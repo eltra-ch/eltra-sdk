@@ -1,0 +1,11 @@
+tocTab[tocTab.length] = new Array("0.1.1.1:1", "", "Admin", "EARoot/EA1/EA1/EA1/EA30.htm", "6.png", "E2732", "0", "", "Actor0","{9D6786BD-BCCE-4ef4-8C93-D90394183D2F}");
+tocTab[tocTab.length] = new Array("0.1.1.1:2", "", "Admin", "EARoot/EA1/EA1/EA1/EA31.htm", "6.png", "E2740", "0", "", "Actor0","{46619A2A-4C94-4acb-94BD-192F9A865DCF}");
+tocTab[tocTab.length] = new Array("0.1.1.1:3", "", "Cloud IoT Service (Dashboard)", "EARoot/EA1/EA1/EA1/EA32.htm", "10.png", "E2548", "0", "", "Component0","{E03E9090-7EFC-4a57-86D3-7C21AF78FB5C}");
+tocTab[tocTab.length] = new Array("0.1.1.1:4", "", "Customer", "EARoot/EA1/EA1/EA1/EA33.htm", "6.png", "E2561", "0", "", "Actor0","{1527DEB0-6BE0-4791-81BA-64752FE3B01E}");
+tocTab[tocTab.length] = new Array("0.1.1.1:5", "", "Dashboard / IoT Server", "EARoot/EA1/EA1/EA1/EA34.htm", "7.png", "E2739", "0", "", "UseCase0","{7F1DB752-C61D-419f-8853-6AE2D6C3AF1B}");
+tocTab[tocTab.length] = new Array("0.1.1.1:6", "", "EPOS Master (Agent)", "EARoot/EA1/EA1/EA1/EA35.htm", "10.png", "E2549", "0", "", "Component0","{06A07CE2-D968-44e1-AC32-32F8A31EFFB7}");
+tocTab[tocTab.length] = new Array("0.1.1.1:7", "", "EPOS Navigo (Agent)", "EARoot/EA1/EA1/EA1/EA36.htm", "10.png", "E2550", "0", "", "Component0","{0A83AFA1-033F-45b7-B772-791A5029D015}");
+tocTab[tocTab.length] = new Array("0.1.1.1:8", "", "Observer", "EARoot/EA1/EA1/EA1/EA37.htm", "6.png", "E2731", "0", "", "Actor0","{CB02790A-08E0-47fb-B4B1-7BC7DBE2C7D4}");
+tocTab[tocTab.length] = new Array("0.1.1.1:9", "", "Publisher", "EARoot/EA1/EA1/EA1/EA38.htm", "6.png", "E2729", "0", "", "Actor0","{F7C05F2F-B700-4b87-B457-A8520B0BFAAC}");
+tocTab[tocTab.length] = new Array("0.1.1.1:10", "", "Subscriber", "EARoot/EA1/EA1/EA1/EA39.htm", "6.png", "E2730", "0", "", "Actor0","{F745F8DE-4853-4e62-AE09-302F800A10C9}");
+tocTab[tocTab.length] = new Array("0.1.1.1:11", "", "REST", "EARoot/EA1/EA1/EA1/EA40.htm", "112.png", "E2568", "E2548", "", "ProvidedInterface0","{ED185064-4157-4edc-BF89-A3386FBA9F3E}");

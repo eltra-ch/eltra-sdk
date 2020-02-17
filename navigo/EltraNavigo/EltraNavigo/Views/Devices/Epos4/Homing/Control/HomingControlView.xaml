@@ -1,0 +1,75 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<ContentView xmlns="http://xamarin.com/schemas/2014/forms"  
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml" 
+             xmlns:triggers="clr-namespace:EltraNavigo.Views.Homing.Control.Triggers;assembly=EltraNavigo" 
+             x:Class="EltraNavigo.Views.Homing.Control.HomingControlView">
+    <ContentView.Content>
+        <Grid>
+            <Grid Padding="0,8,0,0" IsEnabled="{Binding IsEnabled}">
+                <Grid.Resources>
+                    <ResourceDictionary>
+                        <Style TargetType="Frame">
+                            <Setter Property="Padding" Value="8"/>
+                            <Setter Property="HasShadow" Value="{DynamicResource AppFrameShadowStyle}"/>
+                        </Style>
+                    </ResourceDictionary>
+                </Grid.Resources>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition/>
+                    <ColumnDefinition/>
+                    <ColumnDefinition/>
+                </Grid.ColumnDefinitions>
+                <Frame Grid.Row="0" Grid.Column="0">
+                    <Button Text="Start" IsEnabled="{Binding IsStartButtonEnabled}">
+                        <Button.Triggers>
+                            <EventTrigger Event="Clicked">
+                                <triggers:StartButtonClicked/>
+                            </EventTrigger>
+                        </Button.Triggers>
+                    </Button>
+                </Frame>
+                <Frame Grid.Row="0" Grid.Column="1">
+                    <Button Text="Halt" IsEnabled="{Binding IsHaltButtonEnabled}">
+                        <Button.Triggers>
+                            <EventTrigger Event="Clicked">
+                                <triggers:HaltButtonClicked/>
+                            </EventTrigger>
+                        </Button.Triggers>
+                    </Button>
+                </Frame>
+                <Frame Grid.Row="0" Grid.Column="2">
+                    <Button Text="Define position" IsEnabled="{Binding IsDefinePositionButtonEnabled}">
+                        <Button.Triggers>
+                            <EventTrigger Event="Clicked">
+                                <triggers:DefinePositionButtonClicked/>
+                            </EventTrigger>
+                        </Button.Triggers>
+                    </Button>
+                </Frame>
+                <Frame Grid.Row="1" Grid.Column="0">
+                    <Button Text="{Binding EnableButtonText}" IsEnabled="{Binding IsEnableButtonEnabled}">
+                        <Button.Triggers>
+                            <EventTrigger Event="Clicked">
+                                <triggers:EnableButtonClicked/>
+                            </EventTrigger>
+                        </Button.Triggers>
+                    </Button>
+                </Frame>
+                <Frame Grid.Row="1" Grid.Column="1">
+                    <Button Text="Quick stop" IsEnabled="{Binding IsQuickStopButtonEnabled}" >
+                        <Button.Triggers>
+                            <EventTrigger Event="Clicked">
+                                <triggers:QuickStopButtonClicked/>
+                            </EventTrigger>
+                        </Button.Triggers>
+                    </Button>
+                </Frame>
+            </Grid>
+            <ActivityIndicator IsRunning="{Binding IsBusy}" VerticalOptions="Center" HorizontalOptions="Center" />
+        </Grid>
+    </ContentView.Content>
+</ContentView>

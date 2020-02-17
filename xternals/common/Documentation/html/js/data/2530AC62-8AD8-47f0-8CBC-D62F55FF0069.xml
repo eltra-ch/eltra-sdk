@@ -1,0 +1,6 @@
+tocTab[tocTab.length] = new Array("0.3.1.1.2.1", "1", "Command", "EARoot/EA3/EA1/EA1/EA2/EA1/EA379.htm", "4.png", "", "", "{D9169733-99E5-4bc3-A7A8-38363AB474F1}", "Package");
+tocTab[tocTab.length] = new Array("0.3.1.1.2.2", "1", "CommandText", "EARoot/EA3/EA1/EA1/EA2/EA2/EA386.htm", "4.png", "", "", "{23742960-F5D2-4868-B015-106E9B01179D}", "Package");
+tocTab[tocTab.length] = new Array("0.3.1.1.2.3", "1", "Connection", "EARoot/EA3/EA1/EA1/EA2/EA3/EA406.htm", "4.png", "", "", "{725BD7F1-FC4D-4dbb-8993-F8512D387D9E}", "Package");
+tocTab[tocTab.length] = new Array("0.3.1.1.2.4", "1", "Parameter", "EARoot/EA3/EA1/EA1/EA2/EA4/EA411.htm", "4.png", "", "", "{EB836EB4-4547-4532-943C-32433748D995}", "Package");
+tocTab[tocTab.length] = new Array("0.3.1.1.2.5", "1", "Reader", "EARoot/EA3/EA1/EA1/EA2/EA5/EA413.htm", "4.png", "", "", "{A91F170B-B8FA-4a97-B5A3-86450BB93873}", "Package");
+tocTab[tocTab.length] = new Array("0.3.1.1.2.6", "1", "Transaction", "EARoot/EA3/EA1/EA1/EA2/EA6/EA417.htm", "4.png", "", "", "{F414F430-6523-477a-97DB-5EB1AC5A19B9}", "Package");

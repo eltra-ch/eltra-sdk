@@ -1,0 +1,412 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>EltraCloud</name>
+    </assembly>
+    <members>
+        <member name="P:EltraCloud.Channels.Readers.AsyncChannelReader.Timeout">
+            <summary>
+            Timeout in seconds
+            </summary>
+        </member>
+        <member name="T:EltraCloud.Controllers.AuthController">
+            <summary>
+            Authentication controller 
+            </summary>
+        </member>
+        <member name="M:EltraCloud.Controllers.AuthController.#ctor(EltraCloud.Services.IAuthService)">
+            <summary>
+            Auth controller constructor
+            </summary>        
+        </member>
+        <member name="M:EltraCloud.Controllers.AuthController.Register(EltraCloudContracts.Contracts.Users.UserAuthData)">
+            <summary>
+            Register user
+            </summary>
+            <param name="authData">UserAuthData</param>
+            <return>RequestResult</return>
+        </member>
+        <member name="M:EltraCloud.Controllers.AuthController.SignIn(EltraCloudContracts.Contracts.Users.UserAuthData)">
+            <summary>
+            Sign-In 
+            </summary>
+            <param name="authData">UserAuthData</param>
+            <returns>AuthRequestResult</returns>
+        </member>
+        <member name="M:EltraCloud.Controllers.AuthController.SignOut(System.String)">
+            <summary>
+            Sign-Out 
+            </summary>
+            <param name="token">user token</param>
+            <returns>RequestResult</returns>
+        </member>
+        <member name="M:EltraCloud.Controllers.AuthController.Exists(System.String)">
+            <summary>
+            Check if login exists
+            </summary>
+            <param name="login">login name</param>
+        </member>
+        <member name="M:EltraCloud.Controllers.AuthController.IsValid(System.String,System.String)">
+            <summary>
+            Validate login data
+            </summary>
+            <param name="login">login name</param>
+            <param name="password">password</param>
+        </member>
+        <member name="T:EltraCloud.Controllers.CommandController">
+            <summary>
+            Command controller
+            </summary>
+        </member>
+        <member name="M:EltraCloud.Controllers.CommandController.#ctor(EltraCloud.Services.ISessionService)">
+            <summary>
+            CommandController constructor
+            </summary>
+            <param name="sessionService"></param>
+        </member>
+        <member name="M:EltraCloud.Controllers.CommandController.GetDeviceCommands(System.String,System.UInt64)">
+            <summary>
+            Get all commands supported by device
+            </summary>
+            <param name="uuid">session uuid</param>
+            <param name="serialNumber">device identification</param>
+        </member>
+        <member name="M:EltraCloud.Controllers.CommandController.GetDeviceCommand(System.UInt64,System.String)">
+            <summary>
+            Get device command 
+            </summary>
+            <param name="serialNumber">device identification</param>
+            <param name="commandName">command name</param>
+            <returns>DeviceCommand</returns>
+        </member>
+        <member name="M:EltraCloud.Controllers.CommandController.PushCommand(EltraCloudContracts.Contracts.CommandSets.ExecuteCommand)">
+            <summary>
+            Push command
+            </summary>
+            <param name="executeCommand">ExecuteCommand</param>        
+            <returns>HTTP Status code</returns>
+            <response code="200">Success</response>
+            <response code="422">Failure</response>
+        </member>
+        <member name="M:EltraCloud.Controllers.CommandController.SetStatus(EltraCloudContracts.Contracts.CommandSets.ExecuteCommandStatus)">
+            <summary>
+            
+            </summary>
+            <param name="commandStatus">ExecuteCommandStatus</param>
+            <returns>HTTP Status code</returns>
+            <response code="200">Success</response>
+            <response code="422">Failure</response>
+        </member>
+        <member name="M:EltraCloud.Controllers.CommandController.GetStatus(System.String,System.String,System.String,System.UInt64,System.String)">
+            <summary>
+            Get Command Status
+            </summary>
+            <param name="uuid">Caller session Id</param>
+            <param name="commandUuid">Command Id</param>
+            <param name="sessionUuid">Session Id</param>
+            <param name="serialNumber">Device Id</param>
+            <param name="commandName">Command name</param>
+            <returns>ExecuteCommandStatus</returns>
+        </member>
+        <member name="M:EltraCloud.Controllers.CommandController.PopCommand(System.String,System.String,System.UInt64,EltraCloudContracts.Contracts.CommandSets.ExecCommandStatus)">
+            <summary>
+            Retrieve Command
+            </summary>
+            <param name="uuid">Session Id</param>
+            <param name="commandUuid">Command Uuid</param>
+            <param name="serialNumber">Device Id</param>
+            <param name="status">ExecCommand Status</param>
+            <returns>ExecuteCommand</returns>
+        </member>
+        <member name="M:EltraCloud.Controllers.CommandController.PopCommands(System.String,System.UInt64,EltraCloudContracts.Contracts.CommandSets.ExecCommandStatus)">
+            <summary>
+            Retrieve Commands
+            </summary>
+            <param name="uuid">Session Id</param>
+            <param name="serialNumber">Device Id</param>
+            <param name="status">ExecCommandStatus</param>
+            <returns>List of ExecuteCommand</returns>
+        </member>
+        <member name="T:EltraCloud.Controllers.DescriptionController">
+            <summary>
+            Device description api
+            </summary>
+        </member>
+        <member name="M:EltraCloud.Controllers.DescriptionController.#ctor(EltraCloud.Services.ISessionService)">
+            <summary>
+            Device description constructor
+            </summary>
+            <param name="sessionService"></param>
+        </member>
+        <member name="M:EltraCloud.Controllers.DescriptionController.Download(System.UInt16,System.UInt16,System.UInt16,System.UInt16)">
+            <summary>
+            Download device description
+            </summary>
+            <param name="hardwareVersion">Hardware version</param>
+            <param name="softwareVersion">Software version</param>
+            <param name="applicationNumber">Application number</param>
+            <param name="applicationVersion">Application version</param>
+            <returns>DeviceDescription</returns>
+            <response code="404">Description not found</response>
+        </member>
+        <member name="M:EltraCloud.Controllers.DescriptionController.Upload(EltraCloudContracts.ObjectDictionary.DeviceDescription.DeviceDescription)">
+            <summary>
+            Upload device description
+            </summary>
+            <param name="deviceDescription">Device description object</param>
+            <returns>RequestResult</returns>
+        </member>
+        <member name="M:EltraCloud.Controllers.DescriptionController.DeviceDescriptionExists(System.String)">
+            <summary>
+            Check if device description exists
+            </summary>
+            <param name="hashCode">content hash code (md5)</param>
+            <returns>RequestResult</returns>
+        </member>
+        <member name="T:EltraCloud.Controllers.DeviceController">
+            <summary>
+            Device Controller
+            </summary>
+        </member>
+        <member name="M:EltraCloud.Controllers.DeviceController.#ctor(Microsoft.AspNetCore.Http.IHttpContextAccessor,EltraCloud.Services.ISessionService)">
+            <summary>
+            DeviceController Constructor
+            </summary>
+            <param name="contextAccessor"></param>
+            <param name="sessionService"></param>
+        </member>
+        <member name="M:EltraCloud.Controllers.DeviceController.DeviceExists(System.String,System.String,System.String)">
+            <summary>
+            Check if device exists
+            </summary>
+            <param name="uuid">Caller Id</param>
+            <param name="sessionUuid">Session id</param>
+            <param name="serialNumber">Device Id</param>
+            <returns></returns>
+        </member>
+        <member name="M:EltraCloud.Controllers.DeviceController.RegisterDevice(EltraCloudContracts.Contracts.Sessions.SessionDevice)">
+            <summary>
+            Register device
+            </summary>
+            <param name="sessionDevice">SessionDevice</param>
+            <returns>true/false</returns>
+        </member>
+        <member name="M:EltraCloud.Controllers.DeviceController.RemoveDevice(System.String,System.String)">
+            <summary>
+            Remove device
+            </summary>
+            <param name="serialNumber">Device id</param>
+            <param name="uuid">Caller id</param>
+            <returns></returns>
+        </member>
+        <member name="M:EltraCloud.Controllers.DeviceController.Lock(EltraCloudContracts.Contracts.Devices.DeviceLock)">
+            <summary>
+            Lock device
+            </summary>
+            <param name="deviceLock">DeviceLock</param>
+            <returns>RequestResult</returns>
+        </member>
+        <member name="M:EltraCloud.Controllers.DeviceController.CanLock(EltraCloudContracts.Contracts.Devices.DeviceLock)">
+            <summary>
+            Validate if user can lock device
+            </summary>
+            <param name="deviceLock"></param>
+            <returns></returns>
+        </member>
+        <member name="M:EltraCloud.Controllers.DeviceController.IsLocked(EltraCloudContracts.Contracts.Devices.DeviceLock)">
+            <summary>
+            Is device locked by specific user
+            </summary>
+            <param name="deviceLock"></param>
+            <returns></returns>
+        </member>
+        <member name="M:EltraCloud.Controllers.DeviceController.Unlock(EltraCloudContracts.Contracts.Devices.DeviceLock)">
+            <summary>
+            Unlock device
+            </summary>
+            <param name="deviceLock"></param>
+            <returns></returns>
+        </member>
+        <member name="T:EltraCloud.Controllers.ParameterController">
+            <summary>
+            Parameter controller
+            </summary>
+        </member>
+        <member name="M:EltraCloud.Controllers.ParameterController.#ctor(EltraCloud.Services.ISessionService)">
+            <summary>
+            Parameter controller constructor
+            </summary>
+            <param name="sessionService"></param>
+        </member>
+        <member name="M:EltraCloud.Controllers.ParameterController.Update(EltraCloudContracts.Contracts.Parameters.ParameterUpdate)">
+            <summary>
+            Update parameter
+            </summary>
+            <param name="parameterUpdate">ParameterUpdate</param>
+            <returns>bool</returns>
+        </member>
+        <member name="M:EltraCloud.Controllers.ParameterController.GetParameter(System.String,System.UInt64,System.UInt16,System.Byte)">
+            <summary>
+            Get Parameter
+            </summary>
+            <param name="uuid">Caller Id</param>
+            <param name="serialNumber">Device Id</param>
+            <param name="index">Parameter Index</param>
+            <param name="subIndex">Parameter Subindex</param>
+            <returns></returns>
+        </member>
+        <member name="M:EltraCloud.Controllers.ParameterController.GetParameterValue(System.String,System.UInt64,System.UInt16,System.Byte)">
+            <summary>
+            Get Parameter Value
+            </summary>
+            <param name="uuid">Caller Id</param>
+            <param name="serialNumber">Device Id</param>
+            <param name="index">Parameter Index</param>
+            <param name="subIndex">Parameter Subindex</param>
+            <returns>ParameterValue</returns>
+        </member>
+        <member name="M:EltraCloud.Controllers.ParameterController.GetHistory(System.String,System.UInt64,System.String,System.DateTime,System.DateTime)">
+            <summary>
+            Get Parameter History
+            </summary>
+            <param name="uuid">Caller Id</param>
+            <param name="serialNumber">Device Id</param>
+            <param name="uniqueId">Parameter unique Id</param>
+            <param name="from">from date/time</param>
+            <param name="to">to date/time</param>
+            <returns>History list</returns>
+            <response code="204">No content</response>
+        </member>
+        <member name="M:EltraCloud.Controllers.ParameterController.GetPairHistory(System.String,System.UInt64,System.String,System.String,System.DateTime,System.DateTime)">
+            <summary>
+            Get Parameter History Touple
+            </summary>
+            <param name="uuid">Caller Id</param>
+            <param name="serialNumber">Device Id</param>
+            <param name="uniqueId1">Parameter A unique Id</param>
+            <param name="uniqueId2">Parameter B unique Id</param>
+            <param name="from">from date/time</param>
+            <param name="to">to date/time</param>
+            <returns>History list</returns>
+            <response code="204">No content</response>
+        </member>
+        <member name="T:EltraCloud.Controllers.SessionController">
+            <summary>
+            Session controller
+            </summary>
+        </member>
+        <member name="M:EltraCloud.Controllers.SessionController.#ctor(Microsoft.AspNetCore.Http.IHttpContextAccessor,EltraCloud.Services.IIp2LocationService,EltraCloud.Services.ISessionService)">
+            <summary>
+            Session controller constructor
+            </summary>
+            <param name="contextAccessor">http context</param>
+            <param name="locationService">location service</param>
+            <param name="sessionService">session service</param>
+        </member>
+        <member name="M:EltraCloud.Controllers.SessionController.GetSessions(System.String,System.String,System.String)">
+            <summary>
+            Get active sessions
+            </summary>
+            <param name="uuid">session uuid</param>
+            <param name="login">login name</param>
+            <param name="password">login password</param>
+            <returns></returns>
+        </member>
+        <member name="M:EltraCloud.Controllers.SessionController.GetSession(System.String,System.String,System.String)">
+            <summary>
+            Get Session by Id
+            </summary>
+            <param name="uuid">Session Uuid</param>
+            <param name="login">login</param>
+            <param name="password">password</param>
+            <returns></returns>
+        </member>
+        <member name="M:EltraCloud.Controllers.SessionController.Exists(System.String,System.String)">
+            <summary>
+            Check if session exists
+            </summary>
+            <param name="uuid">Caller Id</param>
+            <param name="sessionUuid">Session Id</param>
+            <returns>RequestResult</returns>
+        </member>
+        <member name="M:EltraCloud.Controllers.SessionController.Add(EltraCloudContracts.Contracts.Sessions.Session)">
+            <summary>
+            Register session
+            </summary>
+            <param name="session">Session</param>
+            <returns>RequestResult</returns>
+        </member>
+        <member name="M:EltraCloud.Controllers.SessionController.UpdateStatus(EltraCloudContracts.Contracts.Sessions.SessionStatusUpdate)">
+            <summary>
+            Update Session Status
+            </summary>
+            <param name="statusUpdate">SessionStatusUpdate</param>
+            <returns>RequestResult</returns>
+        </member>
+        <member name="M:EltraCloud.Controllers.SessionController.GetSessionDevices(System.String,System.String,System.String)">
+            <summary>
+            Get devices associated to session
+            </summary>
+            <param name="uuid">Session Id</param>
+            <param name="login">Login</param>
+            <param name="password">Password</param>
+            <returns>List{EltraDevice}</returns>
+            <response code="403">Forbid</response>
+        </member>
+        <member name="T:EltraCloud.Services.AuthState">
+            <summary>
+            AuthState
+            </summary>
+        </member>
+        <member name="T:EltraCloud.Services.Events.SessionStatusChangedEventArgs">
+            <summary>
+            SessionStatusChanged event arguments
+            </summary>
+        </member>
+        <member name="P:EltraCloud.Services.Events.SessionStatusChangedEventArgs.Uuid">
+            <summary>
+            Session Uuid
+            </summary>
+        </member>
+        <member name="P:EltraCloud.Services.Events.SessionStatusChangedEventArgs.Status">
+            <summary>
+            Session Status
+            </summary>
+        </member>
+        <member name="T:EltraCloud.Services.SessionService">
+            <summary>
+            Session Service
+            </summary>    
+        </member>
+        <member name="M:EltraCloud.Services.SessionService.Dispose">
+            <summary>
+            Dispose
+            </summary>
+        </member>
+        <member name="T:EltraCloud.Startup">
+            <summary>
+            Sturtup
+            </summary>
+        </member>
+        <member name="M:EltraCloud.Startup.#ctor(Microsoft.Extensions.Configuration.IConfiguration)">
+            <summary>
+            Startup constructor
+            </summary>
+            <param name="configuration"></param>
+        </member>
+        <member name="P:EltraCloud.Startup.Configuration">
+            <summary>
+            Configuration interface
+            </summary>
+        </member>
+        <member name="M:EltraCloud.Startup.ConfigureServices(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
+            <summary>
+            This method gets called by the runtime. Use this method to add services to the container.
+            </summary>
+            <param name="services"></param>
+        </member>
+        <member name="M:EltraCloud.Startup.Configure(Microsoft.AspNetCore.Builder.IApplicationBuilder,Microsoft.AspNetCore.Hosting.IWebHostEnvironment)">
+            <summary>This method gets called by the runtime. Use this method to configure the HTTP request pipeline.</summary> 
+        </member>
+    </members>
+</doc>

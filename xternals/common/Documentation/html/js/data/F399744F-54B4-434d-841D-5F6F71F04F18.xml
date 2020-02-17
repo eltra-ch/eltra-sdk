@@ -1,0 +1,5 @@
+tocTab[tocTab.length] = new Array("0.3.1.2.1:1", "", "AppHelper", "EARoot/EA3/EA1/EA2/EA1/EA589.htm", "5.png", "E197", "0", "", "Class0","{2DEECFA0-C80D-4605-8382-6F53BADE32DD}");
+tocTab[tocTab.length] = new Array("0.3.1.2.1:2", "", "CryptHelpers", "EARoot/EA3/EA1/EA2/EA1/EA590.htm", "5.png", "E198", "0", "", "Class0","{7617DF5E-FD6F-4598-969C-FCBAFB3FF5AB}");
+tocTab[tocTab.length] = new Array("0.3.1.2.1:3", "", "IVersionHelper", "EARoot/EA3/EA1/EA2/EA1/EA591.htm", "8.png", "E201", "0", "", "Interface0","{9D222260-1E90-4203-B1C0-A067F100318B}");
+tocTab[tocTab.length] = new Array("0.3.1.2.1:4", "", "ResourceHelper", "EARoot/EA3/EA1/EA2/EA1/EA592.htm", "5.png", "E199", "0", "", "Class0","{637F03F1-D9F5-4e55-A28E-1C2F64E36BEE}");
+tocTab[tocTab.length] = new Array("0.3.1.2.1:5", "", "UrlHelper", "EARoot/EA3/EA1/EA2/EA1/EA593.htm", "5.png", "E200", "0", "", "Class0","{03850D67-1B09-4ee0-83CC-78DDB66D84FE}");

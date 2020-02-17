@@ -1,0 +1,57 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<ContentView xmlns="http://xamarin.com/schemas/2014/forms" 
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:d="http://xamarin.com/schemas/2014/forms/design"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:parameters="clr-namespace:EltraNavigo.Controls.Parameters"
+             mc:Ignorable="d"
+             x:Class="EltraNavigo.Views.Devices.Thermo.ThermoControl.ControllerView">
+  <ContentView.Content>
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="110"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+
+            <Frame Grid.Row="0" Grid.Column="0" Padding="0">
+                <Label Text="Min Temperature:" VerticalOptions="Center"/>
+            </Frame>
+
+            <Frame Grid.Row="1" Grid.Column="0" Padding="0">
+                <Label Text="Max Temperature:" VerticalOptions="Center"/>
+            </Frame>
+
+            <Frame Grid.Row="2" Grid.Column="0" Padding="0">
+                <Label Text="Min Humidity:" VerticalOptions="Center"/>
+            </Frame>
+
+            <Frame Grid.Row="3" Grid.Column="0" Padding="0">
+                <Label Text="Max Humidity:" VerticalOptions="Center"/>
+            </Frame>
+
+            <Frame Grid.Row="0" Grid.Column="1" Padding="0">
+                <parameters:ParameterEditView BindingContext="{Binding TemperatureMin}"/>
+            </Frame>
+
+            <Frame Grid.Row="1" Grid.Column="1" Padding="0">
+                <parameters:ParameterEditView BindingContext="{Binding TemperatureMax}"/>
+            </Frame>
+
+            <Frame Grid.Row="2" Grid.Column="1" Padding="0">
+                <parameters:ParameterEditView BindingContext="{Binding HumidityMin}"/>
+            </Frame>
+
+            <Frame Grid.Row="3" Grid.Column="1" Padding="0">
+                <parameters:ParameterEditView BindingContext="{Binding HumidityMax}"/>
+            </Frame>
+
+        </Grid>
+    </ContentView.Content>
+</ContentView>

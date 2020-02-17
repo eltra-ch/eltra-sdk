@@ -1,0 +1,56 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<ContentView xmlns="http://xamarin.com/schemas/2014/forms"   
+				xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"  
+				xmlns:deviceList="clr-namespace:EltraNavigo.Views.DeviceList"  
+				xmlns:behaviors="clr-namespace:EltraNavigo.Controls.Behaviors;assembly=EltraNavigo" 
+				xmlns:converters="clr-namespace:EltraNavigo.Views.DeviceList.Converters"
+                x:Class="EltraNavigo.Views.DeviceList.DeviceListView" 
+                x:DataType="deviceList:DeviceListViewModel"
+                VerticalOptions="FillAndExpand">
+    <ContentView.Behaviors>
+		<behaviors:ToolViewShow/>
+	</ContentView.Behaviors>
+    <ContentView.Content>
+        <Grid VerticalOptions="FillAndExpand">
+            <Grid.Resources>
+                <converters:ListViewCountToHeightConverter x:Key="ListViewCountToHeightConverter"/>
+            </Grid.Resources>
+
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"></RowDefinition>
+                <RowDefinition></RowDefinition>
+                <RowDefinition Height="Auto"></RowDefinition>
+            </Grid.RowDefinitions>
+
+            <Frame Grid.Row="0">
+                <ListView ItemsSource="{Binding Devices}"  
+                        SelectedItem="{Binding SelectedDevice, Mode=TwoWay}"  
+                        IsPullToRefreshEnabled="True"  
+                        RefreshCommand="{Binding RefreshCommand}"  
+                        IsRefreshing="{Binding IsRefreshing}" 
+                        IsEnabled="{Binding LoginViewModel.IsValid}"
+                        HeightRequest="{Binding Devices, Converter={StaticResource ListViewCountToHeightConverter}}">
+                    <ListView.RowHeight>
+                        <OnPlatform x:TypeArguments="x:Int32">
+                            <On Platform="Android">160</On>
+                            <On Platform="iOS">160</On>
+                        </OnPlatform>
+                    </ListView.RowHeight>
+                    <ListView.ItemTemplate>
+                        <DataTemplate>
+                            <deviceList:DeviceView/>
+                        </DataTemplate>
+                    </ListView.ItemTemplate>
+                </ListView>
+            </Frame>
+            
+            <Frame Grid.Row="1" BorderColor="Transparent" BackgroundColor="Transparent">                
+                <ActivityIndicator IsRunning="{Binding IsBusy}" VerticalOptions="Center" HorizontalOptions="Center" />
+            </Frame>
+
+            <Frame Grid.Row="2" BorderColor="Transparent" BackgroundColor="Transparent">
+                <Button Text="Refresh" Command="{Binding RefreshCommand}" IsEnabled="{Binding LoginViewModel.IsValid}"/>
+            </Frame>
+        </Grid>
+    </ContentView.Content>
+</ContentView>

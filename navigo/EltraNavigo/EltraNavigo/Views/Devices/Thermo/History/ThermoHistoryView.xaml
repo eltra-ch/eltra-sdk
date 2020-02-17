@@ -1,0 +1,262 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<ContentView xmlns="http://xamarin.com/schemas/2014/forms"  
+				xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml" 
+				xmlns:d="http://xamarin.com/schemas/2014/forms/design" 
+				xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+				xmlns:behaviors="clr-namespace:EltraNavigo.Controls.Behaviors;assembly=EltraNavigo" 
+				xmlns:converters="clr-namespace:EltraNavigo.Views.Converters" 
+				mc:Ignorable="d" 
+				xmlns:views="clr-namespace:EltraNavigo.Views.Devices.Thermo.History;assembly=EltraNavigo" 
+				xmlns:oxy="clr-namespace:OxyPlot.Xamarin.Forms;assembly=OxyPlot.Xamarin.Forms" 
+				x:DataType="views:ThermoHistoryViewModel" 
+				x:Class="EltraNavigo.Views.Devices.Thermo.History.ThermoHistoryView">
+	<ContentView.Behaviors>
+		<behaviors:ToolViewShow/>
+	</ContentView.Behaviors>
+	<ContentView.Content>
+		<ScrollView>
+			<Grid>
+				<Grid.Resources>
+					<converters:NegateBooleanConverter x:Key="NegateBooleanConverter"/>
+					<Style TargetType="Button">
+						<Setter Property="FontSize" Value="Large"/>
+						<Setter Property="BackgroundColor" Value="{StaticResource NavigationPrimary}"/>
+						<Setter Property="BorderColor" Value="White"/>
+						<Setter Property="TextColor" Value="White"/>
+					</Style>
+					<Style TargetType="Label">
+						<Setter Property="FontSize" Value="Small"/>
+					</Style>
+				</Grid.Resources>
+				<Grid.ColumnDefinitions>
+					<ColumnDefinition Width="24"/>
+					<ColumnDefinition Width="*"/>
+					<ColumnDefinition Width="24"/>
+				</Grid.ColumnDefinitions>
+				<Grid.RowDefinitions>
+					<RowDefinition Height="24"/> <!-- 0 header -->
+					<RowDefinition Height="Auto"/> <!-- 1 pickers -->
+					<RowDefinition Height="Auto"/> <!-- 2 ActivityIndicator -->
+					<RowDefinition Height="*"/>	<!-- 3 list -->
+					<RowDefinition Height="24"/> <!-- 4 footer -->
+				</Grid.RowDefinitions>
+				<Frame Grid.Row="1" Grid.Column="1" BorderColor="{StaticResource NavigationPrimary}">
+					<Grid>
+						<Grid.RowDefinitions>
+							<RowDefinition Height="Auto"/>
+							<RowDefinition Height="Auto"/>
+							<RowDefinition Height="Auto"/>
+							<RowDefinition Height="Auto"/>
+						</Grid.RowDefinitions>
+						<Frame Grid.Row="0" Padding="0">
+							<DatePicker MinimumDate="01/01/2019" MaximumDate="12/31/2020" Date="{Binding StartDate}" />
+						</Frame>
+						<Frame Grid.Row="1" Padding="0">
+							<TimePicker Time="{Binding StartTime}"/>
+						</Frame>
+						<Frame Grid.Row="2" Padding="0">
+							<Grid>
+								<Grid.ColumnDefinitions>
+									<ColumnDefinition Width="*"/>
+									<ColumnDefinition Width="Auto"/>
+								</Grid.ColumnDefinitions>
+								<Grid Grid.Column="0">
+									<Grid.RowDefinitions>
+										<RowDefinition Height="Auto"/>
+										<RowDefinition Height="Auto"/>
+									</Grid.RowDefinitions>
+									<Frame Grid.Column="0" Padding="0">
+										<DatePicker MinimumDate="01/01/2019" MaximumDate="12/31/2020" Date="{Binding EndDate}" VerticalOptions="Center"/>
+									</Frame>
+									<Frame Grid.Row="1" Padding="0">
+										<TimePicker Time="{Binding EndTime}"/>
+									</Frame>
+								</Grid>
+								<Frame Grid.Column="1" Padding="0">
+									<Button Text="Now" FontSize="Small" Command="{Binding SetEndDateCommand}" VerticalOptions="FillAndExpand"/>
+								</Frame>
+							</Grid>
+						</Frame>
+						<Frame Grid.Row="3" Padding="0">
+							<Button Text="Refresh" FontSize="Medium" Command="{Binding RefreshPlotsCommand}"/>
+						</Frame>
+					</Grid>
+				</Frame>
+				<Frame Grid.Row="2" Grid.Column="1">
+					<ActivityIndicator IsRunning="{Binding IsBusy}" VerticalOptions="Center" HorizontalOptions="Center" />
+				</Frame>
+				<Frame Grid.Row="3" Grid.Column="1" Padding="0">
+					<Grid HorizontalOptions="Fill" VerticalOptions="FillAndExpand">
+						<Grid.RowDefinitions>
+							<RowDefinition Height="280"/>
+							<RowDefinition Height="280"/>
+							<RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+						</Grid.RowDefinitions>
+						<Frame Grid.Row="0" Padding="0,0,32,0">
+							<oxy:PlotView Model="{Binding TempPlotModel}" VerticalOptions="FillAndExpand" />
+						</Frame>
+						<Frame Grid.Row="1" Padding="0,0,32,0">
+							<oxy:PlotView Model="{Binding HumidityPlotModel}" VerticalOptions="FillAndExpand" />
+						</Frame>
+						<Frame Grid.Row="2" Padding="0">
+                            <Grid>
+                                <Grid.Resources>
+                                    <Style TargetType="Frame">
+                                        <Setter Property="Padding" Value="1"/>
+                                    </Style>
+                                </Grid.Resources>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                </Grid.RowDefinitions>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="160"/>
+                                    <ColumnDefinition/>
+                                    <ColumnDefinition/>
+                                </Grid.ColumnDefinitions>
+
+                                <Frame Grid.Row="0" Grid.Column="0">
+                                    <Label Text="Temperature [°C]" FontAttributes="Bold"/>
+                                </Frame>
+
+                                <Frame Grid.Row="0" Grid.Column="1">
+                                    <Label Text="Min" HorizontalOptions="Center"/>
+                                </Frame>
+
+                                <Frame Grid.Row="0" Grid.Column="2">
+                                    <Label Text="Max" HorizontalOptions="Center"/>
+                                </Frame>
+
+                                <Frame Grid.Row="1" Grid.Column="0">
+                                    <Label Text="Internal" HorizontalOptions="Start"/>
+                                </Frame>
+
+                                <Frame Grid.Row="2" Grid.Column="0">
+                                    <Label Text="External" HorizontalOptions="Start"/>
+                                </Frame>
+
+                                <Frame Grid.Row="1" Grid.Column="1">
+                                    <Label Text="{Binding MinIntTemp}" HorizontalOptions="Center"/>
+                                </Frame>
+
+                                <Frame Grid.Row="1" Grid.Column="2">
+                                    <Label Text="{Binding MaxIntTemp}" HorizontalOptions="Center"/>
+                                </Frame>
+
+                                <Frame Grid.Row="2" Grid.Column="1">
+                                    <Label Text="{Binding MinExtTemp}" HorizontalOptions="Center"/>
+                                </Frame>
+
+                                <Frame Grid.Row="2" Grid.Column="2">
+                                    <Label Text="{Binding MaxExtTemp}" HorizontalOptions="Center"/>
+                                </Frame>
+
+                            </Grid>
+						</Frame>
+
+                        <Frame Grid.Row="3" Padding="0">
+                            <Grid>
+                                <Grid.Resources>
+                                    <Style TargetType="Frame">
+                                        <Setter Property="Padding" Value="1"/>
+                                    </Style>
+                                </Grid.Resources>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                </Grid.RowDefinitions>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="160"/>
+                                    <ColumnDefinition/>
+                                    <ColumnDefinition/>
+                                </Grid.ColumnDefinitions>
+
+                                <Frame Grid.Row="0" Grid.Column="0">
+                                    <Label Text="Humidity [%]" FontAttributes="Bold"/>
+                                </Frame>
+
+                                <Frame Grid.Row="0" Grid.Column="1">
+                                    <Label Text="Min" HorizontalOptions="Center"/>
+                                </Frame>
+
+                                <Frame Grid.Row="0" Grid.Column="2">
+                                    <Label Text="Max" HorizontalOptions="Center"/>
+                                </Frame>
+
+                                <Frame Grid.Row="1" Grid.Column="0">
+                                    <Label Text="Internal" HorizontalOptions="Start"/>
+                                </Frame>
+
+                                <Frame Grid.Row="2" Grid.Column="0">
+                                    <Label Text="External" HorizontalOptions="Start"/>
+                                </Frame>
+
+                                <Frame Grid.Row="1" Grid.Column="1">
+                                    <Label Text="{Binding MinIntHum}" HorizontalOptions="Center"/>
+                                </Frame>
+
+                                <Frame Grid.Row="1" Grid.Column="2">
+                                    <Label Text="{Binding MaxIntHum}" HorizontalOptions="Center"/>
+                                </Frame>
+
+                                <Frame Grid.Row="2" Grid.Column="1">
+                                    <Label Text="{Binding MinExtHum}" HorizontalOptions="Center"/>
+                                </Frame>
+
+                                <Frame Grid.Row="2" Grid.Column="2">
+                                    <Label Text="{Binding MaxExtHum}" HorizontalOptions="Center"/>
+                                </Frame>
+
+                            </Grid>
+                        </Frame>
+
+                        <Frame Grid.Row="4" Padding="0">
+
+                            <Grid>
+                                <Grid.Resources>
+                                    <Style TargetType="Frame">
+                                        <Setter Property="Padding" Value="1"/>
+                                    </Style>
+                                </Grid.Resources>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                </Grid.RowDefinitions>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="160"/>
+                                    <ColumnDefinition/>
+                                </Grid.ColumnDefinitions>
+
+                                <Frame Grid.Column="0" Grid.Row="0">
+                                    <Label Text="Turn on" FontAttributes="Bold"/>
+                                </Frame>
+                                
+                                <Frame Grid.Column="1" Grid.Row="0">
+                                    <Label Text="Count" HorizontalOptions="Center"/>
+                                </Frame>
+
+                                <Frame Grid.Column="2" Grid.Row="0">
+                                    <Label Text="Duration [h]" HorizontalOptions="Center"/>
+                                </Frame>
+
+                                <Frame Grid.Column="1" Grid.Row="1">
+                                    <Label Text="{Binding RelayOnCount}" HorizontalOptions="Center"/>
+                                </Frame>
+
+                                <Frame Grid.Column="2" Grid.Row="1">
+                                    <Label Text="{Binding RelayOnTime}" HorizontalOptions="Center"/>
+                                </Frame>
+                            </Grid>
+
+                        </Frame>
+                        
+                    </Grid>
+				</Frame>
+                
+			</Grid>
+		</ScrollView>
+	</ContentView.Content>
+</ContentView>

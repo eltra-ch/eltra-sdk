@@ -1,0 +1,88 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <AspNetCoreHostingModel>InProcess</AspNetCoreHostingModel>
+	<LangVersion>7.1</LangVersion>
+	<Company>eltra.ch</Company>
+	<Authors>eltra.ch Mobile Solutions</Authors>
+	<AddRazorSupportForMvc>true</AddRazorSupportForMvc>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <DocumentationFile>EltraCloud.xml</DocumentationFile>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <DocumentationFile>EltraCloud.xml</DocumentationFile>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="prebuild.cmd" />
+    <None Remove="prebuild.sh" />
+    <None Remove="publish.sh" />
+    <None Remove="Resources\0B10.png" />
+    <None Remove="Resources\6050.png" />
+    <None Remove="Resources\6150.png" />
+    <None Remove="Resources\6350.png" />
+    <None Remove="Resources\6450.png" />
+    <None Remove="Resources\6551.png" />
+    <None Remove="Resources\6552.png" />
+    <None Remove="Resources\6750.png" />
+    <None Remove="Resources\A000.png" />
+    <None Remove="Resources\EPOS2_2126h_6220h_0000h_0000h.eds" />
+    <None Remove="Resources\EPOS4_0110h_6150h_0000h_0000h.xdd" />
+    <None Remove="Resources\EPOS4_0110h_6551h_0000h_0000h.xdd" />
+    <None Remove="Resources\EPOS4_0150h_6050h_0000h_0000h.xdd" />
+    <None Remove="Resources\EPOS4_0150h_6150h_0000h_0000h.xdd" />
+    <None Remove="Resources\EPOS4_0150h_6350h_0000h_0000h.xdd" />
+    <None Remove="Resources\EPOS4_0150h_6450h_0000h_0000h.xdd" />
+    <None Remove="Resources\EPOS4_0150h_6551h_0000h_0000h.xdd" />
+    <None Remove="Resources\EPOS4_0150h_6552h_0000h_0000h.xdd" />
+    <None Remove="Resources\EPOS4_0160h_6750h_FF00h_00D0h.xdd" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\0B10.png" />
+    <EmbeddedResource Include="Resources\6050.png" />
+    <EmbeddedResource Include="Resources\6150.png" />
+    <EmbeddedResource Include="Resources\6350.png" />
+    <EmbeddedResource Include="Resources\6450.png" />
+    <EmbeddedResource Include="Resources\6551.png" />
+    <EmbeddedResource Include="Resources\6552.png" />
+    <EmbeddedResource Include="Resources\6750.png" />
+    <EmbeddedResource Include="Resources\A000.png" />
+    <EmbeddedResource Include="Resources\EPOS2_2126h_6220h_0000h_0000h.eds" />
+    <EmbeddedResource Include="Resources\EPOS4_0110h_6150h_0000h_0000h.xdd" />
+    <EmbeddedResource Include="Resources\EPOS4_0110h_6551h_0000h_0000h.xdd" />
+    <EmbeddedResource Include="Resources\EPOS4_0150h_6050h_0000h_0000h.xdd" />
+    <EmbeddedResource Include="Resources\EPOS4_0150h_6150h_0000h_0000h.xdd" />
+    <EmbeddedResource Include="Resources\EPOS4_0150h_6350h_0000h_0000h.xdd" />
+    <EmbeddedResource Include="Resources\EPOS4_0150h_6450h_0000h_0000h.xdd" />
+    <EmbeddedResource Include="Resources\EPOS4_0150h_6551h_0000h_0000h.xdd" />
+    <EmbeddedResource Include="Resources\EPOS4_0150h_6552h_0000h_0000h.xdd" />
+    <EmbeddedResource Include="Resources\EPOS4_0160h_6750h_FF00h_00D0h.xdd" />
+  </ItemGroup>
+ 
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="3.1.0" />
+    <PackageReference Include="Microsoft.CodeAnalysis" Version="3.3.1" />
+    <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="3.1.0" />
+    <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Utils" Version="3.1.0" />
+    <PackageReference Include="MySql.Data" Version="8.0.18" />
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="5.0.0-rc5" />
+    <PackageReference Include="Swashbuckle.AspNetCore.Swagger" Version="5.0.0-rc5" />
+    <PackageReference Include="Swashbuckle.AspNetCore.SwaggerUI" Version="5.0.0-rc5" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="wwwroot\lib\NewFolder\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\EltraCloudStorage\EltraCloudStorage.csproj" />
+    <ProjectReference Include="..\Xternals\Common\EltraCloudContracts\EltraCloudContracts.csproj" />
+    <ProjectReference Include="..\Xternals\Common\EltraCommon\EltraCommon.csproj" />
+  </ItemGroup>
+
+</Project>

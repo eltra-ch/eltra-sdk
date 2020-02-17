@@ -1,0 +1,5 @@
+tocTab[tocTab.length] = new Array("0.5.2.1.1.6:1", "", "ParameterConnectionManager", "EARoot/EA5/EA2/EA1/EA1/EA6/EA996.htm", "5.png", "E682", "0", "", "Class0","{64FF7E14-D65E-49f4-94A6-3EDF95BE07EE}");
+tocTab[tocTab.length] = new Array("0.5.2.1.1.6:2", "", "ParameterUpdater", "EARoot/EA5/EA2/EA1/EA1/EA6/EA997.htm", "5.png", "E683", "0", "", "Class0","{2F13ADBE-4946-4072-8581-BAF79D48B46E}");
+tocTab[tocTab.length] = new Array("0.5.2.1.1.6:3", "", "RegisteredParameter", "EARoot/EA5/EA2/EA1/EA1/EA6/EA998.htm", "5.png", "E684", "0", "", "Class0","{35B4BB67-89E6-4361-B96D-326718FBC906}");
+tocTab[tocTab.length] = new Array("0.5.2.1.1.6:4", "", "SourceValidator", "EARoot/EA5/EA2/EA1/EA1/EA6/EA999.htm", "5.png", "E685", "0", "", "Class0","{18D17815-54AE-4481-96A7-51CD362A6C4A}");
+tocTab[tocTab.length] = new Array("0.5.2.1.1.6.1", "1", "Events", "EARoot/EA5/EA2/EA1/EA1/EA6/EA1/EA1000.htm", "4.png", "", "", "{96D68A56-C6DE-40e7-B836-685729D41F74}", "Package");

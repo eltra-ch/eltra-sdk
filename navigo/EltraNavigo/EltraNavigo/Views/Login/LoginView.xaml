@@ -1,0 +1,112 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentView xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:d="http://xamarin.com/schemas/2014/forms/design"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:behaviors="clr-namespace:EltraNavigo.Views.Login.Behaviors;assembly=EltraNavigo"
+             xmlns:views="clr-namespace:EltraNavigo.Views.Login;assembly=EltraNavigo"
+             mc:Ignorable="d"
+             x:DataType="views:LoginViewModel"             
+             xmlns:local="clr-namespace:EltraNavigo.Controls.Extensions;assembly=EltraNavigo"
+             x:Class="EltraNavigo.Views.Login.LoginView" VerticalOptions="CenterAndExpand">
+    <ContentView.Behaviors>
+        <behaviors:LoginViewBehavior/>
+    </ContentView.Behaviors>
+    <ContentView.Content>
+        <Grid VerticalOptions="FillAndExpand" HorizontalOptions="FillAndExpand">
+            
+            <Grid>
+                <Grid.Resources>
+                    <ResourceDictionary>
+                        <Color x:Key="NavigationPrimary">#2196F3</Color>
+                    </ResourceDictionary>
+                </Grid.Resources>
+                <Grid.RowDefinitions>
+                    <RowDefinition></RowDefinition>
+                    <RowDefinition Height="Auto"></RowDefinition>
+                    <RowDefinition></RowDefinition>
+                </Grid.RowDefinitions>
+
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="4"></ColumnDefinition>
+                    <ColumnDefinition Width="*"></ColumnDefinition>
+                    <ColumnDefinition Width="4"></ColumnDefinition>
+                </Grid.ColumnDefinitions>
+
+                <Frame Grid.Row="1" Grid.Column="1" BorderColor="White" BackgroundColor="Transparent" 
+                       HasShadow="False" CornerRadius="10" OutlineColor="{StaticResource NavigationPrimary}">
+                    <Grid>
+                        
+                        <Image Source="{local:ImageResource EltraNavigo.Resources.clouds.png}" Aspect="Fill"/>
+                        
+                        <Grid VerticalOptions="CenterAndExpand" Padding="4,0,4,0">
+                            
+                            <Grid.Resources>
+                                <ResourceDictionary>
+                                    <Style TargetType="Frame">
+                                        <Setter Property="Padding" Value="2"/>
+                                        <Setter Property="HasShadow" Value="{DynamicResource AppFrameShadowStyle}"/>
+                                    </Style>
+                                </ResourceDictionary>
+                            </Grid.Resources>
+                            
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="24"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="42"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+
+                            <Frame Grid.Row="0" BackgroundColor="Transparent">
+                                <Label IsTabStop="False" 
+                                       Text="Eltra Cloud, Please Sign-in" FontSize="Medium" TextColor="White" 
+                                       BackgroundColor="Transparent"
+                                       HorizontalOptions="CenterAndExpand"/>
+                            </Frame>
+
+                            <Frame Grid.Row="2" BackgroundColor="Transparent">
+                                <Label IsTabStop="False" Text="User name" FontSize="Small" TextColor="White" BackgroundColor="Transparent"/>
+                            </Frame>
+
+                            <Frame Grid.Row="3">
+                                <Entry IsTabStop="True" TabIndex="0" Text="{Binding LoginName, Mode=OneWay}">
+                                    <Entry.Behaviors>
+                                        <behaviors:LoginValidationBehavior/>
+                                    </Entry.Behaviors>
+                                </Entry>
+                            </Frame>
+
+                            <Frame Grid.Row="4" BackgroundColor="Transparent">
+                                <Label IsTabStop="False" Text="Password" FontSize="Small" TextColor="White" BackgroundColor="Transparent"/>
+                            </Frame>
+
+                            <Frame Grid.Row="5">
+                                <Entry IsTabStop="True" TabIndex="1" Text="{Binding Password, Mode=OneWay}" IsPassword="True">
+                                    <Entry.Behaviors>
+                                        <behaviors:PasswordValidationBehavior/>
+                                    </Entry.Behaviors>
+                                </Entry>
+                            </Frame>
+
+                            <Frame Grid.Row="6">
+                                <Button IsTabStop="True" TabIndex="3" Text="LOGIN" Command="{Binding OkCommand}" IsEnabled="{Binding IsValid}"/>
+                            </Frame>
+
+                            <Frame Grid.Row="7" BackgroundColor="Transparent">
+                                <StackLayout Orientation="Horizontal">
+                                    <CheckBox IsChecked="{Binding AutoLogOnActive}" WidthRequest="32"/>
+                                    <Label Text="Automatically Log On" VerticalOptions="CenterAndExpand" HorizontalOptions="StartAndExpand" TextColor="White" BackgroundColor="Transparent"/>
+                                </StackLayout>
+                            </Frame>
+
+                        </Grid>
+                    </Grid>
+                </Frame>
+            </Grid>
+        </Grid>
+    </ContentView.Content>
+</ContentView>

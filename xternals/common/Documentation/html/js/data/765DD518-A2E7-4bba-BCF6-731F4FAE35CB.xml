@@ -1,0 +1,4 @@
+tocTab[tocTab.length] = new Array("0.3.1.1.3.1:1", "", "DeviceObjectDictionary", "EARoot/EA3/EA1/EA1/EA3/EA1/EA427.htm", "5.png", "E321", "0", "", "Class0","{B8CB5B80-0BC5-41da-831F-C1CC2ED58890}");
+tocTab[tocTab.length] = new Array("0.3.1.1.3.1:2", "", "RegionalOptions", "EARoot/EA3/EA1/EA1/EA3/EA1/EA428.htm", "5.png", "E322", "0", "", "Class0","{74C5C020-312A-4e91-A043-26400E55B21A}");
+tocTab[tocTab.length] = new Array("0.3.1.1.3.1.1", "1", "Diagrams", "EARoot/EA3/EA1/EA1/EA3/EA1/EA1/EA433.htm", "4.png", "", "", "{495B1A17-0DE3-4cd8-8EF2-8725AD8D4644}", "Package");
+tocTab[tocTab.length] = new Array("0.3.1.1.3.1.2", "1", "DeviceDescription", "EARoot/EA3/EA1/EA1/EA3/EA1/EA2/EA436.htm", "4.png", "", "", "{1A333614-B7E9-4e34-82BC-76AF6E7E12CA}", "Package");

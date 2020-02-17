@@ -1,0 +1,53 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="devices\fw\EPOS2_2126h_6220h_0000h_0000h.eds" />
+    <None Remove="devices\fw\EPOS4_0110h_6150h_0000h_0000h.xdd" />
+    <None Remove="devices\fw\EPOS4_0110h_6551h_0000h_0000h.xdd" />
+    <None Remove="devices\fw\EPOS4_0150h_6050h_0000h_0000h.xdd" />
+    <None Remove="devices\fw\EPOS4_0150h_6150h_0000h_0000h.xdd" />
+    <None Remove="devices\fw\EPOS4_0150h_6350h_0000h_0000h.xdd" />
+    <None Remove="devices\fw\EPOS4_0150h_6450h_0000h_0000h.xdd" />
+    <None Remove="devices\fw\EPOS4_0150h_6551h_0000h_0000h.xdd" />
+    <None Remove="devices\fw\EPOS4_0150h_6552h_0000h_0000h.xdd" />
+    <None Remove="devices\fw\EPOS4_0160h_6750h_FF00h_00D0h.xdd" />
+    <None Remove="devices\fw\THERMO_0150h_0B10h_0001h_0006h.xdd" />
+    <None Remove="devices\thumbnails\0B10.png" />
+    <None Remove="devices\thumbnails\6050.png" />
+    <None Remove="devices\thumbnails\6150.png" />
+    <None Remove="devices\thumbnails\6350.png" />
+    <None Remove="devices\thumbnails\6450.png" />
+    <None Remove="devices\thumbnails\6551.png" />
+    <None Remove="devices\thumbnails\6552.png" />
+    <None Remove="devices\thumbnails\6750.png" />
+    <None Remove="devices\thumbnails\A000.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="devices\fw\EPOS2_2126h_6220h_0000h_0000h.eds" />
+    <EmbeddedResource Include="devices\fw\EPOS4_0110h_6150h_0000h_0000h.xdd" />
+    <EmbeddedResource Include="devices\fw\EPOS4_0110h_6551h_0000h_0000h.xdd" />
+    <EmbeddedResource Include="devices\fw\EPOS4_0150h_6050h_0000h_0000h.xdd" />
+    <EmbeddedResource Include="devices\fw\EPOS4_0150h_6150h_0000h_0000h.xdd" />
+    <EmbeddedResource Include="devices\fw\EPOS4_0150h_6350h_0000h_0000h.xdd" />
+    <EmbeddedResource Include="devices\fw\EPOS4_0150h_6450h_0000h_0000h.xdd" />
+    <EmbeddedResource Include="devices\fw\EPOS4_0150h_6551h_0000h_0000h.xdd" />
+    <EmbeddedResource Include="devices\fw\EPOS4_0150h_6552h_0000h_0000h.xdd" />
+    <EmbeddedResource Include="devices\fw\EPOS4_0160h_6750h_FF00h_00D0h.xdd" />
+    <EmbeddedResource Include="devices\fw\THERMO_0150h_0B10h_0001h_0006h.xdd" />
+    <EmbeddedResource Include="devices\thumbnails\0B10.png" />
+    <EmbeddedResource Include="devices\thumbnails\6050.png" />
+    <EmbeddedResource Include="devices\thumbnails\6150.png" />
+    <EmbeddedResource Include="devices\thumbnails\6350.png" />
+    <EmbeddedResource Include="devices\thumbnails\6450.png" />
+    <EmbeddedResource Include="devices\thumbnails\6551.png" />
+    <EmbeddedResource Include="devices\thumbnails\6552.png" />
+    <EmbeddedResource Include="devices\thumbnails\6750.png" />
+    <EmbeddedResource Include="devices\thumbnails\A000.png" />
+  </ItemGroup>
+
+</Project>

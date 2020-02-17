@@ -1,0 +1,112 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<ContentView xmlns="http://xamarin.com/schemas/2014/forms" 
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:d="http://xamarin.com/schemas/2014/forms/design"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:behaviors="clr-namespace:EltraNavigo.Controls.Behaviors;assembly=EltraNavigo"
+             xmlns:converters="clr-namespace:EltraNavigo.Views.Converters"
+             mc:Ignorable="d"
+             xmlns:views="clr-namespace:EltraNavigo.Views.RelayControl;assembly=EltraNavigo"
+             x:DataType="views:RelayControlViewModel"
+             x:Class="EltraNavigo.Views.RelayControl.RelayControlView">
+
+    <ContentView.Behaviors>
+        <behaviors:ToolViewShow/>
+    </ContentView.Behaviors>
+    
+    <ContentView.Content>
+        <ScrollView>
+            <Grid>
+                <Grid.Resources>
+                    <converters:NegateBooleanConverter x:Key="NegateBooleanConverter"/>
+                    <Style TargetType="Button">
+                        <Setter Property="FontSize" Value="Large"/>
+                        <Setter Property="BackgroundColor" Value="{StaticResource NavigationPrimary}"/>
+                        <Setter Property="BorderColor" Value="White"/>
+                        <Setter Property="TextColor" Value="White"/>                        
+                    </Style>
+                </Grid.Resources>
+
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="24"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="24"/>
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="24"/>   <!-- 0 header --> 
+                    <RowDefinition Height="Auto"/> <!-- 1 button 1 -->
+                    <RowDefinition Height="Auto"/> <!-- 2 Time to switch off -->
+                    <RowDefinition Height="Auto"/> <!-- 3 Automatically Switch off-->
+                    <RowDefinition Height="Auto"/> <!-- 4 ActivityIndicator -->
+                    <RowDefinition Height="Auto"/> <!-- 5 button 2 -->
+                    <RowDefinition Height="Auto"/> <!-- 6 Time to switch off -->
+                    <RowDefinition Height="Auto"/> <!-- 7 Automatically Switch off-->
+                    <RowDefinition Height="24"/>   <!-- 8 footer -->
+                </Grid.RowDefinitions>
+
+                <Frame Grid.Row="1" Grid.Column="1" BorderColor="{StaticResource NavigationPrimary}">
+                    <StackLayout HeightRequest="100">
+                        <Button IsEnabled="{Binding IsControlButton1Enabled}"  
+                                FontSize="Large" BackgroundColor="{StaticResource NavigationPrimary}" BorderColor="White" TextColor="White"
+                            VerticalOptions="FillAndExpand" HorizontalOptions="FillAndExpand"  
+                            Text="{Binding ControlButton1Text}" Command="{Binding ControlButton1Command}">
+                            <Button.HeightRequest>
+                                <OnPlatform x:TypeArguments="x:Double" iOS="100"/>
+                            </Button.HeightRequest>
+                        </Button>
+                    </StackLayout>
+                </Frame>
+
+                <Frame Grid.Row="2" Grid.Column="1" IsVisible="{Binding IsButton1SwitchedOn}">
+                    <StackLayout IsVisible="{Binding IsButton1AutoSwitchOffActive}">
+                        <StackLayout Orientation="Horizontal" VerticalOptions="Start" HorizontalOptions="CenterAndExpand">
+                            <Label Text="Time to switch off:" FontSize="Medium"/>
+                            <Label Text="{Binding RemainingTime1}" FontSize="Medium"/>
+                        </StackLayout>
+                    </StackLayout>
+                </Frame>
+
+                <Frame Grid.Row="3" Grid.Column="1" IsVisible="{Binding IsButton1SwitchedOn, Converter={StaticResource NegateBooleanConverter}}">
+                    <StackLayout Orientation="Horizontal" HorizontalOptions="Center" VerticalOptions="Start">
+                        <CheckBox IsChecked="{Binding IsButton1AutoSwitchOffActive}" WidthRequest="32"/>
+                        <Label Text="Automatically Switch off" VerticalOptions="CenterAndExpand" HorizontalOptions="StartAndExpand"/>
+                    </StackLayout>
+                </Frame>
+
+                <Frame Grid.Row="4" Grid.Column="1">
+                    <ActivityIndicator IsRunning="{Binding IsBusy}" VerticalOptions="Center" HorizontalOptions="Center" />
+                </Frame>
+
+                <Frame Grid.Row="5" Grid.Column="1" BorderColor="{StaticResource NavigationPrimary}">
+                    <StackLayout HeightRequest="100">
+                        <Button IsEnabled="{Binding IsControlButton2Enabled}"
+                            VerticalOptions="FillAndExpand" HorizontalOptions="FillAndExpand" 
+                            BackgroundColor="{StaticResource NavigationPrimary}" BorderColor="White" TextColor="White"
+                            Text="{Binding ControlButton2Text}" Command="{Binding ControlButton2Command}">
+                            <Button.HeightRequest>
+                                <OnPlatform x:TypeArguments="x:Double" iOS="100"/>
+                            </Button.HeightRequest>
+                        </Button>
+                    </StackLayout>
+                </Frame>
+
+                <Frame Grid.Row="6" Grid.Column="1" IsVisible="{Binding IsButton2SwitchedOn}">
+                    <StackLayout IsVisible="{Binding IsButton2AutoSwitchOffActive}">
+                        <StackLayout Orientation="Horizontal" VerticalOptions="Start" HorizontalOptions="CenterAndExpand">
+                            <Label Text="Time to switch off:" FontSize="Medium"/>
+                            <Label Text="{Binding RemainingTime2}" FontSize="Medium"/>
+                        </StackLayout>
+                    </StackLayout>
+                </Frame>
+
+                <Frame Grid.Row="7" Grid.Column="1" IsVisible="{Binding IsButton2SwitchedOn, Converter={StaticResource NegateBooleanConverter}}">
+                    <StackLayout Orientation="Horizontal" HorizontalOptions="Center" VerticalOptions="Start">
+                        <CheckBox IsChecked="{Binding IsButton2AutoSwitchOffActive}" WidthRequest="32"/>
+                        <Label Text="Automatically Switch off" VerticalOptions="CenterAndExpand" HorizontalOptions="StartAndExpand"/>
+                    </StackLayout>
+                </Frame>
+                
+            </Grid>
+        </ScrollView>
+    </ContentView.Content>
+</ContentView>

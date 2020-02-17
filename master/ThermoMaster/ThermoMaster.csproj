@@ -1,0 +1,34 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.1</TargetFramework>
+	<LangVersion>7.1</LangVersion>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="DeviceManager\Wrapper\WiringPiWrapper.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+      <PackageReference Include="Microsoft.Extensions.Configuration" Version="3.0.0" />
+      <PackageReference Include="Microsoft.Extensions.Configuration.FileExtensions" Version="3.0.0" />
+      <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="3.0.0" />
+      <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
+   </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Xternals\Common\EltraCloudContracts\EltraCloudContracts.csproj" />
+    <ProjectReference Include="..\Xternals\Common\EltraCommon\EltraCommon.csproj" />
+    <ProjectReference Include="..\Xternals\Common\EltraResources\EltraResources.csproj" />
+    <ProjectReference Include="..\Xternals\Connect\EltraConnector\EltraConnector.csproj" />
+  </ItemGroup>
+  
+</Project>

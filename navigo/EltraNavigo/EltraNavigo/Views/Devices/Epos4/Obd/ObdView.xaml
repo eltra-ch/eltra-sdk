@@ -1,0 +1,53 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentView xmlns="http://xamarin.com/schemas/2014/forms" 
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml" 
+             xmlns:outputs="clr-namespace:EltraNavigo.Views.Obd.Outputs;assembly=EltraNavigo" 
+             xmlns:inputs="clr-namespace:EltraNavigo.Views.Obd.Inputs;assembly=EltraNavigo" 
+             xmlns:status="clr-namespace:EltraNavigo.Controls.Status" 
+             xmlns:behaviors="clr-namespace:EltraNavigo.Controls.Behaviors;assembly=EltraNavigo" 
+             xmlns:local="clr-namespace:EltraNavigo.Controls.Extensions;assembly=EltraNavigo"
+             x:Class="EltraNavigo.Views.Obd.ObdView">
+    <ContentView.Behaviors>
+		<behaviors:ToolViewShow/>
+	</ContentView.Behaviors>
+    <ContentView.Content>
+		<Grid Padding="0,8,0,0">
+			<Grid.Resources>
+				<ResourceDictionary>
+					<Style TargetType="Frame">
+						<Setter Property="Padding" Value="4"/>
+                        <Setter Property="HasShadow" Value="{DynamicResource AppFrameShadowStyle}"/>
+					</Style>
+				</ResourceDictionary>
+			</Grid.Resources>
+			<Grid.RowDefinitions>
+				<RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+			</Grid.RowDefinitions>
+
+            <Frame Grid.Row="0">
+                <StackLayout>
+                    <Grid HeightRequest="100">
+                        <Image Source="{local:ImageResource EltraNavigo.Resources.obd.png}"  Aspect="Fill"/>
+                        <StackLayout Opacity="0.6" VerticalOptions="FillAndExpand" HorizontalOptions="FillAndExpand" TranslationY="54" Padding="4,4,4,4">
+                            <Label XAlign="End" YAlign="End" TextColor="Black" FontSize="Large" Text="Object Dictionary"/>
+                        </StackLayout>
+                    </Grid>
+                    <status:ToolStatusView BindingContext="{Binding ToolStatusViewModel}" IsEnabled="{Binding IsEnabled}"/>
+                </StackLayout>
+            </Frame>
+
+            <Frame Grid.Row="1" BackgroundColor="Transparent" BorderColor="Transparent">
+                <inputs:ObdInputsView BindingContext="{Binding InputsViewModel}" IsEnabled="{Binding IsEnabled}"/>
+            </Frame>
+
+            <ScrollView Grid.Row="2">
+                <Frame BackgroundColor="Transparent" BorderColor="Transparent">
+                    <outputs:ObdOutputsView BindingContext="{Binding OutputsViewModel}"/>
+                </Frame>
+            </ScrollView>
+            
+        </Grid>
+	</ContentView.Content>
+</ContentView>

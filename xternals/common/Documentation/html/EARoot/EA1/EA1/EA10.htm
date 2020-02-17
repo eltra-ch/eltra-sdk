@@ -1,0 +1,96 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<title>Agent class model</title>
+<link href="../../../css/ea.css" rel="stylesheet" type="text/css" />
+<script>
+function initPage(src) {	
+	if(parent==this&&(this.location+"").indexOf('EARoot')!=-1)
+		document.location=(this.location+"").substring(0,(this.location+"").indexOf('EARoot'))+"index"+(this.location+"").substring((this.location+"").lastIndexOf('.'))+"?goto="+((this.location+"").substring((this.location+"").indexOf('EARoot')+7,(this.location+"").lastIndexOf('.')).replace(/\//g,':').replace(/EA/g,""));
+	else
+		parent.initPage(src);
+}
+
+function nameClassifier(name, separator)
+{
+  var str = name;
+  var classifierName;
+  var node = document.getElementById('name_classifier');
+  if(node != null)
+  {
+    classifierName = node.innerHTML;
+  }
+  if(classifierName != "")
+  {
+   str += separator + classifierName;
+  }
+  
+  return str;
+}
+</script>
+</head>
+<body onload="initPage(this);" class="Content">
+<div class="PageBody">
+	
+<img src="EA11.png" usemap="#EA11" border="0" />
+
+<MAP NAME="EA11">
+<area shape="rect" coords="971,676,1139,698" href="../../EA6/EA1/EA1/EA1/EA1056.htm" target="_self">
+<area shape="rect" coords="31,48,217,70" href="EA12.htm" target="_self">
+<area shape="rect" coords="254,162,299,252" href="./EA1/EA30.htm" target="_self">
+<area shape="rect" coords="1303,10,1348,100" href="./EA1/EA37.htm" target="_self">
+<area shape="rect" coords="1293,768,1338,858" href="./EA1/EA39.htm" target="_self">
+<area shape="rect" coords="769,768,814,858" href="./EA1/EA38.htm" target="_self">
+<area shape="rect" coords="395,681,581,703" href="../../EA5/EA1/EA684.htm" target="_self">
+<area shape="rect" coords="10,608,101,861" href="EA22.htm" target="_self">
+<area shape="rect" coords="12,481,103,578" href="EA16.htm" target="_self">
+<area shape="rect" coords="13,188,104,457" href="EA18.htm" target="_self">
+<area shape="rect" coords="598,366,883,421" href="../../EA2/EA1/EA1/EA54.htm" target="_self">
+<area shape="rect" coords="427,301,649,323" href="../../EA2/EA1/EA44.htm" target="_self">
+<area shape="rect" coords="954,609,1148,713" href="./EA1/EA36.htm" target="_self">
+<area shape="rect" coords="372,615,595,719" href="./EA1/EA35.htm" target="_self">
+<area shape="rect" coords="412,240,1055,337" href="./EA1/EA32.htm" target="_self">
+<area shape="rect" coords="120,615,279,713" href="EA17.htm" target="_self">
+<area shape="rect" coords="1210,615,1420,712" href="EA19.htm" target="_self">
+<area shape="rect" coords="1081,290,1176,383" href="EA20.htm" target="_self">
+<area shape="rect" coords="141,55,1273,509" href="EA15.htm" target="_self">
+<area shape="rect" coords="331,772,663,867" href="EA21.htm" target="_self">
+</MAP>
+
+	<div class="ObjectTitle">Agent class model : Component diagram</div>
+	<table border="0" cellpadding="0" cellspacing="0" class="ObjectDetails">
+		<tr>
+			<td width="15%" class="ObjectDetailsTopic">Created:</td>
+			<td width="85%" class="ObjectDetailsValue">22.06.2019 10:01:17</td>
+		</tr>
+		<tr>
+			<td width="15%" class="ObjectDetailsTopic">Modified:</td>
+			<td width="85%" class="ObjectDetailsValue">05.07.2019 10:13:30</td>
+		</tr>
+		<tr style="padding-top: 10px;">
+			<td width="15%" class="ObjectDetailsTopic"><img src="../../../images/plus03.gif" align="absmiddle" id="proj" onclick="parent.toggleData(this.id)" />Project:</td>
+			<td width="85%" class="ObjectDetailsValue"></td>			
+		</tr>
+		<tr id="proj00" style="display: none;">
+			<td width="15%" class="ObjectDetailsTopic" style="padding-left: 18px;">Author:</td>
+			<td width="85%" class="ObjectDetailsValue">Dawid</td>
+		</tr>
+		<tr id="proj01" style="display: none;">
+			<td width="15%" class="ObjectDetailsTopic" style="padding-left: 18px;">Version:</td>
+			<td width="85%" class="ObjectDetailsValue">1.0</td>
+		</tr>
+		<tr>
+			<td width="15%" class="ObjectDetailsTopic"><img src="../../../images/plus03.gif" align="absmiddle" id="adv" onclick="parent.toggleData(this.id)" />Advanced:</td>
+			<td width="85%" class="ObjectDetailsValue"></td>			
+		</tr>
+		<tr id="adv00" style="display: none;">
+			<td width="15%" class="ObjectDetailsTopic" style="padding-left: 18px;">ID:</td>
+			<td width="85%" class="ObjectDetailsValue">{C98DCDEB-FE48-46e0-AB15-ACBA90049E47}</td>
+		</tr>
+	</table>
+	
+</div>
+ 
+</body>
+</html>

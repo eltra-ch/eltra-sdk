@@ -1,0 +1,80 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentView xmlns="http://xamarin.com/schemas/2014/forms"  
+				xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"  
+				xmlns:behaviors="clr-namespace:EltraNavigo.Controls.Behaviors;assembly=EltraNavigo" 
+				x:Class="EltraNavigo.Views.DataRecorder.DataRecorderView"  
+				xmlns:oxy="clr-namespace:OxyPlot.Xamarin.Forms;assembly=OxyPlot.Xamarin.Forms"
+				xmlns:triggers="clr-namespace:EltraNavigo.Views.DataRecorder.Triggers;assembly=EltraNavigo"
+        xmlns:inputs="clr-namespace:EltraNavigo.Views.Obd.Inputs"
+        xmlns:outputs="clr-namespace:EltraNavigo.Views.Obd.Outputs"
+        xmlns:converters="clr-namespace:EltraNavigo.Views.Converters" 
+        VerticalOptions="FillAndExpand" HorizontalOptions="FillAndExpand">
+    <ContentView.Behaviors>
+        <behaviors:ToolViewShow/>
+    </ContentView.Behaviors>
+    <ContentView.Content>
+        <Grid Padding="0,8,0,0">
+            <Grid.Resources>
+                <ResourceDictionary>
+                    <Style TargetType="Frame">
+                        <Setter Property="Padding" Value="8"/>
+                        <Setter Property="HasShadow" Value="{DynamicResource FrameShadowStyle}"/>
+                    </Style>
+                </ResourceDictionary>
+            </Grid.Resources>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="208"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+
+            <ScrollView Grid.Row="0">
+                <StackLayout>
+                    <Frame>
+                        <inputs:ObdInputsView BindingContext="{Binding InputsViewModel}"/>
+                    </Frame>
+                    <Frame>
+                        <outputs:ObdOutputsView BindingContext="{Binding OutputsViewModel}"/>
+                    </Frame>
+                </StackLayout>
+            </ScrollView>
+
+
+            <Frame Grid.Row="1">
+                <oxy:PlotView Model="{Binding Model}" VerticalOptions="Fill" HorizontalOptions="Fill" />
+            </Frame>
+            <Frame Grid.Row="2">
+                <StackLayout Orientation="Horizontal">
+                    <StackLayout.Resources>
+                        <converters:NegateBooleanConverter x:Key="NegateBooleanConverter"/>
+                    </StackLayout.Resources>
+                                        
+                    <Button Text="Start" IsEnabled="{Binding IsRunning, Converter={StaticResource NegateBooleanConverter} }">
+                        <Button.Triggers>
+                            <EventTrigger Event="Clicked">
+                                <triggers:StartButtonClicked/>
+                            </EventTrigger>
+                        </Button.Triggers>
+                    </Button>
+                    <Button Text="Stop" IsEnabled="{Binding IsRunning}">
+                        <Button.Triggers>
+                            <EventTrigger Event="Clicked">
+                                <triggers:StopButtonClicked/>
+                            </EventTrigger>
+                        </Button.Triggers>
+                    </Button>
+                    <Button Text="Force Trigger" IsEnabled="{Binding IsRunning}">
+                        <Button.Triggers>
+                            <EventTrigger Event="Clicked">
+                                <triggers:TriggerButtonClicked/>
+                            </EventTrigger>
+                        </Button.Triggers>
+                    </Button>
+                </StackLayout>
+            </Frame>
+        </Grid>
+    </ContentView.Content>
+</ContentView>

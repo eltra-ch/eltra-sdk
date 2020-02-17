@@ -1,0 +1,3 @@
+tocTab[tocTab.length] = new Array("0.6.1.1.2.5.7.1:1", "", "HomingControlView", "EARoot/EA6/EA1/EA1/EA2/EA5/EA7/EA1/EA1191.htm", "5.png", "E950", "0", "", "Class0","{53C7A41A-12D8-45a8-9EAB-4B6265BAECE6}");
+tocTab[tocTab.length] = new Array("0.6.1.1.2.5.7.1:2", "", "HomingControlViewModel", "EARoot/EA6/EA1/EA1/EA2/EA5/EA7/EA1/EA1192.htm", "5.png", "E951", "0", "", "Class0","{5978833B-38D9-4259-B578-01D7DE016D3B}");
+tocTab[tocTab.length] = new Array("0.6.1.1.2.5.7.1.1", "1", "Triggers", "EARoot/EA6/EA1/EA1/EA2/EA5/EA7/EA1/EA1/EA1194.htm", "4.png", "", "", "{05F671B6-0F7A-4976-AA68-2BAE43E397FE}", "Package");

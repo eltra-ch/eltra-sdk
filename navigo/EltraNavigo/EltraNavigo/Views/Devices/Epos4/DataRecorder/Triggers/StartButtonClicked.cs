@@ -1,0 +1,15 @@
+﻿using Xamarin.Forms;
+
+namespace EltraNavigo.Views.DataRecorder.Triggers
+{
+    public class StartButtonClicked : TriggerAction<Button>
+    {
+        protected override void Invoke(Button sender)
+        {
+            if (sender.BindingContext is DataRecorderViewModel controlViewModel)
+            {
+                controlViewModel.StartRecorder();
+            }
+        }
+    }
+}

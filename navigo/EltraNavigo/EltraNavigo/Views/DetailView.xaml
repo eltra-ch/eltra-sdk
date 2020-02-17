@@ -1,0 +1,100 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:d="http://xamarin.com/schemas/2014/forms/design"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:selectors="clr-namespace:EltraNavigo.Views.Selectors;assembly=EltraNavigo"
+             xmlns:deviceList="clr-namespace:EltraNavigo.Views.DeviceList;assembly=EltraNavigo"
+             xmlns:obd="clr-namespace:EltraNavigo.Views.Obd;assembly=EltraNavigo"
+             xmlns:pvm="clr-namespace:EltraNavigo.Views.Pvm;assembly=EltraNavigo"
+             xmlns:ppm="clr-namespace:EltraNavigo.Views.Ppm;assembly=EltraNavigo"
+             xmlns:homing="clr-namespace:EltraNavigo.Views.Homing;assembly=EltraNavigo"
+             xmlns:relay="clr-namespace:EltraNavigo.Views.RelayControl;assembly=EltraNavigo"
+             xmlns:about="clr-namespace:EltraNavigo.Views.About;assembly=EltraNavigo"
+             xmlns:login="clr-namespace:EltraNavigo.Views.Login;assembly=EltraNavigo"
+             xmlns:dataRecorder="clr-namespace:EltraNavigo.Views.DataRecorder;assembly=EltraNavigo"
+             xmlns:views="clr-namespace:EltraNavigo.Views;assembly=EltraNavigo"
+             xmlns:thermoOverview="clr-namespace:EltraNavigo.Views.Devices.Thermo.Overview"
+             xmlns:thermoControl="clr-namespace:EltraNavigo.Views.Devices.Thermo.Control"
+             xmlns:thermoHistory="clr-namespace:EltraNavigo.Views.Devices.Thermo.History"
+             xmlns:thermoSettings="clr-namespace:EltraNavigo.Views.Devices.Thermo.Settings"
+             mc:Ignorable="d"
+             x:DataType="views:DetailViewModel"
+             x:Class="EltraNavigo.Views.DetailView" Title="{Binding Title}">
+
+    <ContentPage.Resources>
+
+        <DataTemplate x:Key="LoginView">
+            <login:LoginView IsVisible="{Binding IsVisible}"/>
+        </DataTemplate>
+
+        <DataTemplate x:Key="DeviceListView">
+            <deviceList:DeviceListView IsVisible="{Binding IsVisible}"/>
+        </DataTemplate>
+
+        <DataTemplate x:Key="ObdView">
+            <obd:ObdView IsVisible="{Binding IsVisible}"/>
+        </DataTemplate>
+
+        <DataTemplate x:Key="PvmView">
+            <pvm:PvmView IsVisible="{Binding IsVisible}"/>
+        </DataTemplate>
+
+        <DataTemplate x:Key="PpmView">
+            <ppm:PpmView IsVisible="{Binding IsVisible}"/>
+        </DataTemplate>
+
+        <DataTemplate x:Key="HomingView">
+            <homing:HomingView IsVisible="{Binding IsVisible}"/>
+        </DataTemplate>
+
+        <DataTemplate x:Key="RelayControlView">
+            <relay:RelayControlView IsVisible="{Binding IsVisible}"/>
+        </DataTemplate>
+
+        <DataTemplate x:Key="ThermoControlView">
+            <thermoControl:ThermoControlView IsVisible="{Binding IsVisible}"/>
+        </DataTemplate>
+
+        <DataTemplate x:Key="ThermoOverviewView">
+            <thermoOverview:ThermoOverviewView IsVisible="{Binding IsVisible}"/>
+        </DataTemplate>
+
+        <DataTemplate x:Key="ThermoHistoryView">
+            <thermoHistory:ThermoHistoryView IsVisible="{Binding IsVisible}"/>
+        </DataTemplate>
+
+        <DataTemplate x:Key="ThermoSettingsView">
+            <thermoSettings:ThermoSettingsView IsVisible="{Binding IsVisible}"/>
+        </DataTemplate>
+
+        <DataTemplate x:Key="DataRecorderView">
+            <dataRecorder:DataRecorderView IsVisible="{Binding IsVisible}"/>
+        </DataTemplate>
+
+        <DataTemplate x:Key="AboutView">
+            <about:AboutView IsVisible="{Binding IsVisible}"/>
+        </DataTemplate>
+
+        <selectors:DetailPageSelector x:Key="DetailPageSelector" LoginView="{StaticResource LoginView}"
+                                      DeviceListView="{StaticResource DeviceListView}"
+                                      ObdView="{StaticResource ObdView}"
+                                      PvmView="{StaticResource PvmView}"
+                                      PpmView="{StaticResource PpmView}"
+                                      HomingView="{StaticResource HomingView}"
+                                      DataRecorderView="{StaticResource DataRecorderView}"
+                                      RelayControlView="{StaticResource RelayControlView}"
+                                      ThermoControlView="{StaticResource ThermoControlView}"
+                                      ThermoOverviewView="{StaticResource ThermoOverviewView}"
+                                      ThermoHistoryView="{StaticResource ThermoHistoryView}"
+                                      ThermoSettingsView="{StaticResource ThermoSettingsView}"
+                                      AboutView="{StaticResource AboutView}"/>
+
+    </ContentPage.Resources>
+    <ContentPage.Content>
+        <Frame>
+            <StackLayout BindableLayout.ItemsSource="{Binding MasterViewModel.ViewModels}"
+                         BindableLayout.ItemTemplateSelector="{StaticResource DetailPageSelector}"/>
+        </Frame>
+    </ContentPage.Content>
+</ContentPage>

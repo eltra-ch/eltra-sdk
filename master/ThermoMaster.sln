@@ -1,0 +1,55 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29424.173
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ThermoMaster", "ThermoMaster\ThermoMaster.csproj", "{FB0C4289-29CF-419B-BA43-BB15E1CD174F}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EltraConnector", "Xternals\Connect\EltraConnector\EltraConnector.csproj", "{624605D6-D100-41E9-A4DC-B4944194A225}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EltraCommon", "Xternals\Common\EltraCommon\EltraCommon.csproj", "{36D8115E-B0AD-4E7A-ACF4-FA87E68590AE}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EltraCloudContracts", "Xternals\Common\EltraCloudContracts\EltraCloudContracts.csproj", "{5A2B4054-C61C-4197-9253-D3BF479224DB}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EltraResources", "Xternals\Common\EltraResources\EltraResources.csproj", "{24F7DA60-5803-410E-9913-C028A7517B5D}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ThermoMasterConsole", "ThermoMasterConsole\ThermoMasterConsole.csproj", "{9B7A33CE-71E2-4949-8082-FA021D0B7A7A}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{FB0C4289-29CF-419B-BA43-BB15E1CD174F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FB0C4289-29CF-419B-BA43-BB15E1CD174F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FB0C4289-29CF-419B-BA43-BB15E1CD174F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FB0C4289-29CF-419B-BA43-BB15E1CD174F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{624605D6-D100-41E9-A4DC-B4944194A225}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{624605D6-D100-41E9-A4DC-B4944194A225}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{624605D6-D100-41E9-A4DC-B4944194A225}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{624605D6-D100-41E9-A4DC-B4944194A225}.Release|Any CPU.Build.0 = Release|Any CPU
+		{36D8115E-B0AD-4E7A-ACF4-FA87E68590AE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{36D8115E-B0AD-4E7A-ACF4-FA87E68590AE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{36D8115E-B0AD-4E7A-ACF4-FA87E68590AE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{36D8115E-B0AD-4E7A-ACF4-FA87E68590AE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5A2B4054-C61C-4197-9253-D3BF479224DB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5A2B4054-C61C-4197-9253-D3BF479224DB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5A2B4054-C61C-4197-9253-D3BF479224DB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5A2B4054-C61C-4197-9253-D3BF479224DB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{24F7DA60-5803-410E-9913-C028A7517B5D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{24F7DA60-5803-410E-9913-C028A7517B5D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{24F7DA60-5803-410E-9913-C028A7517B5D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{24F7DA60-5803-410E-9913-C028A7517B5D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9B7A33CE-71E2-4949-8082-FA021D0B7A7A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9B7A33CE-71E2-4949-8082-FA021D0B7A7A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9B7A33CE-71E2-4949-8082-FA021D0B7A7A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9B7A33CE-71E2-4949-8082-FA021D0B7A7A}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {398172F7-FB1F-4632-9684-A83992283F20}
+	EndGlobalSection
+EndGlobal

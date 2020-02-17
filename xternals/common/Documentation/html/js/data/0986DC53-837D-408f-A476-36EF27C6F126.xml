@@ -1,0 +1,3 @@
+tocTab[tocTab.length] = new Array("0.6.1.1.2.5.8.1:1", "", "LoginValidationBehavior", "EARoot/EA6/EA1/EA1/EA2/EA5/EA8/EA1/EA1217.htm", "5.png", "E968", "0", "", "Class0","{EA789B2E-9F7D-4dba-9C27-1ABB0DDF4C9B}");
+tocTab[tocTab.length] = new Array("0.6.1.1.2.5.8.1:2", "", "LoginViewBehavior", "EARoot/EA6/EA1/EA1/EA2/EA5/EA8/EA1/EA1218.htm", "5.png", "E969", "0", "", "Class0","{3951F465-CBE9-421e-A6D2-2F6F2E817128}");
+tocTab[tocTab.length] = new Array("0.6.1.1.2.5.8.1:3", "", "PasswordValidationBehavior", "EARoot/EA6/EA1/EA1/EA2/EA5/EA8/EA1/EA1219.htm", "5.png", "E970", "0", "", "Class0","{7AB7A0DC-8B18-49bd-B9DB-205B3037DC5E}");

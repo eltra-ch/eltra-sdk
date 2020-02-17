@@ -1,0 +1,5 @@
+tocTab[tocTab.length] = new Array("0.3.1.1.3.3.2.2.2.1.1:1", "", "Channel", "EARoot/EA3/EA1/EA1/EA3/EA3/EA2/EA2/EA2/EA1/EA1/EA552.htm", "5.png", "E377", "0", "", "Class0","{42319C19-B0A2-47b1-A126-B0CCC7E877DB}");
+tocTab[tocTab.length] = new Array("0.3.1.1.3.3.2.2.2.1.1:2", "", "ChannelBuffer", "EARoot/EA3/EA1/EA1/EA3/EA3/EA2/EA2/EA2/EA1/EA1/EA553.htm", "5.png", "E378", "0", "", "Class0","{C1C8EA52-AA95-4e24-919E-64770B69C390}");
+tocTab[tocTab.length] = new Array("0.3.1.1.3.3.2.2.2.1.1:3", "", "ChannelIdRef", "EARoot/EA3/EA1/EA1/EA3/EA3/EA2/EA2/EA2/EA1/EA1/EA554.htm", "5.png", "E379", "0", "", "Class0","{5D03A823-C9A1-42b1-B05B-44E7F6871AD4}");
+tocTab[tocTab.length] = new Array("0.3.1.1.3.3.2.2.2.1.1:4", "", "ChannelSubBuffers", "EARoot/EA3/EA1/EA1/EA3/EA3/EA2/EA2/EA2/EA1/EA1/EA555.htm", "5.png", "E380", "0", "", "Class0","{07A61990-102C-4c67-BB64-452FA6AE097C}");
+tocTab[tocTab.length] = new Array("0.3.1.1.3.3.2.2.2.1.1:5", "", "ParamBuffer", "EARoot/EA3/EA1/EA1/EA3/EA3/EA2/EA2/EA2/EA1/EA1/EA556.htm", "5.png", "E381", "0", "", "Class0","{81E4D1C1-8B3B-4019-AC13-8D80652BE715}");

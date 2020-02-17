@@ -1,0 +1,8 @@
+tocTab[tocTab.length] = new Array("0.4.1.1.2:1", "", "AuthControllerAdapter", "EARoot/EA4/EA1/EA1/EA2/EA615.htm", "5.png", "E431", "0", "", "Class0","{4936759E-49FC-4c34-91F1-6FE5B19C4C31}");
+tocTab[tocTab.length] = new Array("0.4.1.1.2:2", "", "DeviceCommandsControllerAdapter", "EARoot/EA4/EA1/EA1/EA2/EA617.htm", "5.png", "E432", "0", "", "Class0","{46D251C6-714D-42bd-9C4E-D01515F2DA66}");
+tocTab[tocTab.length] = new Array("0.4.1.1.2:3", "", "DeviceControllerAdapter", "EARoot/EA4/EA1/EA1/EA2/EA618.htm", "5.png", "E433", "0", "", "Class0","{DA10A769-6416-4de8-B2AD-01FE6C2A5A56}");
+tocTab[tocTab.length] = new Array("0.4.1.1.2:4", "", "ParameterControllerAdapter", "EARoot/EA4/EA1/EA1/EA2/EA620.htm", "5.png", "E434", "0", "", "Class0","{6304D752-EBD7-4e8f-B548-927851F2483E}");
+tocTab[tocTab.length] = new Array("0.4.1.1.2:5", "", "SessionControllerAdapter", "EARoot/EA4/EA1/EA1/EA2/EA621.htm", "5.png", "E435", "0", "", "Class0","{03420012-C8E7-42e6-95A5-DEB4A87E0D79}");
+tocTab[tocTab.length] = new Array("0.4.1.1.2:6", "", "UserSessionControllerAdapter", "EARoot/EA4/EA1/EA1/EA2/EA622.htm", "5.png", "E436", "0", "", "Class0","{3D8FFB70-C3B6-4b1f-88B7-CDCBA6DC1599}");
+tocTab[tocTab.length] = new Array("0.4.1.1.2.1", "1", "Base", "EARoot/EA4/EA1/EA1/EA2/EA1/EA623.htm", "4.png", "", "", "{D1446BC6-9B5D-4954-AA41-56B2F7F6403D}", "Package");
+tocTab[tocTab.length] = new Array("0.4.1.1.2.2", "1", "Diagrams", "EARoot/EA4/EA1/EA1/EA2/EA2/EA638.htm", "4.png", "", "", "{36239A06-161F-4a85-B899-494FF1C1272C}", "Package");

@@ -1,0 +1,145 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<ContentView xmlns="http://xamarin.com/schemas/2014/forms"  
+				xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml" 
+				xmlns:parameters="clr-namespace:EltraNavigo.Controls.Parameters;assembly=EltraNavigo" 
+				xmlns:selectors="clr-namespace:EltraNavigo.Views.Obd.Outputs.Selectors;assembly=EltraNavigo" 
+				xmlns:triggers="clr-namespace:EltraNavigo.Views.Obd.Outputs.Triggers;assembly=EltraNavigo" 
+				xmlns:system="clr-namespace:System;assembly=netstandard"
+             xmlns:converters="clr-namespace:EltraNavigo.Views.Converters"
+             x:Class="EltraNavigo.Views.Obd.Outputs.ObdOutputsView">
+	<ContentView.Content>
+		<StackLayout Padding="0,4,0,0">
+			<StackLayout.Resources>
+				<ResourceDictionary>
+					<Style TargetType="Frame">
+						<Setter Property="Padding" Value="2"/>
+                        <Setter Property="HasShadow" Value="{DynamicResource AppFrameShadowStyle}"/>
+					</Style>
+					<Style TargetType="Label">
+						<Setter Property="VerticalOptions" Value="Center"/>
+                        <Setter Property="FontSize" Value="10"/>
+					</Style>
+				</ResourceDictionary>
+			</StackLayout.Resources>
+
+            <StackLayout Margin="0,-12,0,0" IsVisible="{Binding IsSearchActive}" BindableLayout.ItemsSource="{Binding ObdEntries}">
+				<BindableLayout.ItemTemplate>
+					<DataTemplate>
+						<Grid>							
+							<Grid.ColumnDefinitions>
+								<ColumnDefinition Width="50"/>
+								<ColumnDefinition Width="40"/>
+								<ColumnDefinition/>
+                                <ColumnDefinition Width="50"/>
+                            </Grid.ColumnDefinitions>
+							<Label Grid.Row="0" Grid.Column="0" Text="{Binding Index}"/>
+							<Label Grid.Row="0" Grid.Column="1" Text="{Binding SubIndex}"/>
+							<Label Grid.Row="0" Grid.Column="2" Text="{Binding Name}"/>
+							<Button Grid.Row="0" Grid.Column="3" Text="+">
+								<Button.Triggers>
+									<EventTrigger Event="Clicked">
+										<triggers:AddObdEntryButtonClicked/>
+									</EventTrigger>
+								</Button.Triggers>
+							</Button>
+						</Grid>
+					</DataTemplate>
+				</BindableLayout.ItemTemplate>
+			</StackLayout>
+
+            <Button Margin="0,-8,0,0" HeightRequest="32" 
+                    Text="{Binding CollapseParameterSelectionText}" VerticalOptions="StartAndExpand" 
+                    BackgroundColor="Transparent" IsVisible="{Binding IsSearchActive}">
+                <Button.Triggers>
+                    <EventTrigger Event="Clicked">
+                        <triggers:CollapseParameterSelectionButtonClicked/>
+                    </EventTrigger>
+                </Button.Triggers>
+            </Button>
+            
+            <StackLayout Orientation="Vertical" VerticalOptions="FillAndExpand">
+                <StackLayout.Resources>
+                    <converters:NegateBooleanConverter x:Key="NegateBooleanConverter"/>
+                </StackLayout.Resources>
+                <ListView ItemsSource="{Binding ObservedObdEntries}" RowHeight="72" HasUnevenRows="True" IsVisible="{Binding IsEditable}">
+					<ListView.ItemTemplate>
+						<DataTemplate>
+							<ViewCell>
+								<ViewCell.ContextActions>
+									<MenuItem Command="{Binding Path=DeleteObdEntryCommand}" Text="Delete" IsDestructive="True" />
+								</ViewCell.ContextActions>
+								
+                                <Grid IsVisible="{Binding IsVisible}">
+									<Grid.RowDefinitions>
+										<RowDefinition Height="Auto"/>
+										<RowDefinition Height="Auto"/>
+									</Grid.RowDefinitions>
+									<Grid.ColumnDefinitions>
+										<ColumnDefinition Width="50"/>
+										<ColumnDefinition Width="40"/>
+										<ColumnDefinition/>
+										<ColumnDefinition Width="50"/>
+										<ColumnDefinition Width="32"/>
+									</Grid.ColumnDefinitions>
+
+									<Label Grid.Row="0" Grid.Column="0" Text="{Binding Index}"/>
+									<Label Grid.Row="0" Grid.Column="1" Text="{Binding SubIndex}"/>
+									<Label Grid.Row="0" Grid.Column="2" Text="{Binding Name}"/>
+									<Label Grid.Row="0" Grid.Column="3" Text="{Binding Type}"/>
+									<Label Grid.Row="0" Grid.Column="4" Text="{Binding Access}"/>
+									
+                                    <Grid Grid.Row="1" Grid.Column="2">
+										<Grid.Resources>
+											<DataTemplate x:Key="EditTemplate">
+												<parameters:ParameterEditView/>
+											</DataTemplate>
+											<DataTemplate x:Key="ReadOnlyTemplate">
+												<parameters:ParameterLabelView/>
+											</DataTemplate>
+											<selectors:ParameterControlTemplateSelector x:Key="ParameterControlTemplateSelector"  EditDataTemplate="{StaticResource EditTemplate}" ReadOnlyDataTemplate="{StaticResource ReadOnlyTemplate}"/>
+										</Grid.Resources>
+										<Grid BindableLayout.ItemsSource="{Binding Values}" BindableLayout.ItemTemplateSelector="{StaticResource ParameterControlTemplateSelector}"/>
+									</Grid>
+								</Grid>
+							</ViewCell>
+						</DataTemplate>
+					</ListView.ItemTemplate>
+                    <ListView.Footer>
+                        <Label />
+                    </ListView.Footer>
+				</ListView>
+                <ListView ItemsSource="{Binding ObservedObdEntries}" HasUnevenRows="True" IsVisible="{Binding IsEditable, Converter={StaticResource NegateBooleanConverter}}">
+                    <ListView.ItemTemplate>
+                        <DataTemplate>
+                            <ViewCell>
+                                <ViewCell.ContextActions>
+                                    <MenuItem Command="{Binding Path=DeleteObdEntryCommand}" Text="Delete" IsDestructive="True" />
+                                </ViewCell.ContextActions>
+                                <Grid IsVisible="{Binding IsVisible}">
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="Auto"/>
+                                    </Grid.RowDefinitions>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="50"/>
+                                        <ColumnDefinition Width="40"/>
+                                        <ColumnDefinition/>
+                                        <ColumnDefinition Width="50"/>
+                                        <ColumnDefinition Width="32"/>
+                                    </Grid.ColumnDefinitions>
+                                    <Label Grid.Row="0" Grid.Column="0" Text="{Binding Index}"/>
+                                    <Label Grid.Row="0" Grid.Column="1" Text="{Binding SubIndex}"/>
+                                    <Label Grid.Row="0" Grid.Column="2" Text="{Binding Name}"/>
+                                    <Label Grid.Row="0" Grid.Column="3" Text="{Binding Type}"/>
+                                </Grid>
+                            </ViewCell>
+                        </DataTemplate>
+                    </ListView.ItemTemplate>
+                    <ListView.Footer>
+                        <Label />
+                    </ListView.Footer>
+                </ListView>
+            </StackLayout>
+		</StackLayout>
+	</ContentView.Content>
+</ContentView>

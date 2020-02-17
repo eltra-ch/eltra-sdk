@@ -1,0 +1,17 @@
+[Unit]
+Description=Eltra thermo service
+After=network.target
+After=systemd-user-sessions.service
+After=network-online.target
+
+[Service]
+User=dawid
+Type=simple
+WorkingDirectory=/home/dawid/thermo
+ExecStart=/home/dawid/thermo/ThermoMasterConsole
+ExecStop=/home/dawid/thermo/ThermoMasterConsoler --stop
+Restart=on-failure
+RestartSec=30
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,95 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentView xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:outputs="clr-namespace:EltraNavigo.Views.Ppm.Outputs;assembly=EltraNavigo"
+             xmlns:inputs="clr-namespace:EltraNavigo.Views.Ppm.Inputs;assembly=EltraNavigo"
+             xmlns:control="clr-namespace:EltraNavigo.Views.Ppm.Control;assembly=EltraNavigo"
+             xmlns:opMode="clr-namespace:EltraNavigo.Views.Ppm.OpMode"
+             xmlns:behaviors="clr-namespace:EltraNavigo.Controls.Behaviors;assembly=EltraNavigo"
+             xmlns:status="clr-namespace:EltraNavigo.Controls.Status"
+             xmlns:ppmstatus="clr-namespace:EltraNavigo.Views.Ppm.Status"
+             xmlns:local="clr-namespace:EltraNavigo.Controls.Extensions;assembly=EltraNavigo"
+             x:Class="EltraNavigo.Views.Ppm.PpmView">
+
+    <ContentView.Behaviors>
+        <behaviors:ToolViewShow/>
+    </ContentView.Behaviors>
+
+    <ContentView.Content>
+            <Grid Padding="0,8,0,0">
+                <Grid.Resources>
+                    <ResourceDictionary>
+                        <Style TargetType="Frame">
+                            <Setter Property="Padding" Value="4"></Setter>
+                          <Setter Property="HasShadow" Value="{DynamicResource AppFrameShadowStyle}"/>
+                        </Style>
+                        <Color x:Key="NavigationPrimary">#2196F3</Color>
+                    </ResourceDictionary>
+                </Grid.Resources>
+
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition/>
+                </Grid.RowDefinitions>
+
+                <Frame Grid.Row="0">
+                    <Frame BorderColor="Transparent" HasShadow="False" Padding="0">
+                    <StackLayout>
+                        <Grid HeightRequest="100">
+                            <Frame BorderColor="Transparent" HasShadow="True" Padding="0">
+                                <Image Source="{local:ImageResource EltraNavigo.Resources.ppm.png}" Aspect="Fill"/>
+                            </Frame>
+                            <StackLayout Opacity="0.6" VerticalOptions="FillAndExpand" HorizontalOptions="FillAndExpand" TranslationY="54" Padding="4,4,4,0">
+                                <Label XAlign="End" YAlign="End" TextColor="White" FontSize="Large" Text="Profile Position Mode"/>
+                            </StackLayout>
+                        </Grid>
+                        <status:ToolStatusView BindingContext="{Binding ToolStatusViewModel}" IsEnabled="{Binding IsEnabled}"/>
+                    </StackLayout>
+                </Frame>
+                </Frame>
+
+                <Frame Grid.Row="1">
+                    <Frame BorderColor="{StaticResource NavigationPrimary}" HasShadow="True" Padding="2">
+                        <opMode:PpmOpModeView BindingContext="{Binding OpModeViewModel}" IsEnabled="{Binding IsEnabled}"/>
+                    </Frame>
+                </Frame>
+            
+                <ScrollView Grid.Row="2">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+                 
+                        <Frame Grid.Row="0" Grid.Column="0">
+                            <Frame BorderColor="{StaticResource NavigationPrimary}" HasShadow="True" Padding="2">
+                                <inputs:PpmInputsView BindingContext="{Binding InputsViewModel}" IsEnabled="{Binding IsEnabled}"/>
+                            </Frame>
+                        </Frame>
+                        
+                        <Frame Grid.Row="1" Grid.Column="0">
+                            <Frame BorderColor="{StaticResource NavigationPrimary}" HasShadow="True" Padding="2">
+                                <control:PpmControlView BindingContext="{Binding ControlViewModel}" IsEnabled="{Binding IsEnabled}"/>
+                            </Frame>
+                        </Frame>
+
+                        <Frame Grid.Row="2" Grid.Column="0">
+                            <Frame BorderColor="{StaticResource NavigationPrimary}" HasShadow="True" Padding="2">
+                                <outputs:PpmOutputsView BindingContext="{Binding OutputsViewModel}"/>
+                            </Frame>
+                        </Frame>
+                        
+                        <Frame Grid.Row="3" Grid.Column="0">
+                            <Frame BorderColor="{StaticResource NavigationPrimary}" HasShadow="True" Padding="2">
+                                <ppmstatus:PpmStatusView BindingContext="{Binding StatusViewModel}"/>
+                            </Frame>
+                        </Frame>
+                        
+                    </Grid>
+                </ScrollView>
+            </Grid>
+    </ContentView.Content>
+</ContentView>

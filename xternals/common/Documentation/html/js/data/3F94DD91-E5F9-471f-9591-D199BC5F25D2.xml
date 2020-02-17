@@ -1,0 +1,4 @@
+tocTab[tocTab.length] = new Array("0.6.1.1.2.2.4:1", "", "ErrorHistoryEntryViewModel", "EARoot/EA6/EA1/EA1/EA2/EA2/EA4/EA1106.htm", "5.png", "E764", "0", "", "Class0","{5879A4CD-2F53-450c-83EA-C4AA47AA680B}");
+tocTab[tocTab.length] = new Array("0.6.1.1.2.2.4:2", "", "ToolStatusView", "EARoot/EA6/EA1/EA1/EA2/EA2/EA4/EA1107.htm", "5.png", "E765", "0", "", "Class0","{572936F2-2D65-4dd9-ACFA-6812AE2FFBD2}");
+tocTab[tocTab.length] = new Array("0.6.1.1.2.2.4:3", "", "ToolStatusViewModel", "EARoot/EA6/EA1/EA1/EA2/EA2/EA4/EA1108.htm", "5.png", "E766", "0", "", "Class0","{CDDDC397-5006-41d6-84EC-1220DECEE723}");
+tocTab[tocTab.length] = new Array("0.6.1.1.2.2.4.1", "1", "Triggers", "EARoot/EA6/EA1/EA1/EA2/EA2/EA4/EA1/EA1110.htm", "4.png", "", "", "{FC8DB053-F8F0-4f0b-9AF0-C2052E73A35C}", "Package");

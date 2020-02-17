@@ -1,0 +1,5 @@
+tocTab[tocTab.length] = new Array("0.4.1.1.8:1", "", "AgentVcs", "EARoot/EA4/EA1/EA1/EA8/EA672.htm", "5.png", "E461", "0", "", "Class0","{6068504B-4C77-4240-8E9C-9231EB607D03}");
+tocTab[tocTab.length] = new Array("0.4.1.1.8:2", "", "DeviceAgent", "EARoot/EA4/EA1/EA1/EA8/EA673.htm", "5.png", "E462", "0", "", "Class0","{4C9420CA-56A6-4d5e-A98C-6D0C4FBA2D2A}");
+tocTab[tocTab.length] = new Array("0.4.1.1.8:3", "", "ExecuteCommander", "EARoot/EA4/EA1/EA1/EA8/EA675.htm", "5.png", "E463", "0", "", "Class0","{23DE1A57-16DC-4471-ADB7-327ED06CA6DD}");
+tocTab[tocTab.length] = new Array("0.4.1.1.8:4", "", "UserCloudAgent", "EARoot/EA4/EA1/EA1/EA8/EA676.htm", "5.png", "E464", "0", "", "Class0","{3A9F8D58-6A17-4499-BDF0-E23341180B9F}");
+tocTab[tocTab.length] = new Array("0.4.1.1.8.1", "1", "Events", "EARoot/EA4/EA1/EA1/EA8/EA1/EA677.htm", "4.png", "", "", "{32E365AF-B234-428e-A01A-5FF60A6F03C8}", "Package");

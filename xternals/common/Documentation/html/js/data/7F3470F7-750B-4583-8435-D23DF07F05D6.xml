@@ -1,0 +1,4 @@
+tocTab[tocTab.length] = new Array("0.5.1:1", "", "Auth Session sequence", "EARoot/EA5/EA1/EA682.htm", "185.png", "9", "0", "", "Sequence diagram0","{7F1C53EA-A60F-4f00-BAB1-429314771BCC}");
+tocTab[tocTab.length] = new Array("0.5.1:2", "", "Class Hierarchy", "EARoot/EA5/EA1/EA684.htm", "175.png", "22", "0", "", "Logical diagram0","{5AB6F3CA-56E0-4018-A730-60517B520FEF}");
+tocTab[tocTab.length] = new Array("0.5.1:3", "", "Master Cloud Service interaction", "EARoot/EA5/EA1/EA686.htm", "181.png", "11", "0", "", "Activity diagram0","{7C0103B4-6432-499d-9C4D-519A539A983F}");
+tocTab[tocTab.length] = new Array("0.5.1.1", "1", "Elements", "EARoot/EA5/EA1/EA1/EA697.htm", "4.png", "", "", "{C61E2C0F-C416-464d-9C0D-2CA1222CBAE2}", "Package");

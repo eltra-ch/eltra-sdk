@@ -1,0 +1,2 @@
+tocTab[tocTab.length] = new Array("0.6.1.1.2.5.11.5:1", "", "PvmStatusView", "EARoot/EA6/EA1/EA1/EA2/EA5/EA11/EA5/EA1305.htm", "5.png", "E1037", "0", "", "Class0","{8FFE2AE0-A2E7-4385-A3CB-9AD278BA67BA}");
+tocTab[tocTab.length] = new Array("0.6.1.1.2.5.11.5:2", "", "PvmStatusViewModel", "EARoot/EA6/EA1/EA1/EA2/EA5/EA11/EA5/EA1306.htm", "5.png", "E1038", "0", "", "Class0","{B44D8644-4BDC-443a-991D-FC42C712A50A}");

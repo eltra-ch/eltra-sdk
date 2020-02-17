@@ -1,0 +1,2 @@
+tocTab[tocTab.length] = new Array("0.6.1.1.2.2.5:1", "", "IToastMessage", "EARoot/EA6/EA1/EA1/EA2/EA2/EA5/EA1113.htm", "8.png", "E768", "0", "", "Interface0","{129AFA9C-579A-4201-B609-AA415775B8DD}");
+tocTab[tocTab.length] = new Array("0.6.1.1.2.2.5:2", "", "ToastMessage", "EARoot/EA6/EA1/EA1/EA2/EA2/EA5/EA1114.htm", "5.png", "E769", "0", "", "Class0","{90F45988-9685-4bef-95B4-B59B5EBA480D}");

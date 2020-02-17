@@ -1,0 +1,6 @@
+tocTab[tocTab.length] = new Array("0.5.2.1:1", "", "Authentication", "EARoot/EA5/EA2/EA1/EA723.htm", "5.png", "E736", "0", "", "Class0","{5347346F-CF02-4b77-9792-E59CEC054527}");
+tocTab[tocTab.length] = new Array("0.5.2.1:2", "", "Master", "EARoot/EA5/EA2/EA1/EA725.htm", "5.png", "E2686", "0", "", "Class0","{AC2A4C81-1394-4675-BC91-AD4A3C026D40}");
+tocTab[tocTab.length] = new Array("0.5.2.1:3", "", "Program", "EARoot/EA5/EA2/EA1/EA727.htm", "5.png", "E737", "0", "", "Class0","{2A0AC4CF-CCEC-41ec-A395-A7683C56AD9E}");
+tocTab[tocTab.length] = new Array("0.5.2.1.1", "1", "DeviceManager", "EARoot/EA5/EA2/EA1/EA1/EA729.htm", "4.png", "", "", "{4E397384-02BC-4f82-9CBF-AD00681A44C0}", "Package");
+tocTab[tocTab.length] = new Array("0.5.2.1.2", "1", "Os", "EARoot/EA5/EA2/EA1/EA2/EA1030.htm", "4.png", "", "", "{8746A747-6C8D-4f64-BD6D-F3F4215C46FE}", "Package");
+tocTab[tocTab.length] = new Array("0.5.2.1.3", "1", "Settings", "EARoot/EA5/EA2/EA1/EA3/EA1041.htm", "4.png", "", "", "{3E586CF1-12D2-4d1a-B00E-89179752798B}", "Package");

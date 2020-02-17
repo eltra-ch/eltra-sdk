@@ -1,0 +1,15 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<ContentView xmlns="http://xamarin.com/schemas/2014/forms" 
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:behaviors="clr-namespace:EltraNavigo.Views.Obd.Inputs.Behaviors;assembly=EltraNavigo"
+             x:Class="EltraNavigo.Views.Obd.Inputs.ObdInputsView">
+  <ContentView.Content>
+        <Grid Padding="4,8,0,0">
+            <SearchBar Text="{Binding SearchText, Mode=OneWay}" BackgroundColor="Transparent">
+                <SearchBar.Behaviors>
+                    <behaviors:SearchBehavior/>
+                </SearchBar.Behaviors>
+            </SearchBar>
+        </Grid>
+    </ContentView.Content>
+</ContentView>

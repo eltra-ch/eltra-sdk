@@ -1,0 +1,7 @@
+tocTab[tocTab.length] = new Array("0.5.2.1.1.1.1:1", "", ": DeviceScanner", "EARoot/EA5/EA2/EA1/EA1/EA1/EA1/EA756.htm", "25.png", "E2702", "0", "", "Object0","{6CB493C2-9E9E-47b2-856A-803EB5F4A31F}");
+tocTab[tocTab.length] = new Array("0.5.2.1.1.1.1:2", "", ": Epos4Device", "EARoot/EA5/EA2/EA1/EA1/EA1/EA1/EA757.htm", "25.png", "E2706", "0", "", "Object0","{794CE49B-9E9C-4488-856B-E4FF96D7CFE9}");
+tocTab[tocTab.length] = new Array("0.5.2.1.1.1.1:3", "", ": Master", "EARoot/EA5/EA2/EA1/EA1/EA1/EA1/EA758.htm", "25.png", "E2704", "0", "", "Object0","{2F394C4C-50AA-4612-AA8D-8A537A1E28B3}");
+tocTab[tocTab.length] = new Array("0.5.2.1.1.1.1:4", "", ": Device", "EARoot/EA5/EA2/EA1/EA1/EA1/EA1/EA759.htm", "25.png", "E2700", "0", "", "Object0","{9B88ADE8-4E30-4653-BE50-41A74CD4401D}");
+tocTab[tocTab.length] = new Array("0.5.2.1.1.1.1:5", "", ": EposDeviceManager", "EARoot/EA5/EA2/EA1/EA1/EA1/EA1/EA760.htm", "25.png", "E2699", "0", "", "Object0","{49FC12F6-27D7-456a-9825-48BFC153A442}");
+tocTab[tocTab.length] = new Array("0.5.2.1.1.1.1:6", "", ": SyncCloudAgent", "EARoot/EA5/EA2/EA1/EA1/EA1/EA1/EA761.htm", "25.png", "E2705", "0", "", "Object0","{1F3CDA4C-1380-49ab-90A1-DB422ACF98AF}");
+tocTab[tocTab.length] = new Array("0.5.2.1.1.1.1:7", "", "Actor1", "EARoot/EA5/EA2/EA1/EA1/EA1/EA1/EA762.htm", "6.png", "E2703", "0", "", "Actor0","{BF566780-B6B7-4fa5-9CB7-A3CA15F79B16}");

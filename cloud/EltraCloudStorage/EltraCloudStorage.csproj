@@ -1,0 +1,30 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+	<LangVersion>7.1</LangVersion>
+	<Authors>eltra.ch</Authors>
+	<Company>eltra.ch Mobile Solutions</Company>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <DefineConstants>TRACE;DEBUG;NETCOREAPP;NETCOREAPP2_2;</DefineConstants>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="MySql.Data" Version="8.0.18" />
+    <PackageReference Include="Npgsql" Version="4.1.1" />
+    <PackageReference Include="System.Data.SQLite.Core" Version="1.0.112" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Xternals\Common\EltraCloudContracts\EltraCloudContracts.csproj" />
+    <ProjectReference Include="..\Xternals\Common\EltraCommon\EltraCommon.csproj" />
+  </ItemGroup>
+
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+    <Exec Command="if not exist $(ProjectDir)..\Assemblies (md $(ProjectDir)..\Assemblies);&#xD;&#xA;xcopy $(TargetPath) $(ProjectDir)..\Assemblies /Y" Condition=" '$(OS)' == 'Windows_NT' " />
+    <Exec Command="mkdir -p $(ProjectDir)../Assemblies;/bin/cp -f $(TargetPath) $(ProjectDir)../Assemblies" Condition=" '$(OS)' == 'Unix' " />
+  </Target>
+
+</Project>

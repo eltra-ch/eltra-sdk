@@ -1,0 +1,3 @@
+tocTab[tocTab.length] = new Array("0.4.1.1.4:1", "", "RegistrationEventArgs", "EARoot/EA4/EA1/EA1/EA4/EA651.htm", "5.png", "E440", "0", "", "Class0","{99F518A8-C501-4e72-9429-D8550FCFD2A7}");
+tocTab[tocTab.length] = new Array("0.4.1.1.4:2", "", "RegistrationState", "EARoot/EA4/EA1/EA1/EA4/EA652.htm", "247.png", "E441", "0", "", "Enumeration0","{BDBCAAA4-CBF9-4a1c-8F1C-B4A8A5EBB59C}");
+tocTab[tocTab.length] = new Array("0.4.1.1.4:3", "", "SessionRegistrationEventArgs", "EARoot/EA4/EA1/EA1/EA4/EA653.htm", "5.png", "E442", "0", "", "Class0","{B1AA29A7-8F5D-4ffc-9A1F-15EB838ACBF8}");

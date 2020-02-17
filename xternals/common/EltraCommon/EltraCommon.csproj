@@ -1,0 +1,19 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+	<LangVersion>7.1</LangVersion>
+	<Company>eltra.ch</Company>
+	<Authors>eltra.ch Mobile Solutions</Authors>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
+  </ItemGroup>
+
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+    <Exec Command="if not exist $(ProjectDir)..\..\..\Assemblies (md $(ProjectDir)..\..\..\Assemblies);&#xD;&#xA;xcopy $(TargetPath) $(ProjectDir)..\..\..\Assemblies /Y" Condition=" '$(OS)' == 'Windows_NT' " />
+    <Exec Command="mkdir -p $(ProjectDir)../../../Assemblies;/bin/cp -f $(TargetPath) $(ProjectDir)../../../Assemblies" Condition=" '$(OS)' == 'Unix' " />
+  </Target>
+
+</Project>

@@ -1,0 +1,5 @@
+tocTab[tocTab.length] = new Array("0.6.1.1.2.5.7.1.1:1", "", "DefinePositionButtonClicked", "EARoot/EA6/EA1/EA1/EA2/EA5/EA7/EA1/EA1/EA1195.htm", "5.png", "E947", "0", "", "Class0","{7E578DA0-8420-47f6-A382-7904AF9957C8}");
+tocTab[tocTab.length] = new Array("0.6.1.1.2.5.7.1.1:2", "", "EnableButtonClicked", "EARoot/EA6/EA1/EA1/EA2/EA5/EA7/EA1/EA1/EA1196.htm", "5.png", "E945", "0", "", "Class0","{1002DBBD-2F58-4cb2-8AF0-7BFB16B5B5DA}");
+tocTab[tocTab.length] = new Array("0.6.1.1.2.5.7.1.1:3", "", "HaltButtonClicked", "EARoot/EA6/EA1/EA1/EA2/EA5/EA7/EA1/EA1/EA1197.htm", "5.png", "E946", "0", "", "Class0","{AC8688AC-5019-4d21-B32A-8DCE4F9B0B48}");
+tocTab[tocTab.length] = new Array("0.6.1.1.2.5.7.1.1:4", "", "QuickStopButtonClicked", "EARoot/EA6/EA1/EA1/EA2/EA5/EA7/EA1/EA1/EA1198.htm", "5.png", "E948", "0", "", "Class0","{B49249DF-6B54-4b3e-B1D7-D0C8FA720C8F}");
+tocTab[tocTab.length] = new Array("0.6.1.1.2.5.7.1.1:5", "", "StartButtonClicked", "EARoot/EA6/EA1/EA1/EA2/EA5/EA7/EA1/EA1/EA1199.htm", "5.png", "E949", "0", "", "Class0","{8692B45E-50AF-4d45-A19A-3BBD95971ED5}");

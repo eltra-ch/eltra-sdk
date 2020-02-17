@@ -1,0 +1,4 @@
+tocTab[tocTab.length] = new Array("0.6.1.1.2.5.9.1:1", "", "ObdInputsView", "EARoot/EA6/EA1/EA1/EA2/EA5/EA9/EA1/EA1228.htm", "5.png", "E979", "0", "", "Class0","{0D37B446-7B99-4380-813D-214E26DA3054}");
+tocTab[tocTab.length] = new Array("0.6.1.1.2.5.9.1:2", "", "ObdInputsViewModel", "EARoot/EA6/EA1/EA1/EA2/EA5/EA9/EA1/EA1229.htm", "5.png", "E980", "0", "", "Class0","{EBF7382D-FA53-4d8b-8436-D277043A7122}");
+tocTab[tocTab.length] = new Array("0.6.1.1.2.5.9.1.1", "1", "Behaviors", "EARoot/EA6/EA1/EA1/EA2/EA5/EA9/EA1/EA1/EA1230.htm", "4.png", "", "", "{53CEF70B-B9FE-4e34-B9AC-D1627779F3A0}", "Package");
+tocTab[tocTab.length] = new Array("0.6.1.1.2.5.9.1.2", "1", "Events", "EARoot/EA6/EA1/EA1/EA2/EA5/EA9/EA1/EA2/EA1232.htm", "4.png", "", "", "{80522FC6-B8A1-4dcb-84E2-9E990F8A484C}", "Package");

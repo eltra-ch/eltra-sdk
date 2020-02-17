@@ -1,0 +1,169 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <ProduceAssemblyReference>true</ProduceAssemblyReference>
+    <LangVersion>7.1</LangVersion>
+    <Company>Eltra mobile solutions</Company>
+	<Authors>Eltra mobile solutions</Authors>
+    <Product>Eltra Navigo</Product>
+    <Copyright>eltra.ch</Copyright>
+    <Version>1.0.4.7</Version>
+    <AssemblyVersion>1.0.4.7</AssemblyVersion>
+    <FileVersion>1.0.4.7</FileVersion>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <DebugType>pdbonly</DebugType>
+    <DebugSymbols>true</DebugSymbols>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="Views\ToolView\**" />
+    <EmbeddedResource Remove="Views\ToolView\**" />
+    <None Remove="Views\ToolView\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="Controls\Triggers\ToolViewAppearing.cs" />
+    <Compile Remove="Controls\Triggers\ToolViewDisappearing.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="Resources\anchor_32px.png" />
+    <None Remove="Resources\bike_32px.png" />
+    <None Remove="Resources\book-open_32px.png" />
+    <None Remove="Resources\clouds.jpg" />
+    <None Remove="Resources\clouds.png" />
+    <None Remove="Resources\download_32px.png" />
+    <None Remove="Resources\hamburger.png" />
+    <None Remove="Resources\hazardous_32px.png" />
+    <None Remove="Resources\homing.png" />
+    <None Remove="Resources\led_active.png" />
+    <None Remove="Resources\led_inactive.png" />
+    <None Remove="Resources\led_undefined.png" />
+    <None Remove="Resources\led_warn.png" />
+    <None Remove="Resources\lightbulb_32px.png" />
+    <None Remove="Resources\map_32px.png" />
+    <None Remove="Resources\obd.png" />
+    <None Remove="Resources\ppm.png" />
+    <None Remove="Resources\presentation_32px.png" />
+    <None Remove="Resources\profile-male_32px.png" />
+    <None Remove="Resources\put-logo.png" />
+    <None Remove="Resources\pvm.png" />
+    <None Remove="Resources\Velocity.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\anchor_32px.png" />
+    <EmbeddedResource Include="Resources\bike_32px.png" />
+    <EmbeddedResource Include="Resources\book-open_32px.png" />
+    <EmbeddedResource Include="Resources\clouds.png" />
+    <EmbeddedResource Include="Resources\download_32px.png" />
+    <EmbeddedResource Include="Resources\hamburger.png" />
+    <EmbeddedResource Include="Resources\hazardous_32px.png" />
+    <EmbeddedResource Include="Resources\homing.png" />
+    <EmbeddedResource Include="Resources\led_active.png" />
+    <EmbeddedResource Include="Resources\led_inactive.png" />
+    <EmbeddedResource Include="Resources\led_undefined.png" />
+    <EmbeddedResource Include="Resources\led_warn.png" />
+    <EmbeddedResource Include="Resources\lightbulb_32px.png" />
+    <EmbeddedResource Include="Resources\map_32px.png" />
+    <EmbeddedResource Include="Resources\obd.png" />
+    <EmbeddedResource Include="Resources\ppm.png" />
+    <EmbeddedResource Include="Resources\presentation_32px.png" />
+    <EmbeddedResource Include="Resources\profile-male_32px.png" />
+    <EmbeddedResource Include="Resources\put-logo.png" />
+    <EmbeddedResource Include="Resources\pvm.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="OxyPlot.Xamarin.Forms" Version="1.0.0" />
+    <PackageReference Include="Xamarin.Forms" Version="4.4.0.991537" />  
+    <PackageReference Include="Xamarin.Essentials" Version="1.3.1" />  
+    <PackageReference Include="Xamarin.Forms.Maps" Version="4.4.0.991537" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\Xternals\Common\EltraCloudContracts\EltraCloudContracts.csproj" />
+    <ProjectReference Include="..\..\Xternals\Common\EltraCommon\EltraCommon.csproj" />
+    <ProjectReference Include="..\..\Xternals\Common\EltraResources\EltraResources.csproj" />
+    <ProjectReference Include="..\..\Xternals\Connect\EltraConnector\EltraConnector.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Update="Resources\AppResources.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>AppResources.resx</DependentUpon>
+    </Compile>
+    <Compile Update="Views\About\AboutView.xaml.cs">
+      <DependentUpon>AboutView.xaml</DependentUpon>
+    </Compile>
+    <Compile Update="Views\DeviceList\DeviceListView.xaml.cs">
+      <DependentUpon>DeviceListView.xaml</DependentUpon>
+    </Compile>
+    <Compile Update="Views\Login\LoginView.xaml.cs">
+      <DependentUpon>LoginView.xaml</DependentUpon>
+    </Compile>
+    <Compile Update="Views\MainView.xaml.cs">
+      <DependentUpon>MainView.xaml</DependentUpon>
+    </Compile>
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Update="Controls\Parameters\ParameterComboView.xaml">
+      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\AppResources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>AppResources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Views\Control\ControlView.xaml">
+      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Views\DetailView.xaml">
+      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Views\DeviceList\DeviceListView.xaml">
+      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Views\DeviceList\DeviceView.xaml">
+      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Views\Devices\Thermo\Control\ControllerView.xaml">
+      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Views\Login\LoginView.xaml">
+      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Views\MasterView.xaml">
+      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Views\Devices\Epos4\Ppm\Status\PpmStatusView.xaml">
+      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Views\Devices\Epos4\Pvm\Control\PvmControlView.xaml">
+      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Views\Devices\Epos4\Pvm\Inputs\PvmInputsView.xaml">
+      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Views\Devices\Epos4\Pvm\OpMode\PvmOpModeView.xaml">
+      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Views\Devices\Epos4\Pvm\Outputs\PvmOutputsView.xaml">
+      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Views\Devices\Epos4\Pvm\PvmView.xaml">
+      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Views\Devices\Relay\RelayControl\RelayControlView.xaml">
+      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
+    </EmbeddedResource>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Views\Devices\Thermo\Settings\" />
+  </ItemGroup>
+</Project>

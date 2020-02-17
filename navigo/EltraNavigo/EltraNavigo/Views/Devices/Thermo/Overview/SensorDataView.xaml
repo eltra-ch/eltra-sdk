@@ -1,0 +1,75 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<ContentView xmlns="http://xamarin.com/schemas/2014/forms" 
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:d="http://xamarin.com/schemas/2014/forms/design"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:parameters="clr-namespace:EltraNavigo.Controls.Parameters"
+             mc:Ignorable="d"
+             x:Class="EltraNavigo.Views.Devices.Thermo.Overview.SensorDataView">
+  <ContentView.Content>
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="110"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+
+            <Frame Grid.Row="0" Grid.Column="0" Padding="0">
+                <Label Text="Temperature:" VerticalOptions="Center"/>
+            </Frame>
+
+            <Frame Grid.Row="1" Grid.Column="0" Padding="0">
+                <Label Text="Humidity:" VerticalOptions="Center"/>
+            </Frame>
+
+            <Frame Grid.Row="2" Grid.Column="0" Padding="0">
+                <Label Text="Temperature (Ext):" VerticalOptions="Center"/>
+            </Frame>
+
+            <Frame Grid.Row="3" Grid.Column="0" Padding="0">
+                <Label Text="Pressure:" VerticalOptions="Center"/>
+            </Frame>
+
+            <Frame Grid.Row="4" Grid.Column="0" Padding="0">
+                <Label Text="Altitude:" VerticalOptions="Center"/>
+            </Frame>
+
+            <Frame Grid.Row="5" Grid.Column="0" Padding="0">
+                <Label Text="Last change:" VerticalOptions="Center"/>
+            </Frame>
+            
+            <Frame Grid.Row="0" Grid.Column="1" Padding="0">
+                <parameters:ParameterLabelView BindingContext="{Binding ActualTemperature}"/>
+            </Frame>
+
+            <Frame Grid.Row="1" Grid.Column="1" Padding="0">
+                <parameters:ParameterLabelView BindingContext="{Binding ActualHumidity}"/>
+            </Frame>
+
+            <Frame Grid.Row="2" Grid.Column="1" Padding="0">
+                <parameters:ParameterLabelView BindingContext="{Binding ActualTemperatureExt}"/>
+            </Frame>
+
+            <Frame Grid.Row="3" Grid.Column="1" Padding="0">
+                <parameters:ParameterLabelView BindingContext="{Binding ActualPressure}"/>
+            </Frame>
+
+            <Frame Grid.Row="4" Grid.Column="1" Padding="0">
+                <parameters:ParameterLabelView BindingContext="{Binding ActualAltitude}"/>
+            </Frame>
+
+            <Frame Grid.Row="5" Grid.Column="1" Padding="0">
+                <parameters:ParameterLabelView BindingContext="{Binding ActualTimestamp}" FontSize="Small"/>
+            </Frame>
+        </Grid>
+    </ContentView.Content>
+</ContentView>

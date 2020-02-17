@@ -1,0 +1,3 @@
+tocTab[tocTab.length] = new Array("0.5.2.1.1.3.1:1", "", "Class Hierarchy", "EARoot/EA5/EA2/EA1/EA1/EA3/EA1/EA773.htm", "175.png", "25", "0", "", "Logical diagram0","{6A884133-8D10-430e-8771-FC6BE8B75C47}");
+tocTab[tocTab.length] = new Array("0.5.2.1.1.3.1:2", "", "EposDevice Class Hierarchy", "EARoot/EA5/EA2/EA1/EA1/EA3/EA1/EA775.htm", "175.png", "39", "0", "", "Logical diagram0","{F191EB90-D7B9-4b41-BBBB-AEF9A556C173}");
+tocTab[tocTab.length] = new Array("0.5.2.1.1.3.1:3", "", "MotionControllerDevice Class Hierarchy", "EARoot/EA5/EA2/EA1/EA1/EA3/EA1/EA777.htm", "175.png", "40", "0", "", "Logical diagram0","{626DD4B2-984B-4753-9DDA-9D34F265E920}");
