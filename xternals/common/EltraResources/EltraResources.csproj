@@ -15,6 +15,7 @@
     <None Remove="devices\fw\EPOS4_0150h_6551h_0000h_0000h.xdd" />
     <None Remove="devices\fw\EPOS4_0150h_6552h_0000h_0000h.xdd" />
     <None Remove="devices\fw\EPOS4_0160h_6750h_FF00h_00D0h.xdd" />
+    <None Remove="devices\fw\THERMO_0100h_A000h_0001h_0001h.xdd" />
     <None Remove="devices\fw\THERMO_0150h_0B10h_0001h_0006h.xdd" />
     <None Remove="devices\thumbnails\0B10.png" />
     <None Remove="devices\thumbnails\6050.png" />
@@ -38,6 +39,7 @@
     <EmbeddedResource Include="devices\fw\EPOS4_0150h_6551h_0000h_0000h.xdd" />
     <EmbeddedResource Include="devices\fw\EPOS4_0150h_6552h_0000h_0000h.xdd" />
     <EmbeddedResource Include="devices\fw\EPOS4_0160h_6750h_FF00h_00D0h.xdd" />
+    <EmbeddedResource Include="devices\fw\THERMO_0100h_A000h_0001h_0001h.xdd" />
     <EmbeddedResource Include="devices\fw\THERMO_0150h_0B10h_0001h_0006h.xdd" />
     <EmbeddedResource Include="devices\thumbnails\0B10.png" />
     <EmbeddedResource Include="devices\thumbnails\6050.png" />

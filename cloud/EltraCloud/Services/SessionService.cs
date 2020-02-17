@@ -685,16 +685,25 @@ namespace EltraCloud.Services
 
         private bool CreateObjectDictionary(EltraDevice device, DeviceDescriptionFile _)
         {
-            device.ObjectDictionary = ObjectDictionaryFactory.CreateObjectDictionary(device);
+            bool result = false;
 
-            var result = device.ObjectDictionary.Open();
-
-            if(result)
+            try
             {
-                if(!UpdateParameters(device))
+                device.ObjectDictionary = ObjectDictionaryFactory.CreateObjectDictionary(device);
+
+                if (device.ObjectDictionary.Open())
                 {
-                    MsgLogger.WriteWarning($"{GetType().Name} - CreateObjectDictionary", $"update parameters for device '0x{device.Identification.SerialNumber:X4}' failed, first registration?");
+                    if (!UpdateParameters(device))
+                    {
+                        MsgLogger.WriteWarning($"{GetType().Name} - CreateObjectDictionary", $"update parameters for device '0x{device.Identification.SerialNumber:X4}' failed, first registration?");
+                    }
+
+                    result = true;
                 }
+            }
+            catch(Exception e)
+            {
+                MsgLogger.Exception($"{GetType().Name} - CreateObjectDictionary", e);
             }
 
             return result;

@@ -10,7 +10,7 @@ namespace EltraCloudContracts.ObjectDictionary.Factory
         {
             DeviceObjectDictionary result = null;
 
-            if (device.Name == "EPOS4" || device.Name == "THERMO")
+            if (device.Name == "EPOS4" || device.Name == "THERMO" || device.Name == "THERMOMETER")
             {
                 result = CreateEpos4ObjectDictionary(device);
             }
