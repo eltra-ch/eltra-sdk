@@ -36,7 +36,7 @@
   </ItemGroup>
 
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="copy $(ProjectDir)..\NativeLibs\Bmp180\build\Debug\EltraBmp180.dll $(TargetDir)&#xD;&#xA;copy $(ProjectDir)..\NativeLibs\Dht22\build\Debug\EltraDht22.dll $(TargetDir)&#xD;&#xA;copy $(ProjectDir)..\NativeLibs\Relay\build\Debug\EltraRelay.dll $(TargetDir)&#xD;&#xA;copy $(ProjectDir)..\NativeLibs\Sds011\build\Debug\EltraSds011.dll $(TargetDir)" Condition=" '$(OS)' == 'Windows_NT' " />
+    <Exec Command="copy $(ProjectDir)..\SensorLibs\Bmp180\build\Debug\EltraBmp180.dll $(TargetDir)&#xD;&#xA;copy $(ProjectDir)..\SensorLibs\Dht22\build\Debug\EltraDht22.dll $(TargetDir)&#xD;&#xA;copy $(ProjectDir)..\SensorLibs\Relay\build\Debug\EltraRelay.dll $(TargetDir)&#xD;&#xA;copy $(ProjectDir)..\SensorLibs\Sds011\build\Debug\EltraSds011.dll $(TargetDir)" Condition=" '$(OS)' == 'Windows_NT' " />
   </Target>
  
 </Project>
