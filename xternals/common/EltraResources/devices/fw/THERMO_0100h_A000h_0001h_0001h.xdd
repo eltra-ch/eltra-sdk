@@ -1,0 +1,290 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<ProfileContainer>
+	<Profile>
+		<ProfileHeader>
+			<ProfileIdentification>ELTRA Device Profile</ProfileIdentification>
+			<ProfileRevision>1</ProfileRevision>
+			<ProfileName>Thermometer</ProfileName>
+			<ProfileSource>eltra.ch</ProfileSource>
+			<ProfileClassID>Device</ProfileClassID>
+			<SecurityCode/>
+		</ProfileHeader>
+		<ProfileBody type="ProfileBody_Device_Eltra" formatName="ELTRA" formatVersion="1.0" supportedLanguages="en"  fileVersion="1.0" fileCreator="DS" fileName="DeviceDescription.xdd" fileCreationDate="17.02.2020">
+			<DeviceIdentity>
+				<vendorName readOnly="true">eltra.ch</vendorName>
+				<deviceFamily readOnly="true">
+					<label lang="en-TT">Smart Thermometer</label>
+				</deviceFamily>
+				<productFamily readOnly="true">Thermometer</productFamily>
+				<productName readOnly="true">Thermometer rev. 1</productName>
+				<productText readOnly="true">
+					<label lang="en-TT">Thermometer is ...</label>
+				</productText>
+				<productUrl readOnly="true">
+					<label lang="en-TT">http://www.eltra.ch</label>
+				</productUrl>
+				<orderNumber readOnly="true">000000</orderNumber>
+				<version versionType="SW" readOnly="true">0x0100</version>
+				<version versionType="HW" readOnly="true">0xA000</version>
+				<version versionType="APPNB" readOnly="true">0x0001</version>
+				<version versionType="APPVER" readOnly="true">0x0001</version>
+			</DeviceIdentity>
+			<DeviceManager>
+				<userLevelList>
+					<userLevel uniqueID="USR_Standard">
+						<role>operator</role>
+						<label lang="en-TT">Standard</label>
+						<description lang="en-TT">Standard user level</description>
+					</userLevel>
+					<userLevel uniqueID="USR_Expert">
+						<role>engineer</role>
+						<label lang="en-TT">Expert</label>
+						<description lang="en-TT">Expert user level (Configuration allowed)</description>
+					</userLevel>
+					<userLevel uniqueID="USR_Internal">
+						<role>developer</role>
+						<label lang="en-TT">Internal</label>
+						<description lang="en-TT">Only for eltra internal use</description>
+						<password/>
+					</userLevel>
+				</userLevelList>
+			</DeviceManager>
+			<DeviceHardware/>
+			<ApplicationProcess>
+				<dataTypeList/>
+				<unitsList/>
+				<templateList>
+					<flags uniqueID="AT_RO" name="AT_RO">
+						<Access>ro</Access>
+					</flags>
+					<flags uniqueID="AT_WO" name="AT_WO">
+						<Access>wo</Access>
+					</flags>
+					<flags uniqueID="AT_RW" name="AT_RW">
+						<Access>rw</Access>
+					</flags>
+					<flags uniqueID="AT_RW_BACKUP" name="AT_RW_BACKUP">
+						<Access>rw</Access>
+						<Backup>1</Backup>
+					</flags>
+				</templateList>
+				<parameterList>
+					<!-- Internal Temperature -->
+					<structuredParameter uniqueID="PARAM_Temperature">
+						<index>0x2000</index>
+						<label lang="en-TT">Temperature</label>
+					</structuredParameter>
+					<parameter uniqueID="PARAM_Temperature_MaxSubIdx">
+						<index>0x2000</index>
+						<subIndex>0x00</subIndex>
+						<label lang="en-TT">Max Subindex of temperature parameters</label>
+						<dataType>
+							<type>UNSIGNED8</type>
+						</dataType>
+						<flagsIDRef uniqueIDRef="AT_RO" />
+						<defaultValue>1</defaultValue>
+						<userLevels>
+							<userLevelIDRef uniqueIDRef="USR_Expert" />
+							<userLevelIDRef uniqueIDRef="USR_Internal" />
+						</userLevels>
+					</parameter>
+					<parameter uniqueID="PARAM_ActualTemperature">
+						<index>0x2000</index>
+						<subIndex>0x01</subIndex>
+						<label lang="en-TT">Actual Temperature</label>
+						<dataType>
+							<type>DOUBLE</type>
+						</dataType>
+						<flagsIDRef uniqueIDRef="AT_RO" />
+						<defaultValue>0</defaultValue>
+						<unit>
+							<label lang="en-TT">°C</label>
+						</unit>
+						<allowedValues>
+							<range>
+								<minValue>
+									<value>-90</value>
+								</minValue>
+								<maxValue>
+									<value>57</value>
+								</maxValue>
+							</range>
+						</allowedValues>
+						<userLevels>
+							<userLevelIDRef uniqueIDRef="USR_Expert" />
+							<userLevelIDRef uniqueIDRef="USR_Internal" />
+						</userLevels>
+					</parameter>
+					<!--- Internal Humidity -->
+					<structuredParameter uniqueID="PARAM_Humidity">
+						<index>0x2001</index>
+						<label lang="en-TT">Humidity</label>
+					</structuredParameter>
+					<parameter uniqueID="PARAM_Humidity_MaxSubIdx">
+						<index>0x2001</index>
+						<subIndex>0x00</subIndex>
+						<label lang="en-TT">Max Subindex of humidity</label>
+						<dataType>
+							<type>UNSIGNED8</type>
+						</dataType>
+						<flagsIDRef uniqueIDRef="AT_RO" />
+						<defaultValue>1</defaultValue>
+						<userLevels>
+							<userLevelIDRef uniqueIDRef="USR_Expert" />
+							<userLevelIDRef uniqueIDRef="USR_Internal" />
+						</userLevels>
+					</parameter>
+					<parameter uniqueID="PARAM_ActualHumidity">
+						<index>0x2001</index>
+						<subIndex>0x01</subIndex>
+						<label lang="en-TT">Actual Humidity</label>
+						<dataType>
+							<type>DOUBLE</type>
+						</dataType>
+						<flagsIDRef uniqueIDRef="AT_RO" />
+						<defaultValue>0</defaultValue>
+						<unit>
+							<label lang="en-TT">%</label>
+						</unit>
+						<allowedValues>
+							<range>
+								<minValue>
+									<value>0</value>
+								</minValue>
+								<maxValue>
+									<value>100</value>
+								</maxValue>
+							</range>
+						</allowedValues>
+						<userLevels>
+							<userLevelIDRef uniqueIDRef="USR_Expert" />
+							<userLevelIDRef uniqueIDRef="USR_Internal" />
+						</userLevels>
+					</parameter>
+					<!-- External Temperature -->
+					<structuredParameter uniqueID="PARAM_ExternalTemperature">
+						<index>0x2002</index>
+						<label lang="en-TT">External Temperature</label>
+					</structuredParameter>
+					<parameter uniqueID="PARAM_ExternalTemperature_MaxSubIdx">
+						<index>0x2002</index>
+						<subIndex>0x00</subIndex>
+						<label lang="en-TT">Max Subindex of external temperature parameters</label>
+						<dataType>
+							<type>UNSIGNED8</type>
+						</dataType>
+						<flagsIDRef uniqueIDRef="AT_RO" />
+						<defaultValue>1</defaultValue>
+						<userLevels>
+							<userLevelIDRef uniqueIDRef="USR_Expert" />
+							<userLevelIDRef uniqueIDRef="USR_Internal" />
+						</userLevels>
+					</parameter>
+					<parameter uniqueID="PARAM_ActualExternalTemperature">
+						<index>0x2002</index>
+						<subIndex>0x01</subIndex>
+						<label lang="en-TT">Actual External Temperature</label>
+						<dataType>
+							<type>DOUBLE</type>
+						</dataType>
+						<flagsIDRef uniqueIDRef="AT_RO" />
+						<defaultValue>0</defaultValue>
+						<unit>
+							<label lang="en-TT">°C</label>
+						</unit>
+						<allowedValues>
+							<range>
+								<minValue>
+									<value>-90</value>
+								</minValue>
+								<maxValue>
+									<value>57</value>
+								</maxValue>
+							</range>
+						</allowedValues>
+						<userLevels>
+							<userLevelIDRef uniqueIDRef="USR_Expert" />
+							<userLevelIDRef uniqueIDRef="USR_Internal" />
+						</userLevels>
+					</parameter>
+					<!-- Setup -->
+					<structuredParameter uniqueID="PARAM_Setup">
+						<index>0x3001</index>
+						<label lang="en-TT">Device Setup</label>
+					</structuredParameter>
+					<parameter uniqueID="PARAM_Setup_MaxSubIdx">
+						<index>0x3001</index>
+						<subIndex>0x00</subIndex>
+						<label lang="en-TT">Max Subindex of setup</label>
+						<dataType>
+							<type>UNSIGNED8</type>
+						</dataType>
+						<flagsIDRef uniqueIDRef="AT_RO" />
+						<defaultValue>1</defaultValue>
+						<userLevels>
+							<userLevelIDRef uniqueIDRef="USR_Expert" />
+							<userLevelIDRef uniqueIDRef="USR_Internal" />
+						</userLevels>
+					</parameter>
+					<parameter uniqueID="PARAM_SamplingTime">
+						<index>0x3001</index>
+						<subIndex>0x01</subIndex>
+						<label lang="en-TT">Sampling Time</label>
+						<dataType>
+							<type>UNSIGNED16</type>
+						</dataType>
+						<flagsIDRef uniqueIDRef="AT_RW" />
+						<defaultValue>30</defaultValue>
+						<unit>
+							<label lang="en-TT">s</label>
+						</unit>
+						<allowedValues>
+							<range>
+								<minValue>
+									<value>5</value>
+								</minValue>
+								<maxValue>
+									<value>100000</value>
+								</maxValue>
+							</range>
+						</allowedValues>
+						<userLevels>
+							<userLevelIDRef uniqueIDRef="USR_Expert" />
+							<userLevelIDRef uniqueIDRef="USR_Internal" />
+						</userLevels>
+					</parameter>
+					<!-- Altitude & Pressure -->
+					<parameter uniqueID="PARAM_Pressure">
+						<index>0x2100</index>
+						<subIndex>0x00</subIndex>
+						<label lang="en-TT">Pressure</label>
+						<dataType>
+							<type>DOUBLE</type>
+						</dataType>
+						<flagsIDRef uniqueIDRef="AT_RO" />
+						<defaultValue>0</defaultValue>
+						<unit>
+							<decimalPlaces>2</decimalPlaces>
+							<label lang="en-TT">hPa</label>
+						</unit>
+						<allowedValues>
+							<range>
+								<minValue>
+									<value>-10000</value>
+								</minValue>
+								<maxValue>
+									<value>10000</value>
+								</maxValue>
+							</range>
+						</allowedValues>
+						<userLevels>
+							<userLevelIDRef uniqueIDRef="USR_Expert" />
+							<userLevelIDRef uniqueIDRef="USR_Internal" />
+						</userLevels>
+					</parameter>
+					<!-- End -->
+				</parameterList>
+			</ApplicationProcess>
+		</ProfileBody>
+	</Profile>
+</ProfileContainer>
