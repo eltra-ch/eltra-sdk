@@ -82,7 +82,7 @@
 							<type>UNSIGNED8</type>
 						</dataType>
 						<flagsIDRef uniqueIDRef="AT_RO" />
-						<defaultValue>1</defaultValue>
+						<defaultValue>2</defaultValue>
 						<userLevels>
 							<userLevelIDRef uniqueIDRef="USR_Expert" />
 							<userLevelIDRef uniqueIDRef="USR_Internal" />
@@ -115,6 +115,21 @@
 							<userLevelIDRef uniqueIDRef="USR_Internal" />
 						</userLevels>
 					</parameter>
+          <parameter uniqueID="PARAM_TemperatureTimestamp">
+            <index>0x2000</index>
+            <subIndex>0x02</subIndex>
+            <label lang="en-TT">Temperature Timestamp</label>
+            <dataType>
+              <type>DATE_TIME</type>
+              <size unit="byte">8</size>
+            </dataType>
+            <flagsIDRef uniqueIDRef="AT_RO" />
+            <defaultValue/>
+            <userLevels>
+              <userLevelIDRef uniqueIDRef="USR_Expert" />
+              <userLevelIDRef uniqueIDRef="USR_Internal" />
+            </userLevels>
+          </parameter>
 					<!--- Internal Humidity -->
 					<structuredParameter uniqueID="PARAM_Humidity">
 						<index>0x2001</index>
@@ -128,7 +143,7 @@
 							<type>UNSIGNED8</type>
 						</dataType>
 						<flagsIDRef uniqueIDRef="AT_RO" />
-						<defaultValue>1</defaultValue>
+						<defaultValue>2</defaultValue>
 						<userLevels>
 							<userLevelIDRef uniqueIDRef="USR_Expert" />
 							<userLevelIDRef uniqueIDRef="USR_Internal" />
@@ -161,6 +176,22 @@
 							<userLevelIDRef uniqueIDRef="USR_Internal" />
 						</userLevels>
 					</parameter>
+          <parameter uniqueID="PARAM_HumidityTimestamp">
+            <index>0x2001</index>
+            <subIndex>0x02</subIndex>
+            <label lang="en-TT">Humidity Timestamp</label>
+            <dataType>
+              <type>DATE_TIME</type>
+              <size unit="byte">8</size>
+            </dataType>
+            <flagsIDRef uniqueIDRef="AT_RO" />
+            <defaultValue/>
+            <userLevels>
+              <userLevelIDRef uniqueIDRef="USR_Expert" />
+              <userLevelIDRef uniqueIDRef="USR_Internal" />
+            </userLevels>
+          </parameter>
+          
 					<!-- External Temperature -->
 					<structuredParameter uniqueID="PARAM_ExternalTemperature">
 						<index>0x2002</index>
@@ -174,7 +205,7 @@
 							<type>UNSIGNED8</type>
 						</dataType>
 						<flagsIDRef uniqueIDRef="AT_RO" />
-						<defaultValue>1</defaultValue>
+						<defaultValue>2</defaultValue>
 						<userLevels>
 							<userLevelIDRef uniqueIDRef="USR_Expert" />
 							<userLevelIDRef uniqueIDRef="USR_Internal" />
@@ -207,6 +238,21 @@
 							<userLevelIDRef uniqueIDRef="USR_Internal" />
 						</userLevels>
 					</parameter>
+          <parameter uniqueID="PARAM_ExternalTemperatureTimestamp">
+            <index>0x2002</index>
+            <subIndex>0x02</subIndex>
+            <label lang="en-TT">External Temperature Timestamp</label>
+            <dataType>
+              <type>DATE_TIME</type>
+              <size unit="byte">8</size>
+            </dataType>
+            <flagsIDRef uniqueIDRef="AT_RO" />
+            <defaultValue/>
+            <userLevels>
+              <userLevelIDRef uniqueIDRef="USR_Expert" />
+              <userLevelIDRef uniqueIDRef="USR_Internal" />
+            </userLevels>
+          </parameter>
 					<!-- Setup -->
 					<structuredParameter uniqueID="PARAM_Setup">
 						<index>0x3001</index>
