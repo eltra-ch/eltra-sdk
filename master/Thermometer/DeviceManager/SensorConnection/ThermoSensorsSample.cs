@@ -32,8 +32,7 @@ namespace ThermoMaster.DeviceManager.SensorConnection
 
             Humidity = sample.Humidity;
             HumidityAveraged = sample.HumidityAveraged;
-            
-            Altitude = sample.Altitude;
+                        
             Pressure = sample.Pressure;
 
             Timestamp = sample.Timestamp;
@@ -48,7 +47,7 @@ namespace ThermoMaster.DeviceManager.SensorConnection
         public double Temperature { get; set; }
         public double Humidity { get; set; }
         public double Pressure { get; set; }
-        public double Altitude { get; set; }
+        
         public double TemperatureAveraged { get; private set; }
         public double HumidityAveraged { get; private set; }
         public DateTime Timestamp { get; set; }
@@ -64,49 +63,40 @@ namespace ThermoMaster.DeviceManager.SensorConnection
         public void Set(SampleSource source, double temperature, double humidity)
         {
             _source = source;
-            Temperature = temperature;
-            Humidity = humidity;
-            
-            if(Count==0)
-            {
-                _kalmanFilterT = new Kalman(0.125, 32, 1023, temperature);
-                _kalmanFilterH = new Kalman(0.125, 32, 1023, humidity);
 
-                TemperatureAveraged = temperature;
-                HumidityAveraged = humidity;
+            Temperature = temperature;
+
+            if(source == SampleSource.dht11)
+            {
+                Humidity = humidity; 
             }
             else
             {
-                TemperatureAveraged = _kalmanFilterT.GetFilteredValue(temperature);
-                HumidityAveraged = _kalmanFilterH.GetFilteredValue(humidity);
-
-                TemperatureAveraged = Math.Round(TemperatureAveraged, 1);
-                HumidityAveraged = Math.Round(HumidityAveraged, 1);
+                Pressure = humidity;
             }
-
-            Timestamp = DateTime.Now;
-
-            Count++;
-        }
-
-        public void Set(SampleSource source, double temperature, double pressure, double altitude)
-        {
-            _source = source;
-            Temperature = temperature;
-            Pressure = pressure;
-            Altitude = altitude;
-
-            if (Count == 0)
+                        
+            if(Count==0)
             {
                 _kalmanFilterT = new Kalman(0.125, 32, 1023, temperature);
                 
                 TemperatureAveraged = temperature;
+
+                if (source == SampleSource.dht11)
+                {
+                    _kalmanFilterH = new Kalman(0.125, 32, 1023, humidity);
+                    HumidityAveraged = humidity;
+                }
             }
             else
             {
                 TemperatureAveraged = _kalmanFilterT.GetFilteredValue(temperature);
-
                 TemperatureAveraged = Math.Round(TemperatureAveraged, 1);
+
+                if (source == SampleSource.dht11)
+                {
+                    HumidityAveraged = _kalmanFilterH.GetFilteredValue(humidity);
+                    HumidityAveraged = Math.Round(HumidityAveraged, 1);
+                }
             }
 
             Timestamp = DateTime.Now;

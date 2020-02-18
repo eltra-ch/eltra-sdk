@@ -7,6 +7,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using ThermoMaster.DeviceManager.Device;
 using ThermoMaster.Settings;
+using ThermoMaster.DeviceManager.SensorConnection.DataSource;
 
 namespace ThermoMaster.DeviceManager.SensorConnection
 {
@@ -140,40 +141,29 @@ namespace ThermoMaster.DeviceManager.SensorConnection
             return base.Execute();
         }
 
-        private bool ReadBme280(out double temperature, out double pressure, out double altitude)
+        private bool ReadBme280(out double temperature, out double pressure)
         {
             bool result = false;
-            double t = double.NaN;
-            double p = double.NaN;
-            double a = double.NaN;
-
+            
             temperature = double.NaN;
             pressure = double.NaN;
-            altitude = double.NaN;
 
             try
             {
-                int r = 1;
+                var dataSource = new Bme280DataSource("/tmp/BME280.txt");
 
-                if (r == 1)
+                if (dataSource.ReadBme280(out var t, out var p, out var dateTime))
                 {
-                    var rnd = new Random();
-
-                    t = rnd.Next(0, 100);
-                    p = rnd.Next(950, 1050);
-                    a = rnd.Next(100, 120);
-                    
                     temperature = t;
                     pressure = p;
-                    altitude = a;
 
                     result = true;
 
-                    MsgLogger.WriteDebug($"{GetType().Name} - ReadBmp180", $"new sample: temperature={temperature}, pressure={pressure}, altitude={altitude}");
+                    MsgLogger.WriteDebug($"{GetType().Name} - ReadBmp180", $"new sample: temperature={temperature}, pressure={pressure}");
                 }
                 else
                 {
-                    MsgLogger.WriteError($"{GetType().Name} - ReadBmp180", $"ReadBmp180 failed, result = {r}!");
+                    MsgLogger.WriteError($"{GetType().Name} - ReadBmp180", $"ReadBmp180 failed!");
                 }
             }
             catch (Exception e)
@@ -194,45 +184,35 @@ namespace ThermoMaster.DeviceManager.SensorConnection
 
         private void ReadBmp180()
         {
-            if (ReadBme280(out var temperature, out var pressure, out var altitude))
+            if (ReadBme280(out var temperature, out var pressure))
             {
-                _externalSample.Set(SampleSource.bme280, temperature, pressure, altitude);
+                _externalSample.Set(SampleSource.bme280, temperature, pressure);
             }
         }
 
         private bool DhtRead(out double temperature, out double humidity)
         {
-            const int delay = 2000;
-            const int retryCount = 1;
-
             bool result = false;
-            double t = double.NaN;
-            double h = double.NaN;
-
+            
             temperature = double.NaN;
             humidity = double.NaN;
 
             try
             {
-                int r = 1;
+                var dataSource = new Dht11DataSource("/tmp/DHT11.txt");
 
-                if (r == 1)
+                if (dataSource.ReadDht11(out var t, out var h, out var dateTime))
                 {
-                    var rnd = new Random();
-
-                    t = rnd.Next(0, 100);
-                    h = rnd.Next(100, 150);
-
                     temperature = t;
                     humidity = h;
                     
                     result = true;
 
-                    MsgLogger.WriteDebug($"{GetType().Name} - ReadDht22Pins", $"new sample: temperature={temperature}, humidity={humidity}");
+                    MsgLogger.WriteDebug($"{GetType().Name} - ReadDht22Pins", $"new sample: temperature={temperature}, humidity={humidity}, datetime={dateTime}");
                 }
                 else
                 {
-                    MsgLogger.WriteError($"{GetType().Name} - ReadDht22Pins", $"ReadDht22 failed! delay={delay}, retry count={retryCount}");
+                    MsgLogger.WriteError($"{GetType().Name} - ReadDht22Pins", $"ReadDht22 failed!");
                 }
             }
             catch (Exception e)

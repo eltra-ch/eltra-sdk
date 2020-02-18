@@ -16,23 +16,9 @@ namespace ThermoMaster.DeviceManager
 
         private readonly ThermoDeviceBase _device;
         private readonly MasterSettings _settings;
-        private ThermoVcs _vcs;
         
-        private int[] _relayPins;
-
-        private ushort[] _lastState;
-
-        private double _minTemperature;
-        private double _maxTemperature;
-
-        private double _minHumidity;
-        private double _maxHumidity;
-
+        private ThermoVcs _vcs;
         private ushort _samplingTime;
-        private ushort _reactionInertia;
-
-        private ushort _controlWord;
-        private ushort _statusWord;
 
         #endregion
 
@@ -69,16 +55,7 @@ namespace ThermoMaster.DeviceManager
                 {
                     if (Vcs != null)
                     {
-                        await Vcs.UpdateParameterValue("PARAM_TemperatureMinThreshold");
-                        await Vcs.UpdateParameterValue("PARAM_TemperatureMaxThreshold");
-                        await Vcs.UpdateParameterValue("PARAM_HumidityMinThreshold");
-                        await Vcs.UpdateParameterValue("PARAM_HumidityMaxThreshold");
-                        
-                        await Vcs.UpdateParameterValue("PARAM_ControlWord");
-                        await Vcs.UpdateParameterValue("PARAM_StatusWord");
-
                         await Vcs.UpdateParameterValue("PARAM_SamplingTime");
-                        await Vcs.UpdateParameterValue("PARAM_ReactionInertia");
                     }
                     else
                     {
@@ -86,19 +63,9 @@ namespace ThermoMaster.DeviceManager
                     }
                 });
 
-                updateTask.Wait();
-
-                (_device?.SearchParameter("PARAM_TemperatureMinThreshold") as Parameter)?.GetValue(out _minTemperature);
-                (_device?.SearchParameter("PARAM_TemperatureMaxThreshold") as Parameter)?.GetValue(out _maxTemperature);
-
-                (_device?.SearchParameter("PARAM_HumidityMinThreshold") as Parameter)?.GetValue(out _minHumidity);
-                (_device.SearchParameter("PARAM_HumidityMaxThreshold") as Parameter)?.GetValue(out _maxHumidity);
+                updateTask.Wait();                
 
                 (_device?.SearchParameter("PARAM_SamplingTime") as Parameter)?.GetValue(out _samplingTime);
-                (_device?.SearchParameter("PARAM_ReactionInertia") as Parameter)?.GetValue(out _reactionInertia);
-
-                (_device?.SearchParameter("PARAM_ControlWord") as Parameter)?.GetValue(out _controlWord);
-                (_device?.SearchParameter("PARAM_StatusWord") as Parameter)?.GetValue(out _statusWord);
             }
         }
 
@@ -118,27 +85,10 @@ namespace ThermoMaster.DeviceManager
         public ushort NodeId { get; set; }        
         public uint LastErrorCode { get; set; }
         
-        public int[] RelayPins 
-        { 
-            get => _relayPins; 
-            set 
-            { 
-                _relayPins = value; 
-                OnPinsChanged(); 
-            }
-        }
-        
         #endregion
 
         #region Methods
-
-        protected virtual void OnPinsChanged()
-        {
-            MsgLogger.WriteLine($"Relay pins set {string.Join(",", RelayPins)}");
-
-            _lastState = new ushort[RelayPins.Length];
-        }
-        
+                
         public bool GetObject(ushort objectIndex, byte objectSubindex, ref byte[] data)
         {
             bool result = false;
