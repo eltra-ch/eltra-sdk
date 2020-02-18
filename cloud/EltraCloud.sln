@@ -7,11 +7,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EltraCloud", "EltraCloud\El
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EltraCloudStorage", "EltraCloudStorage\EltraCloudStorage.csproj", "{131AB681-5AE9-4247-B803-31657DA722C1}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EltraCommon", "..\xternals\Common\EltraCommon\EltraCommon.csproj", "{11422E83-E976-44A1-8D3C-00382F774833}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EltraCommon", "..\xternals\common\EltraCommon\EltraCommon.csproj", "{11422E83-E976-44A1-8D3C-00382F774833}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EltraCloudContracts", "..\xternals\Common\EltraCloudContracts\EltraCloudContracts.csproj", "{7BCF0435-542A-4343-9C50-3D218C6FC2CE}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EltraCloudContracts", "..\xternals\common\EltraCloudContracts\EltraCloudContracts.csproj", "{7BCF0435-542A-4343-9C50-3D218C6FC2CE}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EltraResources", "..\xternals\Common\EltraResources\EltraResources.csproj", "{F9C9A9EE-98A7-4314-9401-782BBC81397A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EltraResources", "..\xternals\common\EltraResources\EltraResources.csproj", "{F9C9A9EE-98A7-4314-9401-782BBC81397A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
