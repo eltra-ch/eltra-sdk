@@ -81,8 +81,8 @@
 
   <ItemGroup>
     <ProjectReference Include="..\EltraCloudStorage\EltraCloudStorage.csproj" />
-    <ProjectReference Include="..\..\Xternals\Common\EltraCloudContracts\EltraCloudContracts.csproj" />
-    <ProjectReference Include="..\..\Xternals\Common\EltraCommon\EltraCommon.csproj" />
+    <ProjectReference Include="..\..\xternals\common\EltraCloudContracts\EltraCloudContracts.csproj" />
+    <ProjectReference Include="..\..\xternals\common\EltraCommon\EltraCommon.csproj" />
   </ItemGroup>
 
 </Project>
