@@ -3,15 +3,15 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.29424.173
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ThermoMasterConsole", "ThermoMasterConsole.csproj", "{61DA541A-88D6-4E99-AA52-B8B4F9945C6F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ThermometerConsole", "ThermometerConsole.csproj", "{61DA541A-88D6-4E99-AA52-B8B4F9945C6F}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ThermoMaster", "..\ThermoMaster\ThermoMaster.csproj", "{C66B905C-278F-4FE3-88A6-339559187A93}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Thermometer", "..\Thermometer\Thermometer.csproj", "{C66B905C-278F-4FE3-88A6-339559187A93}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EltraConnector", "..\Xternals\Connect\EltraConnector\EltraConnector.csproj", "{0CABA914-1B24-4630-B3A8-B02AE402E731}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EltraConnector", "..\..\xternals\connect\EltraConnector\EltraConnector.csproj", "{0CABA914-1B24-4630-B3A8-B02AE402E731}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EltraCloudContracts", "..\Xternals\Common\EltraCloudContracts\EltraCloudContracts.csproj", "{8261AECD-C324-48BF-A2FA-88C352A44EB7}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EltraCloudContracts", "..\..\xternals\common\EltraCloudContracts\EltraCloudContracts.csproj", "{8261AECD-C324-48BF-A2FA-88C352A44EB7}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EltraResources", "..\Xternals\Common\EltraResources\EltraResources.csproj", "{A1C97C54-4FAF-459E-8117-8270A6CC93F0}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EltraResources", "..\..\xternals\common\EltraResources\EltraResources.csproj", "{A1C97C54-4FAF-459E-8117-8270A6CC93F0}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
