@@ -23,6 +23,7 @@ namespace EltraConnector.SyncAgent
         private readonly WsConnectionManager _wsConnectionManager;
         private readonly string _url;
         private readonly UserAuthData _authData;
+        private readonly Authentication _authentication;
 
         #endregion
 
@@ -33,6 +34,7 @@ namespace EltraConnector.SyncAgent
             _url = url;
             _authData = authData;
 
+            _authentication = new Authentication(this);
             _wsConnectionManager = new WsConnectionManager() { HostUrl = url };
 
             _authControllerAdapter = new AuthControllerAdapter(url);
@@ -304,6 +306,26 @@ namespace EltraConnector.SyncAgent
             MsgLogger.WriteDebug($"{GetType().Name} - Stop", "Auth controller stopped 4/4");
 
             return base.Stop();
+        }
+
+        public async Task<bool> SignIn()
+        {
+            return await _authentication.SignIn();
+        }
+
+        public async Task<bool> SignOut()
+        {
+            return await _authentication.SignOut();
+        }
+
+        public async Task<bool> IsAuthValid()
+        {
+            return await _authentication.IsValid();
+        }
+
+        public async Task<bool> Login(UserAuthData authData)
+        {
+            return await _authentication.Login(authData);
         }
 
         #endregion
