@@ -86,15 +86,13 @@ namespace ThermoMaster
 
                 var agent = new SyncCloudAgent(Host, AuthData, updateInterval, timeout);
 
-                var authentication = new Authentication(agent);
-
-                if (await authentication.Login(AuthData))
+                if (await agent.Login(AuthData))
                 {
-                    if (await authentication.IsValid())
+                    if (await agent.IsAuthValid())
                     {
                         MsgLogger.Print($"Sign in '{AuthData.Login}' ...");
 
-                        if (await authentication.SignIn())
+                        if (await agent.SignIn())
                         {
                             MsgLogger.Print($"'{AuthData.Login}' signed in successfully");
 
@@ -114,7 +112,7 @@ namespace ThermoMaster
 
                             MsgLogger.Print($"Sign out, login '{AuthData.Login}' ...");
 
-                            await authentication.SignOut();
+                            await agent.SignOut();
                         }
                         else
                         {
