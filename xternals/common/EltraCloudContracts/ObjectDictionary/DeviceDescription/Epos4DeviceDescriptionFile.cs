@@ -9,8 +9,6 @@ namespace EltraCloudContracts.ObjectDictionary.DeviceDescription
     {
         public Epos4DeviceDescriptionFile(EltraDevice device) : base(device)
         {
-            AddUrl("https://eltra.ddns.net/eltra/resources/fw/");
-            
             FileExtension = "xdd";
         }
 

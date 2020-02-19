@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Net.Http;
-using System.Net.Http.Headers;
 using System.Threading.Tasks;
 using System.Web;
 using EltraCloudContracts.Contracts.Devices;
@@ -19,7 +17,6 @@ namespace EltraCloudContracts.ObjectDictionary.DeviceDescription
     {
         #region Private fields
 
-        private List<string> _urls;
         private string _content;
 
         #endregion
@@ -28,7 +25,6 @@ namespace EltraCloudContracts.ObjectDictionary.DeviceDescription
 
         public DeviceDescriptionFile(EltraDevice device)
         {
-            Url = "http://localhost";
             FileExtension = "xdd";
 
             Device = device;
@@ -39,12 +35,6 @@ namespace EltraCloudContracts.ObjectDictionary.DeviceDescription
         #region Properties
 
         public string Url { get; set; }
-
-        public List<string> Urls
-        {
-            get => _urls ?? (_urls = new List<string>());
-            set => _urls = value;
-        }
 
         public string FileExtension { get; set; }
         
@@ -102,7 +92,7 @@ namespace EltraCloudContracts.ObjectDictionary.DeviceDescription
 
         #region Methods
 
-        public async Task<string> Get(string url)
+        private async Task<string> Get(string url)
         {
             string result = string.Empty;
             
@@ -125,11 +115,13 @@ namespace EltraCloudContracts.ObjectDictionary.DeviceDescription
                     }
                 }
             }
-            catch (HttpRequestException)
+            catch (HttpRequestException e)
             {
+                MsgLogger.Exception($"{GetType().Name} - Get", e.InnerException);
             }
-            catch (Exception)
+            catch (Exception e)
             {
+                MsgLogger.Exception($"{GetType().Name} - Get", e);
             }
             
             return result;
@@ -161,7 +153,7 @@ namespace EltraCloudContracts.ObjectDictionary.DeviceDescription
             }
             catch (Exception e)
             {
-                MsgLogger.Exception("DeviceDescriptionFile - Exists", e);
+                MsgLogger.Exception($"{GetType().Name} - Exists", e);
             }
 
             return result;
@@ -196,17 +188,12 @@ namespace EltraCloudContracts.ObjectDictionary.DeviceDescription
             }
             catch (Exception e)
             {
-                MsgLogger.Exception("DeviceDescriptionFile - Download", e);
+                MsgLogger.Exception($"{GetType().Name} - Download", e);
             }
 
             return result;
         }
-
-        public void AddUrl(string url)
-        {
-            Urls.Add(url);
-        }
-
+        
         public virtual async Task Read()
         {
             await DownloadFile();
@@ -214,11 +201,6 @@ namespace EltraCloudContracts.ObjectDictionary.DeviceDescription
             if(string.IsNullOrEmpty(Content))
             {
                 await ReadFileFromResources();
-            }
-
-            if (string.IsNullOrEmpty(Content))
-            {
-                await ReadFile();
             }
         }
 
@@ -274,71 +256,6 @@ namespace EltraCloudContracts.ObjectDictionary.DeviceDescription
             return result;
         }
 
-        private string DownloadContentAsync()
-        {
-            string result = string.Empty;
-
-            const double maxTimeoutInSec = 30;
-            var tasks = new List<Task>();
-
-            foreach (var url in Urls)
-            {
-                var task = Task.Run(async () =>
-                {
-                    try
-                    {
-                        using (HttpClient client = new HttpClient {Timeout = TimeSpan.FromSeconds(maxTimeoutInSec)})
-                        {
-                            client.DefaultRequestHeaders.Accept.Clear();
-
-                            client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("plain/text"));
-                            client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("text/html"));
-                            client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("plain/xdd"));
-
-                            client.DefaultRequestHeaders.Add("User-Agent",
-                                "Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/72.0.3626.121 Safari/537.36");
-                            var uri = GetDeviceDescriptionFileUri(url);
-
-                            var response = await client.GetAsync(uri);
-
-                            if (response.IsSuccessStatusCode)
-                            {
-                                string content = await response.Content.ReadAsStringAsync();
-                                
-                                if (!string.IsNullOrEmpty(content))
-                                {
-                                    Url = url;
-
-                                    Content = content;
-
-                                    OnDeviceDescriptionStateChanged(new DeviceDescriptionEventArgs
-                                        {DeviceDescription = this, State = DeviceDescriptionState.Read});
-                                }
-                            }
-                            else
-                            {
-                                OnDeviceDescriptionStateChanged(new DeviceDescriptionEventArgs { DeviceDescription = this, State = DeviceDescriptionState.Failed});
-                            }
-                        }
-                    }
-                    catch (HttpRequestException e)
-                    {
-                        OnDeviceDescriptionStateChanged(new DeviceDescriptionEventArgs { DeviceDescription = this, State = DeviceDescriptionState.Failed, Exception = e });
-                    }
-                    catch (Exception e)
-                    {
-                        OnDeviceDescriptionStateChanged(new DeviceDescriptionEventArgs { DeviceDescription = this, State = DeviceDescriptionState.Failed, Exception = e });
-                    }
-                });
-
-                tasks.Add(task);
-            }
-
-            Task.WaitAny(tasks.ToArray());
-
-            return result;
-        }
-
         private async Task ReadFileFromResources()
         {
             try
@@ -356,27 +273,6 @@ namespace EltraCloudContracts.ObjectDictionary.DeviceDescription
             }
         }
 
-        private async Task ReadFile()
-        {
-            try
-            {
-                Content = await GetContentFromResources();
-
-                if(string.IsNullOrEmpty(Content))
-                {
-                    Content = DownloadContentAsync();
-                }
-                else
-                {
-                    OnDeviceDescriptionStateChanged(new DeviceDescriptionEventArgs { DeviceDescription = this, State = DeviceDescriptionState.Read });
-                }
-            }
-            catch (Exception e)
-            {
-                OnDeviceDescriptionStateChanged(new DeviceDescriptionEventArgs { DeviceDescription = this, State = DeviceDescriptionState.Failed, Exception = e });
-            }
-        }
-        
         #endregion
     }
 }

@@ -10,9 +10,9 @@ namespace ThermoMaster.DeviceManager.Device.Thermostat.ObjectDictionary
 {
     public class ThermoDeviceDescription : DeviceDescriptionFile
     {
-        public ThermoDeviceDescription(EltraDevice device) : base(device)
-        {
-            AddUrl("https://eltra.ddns.net/eltra/resources/fw/");
+        public ThermoDeviceDescription(EltraDevice device) : 
+            base(device)
+        {   
         }
 
         public override async Task Read()
