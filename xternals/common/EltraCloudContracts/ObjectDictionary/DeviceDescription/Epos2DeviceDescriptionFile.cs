@@ -7,8 +7,7 @@ namespace EltraCloudContracts.ObjectDictionary.DeviceDescription
     class Epos2DeviceDescriptionFile : DeviceDescriptionFile
     {
         public Epos2DeviceDescriptionFile(EltraDevice device) : base(device)
-        {
-            FileExtension = "eds";
+        {   
         }
 
         protected override void ReadProductName()

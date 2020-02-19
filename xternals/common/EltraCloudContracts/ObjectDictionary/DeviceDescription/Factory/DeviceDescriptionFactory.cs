@@ -14,11 +14,10 @@ namespace EltraCloudContracts.ObjectDictionary.DeviceDescription.Factory
                     result = new Epos2DeviceDescriptionFile(device);
                     break;
                 case "EPOS4":
-                case "THERMO":
-                    result = new Epos4DeviceDescriptionFile(device);
+                    result = new XddDeviceDescriptionFile(device);
                     break;
                 default:
-                    result = new Epos4DeviceDescriptionFile(device);
+                    result = new XddDeviceDescriptionFile(device);
                     break;
             }
 

@@ -9,6 +9,7 @@ using ThermoMaster.DeviceManager.SensorConnection;
 using EltraCommon.Logger;
 using EltraCloudContracts.ObjectDictionary.DeviceDescription.Events;
 using ThermoMaster.Settings;
+using EltraCloudContracts.ObjectDictionary.DeviceDescription;
 
 namespace ThermoMaster.DeviceManager.Device
 {
@@ -59,20 +60,15 @@ namespace ThermoMaster.DeviceManager.Device
         protected virtual void OnCloudAgentChanged()
         {
             CreateCommunication();
-            CreateIdentification();
-            CreateVersion();
             CreateDeviceDescription();
         }
-
-        protected virtual void OnPinsChanged()
-        {
-        }
-
+        
         private void OnDeviceDescriptionStateChanged(object sender, DeviceDescriptionEventArgs e)
         {
             if(e.State == DeviceDescriptionState.Read)
             {                
                 CreateObjectDictionary();
+
                 CreateConnectionManager();
             }
         }
@@ -87,25 +83,16 @@ namespace ThermoMaster.DeviceManager.Device
 
             _sensorConnectionManager = new SensorConnectionManager(this, _cloudAgent) { Settings = Settings.Device };            
         }
-
-        private void CreateVersion()
-        {
-            Version = new DeviceVersion();
-
-            Version.SoftwareVersion = 0x0100;
-            Version.HardwareVersion = 0xA000;
-            
-            Version.ApplicationNumber = 0x0001;
-            Version.ApplicationVersion = 0x0001;
-        }
-
+        
         public override async void CreateDeviceDescription()
         {
-            DeviceDescription = new ThermoDeviceDescription(this);
+            DeviceDescription = new XddDeviceDescriptionFile(this);
 
-            DeviceDescription.StateChanged += OnDeviceDescriptionStateChanged;
+            DeviceDescription.SourceFile = Settings.Device.XddFile;
 
             DeviceDescription.Url = CloudAgent.Url;
+
+            DeviceDescription.StateChanged += OnDeviceDescriptionStateChanged;
 
             await DeviceDescription.Read();
         }
@@ -135,13 +122,6 @@ namespace ThermoMaster.DeviceManager.Device
         private void CreateCommunication()
         {
             Communication = new ThermoDeviceCommunication(this, Settings);
-        }
-
-        private void CreateIdentification()
-        {
-            Identification = new DeviceIdentification();
-
-            Identification.Name = "THERMOMETER";            
         }
 
         public override async void RunAsync()

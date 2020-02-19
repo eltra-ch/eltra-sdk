@@ -45,6 +45,8 @@ namespace ThermoMaster.Settings
             }
         }
 
+        public string XddFile => _configuration["Device:XddFile"];
+
         #endregion        
     }
 }

@@ -8,7 +8,6 @@ using EltraCloudContracts.Contracts.Results;
 using EltraCloudContracts.ObjectDictionary.DeviceDescription.Events;
 using EltraCommon.Helpers;
 using EltraCommon.Logger;
-using EltraResources;
 using Newtonsoft.Json;
 
 namespace EltraCloudContracts.ObjectDictionary.DeviceDescription
@@ -25,8 +24,6 @@ namespace EltraCloudContracts.ObjectDictionary.DeviceDescription
 
         public DeviceDescriptionFile(EltraDevice device)
         {
-            FileExtension = "xdd";
-
             Device = device;
         }
 
@@ -36,7 +33,7 @@ namespace EltraCloudContracts.ObjectDictionary.DeviceDescription
 
         public string Url { get; set; }
 
-        public string FileExtension { get; set; }
+        public string SourceFile { get; set; }
         
         public string Content 
         {
@@ -86,6 +83,11 @@ namespace EltraCloudContracts.ObjectDictionary.DeviceDescription
         private void OnContentChanged()
         {
             ReadProductName();
+            
+            if(!ReadDeviceVersion())
+            {
+                MsgLogger.WriteError($"{GetType().Name} - OnContentChanged", "read device version failed!");
+            }
         }
 
         #endregion
@@ -196,11 +198,16 @@ namespace EltraCloudContracts.ObjectDictionary.DeviceDescription
         
         public virtual async Task Read()
         {
-            await DownloadFile();
-
-            if(string.IsNullOrEmpty(Content))
+            if(File.Exists(SourceFile))
             {
-                await ReadFileFromResources();
+                if (string.IsNullOrEmpty(Content))
+                {
+                    ReadFile();
+                }
+            }
+            else
+            {
+                await DownloadFile();
             }
         }
 
@@ -223,54 +230,43 @@ namespace EltraCloudContracts.ObjectDictionary.DeviceDescription
         {
         }
 
-        private string GetDeviceDescriptionFileName()
+        protected virtual bool ReadDeviceVersion()
         {
-            var version = Device.Version;
-
-            var result =
-                $"{Device.Name}_{version.SoftwareVersion:X4}h_{version.HardwareVersion:X4}h_{version.ApplicationNumber:X4}h_{version.ApplicationVersion:X4}h.{FileExtension}";
-
-            return result;
+            return false;
         }
 
-        private string GetDeviceDescriptionFileUri(string url)
+        private bool ReadFile()
         {
-            if (!url.EndsWith("/"))
-            {
-                url += "/";
-            }
+            bool result = false;
 
-            var result = $"{url}{GetDeviceDescriptionFileName()}";
-
-            return result;
-        }
-
-        protected async Task<string> GetContentFromResources()
-        {
-            const string resourcePath = "devices.fw";
-            string fileName = GetDeviceDescriptionFileName();
-            var resource = new EltraResource();
-
-            var result = await resource.GetFileContent(resourcePath, fileName);
-
-            return result;
-        }
-
-        private async Task ReadFileFromResources()
-        {
             try
             {
-                Content = await GetContentFromResources();
-
-                if (!string.IsNullOrEmpty(Content))
+                if (File.Exists(SourceFile))
                 {
-                    OnDeviceDescriptionStateChanged(new DeviceDescriptionEventArgs { DeviceDescription = this, State = DeviceDescriptionState.Read });
+                    Content = File.ReadAllText(SourceFile);
+
+                    if (!string.IsNullOrEmpty(Content))
+                    {
+                        result = true;
+
+                        OnDeviceDescriptionStateChanged(new DeviceDescriptionEventArgs { DeviceDescription = this, State = DeviceDescriptionState.Read });
+                    }
+                }
+                else if(!string.IsNullOrEmpty(SourceFile))
+                {
+                    MsgLogger.WriteWarning($"{GetType().Name} - ReadFile", $"device description file '{SourceFile}'");
+                }
+                else
+                {
+                    MsgLogger.WriteWarning($"{GetType().Name} - ReadFile", $"device description file not spefified!");
                 }
             }
             catch (Exception e)
             {
                 OnDeviceDescriptionStateChanged(new DeviceDescriptionEventArgs { DeviceDescription = this, State = DeviceDescriptionState.Failed, Exception = e });
             }
+
+            return result;
         }
 
         #endregion

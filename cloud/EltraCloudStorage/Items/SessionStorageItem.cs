@@ -220,7 +220,6 @@ namespace EltraCloudStorage.Items
                             device.Name = deviceName;
                             device.SessionUuid = uuid;
 
-                            device.Identification.Name = deviceName;
                             device.Identification.SerialNumber = serialNumber;
 
                             device.Status = deviceStatus;
@@ -1282,7 +1281,6 @@ namespace EltraCloudStorage.Items
 
                             device.Name = deviceName;
 
-                            device.Identification.Name = deviceName;
                             device.Identification.SerialNumber = serialNumber;
 
                             device.Status = deviceStatus;

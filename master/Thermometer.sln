@@ -15,6 +15,10 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EltraResources", "..\xterna
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EltraConnector", "..\xternals\connect\EltraConnector\EltraConnector.csproj", "{5861D10B-3A58-4AB4-AA26-C07EC8CC30BC}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ThermoMaster", "ThermoMaster\ThermoMaster.csproj", "{862C9CA3-1072-4704-B32D-EDD33E637C83}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ThermoMasterConsole", "ThermoMasterConsole\ThermoMasterConsole.csproj", "{11AA1E8B-3D9F-473E-8EAF-22BBD8607398}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -45,6 +49,14 @@ Global
 		{5861D10B-3A58-4AB4-AA26-C07EC8CC30BC}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5861D10B-3A58-4AB4-AA26-C07EC8CC30BC}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5861D10B-3A58-4AB4-AA26-C07EC8CC30BC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{862C9CA3-1072-4704-B32D-EDD33E637C83}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{862C9CA3-1072-4704-B32D-EDD33E637C83}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{862C9CA3-1072-4704-B32D-EDD33E637C83}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{862C9CA3-1072-4704-B32D-EDD33E637C83}.Release|Any CPU.Build.0 = Release|Any CPU
+		{11AA1E8B-3D9F-473E-8EAF-22BBD8607398}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{11AA1E8B-3D9F-473E-8EAF-22BBD8607398}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{11AA1E8B-3D9F-473E-8EAF-22BBD8607398}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{11AA1E8B-3D9F-473E-8EAF-22BBD8607398}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
