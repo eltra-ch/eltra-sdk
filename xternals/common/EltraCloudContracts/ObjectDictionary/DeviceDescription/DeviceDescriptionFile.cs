@@ -71,6 +71,7 @@ namespace EltraCloudContracts.ObjectDictionary.DeviceDescription
         #region Events
 
         public event EventHandler<DeviceDescriptionEventArgs> StateChanged;
+
         #endregion
 
         #region Events handling
@@ -87,6 +88,11 @@ namespace EltraCloudContracts.ObjectDictionary.DeviceDescription
             if(!ReadDeviceVersion())
             {
                 MsgLogger.WriteError($"{GetType().Name} - OnContentChanged", "read device version failed!");
+            }
+
+            if (!ReadDeviceTools())
+            {
+                MsgLogger.WriteError($"{GetType().Name} - OnContentChanged", "read device tools failed!");
             }
         }
 
@@ -233,6 +239,11 @@ namespace EltraCloudContracts.ObjectDictionary.DeviceDescription
         protected virtual bool ReadDeviceVersion()
         {
             return false;
+        }
+
+        protected virtual bool ReadDeviceTools()
+        {
+            return true; //optional
         }
 
         private bool ReadFile()

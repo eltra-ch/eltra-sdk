@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using EltraCloudContracts.Contracts.Devices;
 using EltraCloudContracts.ObjectDictionary.Common.DeviceDescription;
 using EltraCloudContracts.ObjectDictionary.Common.DeviceDescription.Profiles.Application.Parameters;
+using EltraCommon.Logger;
 
 namespace EltraCloudContracts.ObjectDictionary.Common
 {
@@ -44,7 +45,7 @@ namespace EltraCloudContracts.ObjectDictionary.Common
 
         #region Methods
 
-        protected abstract void CreateDeviceDescription();
+        protected abstract bool CreateDeviceDescription();
         
         public virtual bool Open()
         {
@@ -52,16 +53,27 @@ namespace EltraCloudContracts.ObjectDictionary.Common
 
             try
             {
-                CreateDeviceDescription();
-
-                if (_xdd.Parse())
+                if(CreateDeviceDescription())
                 {
-                    SetParameters(_xdd.Parameters);
-                    result = true;
+                    if (_xdd.Parse())
+                    {
+                        SetParameters(_xdd.Parameters);
+                        result = true;
+                    }
+                    else
+                    {
+                        MsgLogger.WriteError($"{GetType().Name} - Open", "Parsing device description failed!");
+                    }
+                }
+                else
+                {
+                    MsgLogger.WriteError($"{GetType().Name} - Open", "Create device description failed!");
                 }
             }
-            catch (Exception)
+            catch (Exception e)
             {
+                MsgLogger.Exception($"{GetType().Name} - Open", e);
+
                 result = false;
             }
 

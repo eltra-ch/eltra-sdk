@@ -9,7 +9,7 @@ using EltraCloudContracts.ObjectDictionary.Epos4.DeviceDescription.Profiles.Devi
 
 namespace EltraCloudContracts.ObjectDictionary.Epos4
 {
-    public class Epos4ObjectDictionary : DeviceObjectDictionary
+    public class Epos4ObjectDictionary : XddDeviceObjectDictionary
     {   
         public Epos4ObjectDictionary(EltraDevice device) 
             : base(device)
@@ -17,13 +17,6 @@ namespace EltraCloudContracts.ObjectDictionary.Epos4
         }
 
         public List<DataRecorder> DataRecorders { get; set; }
-
-        protected override void CreateDeviceDescription()
-        {
-            var xdd = new Xdd(Device) { DataSource = Device.DeviceDescription.Content };
-
-            SetDeviceDescription(xdd);
-        }
 
         public override bool Open()
         {

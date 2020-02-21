@@ -160,6 +160,8 @@ namespace EltraCloudContracts.Contracts.Devices
 
         public bool AddTool(DeviceTool tool)
         {
+            tool.Device = this;
+
             bool result = ToolSet.AddTool(tool);
 
             return result;

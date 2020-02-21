@@ -1,7 +1,6 @@
 ﻿using EltraCloudContracts.Contracts.Devices;
 using EltraCloudContracts.ObjectDictionary.Common.DeviceDescription.Profiles.Application.Parameters;
 using EltraConnector.SyncAgent;
-using ThermoMaster.DeviceManager.Device.Thermostat.ObjectDictionary;
 using ThermoMaster.DeviceManager.ParameterConnection;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -10,6 +9,7 @@ using EltraCommon.Logger;
 using EltraCloudContracts.ObjectDictionary.DeviceDescription.Events;
 using ThermoMaster.Settings;
 using EltraCloudContracts.ObjectDictionary.DeviceDescription;
+using EltraCloudContracts.ObjectDictionary.Common;
 
 namespace ThermoMaster.DeviceManager.Device
 {
@@ -66,7 +66,9 @@ namespace ThermoMaster.DeviceManager.Device
         private void OnDeviceDescriptionStateChanged(object sender, DeviceDescriptionEventArgs e)
         {
             if(e.State == DeviceDescriptionState.Read)
-            {                
+            {
+                AddDeviceTools(e.DeviceDescription as XddDeviceDescriptionFile);
+
                 CreateObjectDictionary();
 
                 CreateConnectionManager();
@@ -76,6 +78,17 @@ namespace ThermoMaster.DeviceManager.Device
         #endregion
 
         #region Methods
+
+        private void AddDeviceTools(XddDeviceDescriptionFile xdd)
+        {
+            if (xdd != null)
+            {
+                foreach (var deviceTool in xdd.DeviceTools)
+                {
+                    AddTool(deviceTool);
+                }
+            }
+        }
 
         private void CreateConnectionManager()
         {
@@ -94,12 +107,12 @@ namespace ThermoMaster.DeviceManager.Device
 
             DeviceDescription.StateChanged += OnDeviceDescriptionStateChanged;
 
-            await DeviceDescription.Read();
+            await DeviceDescription.Read();            
         }
 
         public override bool CreateObjectDictionary()
         {
-            var objectDictionary = new ThermostatObjectDictionary(this);
+            var objectDictionary = new XddDeviceObjectDictionary(this);
 
             bool result = objectDictionary.Open();
 

@@ -50,6 +50,14 @@
 				</userLevelList>
 			</DeviceManager>
 			<DeviceHardware/>
+      <DeviceInteraction>
+        <DeviceTools>
+          <DeviceTool Uuid="D0CD9514-0796-4795-A730-6D936155DE76" Name="Overview" Status="Enabled"/>
+          <DeviceTool Uuid="6973CFB4-B798-4204-9C66-569CD0CB6BDA" Name="Control" Status="Enabled"/>
+          <DeviceTool Uuid="FBC7F717-5F88-449D-B13D-A6CB866863E9" Name="History" Status="Enabled"/>
+          <DeviceTool Uuid="14CB39F2-F2BE-46CC-AEB6-72201B2021A0" Name="Settings" Status="Enabled"/>
+        </DeviceTools>
+      </DeviceInteraction>
 			<ApplicationProcess>
 				<dataTypeList/>
 				<unitsList/>

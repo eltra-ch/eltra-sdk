@@ -2,18 +2,40 @@
 using System.Xml;
 using EltraCommon.Logger;
 using EltraCloudContracts.Contracts.Devices;
+using System.Collections.Generic;
+using EltraCloudContracts.Contracts.ToolSet;
 
 namespace EltraCloudContracts.ObjectDictionary.DeviceDescription
 {
     public class XddDeviceDescriptionFile : DeviceDescriptionFile
     {
+        #region Private fields
+
+        private List<DeviceTool> _deviceTools;
+
+        #endregion
+
+        #region Constructors
+
         public XddDeviceDescriptionFile(EltraDevice device) 
             : base(device)
         {            
         }
 
-        protected override void ReadProductName()
+        #endregion
+
+        #region Properties
+
+        public List<DeviceTool> DeviceTools { get => _deviceTools ?? (_deviceTools = new List<DeviceTool>()); }
+
+        #endregion
+
+        #region Methods
+
+        private XmlElement GetRootNode()
         {
+            XmlElement result = null;
+
             try
             {
                 if (!string.IsNullOrEmpty(Content))
@@ -22,11 +44,88 @@ namespace EltraCloudContracts.ObjectDictionary.DeviceDescription
 
                     doc.LoadXml(Content);
 
-                    var rootNode = doc.DocumentElement;
+                    result = doc.DocumentElement;
+                }
+            }
+            catch (Exception e)
+            {
+                MsgLogger.Exception($"{GetType().Name} - GetRootNode", e);
+            }
 
-                    var productNameNode = rootNode?.SelectSingleNode("Profile/ProfileBody/DeviceIdentity/productName");
+            return result;
+        }
 
-                    if (productNameNode != null) ProductName = productNameNode.InnerText;
+        protected override bool ReadDeviceTools()
+        {
+            bool result = true;
+
+            try
+            {
+                var rootNode = GetRootNode();
+
+                var toolsNode = rootNode?.SelectNodes("Profile/ProfileBody/DeviceInteraction/DeviceTools/DeviceTool");
+
+                if (toolsNode != null)
+                {
+                    foreach (XmlNode toolNode in toolsNode)
+                    {
+                        var deviceTool = new DeviceTool();
+
+                        var uuidAttribute = toolNode.Attributes["Uuid"];
+                        var nameAttribute = toolNode.Attributes["Name"];
+                        var statusAttribute = toolNode.Attributes["Status"];
+                        
+                        AddDeviceTool(deviceTool, uuidAttribute, nameAttribute, statusAttribute);
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                MsgLogger.Exception($"{GetType().Name} - ReadDeviceTools", e);
+                
+                result = false;
+            }
+
+            return result;
+        }
+
+        private void AddDeviceTool(DeviceTool deviceTool, XmlAttribute uuidAttribute, XmlAttribute nameAttribute, XmlAttribute statusAttribute)
+        {
+            if (uuidAttribute != null)
+            {
+                deviceTool.Uuid = uuidAttribute.InnerText;
+
+                if (nameAttribute != null)
+                {
+                    deviceTool.Name = nameAttribute.InnerText;
+
+                    if (statusAttribute != null)
+                    {
+                        var statusText = statusAttribute.InnerText.ToLower();
+
+                        switch (statusText)
+                        {
+                            case "enabled": deviceTool.Status = DeviceToolStatus.Enabled; break;
+                            case "disabled": deviceTool.Status = DeviceToolStatus.Disabled; break;
+                        }
+
+                        DeviceTools.Add(deviceTool);
+                    }
+                }
+            }
+        }
+
+        protected override void ReadProductName()
+        {
+            try
+            {
+                var rootNode = GetRootNode();
+
+                var productNameNode = rootNode?.SelectSingleNode("Profile/ProfileBody/DeviceIdentity/productName");
+
+                if (productNameNode != null)
+                {
+                    ProductName = productNameNode.InnerText;
                 }
             }
             catch (Exception e)
@@ -41,40 +140,33 @@ namespace EltraCloudContracts.ObjectDictionary.DeviceDescription
 
             try
             {
-                if (!string.IsNullOrEmpty(Content))
+                var rootNode = GetRootNode();
+
+                var versionNodes = rootNode?.SelectNodes("Profile/ProfileBody/DeviceIdentity/version");
+
+                if (versionNodes != null)
                 {
-                    var doc = new XmlDocument();
+                    var version = new DeviceVersion();
 
-                    doc.LoadXml(Content);
-
-                    var rootNode = doc.DocumentElement;
-
-                    var versionNodes = rootNode?.SelectNodes("Profile/ProfileBody/DeviceIdentity/version");
-
-                    if (versionNodes != null)
+                    foreach (XmlNode versionNode in versionNodes)
                     {
-                        var version = new DeviceVersion();
+                        var versionTypeAttribute = versionNode.Attributes["versionType"];
 
-                        foreach (XmlNode versionNode in versionNodes)
+                        if (versionTypeAttribute != null)
                         {
-                            var versionTypeAttribute = versionNode.Attributes["versionType"];
-
-                            if(versionTypeAttribute!=null)
+                            switch (versionTypeAttribute.InnerText)
                             {
-                                switch (versionTypeAttribute.InnerText)
-                                {
-                                    case "SW": version.SoftwareVersion = Convert.ToUInt16(versionNode.InnerText, 16); break;
-                                    case "HW": version.HardwareVersion = Convert.ToUInt16(versionNode.InnerText, 16); break;
-                                    case "APPNB": version.ApplicationNumber = Convert.ToUInt16(versionNode.InnerText, 16); break;
-                                    case "APPVER": version.ApplicationVersion = Convert.ToUInt16(versionNode.InnerText, 16); break;
-                                }
+                                case "SW": version.SoftwareVersion = Convert.ToUInt16(versionNode.InnerText, 16); break;
+                                case "HW": version.HardwareVersion = Convert.ToUInt16(versionNode.InnerText, 16); break;
+                                case "APPNB": version.ApplicationNumber = Convert.ToUInt16(versionNode.InnerText, 16); break;
+                                case "APPVER": version.ApplicationVersion = Convert.ToUInt16(versionNode.InnerText, 16); break;
                             }
                         }
+                    }
 
-                        Device.Version = version;
+                    Device.Version = version;
 
-                        result = true;
-                    }   
+                    result = true;
                 }
             }
             catch (Exception e)
@@ -84,5 +176,7 @@ namespace EltraCloudContracts.ObjectDictionary.DeviceDescription
 
             return result;
         }
+
+        #endregion
     }
 }

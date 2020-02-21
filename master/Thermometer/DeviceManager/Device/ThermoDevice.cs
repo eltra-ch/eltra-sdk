@@ -1,5 +1,4 @@
 ﻿using ThermoMaster.DeviceManager.Device.Thermostat.Commands;
-using ThermoMaster.DeviceManager.Device.Thermostat.Tools;
 using ThermoMaster.Settings;
 
 namespace ThermoMaster.DeviceManager.Device
@@ -12,7 +11,6 @@ namespace ThermoMaster.DeviceManager.Device
             : base("THERMO", settings)
         {
             CreateCommandSet();
-            CreateToolSet();
         }
 
         #endregion
@@ -31,12 +29,6 @@ namespace ThermoMaster.DeviceManager.Device
             AddCommand(new SetObjectCommand(this));
         }
         
-        private void CreateToolSet()
-        {
-            AddTool(new ThermoOverviewTool());
-            AddTool(new ThermoSettingsTool());
-        }
-
         #endregion
     }
 }

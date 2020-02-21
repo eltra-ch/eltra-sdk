@@ -50,6 +50,12 @@
 				</userLevelList>
 			</DeviceManager>
 			<DeviceHardware/>
+      <DeviceInteraction>
+        <DeviceTools>
+          <DeviceTool Uuid="C9CCCCF8-ADE4-4396-B65E-731D294910B0" Name="Thermometer Overview" Status="Enabled"/>
+          <DeviceTool Uuid="2CB6FB03-2428-4E2E-84EF-58A2633233AE" Name="Thermometer Settings" Status="Enabled"/>
+        </DeviceTools>
+      </DeviceInteraction>
 			<ApplicationProcess>
 				<dataTypeList/>
 				<unitsList/>
