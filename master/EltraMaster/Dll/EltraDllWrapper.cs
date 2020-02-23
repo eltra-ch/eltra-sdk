@@ -6,6 +6,7 @@ namespace EltraMaster.Dll.Wrapper
 {
 #pragma warning disable CA1401 // P/Invokes should not be visible
 #pragma warning disable CA2101 // Specify marshaling for P/Invoke string arguments
+#pragma warning disable IDE1006 // Naming Styles
 
     public class EltraDllWrapper
     {
@@ -19,6 +20,7 @@ namespace EltraMaster.Dll.Wrapper
         #region System
 
         [DllImport("libdl.so")]
+
         protected static extern IntPtr dlopen(string fileName, int flags);
 
         [DllImport("libdl.so")]
@@ -65,7 +67,7 @@ namespace EltraMaster.Dll.Wrapper
 
         protected static IntPtr GetProcAddress(IntPtr dllHandle, string funcName)
         {
-            IntPtr result = IntPtr.Zero;
+            IntPtr result;
 
             if (SystemHelper.IsLinux)
             {
@@ -75,7 +77,7 @@ namespace EltraMaster.Dll.Wrapper
             }
             else
             {
-                result = EltraMaster.Os.Windows.KernelDll.GetProcAddress(dllHandle, funcName);
+                result = Os.Windows.KernelDll.GetProcAddress(dllHandle, funcName);
             }
 
             return result;
@@ -102,5 +104,5 @@ namespace EltraMaster.Dll.Wrapper
 
 #pragma warning restore CA1401 // P/Invokes should not be visible
 #pragma warning restore CA2101 // Specify marshaling for P/Invoke string arguments
-
+#pragma warning restore IDE1006 // Naming Styles
 }

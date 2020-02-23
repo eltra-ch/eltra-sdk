@@ -5,6 +5,7 @@ using EltraMaster.Os.Interface;
 
 namespace EltraMaster.Os.Linux
 {
+#pragma warning disable IDE1006 // Naming Styles
     [SuppressMessage("StyleCop.CSharp.NamingRules", "SA1300:ElementMustBeginWithUpperCaseLetter", Justification = "Reviewed. Suppression is OK here.")]
     public class SystemHelper : ISystemHelper
     {
@@ -30,6 +31,7 @@ namespace EltraMaster.Os.Linux
         #region Methods
 
         [DllImport("libdl.so", CharSet = CharSet.Unicode)]
+
         private static extern IntPtr dlopen(string fileName, int flags);
 
         [DllImport("libdl.so")]
@@ -92,4 +94,5 @@ namespace EltraMaster.Os.Linux
 
         #endregion
     }
+#pragma warning restore IDE1006 // Naming Styles
 }

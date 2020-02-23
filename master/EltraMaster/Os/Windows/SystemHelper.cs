@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Reflection;
+using System.Runtime.InteropServices;
 using EltraCommon.Logger;
 using EltraMaster.Os.Interface;
 
@@ -12,11 +13,11 @@ namespace EltraMaster.Os.Windows
 
         public IntPtr GetDllInstance()
         {
-            string eposCmdFileName = "EposCmd.dll";
+            string eposCmdFileName = "EltraCmd.dll";
 
             if (Is64BitProcess())
             {
-                eposCmdFileName = "EposCmd64.dll";
+                eposCmdFileName = "EltraCmd64.dll";
             }
 
             Assembly asm = Assembly.GetEntryAssembly() ?? Assembly.GetExecutingAssembly();
@@ -76,11 +77,17 @@ namespace EltraMaster.Os.Windows
         public bool FreeLibrary(IntPtr dllHandle)
         {
             bool result;
+            
             do
             {
                 try
                 {
                     result = KernelDll.FreeLibrary(dllHandle);
+                }
+                catch(SEHException se)
+                {
+                    MsgLogger.Exception($"{GetType().Name} - FreeLibrary", se.InnerException);
+                    result = false;
                 }
                 catch(Exception e)
                 {
