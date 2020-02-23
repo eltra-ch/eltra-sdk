@@ -1,0 +1,13 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\xternals\common\EltraCloudContracts\EltraCloudContracts.csproj" />
+    <ProjectReference Include="..\..\xternals\common\EltraCommon\EltraCommon.csproj" />
+    <ProjectReference Include="..\..\xternals\connect\EltraConnector\EltraConnector.csproj" />
+  </ItemGroup>
+
+</Project>

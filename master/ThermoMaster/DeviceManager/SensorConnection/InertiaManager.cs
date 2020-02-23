@@ -12,7 +12,7 @@ namespace ThermoMaster.DeviceManager.SensorConnection
     {
         #region Private fields
 
-        private ThermoDeviceBase _device;
+        private ThermoDevice _device;
         private Task _temperatureInertiaTask;
         private Parameter _reactionInertiaParameter;
         private Parameter _relayState1Parameter;
@@ -26,7 +26,7 @@ namespace ThermoMaster.DeviceManager.SensorConnection
 
         #region Constructors
         
-        public InertiaManager(ThermoDeviceBase device)
+        public InertiaManager(ThermoDevice device)
         {
             _shouldRun = true;
             _device = device;

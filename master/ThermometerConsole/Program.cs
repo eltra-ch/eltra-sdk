@@ -28,7 +28,7 @@ namespace ThermoMasterConsole
             var host = settings.Host;
             var authData = settings.Auth.AuthData;
             var appName = AppDomain.CurrentDomain.FriendlyName;
-            var master = new Master(settings);
+            var master = new ThermometerMaster(settings);
 
             if (!string.IsNullOrEmpty(opts.Login))
             {
@@ -77,7 +77,7 @@ namespace ThermoMasterConsole
                     {
                         MsgLogger.WriteFlow($"host='{host}', user={authData.Login}, pwd='{authData.PlainPassword}', timeout = {settings.Timeout}");
 
-                        master.Start(host, authData, settings.UpdateInterval, settings.Timeout).Wait();
+                        master.Start(host, authData).Wait();
                     }
                     else
                     {

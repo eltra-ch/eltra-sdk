@@ -7,7 +7,7 @@ namespace ThermoMaster.DeviceManager.SensorConnection
 {
     class RelayTransition
     {
-        public static bool MakeTransition(ThermoDeviceBase device, Parameter parameter, ushort from, ushort to)
+        public static bool MakeTransition(ThermoDevice device, Parameter parameter, ushort from, ushort to)
         {
             bool result = false;
 

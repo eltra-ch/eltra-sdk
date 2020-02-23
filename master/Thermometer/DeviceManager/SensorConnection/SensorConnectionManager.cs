@@ -6,8 +6,8 @@ using System;
 using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
-using ThermoMaster.DeviceManager.Device;
 using ThermoMaster.Settings;
+using Thermometer.DeviceManager.Device;
 
 namespace ThermoMaster.DeviceManager.SensorConnection
 {
@@ -15,7 +15,7 @@ namespace ThermoMaster.DeviceManager.SensorConnection
     {
         #region Private fields
 
-        private readonly ThermoDeviceBase _device;
+        private readonly ThermoDevice _device;
         private readonly SyncCloudAgent _cloudAgent;
         private ThermoSensorsManager _dhtManager;
 
@@ -30,7 +30,7 @@ namespace ThermoMaster.DeviceManager.SensorConnection
 
         #region Constructors
 
-        public SensorConnectionManager(ThermoDeviceBase device, SyncCloudAgent cloudAgent)
+        public SensorConnectionManager(ThermoDevice device, SyncCloudAgent cloudAgent)
         {
             _device = device;
             _cloudAgent = cloudAgent;

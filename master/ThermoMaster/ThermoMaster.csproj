@@ -29,6 +29,7 @@
     <ProjectReference Include="..\..\xternals\Common\EltraCommon\EltraCommon.csproj" />
     <ProjectReference Include="..\..\xternals\Common\EltraResources\EltraResources.csproj" />
     <ProjectReference Include="..\..\xternals\Connect\EltraConnector\EltraConnector.csproj" />
+    <ProjectReference Include="..\EltraMaster\EltraMaster.csproj" />
   </ItemGroup>
   
 </Project>

@@ -1,10 +1,11 @@
 using EltraCommon.Logger;
+using EltraMaster.Dll.Wrapper;
 using System;
 using System.Runtime.InteropServices;
 
 namespace ThermoMaster.DeviceManager.Wrapper
 {
-    public class EltraDht22Wrapper : EltraWrapper
+    public class EltraDht22Wrapper : EltraDllWrapper
     {
         #region Private fields
 

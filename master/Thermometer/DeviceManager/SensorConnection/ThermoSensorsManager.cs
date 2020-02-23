@@ -5,9 +5,9 @@ using System;
 using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
-using ThermoMaster.DeviceManager.Device;
 using ThermoMaster.Settings;
 using ThermoMaster.DeviceManager.SensorConnection.DataSource;
+using Thermometer.DeviceManager.Device;
 
 namespace ThermoMaster.DeviceManager.SensorConnection
 {
@@ -18,14 +18,14 @@ namespace ThermoMaster.DeviceManager.SensorConnection
         private DeviceSettings _settings;
         private ThermoSensorsSample _internalSample;
         private ThermoSensorsSample _externalSample;
-        private readonly ThermoDeviceBase _device;
+        private readonly ThermoDevice _device;
         private Parameter _samplingTimeParameter;
 
         #endregion
 
         #region Constructor
 
-        public ThermoSensorsManager(ThermoDeviceBase device)
+        public ThermoSensorsManager(ThermoDevice device)
         {
             _device = device;
             _internalSample = new ThermoSensorsSample();
