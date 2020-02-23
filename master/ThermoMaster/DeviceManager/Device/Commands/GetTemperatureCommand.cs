@@ -1,5 +1,6 @@
 ﻿using System;
 using EltraCloudContracts.Contracts.CommandSets;
+using EltraCloudContracts.Contracts.Devices;
 
 namespace ThermoMaster.DeviceManager.Device.Commands
 {
@@ -9,7 +10,7 @@ namespace ThermoMaster.DeviceManager.Device.Commands
         {
         }
 
-        public GetTemperatureCommand(EltraCloudContracts.Contracts.Devices.EltraDevice device)
+        public GetTemperatureCommand(EltraDevice device)
             : base(device)
         {
             Name = "GetTemperature";

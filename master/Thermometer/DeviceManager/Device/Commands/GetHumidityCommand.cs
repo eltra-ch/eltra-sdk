@@ -1,5 +1,6 @@
 ﻿using System;
 using EltraCloudContracts.Contracts.CommandSets;
+using EltraCloudContracts.Contracts.Devices;
 
 namespace Thermometer.DeviceManager.Device.Commands
 {
@@ -9,7 +10,7 @@ namespace Thermometer.DeviceManager.Device.Commands
         {
         }
 
-        public GetHumidityCommand(EltraCloudContracts.Contracts.Devices.EltraDevice device)
+        public GetHumidityCommand(EltraDevice device)
             : base(device)
         {
             Name = "GetHumidity";

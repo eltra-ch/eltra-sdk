@@ -1,18 +1,19 @@
 ﻿using System;
 using EltraCloudContracts.Contracts.CommandSets;
+using EltraCloudContracts.Contracts.Devices;
 
-namespace ThermoMaster.DeviceManager.Device.Commands
+namespace EltraMaster.Device.Commands
 {
-    public class GetObjectCommand : DeviceCommand
+    public class SetObjectCommand : DeviceCommand
     {
-        public GetObjectCommand()
+        public SetObjectCommand()
         {
         }
 
-        public GetObjectCommand(EltraCloudContracts.Contracts.Devices.EltraDevice device)
+        public SetObjectCommand(EltraDevice device)
             : base(device)
         {
-            Name = "GetObject";
+            Name = "SetObject";
 
             //In
             AddParameter("Index", TypeCode.UInt16);
@@ -28,7 +29,7 @@ namespace ThermoMaster.DeviceManager.Device.Commands
 
         public override DeviceCommand Clone()
         {
-            Clone(out GetObjectCommand result);
+            Clone(out SetObjectCommand result);
 
             return result;
         }
@@ -36,34 +37,20 @@ namespace ThermoMaster.DeviceManager.Device.Commands
         public override bool Execute(string source)
         {
             bool result = false;
-            var eposDevice = Device as ThermoDevice;
-            var communication = eposDevice?.Communication;
+            var device = Device as MasterDevice;
+            var communication = device?.Communication;
             ushort index = 0;
             byte subIndex = 0;
             var data = new byte[] { };
 
             GetParameterValue("Index", ref index);
             GetParameterValue("SubIndex", ref subIndex);
-
-            GetParameterDataType("Data", out TypeCode typeCode);
-
-            if (typeCode != TypeCode.Object)
-            {
-                SetParameterDataType("Data", TypeCode.Object);
-            }
-
             GetParameterValue("Data", ref data);
 
             if (communication != null)
             {
-                var commandResult = communication.GetObject(index, subIndex, ref data);
+                var commandResult = communication.SetObject(index, subIndex, data);
 
-                if (typeCode != TypeCode.Object)
-                {
-                    SetParameterDataType("Data", typeCode);
-                }
-
-                SetParameterValue("Data", data);
                 SetParameterValue("ErrorCode", communication.LastErrorCode);
                 SetParameterValue("Result", commandResult);
 

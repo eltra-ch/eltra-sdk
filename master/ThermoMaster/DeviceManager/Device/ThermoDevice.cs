@@ -31,7 +31,7 @@ namespace ThermoMaster.DeviceManager.Device
 
             Identification.SerialNumber = _settings.Device.SerialNumber;
 
-            CreateCommandSet();
+            ExtendCommandSet();
         }
 
         #endregion
@@ -92,20 +92,14 @@ namespace ThermoMaster.DeviceManager.Device
             }
         }
 
-        private void CreateCommandSet()
+        private void ExtendCommandSet()
         {            
             //Object
             AddCommand(new GetChannelStateCommand(this));
             AddCommand(new SetChannelStateCommand(this));
 
             AddCommand(new GetTemperatureCommand(this));
-            AddCommand(new GetHumidityCommand(this));
-
-            AddCommand(new RegisterParameterUpdateCommand(this));
-            AddCommand(new UnregisterParameterUpdateCommand(this));
-
-            AddCommand(new GetObjectCommand(this));
-            AddCommand(new SetObjectCommand(this));
+            AddCommand(new GetHumidityCommand(this));            
         }
 
         protected override void OnInitialized()

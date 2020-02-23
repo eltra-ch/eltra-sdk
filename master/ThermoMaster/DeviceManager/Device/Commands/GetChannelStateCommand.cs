@@ -1,5 +1,6 @@
 ﻿using System;
 using EltraCloudContracts.Contracts.CommandSets;
+using EltraCloudContracts.Contracts.Devices;
 
 namespace ThermoMaster.DeviceManager.Device.Commands
 {
@@ -9,7 +10,7 @@ namespace ThermoMaster.DeviceManager.Device.Commands
         {
         }
 
-        public GetChannelStateCommand(EltraCloudContracts.Contracts.Devices.EltraDevice device)
+        public GetChannelStateCommand(EltraDevice device)
             : base(device)
         {
             Name = "GetChannelState";

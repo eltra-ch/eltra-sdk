@@ -5,6 +5,7 @@ using EltraCloudContracts.ObjectDictionary.DeviceDescription;
 using EltraCloudContracts.ObjectDictionary.DeviceDescription.Events;
 using EltraCommon.Logger;
 using EltraConnector.SyncAgent;
+using EltraMaster.Device.Commands;
 using EltraMaster.Device.ParameterConnection;
 using System;
 using System.Collections.Generic;
@@ -26,6 +27,8 @@ namespace EltraMaster.Device
         {
             Name = name;
             DeviceDescriptionFilePath = deviceDescriptionFilePath;
+
+            CreateCommandSet();
         }
 
         #endregion
@@ -90,6 +93,15 @@ namespace EltraMaster.Device
         #endregion
 
         #region Methods
+
+        private void CreateCommandSet()
+        {
+            AddCommand(new RegisterParameterUpdateCommand(this));
+            AddCommand(new UnregisterParameterUpdateCommand(this));
+
+            AddCommand(new GetObjectCommand(this));
+            AddCommand(new SetObjectCommand(this));
+        }
 
         public override async void CreateDeviceDescription()
         {

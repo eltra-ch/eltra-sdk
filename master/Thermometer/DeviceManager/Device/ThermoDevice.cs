@@ -24,7 +24,7 @@ namespace Thermometer.DeviceManager.Device
 
             Identification.SerialNumber = settings.Device.SerialNumber;
 
-            CreateCommandSet();
+            ExtendCommandSet();
         }
 
         #endregion
@@ -37,16 +37,10 @@ namespace Thermometer.DeviceManager.Device
 
         #region Methods
 
-        private void CreateCommandSet()
+        private void ExtendCommandSet()
         {
             AddCommand(new GetTemperatureCommand(this));
             AddCommand(new GetHumidityCommand(this));
-
-            AddCommand(new RegisterParameterUpdateCommand(this));
-            AddCommand(new UnregisterParameterUpdateCommand(this));
-
-            AddCommand(new GetObjectCommand(this));
-            AddCommand(new SetObjectCommand(this));
         }
 
         protected override void OnInitialized()

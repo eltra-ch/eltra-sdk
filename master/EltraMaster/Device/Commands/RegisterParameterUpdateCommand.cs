@@ -1,18 +1,16 @@
 ﻿using System;
 using EltraCloudContracts.Contracts.CommandSets;
 using EltraCloudContracts.Contracts.Parameters;
+using EltraCloudContracts.Contracts.Devices;
 
-namespace ThermoMaster.DeviceManager.Device.Commands
+namespace EltraMaster.Device.Commands
 {
-    public class UnregisterParameterUpdateCommand : DeviceCommand
+    public class RegisterParameterUpdateCommand : DeviceCommand
     {
-        public UnregisterParameterUpdateCommand()
-        { }
-
-        public UnregisterParameterUpdateCommand(EltraCloudContracts.Contracts.Devices.EltraDevice device)
+        public RegisterParameterUpdateCommand(EltraDevice device)
             : base(device)
         {
-            Name = "UnregisterParameterUpdate";
+            Name = "RegisterParameterUpdate";
 
             //In
             AddParameter("Index", TypeCode.UInt16);
@@ -25,7 +23,7 @@ namespace ThermoMaster.DeviceManager.Device.Commands
 
         public override DeviceCommand Clone()
         {
-            Clone(out UnregisterParameterUpdateCommand result);
+            Clone(out RegisterParameterUpdateCommand result);
 
             return result;
         }
@@ -33,8 +31,8 @@ namespace ThermoMaster.DeviceManager.Device.Commands
         public override bool Execute(string source)
         {
             bool result = false;
-            var relayDevice = Device as ThermoDevice;
-            var communication = relayDevice?.Communication;
+            var device = Device as MasterDevice;
+            var communication = device?.Communication;
             ushort index = 0;
             byte subIndex = 0;
             int priority = 0;
@@ -45,13 +43,13 @@ namespace ThermoMaster.DeviceManager.Device.Commands
 
             if (communication != null)
             {
-                var manager = relayDevice.ParameterConnectionManager;
+                var manager = device.ParameterConnectionManager;
 
                 bool commandResult = false;
 
                 if (manager != null)
                 {
-                    commandResult = manager.UnregisterParameter(source, index, subIndex, (ParameterUpdatePriority)priority);
+                    commandResult = manager.RegisterParameter(source, index, subIndex, (ParameterUpdatePriority)priority);
                 }
 
                 SetParameterValue("Result", commandResult);
