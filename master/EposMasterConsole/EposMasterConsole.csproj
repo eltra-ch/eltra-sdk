@@ -1,0 +1,42 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+   
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>netcoreapp2.2</TargetFramework>
+	<LangVersion>7.1</LangVersion>
+	<Company>eltra.ch</Company>
+	<Authors>eltra.ch mobile solutions</Authors>
+	<Product>Epos Master Console</Product>
+  </PropertyGroup>
+   
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+   
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+
+  <ItemGroup>
+      <PackageReference Include="Microsoft.Extensions.Configuration" Version="2.2.0" />
+      <PackageReference Include="Microsoft.Extensions.Configuration.FileExtensions" Version="2.2.0" />
+      <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="2.2.0" />
+      <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
+   </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\EposMaster\EposMaster.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="appsettings.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+    <Exec Command="copy $(ProjectDir)..\..\xternals\Maxon\lib\windows\intel\x86_64\EposCmd64.dll $(TargetDir)&#xD;&#xA;if not exist $(ProjectDir)..\Assemblies (md $(ProjectDir)..\Assemblies)&#xD;&#xA;xcopy $(TargetPath) $(ProjectDir)..\Assemblies /Y" Condition=" '$(OS)' == 'Windows_NT' " />
+    <Exec Command="mkdir -p $(ProjectDir)../Assemblies;/bin/cp -f $(TargetPath) $(ProjectDir)../Assemblies" Condition=" '$(OS)' == 'Unix' " />
+  </Target>
+   
+</Project>

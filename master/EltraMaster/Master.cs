@@ -68,11 +68,11 @@ namespace EltraMaster
 
         #region Methods
 
-        public async Task Start(string host, UserAuthData authData, MasterDevice device, uint updateInterval, uint timeout)
+        public async Task Start(string host, UserAuthData authData, MasterDeviceManager deviceManager, uint updateInterval, uint timeout)
         {
             Host = host;
             AuthData = authData;
-            
+
             try
             {
                 var agent = new SyncCloudAgent(Host, AuthData, updateInterval, timeout);
@@ -87,18 +87,17 @@ namespace EltraMaster
                         {
                             MsgLogger.Print($"'{AuthData.Login}' signed in successfully");
 
-                            using (var deviceManager = new MasterDeviceManager(agent, device))
+                            deviceManager.CloudAgent = agent;
+
+                            MsgLogger.Print("scan devices...");
+
+                            await deviceManager.Run();
+
+                            Status = MasterStatus.Started;
+
+                            while (!_cancellationTokenSource.IsCancellationRequested)
                             {
-                                MsgLogger.Print("scan devices...");
-
-                                await deviceManager.Run();
-                                
-                                Status = MasterStatus.Started;
-
-                                while (!_cancellationTokenSource.IsCancellationRequested)
-                                {
-                                    await Task.Delay(100);
-                                }                                
+                                await Task.Delay(100);
                             }
 
                             MsgLogger.Print($"Sign out, login '{AuthData.Login}' ...");
@@ -115,8 +114,7 @@ namespace EltraMaster
                         MsgLogger.WriteError($"{GetType().Name} - Start", "Authentication failed, wrong password!");
                     }
                 }
-
-
+                
                 MsgLogger.Print("Disconnect ...");
 
                 agent.Stop();

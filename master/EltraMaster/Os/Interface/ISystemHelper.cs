@@ -2,7 +2,7 @@
 
 namespace EltraMaster.Os.Interface
 {
-    internal interface ISystemHelper
+    public interface ISystemHelper
     {
         IntPtr GetDllInstance();
 

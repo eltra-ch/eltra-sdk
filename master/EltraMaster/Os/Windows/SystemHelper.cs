@@ -7,7 +7,7 @@ using EltraMaster.Os.Interface;
 
 namespace EltraMaster.Os.Windows
 {
-    internal class SystemHelper : ISystemHelper
+    public class SystemHelper : ISystemHelper
     {
         #region Methods
 

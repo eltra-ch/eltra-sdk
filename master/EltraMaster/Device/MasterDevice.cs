@@ -69,8 +69,11 @@ namespace EltraMaster.Device
 
         protected virtual void OnCloudAgentChanged()
         {
-            CreateCommunication();
-            CreateDeviceDescription();
+            if (CloudAgent != null)
+            {
+                CreateCommunication();
+                CreateDeviceDescription();
+            }
         }
 
         protected virtual void CreateCommunication()

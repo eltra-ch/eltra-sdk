@@ -2,6 +2,7 @@
 using EltraCommon.Logger;
 using EltraConnector.SyncAgent;
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace EltraMaster.Device
@@ -10,28 +11,66 @@ namespace EltraMaster.Device
     {
         #region Private fields
 
-        private readonly SyncCloudAgent _cloudAgent;
-        private readonly MasterDevice _device;
+        private List<MasterDevice> _deviceList;
+        private SyncCloudAgent _cloudAgent;
 
         #endregion
 
         #region Constructors
 
-        public MasterDeviceManager(SyncCloudAgent cloudAgent, MasterDevice device)
+        public MasterDeviceManager()
         {
-            _device = device;
-            
-            _cloudAgent = cloudAgent;
+        }
 
-            if (_device != null)
+        public MasterDeviceManager(SyncCloudAgent cloudAgent)
+        {
+            CloudAgent = cloudAgent;
+        }
+
+        #endregion
+
+        #region Properties
+
+        public SyncCloudAgent CloudAgent
+        {
+            get => _cloudAgent;
+            set
             {
-                _device.CloudAgent = cloudAgent;
+                _cloudAgent = value;
+
+                OnCloudAgentChanged();
             }
+        }
+
+        protected List<MasterDevice> DeviceList
+        {
+            get => _deviceList ?? (_deviceList = new List<MasterDevice>());
         }
 
         #endregion
 
         #region Methods
+
+        protected virtual void OnCloudAgentChanged()
+        {
+            foreach(var device in DeviceList)
+            {
+                device.CloudAgent = CloudAgent;
+            }
+        }
+
+        public void AddDevice(MasterDevice device)
+        {
+            if (device != null)
+            {
+                if (CloudAgent != null)
+                {
+                    device.CloudAgent = CloudAgent;
+                }
+
+                DeviceList.Add(device);
+            }
+        }
 
         protected virtual async void Dispose(bool finalize)
         {
@@ -48,26 +87,29 @@ namespace EltraMaster.Device
             GC.SuppressFinalize(this);
         }
 
-        public async Task Stop()
+        public virtual async Task Stop()
         {
-            _device.Disconnect();
+            foreach(var device in DeviceList)
+            {
+                device.Disconnect();
 
-            MsgLogger.WriteLine($"Disconnected: device = {_device.Name} - Unregister");
+                MsgLogger.WriteLine($"Disconnected: device = {device.Name} - Unregister");
 
-            await _cloudAgent.UnregisterDevice(_device);
+                await CloudAgent.UnregisterDevice(device);
 
-            _device.Status = DeviceStatus.Unregistered;
+                device.Status = DeviceStatus.Unregistered;
+            }
         }
 
         public async Task Run()
         {
-            if (_device != null)
+            foreach (var device in DeviceList)
             {
-                MsgLogger.WriteLine($"Connected: device='{_device.Name}', serial number=0x{_device.Identification.SerialNumber:X}");
+                MsgLogger.WriteLine($"Connected: device='{device.Name}', serial number=0x{device.Identification.SerialNumber:X}");
 
-                _device.Status = DeviceStatus.Ready;
+                device.Status = DeviceStatus.Ready;
 
-                await _cloudAgent.RegisterDevice(_device);
+                await CloudAgent.RegisterDevice(device);
             }
         }
 

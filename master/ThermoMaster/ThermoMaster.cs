@@ -1,6 +1,7 @@
 ﻿using EltraCloudContracts.Contracts.Users;
 using EltraMaster;
 using System.Threading.Tasks;
+using ThermoMaster.DeviceManager;
 using ThermoMaster.DeviceManager.Device;
 using ThermoMaster.DeviceManager.Wrapper;
 using ThermoMaster.Settings;
@@ -27,7 +28,7 @@ namespace ThermoMaster
             EltraRelayWrapper.Initialize();
             EltraSds011Wrapper.Initialize();
 
-            await Start(host, authData, new ThermoDevice(_settings), _settings.UpdateInterval, _settings.Timeout);
+            await Start(host, authData, new ThermoDeviceManager(_settings), _settings.UpdateInterval, _settings.Timeout);
 
             EltraBmp180Wrapper.Release();
             EltraRelayWrapper.Release();

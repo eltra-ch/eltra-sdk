@@ -3,6 +3,7 @@ using ThermoMaster.Settings;
 using System.Threading.Tasks;
 using Thermometer.DeviceManager.Device;
 using EltraMaster;
+using Thermometer.DeviceManager;
 
 namespace ThermoMaster
 {
@@ -27,7 +28,7 @@ namespace ThermoMaster
 
         public async Task Start(string host, UserAuthData authData)
         {
-            await Start(host, authData, new ThermoDevice(_settings), _settings.UpdateInterval, _settings.Timeout);
+            await Start(host, authData, new ThermoDeviceManager(_settings), _settings.UpdateInterval, _settings.Timeout);
         }
 
         #endregion
