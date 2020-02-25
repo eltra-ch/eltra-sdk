@@ -80,7 +80,7 @@ namespace EltraCloudContracts.ObjectDictionary.Common.DeviceDescription.Profiles
                         }
                         /*else if (childNode.Name == "label")
                         {
-                            var label = new Epos4Label(childNode);
+                            var label = new XddLabel(childNode);
 
                             if (label.Parse())
                             {

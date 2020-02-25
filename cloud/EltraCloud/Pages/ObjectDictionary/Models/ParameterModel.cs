@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Text;
 using EltraCloudContracts.ObjectDictionary.Common.DeviceDescription.Profiles.Application.Parameters;
-using EltraCloudContracts.ObjectDictionary.Epos4.DeviceDescription.Profiles.Application.Parameters;
+using EltraCloudContracts.ObjectDictionary.Xdd.DeviceDescription.Profiles.Application.Parameters;
 using Microsoft.AspNetCore.Mvc;
 
 #pragma warning disable CS1591
@@ -79,7 +79,7 @@ namespace EltraCloud.Pages.ObjectDictionary.Models
 
         private void UpdateUnit()
         {
-            if (_parameter is Epos4Parameter epos4Parameter)
+            if (_parameter is XddParameter epos4Parameter)
             {
                 Unit = epos4Parameter.Unit.Label;
             }
@@ -100,7 +100,7 @@ namespace EltraCloud.Pages.ObjectDictionary.Models
 
         private void UpdateVisibility()
         {
-            if (_parameter is Epos4Parameter epos4Parameter)
+            if (_parameter is XddParameter epos4Parameter)
             {
                 IsVisible = (epos4Parameter.VisibleBy("operator") || 
                              epos4Parameter.VisibleBy("engineer") || 
@@ -112,7 +112,7 @@ namespace EltraCloud.Pages.ObjectDictionary.Models
 
                 foreach (var subParameter in _parameter.Parameters)
                 {
-                    if (subParameter is Epos4Parameter epos4SubParameter)
+                    if (subParameter is XddParameter epos4SubParameter)
                     {
                         bool isVisible = (epos4SubParameter.VisibleBy("operator") ||
                                           epos4SubParameter.VisibleBy("engineer") ||
@@ -135,7 +135,7 @@ namespace EltraCloud.Pages.ObjectDictionary.Models
 
         public void UpdateValue(Parameter parameter)
         {
-            if (parameter is Epos4Parameter parameterEntry)
+            if (parameter is XddParameter parameterEntry)
             {
                 var actualValue = parameterEntry.ActualValue;
 
@@ -165,7 +165,7 @@ namespace EltraCloud.Pages.ObjectDictionary.Models
             var byteValues = Convert.FromBase64String(actualValue.Value);
             var byteValue = 0;
 
-            if (_parameter is Epos4Parameter epos4Parameter)
+            if (_parameter is XddParameter epos4Parameter)
             {
                 var multiplier = epos4Parameter.Unit.Multiplier;
                 var decimalPlaces = epos4Parameter.Unit.DecimalPlaces;
@@ -198,7 +198,7 @@ namespace EltraCloud.Pages.ObjectDictionary.Models
             var sbyteValues = Convert.FromBase64String(actualValue.Value);
             var sbyteValue = 0;
 
-            if (_parameter is Epos4Parameter epos4Parameter)
+            if (_parameter is XddParameter epos4Parameter)
             {
                 var multiplier = epos4Parameter.Unit.Multiplier;
                 var decimalPlaces = epos4Parameter.Unit.DecimalPlaces;
@@ -230,7 +230,7 @@ namespace EltraCloud.Pages.ObjectDictionary.Models
             string result = string.Empty;
             var int16Value = BitConverter.ToInt16(Convert.FromBase64String(actualValue.Value));
 
-            if (_parameter is Epos4Parameter epos4Parameter)
+            if (_parameter is XddParameter epos4Parameter)
             {
                 var multiplier = epos4Parameter.Unit.Multiplier;
                 var decimalPlaces = epos4Parameter.Unit.DecimalPlaces;
@@ -257,7 +257,7 @@ namespace EltraCloud.Pages.ObjectDictionary.Models
             string result = string.Empty;
             var int32Value = BitConverter.ToInt32(Convert.FromBase64String(actualValue.Value));
 
-            if (_parameter is Epos4Parameter epos4Parameter)
+            if (_parameter is XddParameter epos4Parameter)
             {
                 var multiplier = epos4Parameter.Unit.Multiplier;
                 var decimalPlaces = epos4Parameter.Unit.DecimalPlaces;
@@ -284,7 +284,7 @@ namespace EltraCloud.Pages.ObjectDictionary.Models
             string result = string.Empty;
             var int64Value = BitConverter.ToInt32(Convert.FromBase64String(actualValue.Value));
 
-            if (_parameter is Epos4Parameter epos4Parameter)
+            if (_parameter is XddParameter epos4Parameter)
             {
                 var multiplier = epos4Parameter.Unit.Multiplier;
                 var decimalPlaces = epos4Parameter.Unit.DecimalPlaces;
@@ -311,7 +311,7 @@ namespace EltraCloud.Pages.ObjectDictionary.Models
             string result = string.Empty;
             var uint16Value = BitConverter.ToUInt16(Convert.FromBase64String(actualValue.Value));
 
-            if (_parameter is Epos4Parameter epos4Parameter)
+            if (_parameter is XddParameter epos4Parameter)
             {
                 var multiplier = epos4Parameter.Unit.Multiplier;
                 var decimalPlaces = epos4Parameter.Unit.DecimalPlaces;
@@ -338,7 +338,7 @@ namespace EltraCloud.Pages.ObjectDictionary.Models
             string result = string.Empty;
             var uint32Value = BitConverter.ToUInt32(Convert.FromBase64String(actualValue.Value));
 
-            if (_parameter is Epos4Parameter epos4Parameter)
+            if (_parameter is XddParameter epos4Parameter)
             {
                 var multiplier = epos4Parameter.Unit.Multiplier;
                 var decimalPlaces = epos4Parameter.Unit.DecimalPlaces;
@@ -365,7 +365,7 @@ namespace EltraCloud.Pages.ObjectDictionary.Models
             string result = string.Empty;
             var uint64Value = BitConverter.ToUInt32(Convert.FromBase64String(actualValue.Value));
 
-            if (_parameter is Epos4Parameter epos4Parameter)
+            if (_parameter is XddParameter epos4Parameter)
             {
                 var multiplier = epos4Parameter.Unit.Multiplier;
                 var decimalPlaces = epos4Parameter.Unit.DecimalPlaces;
@@ -396,7 +396,7 @@ namespace EltraCloud.Pages.ObjectDictionary.Models
         {
             string result = string.Empty;
 
-            if (_parameter is Epos4Parameter epos4Parameter)
+            if (_parameter is XddParameter epos4Parameter)
             {
                 switch (epos4Parameter.DataType.SizeInBytes)
                 {
@@ -435,7 +435,7 @@ namespace EltraCloud.Pages.ObjectDictionary.Models
         {
             TypeCode result = TypeCode.Empty;
 
-            if (_parameter is Epos4Parameter epos4Parameter)
+            if (_parameter is XddParameter epos4Parameter)
             {
                 result = epos4Parameter.DataType.Type;
             }

@@ -1,4 +1,4 @@
-﻿using EltraCloudContracts.ObjectDictionary.Epos4.DeviceDescription.Profiles.Application.Parameters;
+﻿using EltraCloudContracts.ObjectDictionary.Xdd.DeviceDescription.Profiles.Application.Parameters;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -9,7 +9,7 @@ namespace EltraNavigo.Controls.Parameters
         #region Private fields
 
         private readonly string _uniqueId;
-        private Epos4Parameter _parameter;
+        private XddParameter _parameter;
         private string _label;
         private List<string> _textRange;
         private List<long> _intRange;
@@ -68,7 +68,7 @@ namespace EltraNavigo.Controls.Parameters
         {
             if (Vcs != null)
             {
-                if (Vcs.SearchParameter(_uniqueId) is Epos4Parameter parameter)
+                if (Vcs.SearchParameter(_uniqueId) is XddParameter parameter)
                 {
                     _parameter = parameter;
 

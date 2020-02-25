@@ -120,7 +120,7 @@
     <Folder Include="Resources\drawable\" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\Xternals\Common\EltraCommon\EltraCommon.csproj">
+    <ProjectReference Include="..\..\..\Xternals\Common\EltraCommon\EltraCommon.csproj">
       <Project>{D5CB1686-F4F6-470A-89C7-71941A3924F9}</Project>
       <Name>EltraCommon</Name>
     </ProjectReference>

@@ -6,9 +6,9 @@ using EltraCloudContracts.Contracts.Devices;
 using EltraCloudContracts.ObjectDictionary.Common.DeviceDescription.Profiles.Application.DataTypes;
 using EltraCloudContracts.ObjectDictionary.Common.DeviceDescription.Profiles.Application.Parameters.Events;
 using EltraCloudContracts.ObjectDictionary.Common.DeviceDescription.Profiles.Application.Templates;
-using EltraCloudContracts.ObjectDictionary.Epos4.DeviceDescription.Profiles.Application.DataTypes;
+using EltraCloudContracts.ObjectDictionary.Xdd.DeviceDescription.Profiles.Application.DataTypes;
 using System.Collections.Generic;
-using EltraCloudContracts.ObjectDictionary.Epos4.DeviceDescription.Profiles.Application.Parameters;
+using EltraCloudContracts.ObjectDictionary.Xdd.DeviceDescription.Profiles.Application.Parameters;
 using System.Xml;
 using EltraCloudContracts.ObjectDictionary.Common.DeviceDescription.Profiles.Application.Units;
 
@@ -21,7 +21,7 @@ namespace EltraCloudContracts.ObjectDictionary.Common.DeviceDescription.Profiles
 
         private ParameterValue _defaultValue;
         private ParameterValue _actualValue;
-        private List<AllowedValues> _allowedValues;
+        private List<XddAllowedValues> _allowedValues;
 
         #endregion
 
@@ -74,7 +74,7 @@ namespace EltraCloudContracts.ObjectDictionary.Common.DeviceDescription.Profiles
 
         public string DateTimeFormat { get; set; }
 
-        public List<AllowedValues> AllowedValues => _allowedValues ?? (_allowedValues = new List<AllowedValues>());
+        public List<XddAllowedValues> AllowedValues => _allowedValues ?? (_allowedValues = new List<XddAllowedValues>());
 
         public Unit Unit { get; set; }
         
@@ -422,7 +422,7 @@ namespace EltraCloudContracts.ObjectDictionary.Common.DeviceDescription.Profiles
 
             if (DataType.Reference != null)
             {
-                if (DataType.Reference is Epos4EnumDataTypeReference enumReference)
+                if (DataType.Reference is XddEnumDataTypeReference enumReference)
                 {
                     if (enumReference.GetValueLabel(value, out var label))
                     {
@@ -820,7 +820,7 @@ namespace EltraCloudContracts.ObjectDictionary.Common.DeviceDescription.Profiles
 
             try
             {
-                if (DataType.Reference is Epos4StructDataType structDataType)
+                if (DataType.Reference is XddStructDataType structDataType)
                 {
                     result = structDataType.GetStructVariableValue(variableId, ActualValue, out value);
                 }

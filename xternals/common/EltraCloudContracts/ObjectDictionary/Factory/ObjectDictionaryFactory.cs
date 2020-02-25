@@ -1,6 +1,8 @@
 ﻿using EltraCloudContracts.Contracts.Devices;
 using EltraCloudContracts.ObjectDictionary.Common;
 using EltraCloudContracts.ObjectDictionary.Epos4;
+using EltraCloudContracts.ObjectDictionary.Xdd;
+using System;
 
 namespace EltraCloudContracts.ObjectDictionary.Factory
 {
@@ -10,19 +12,20 @@ namespace EltraCloudContracts.ObjectDictionary.Factory
         {
             DeviceObjectDictionary result = null;
 
-            if (device.Name != "EPOS2")
+            if (device.Name == "EPOS2")
             {
-                result = CreateEpos4ObjectDictionary(device);
+                throw new NotImplementedException();
+            }
+            else if (device.Name == "EPOS4")
+            {
+                result = new Epos4ObjectDictionary(device);
+            }
+            else
+            {
+                result = new XddObjectDictionary(device);
             }
 
             return result;
-        }
-        
-        private static DeviceObjectDictionary CreateEpos4ObjectDictionary(EltraDevice device)
-        {
-            var obd = new Epos4ObjectDictionary(device);
-
-            return obd;
-        }
+        }        
     }
 }

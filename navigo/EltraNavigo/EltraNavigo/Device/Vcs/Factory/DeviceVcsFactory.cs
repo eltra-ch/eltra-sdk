@@ -9,7 +9,7 @@ namespace EltraNavigo.Device.Vcs.Factory
         {
             DeviceVcs vcs = null;
 
-            switch (device.Identification.Name)
+            switch (device.Name)
             {
                 case "EPOS4":
                 {

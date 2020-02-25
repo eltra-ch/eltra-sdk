@@ -1,7 +1,7 @@
 ﻿using System.Threading.Tasks;
 using EltraCloudContracts.ObjectDictionary.Common.DeviceDescription.Profiles.Application.Parameters;
 using EltraCloudContracts.ObjectDictionary.Common.DeviceDescription.Profiles.Application.Parameters.Events;
-using EltraCloudContracts.ObjectDictionary.Epos4.DeviceDescription.Profiles.Application.Parameters;
+using EltraCloudContracts.ObjectDictionary.Xdd.DeviceDescription.Profiles.Application.Parameters;
 
 namespace EltraNavigo.Controls.Parameters
 {
@@ -80,7 +80,7 @@ namespace EltraNavigo.Controls.Parameters
                         Value = valueAsText;
                         Label = _parameter.Label;
 
-                        if (parameter is Epos4Parameter epos4Parameter)
+                        if (parameter is XddParameter epos4Parameter)
                         {
                             Unit = epos4Parameter.Unit.Label;
                         }
@@ -156,7 +156,7 @@ namespace EltraNavigo.Controls.Parameters
                         Value = valueAsText;
                         Label = _parameter.Label;
 
-                        if (_parameter is Epos4Parameter epos4Parameter)
+                        if (_parameter is XddParameter epos4Parameter)
                         {
                             Unit = epos4Parameter.Unit.Label;
                         }

@@ -2,8 +2,8 @@
 using System.Xml;
 using EltraCloudContracts.ObjectDictionary.Common.DeviceDescription.Common;
 using EltraCloudContracts.ObjectDictionary.Common.DeviceDescription.Profiles.Application.Parameters;
-using EltraCloudContracts.ObjectDictionary.Epos4.DeviceDescription.Common;
-using EltraCloudContracts.ObjectDictionary.Epos4.DeviceDescription.Profiles.Application.Parameters;
+using EltraCloudContracts.ObjectDictionary.Xdd.DeviceDescription.Common;
+using EltraCloudContracts.ObjectDictionary.Xdd.DeviceDescription.Profiles.Application.Parameters;
 
 namespace EltraCloudContracts.ObjectDictionary.Epos4.DeviceDescription.Profiles.Device.DataRecorder.Channels
 {
@@ -19,7 +19,7 @@ namespace EltraCloudContracts.ObjectDictionary.Epos4.DeviceDescription.Profiles.
 
         public string UniqueId { get; set; }
         public List<Label> Labels => _labels ?? (_labels = new List<Label>());
-        public Epos4ParamIdRef ParamIdRef { get; set; }
+        public XddParamIdRef ParamIdRef { get; set; }
         public ChannelBuffer ChannelBuffer { get; set; }
         public Parameter Parameter { get; set; }
         
@@ -37,7 +37,7 @@ namespace EltraCloudContracts.ObjectDictionary.Epos4.DeviceDescription.Profiles.
             {
                 if (childNode.Name == "label")
                 {
-                    var label = new Epos4Label(childNode);
+                    var label = new XddLabel(childNode);
 
                     if (!label.Parse())
                     {
@@ -49,7 +49,7 @@ namespace EltraCloudContracts.ObjectDictionary.Epos4.DeviceDescription.Profiles.
                 }
                 else if (childNode.Name == "paramIDRef")
                 {
-                    var paramIdRef = new Epos4ParamIdRef();
+                    var paramIdRef = new XddParamIdRef();
 
                     if (!paramIdRef.Parse(childNode))
                     {
@@ -76,7 +76,7 @@ namespace EltraCloudContracts.ObjectDictionary.Epos4.DeviceDescription.Profiles.
             return result;
         }
 
-        public void Resolve(ParameterList parameterList)
+        public void Resolve(XddParameterList parameterList)
         {
             Parameter = parameterList.FindParameter(ParamIdRef.UniqueIdRef) as Parameter;
 

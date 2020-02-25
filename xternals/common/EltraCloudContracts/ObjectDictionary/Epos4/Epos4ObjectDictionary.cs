@@ -1,19 +1,18 @@
-﻿using System;
-using System.Collections.Generic;
-
+﻿
 using EltraCloudContracts.Contracts.Devices;
-using EltraCloudContracts.ObjectDictionary.Common;
+using EltraCloudContracts.ObjectDictionary.Xdd;
 using EltraCloudContracts.ObjectDictionary.Common.DeviceDescription.Profiles.Application.Parameters;
 using EltraCloudContracts.ObjectDictionary.Epos4.DeviceDescription;
 using EltraCloudContracts.ObjectDictionary.Epos4.DeviceDescription.Profiles.Device.DataRecorder;
+using System.Collections.Generic;
 
 namespace EltraCloudContracts.ObjectDictionary.Epos4
 {
-    public class Epos4ObjectDictionary : XddDeviceObjectDictionary
-    {   
-        public Epos4ObjectDictionary(EltraDevice device) 
+    public class Epos4ObjectDictionary : XddObjectDictionary
+    {
+        public Epos4ObjectDictionary(EltraDevice device)
             : base(device)
-        {            
+        {
         }
 
         public List<DataRecorder> DataRecorders { get; set; }
@@ -21,10 +20,10 @@ namespace EltraCloudContracts.ObjectDictionary.Epos4
         public override bool Open()
         {
             bool result = base.Open();
-            
+
             if (result)
             {
-                if (GetDeviceDescription() is Xdd xdd)
+                if (GetDeviceDescription() is Epos4DeviceDescription xdd)
                 {
                     DataRecorders = xdd.DataRecorders;
                 }

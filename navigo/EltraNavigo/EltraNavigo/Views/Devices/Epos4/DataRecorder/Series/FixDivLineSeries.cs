@@ -1,4 +1,4 @@
-﻿using EltraCloudContracts.ObjectDictionary.Epos4.DeviceDescription.Profiles.Application.Parameters;
+﻿using EltraCloudContracts.ObjectDictionary.Xdd.DeviceDescription.Profiles.Application.Parameters;
 using EltraNavigo.Views.Obd.Outputs;
 using OxyPlot;
 using OxyPlot.Series;
@@ -9,12 +9,12 @@ namespace EltraNavigo.Views.DataRecorder.Series
     class FixDivLineSeries : LineSeries
     {
         private readonly ObdEntry _entry;
-        private readonly Epos4Parameter _parameter;
+        private readonly XddParameter _parameter;
 
         public FixDivLineSeries(ObdEntry entry, OxyColor lineColor)
         {
             _entry = entry;
-            _parameter = entry.ParameterEntry as Epos4Parameter;
+            _parameter = entry.ParameterEntry as XddParameter;
 
             Title = entry.Name;
 

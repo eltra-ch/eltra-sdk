@@ -1,5 +1,5 @@
 ﻿using System.Xml;
-using EltraCloudContracts.ObjectDictionary.Epos4.DeviceDescription.Profiles.Application.Parameters;
+using EltraCloudContracts.ObjectDictionary.Xdd.DeviceDescription.Profiles.Application.Parameters;
 using EltraCloudContracts.ObjectDictionary.Epos4.DeviceDescription.Profiles.Device.DataRecorder.Trigger;
 
 namespace EltraCloudContracts.ObjectDictionary.Epos4.DeviceDescription.Profiles.Device.DataRecorder
@@ -83,7 +83,7 @@ namespace EltraCloudContracts.ObjectDictionary.Epos4.DeviceDescription.Profiles.
             return result;
         }
 
-        public void Resolve(ParameterList parameterList)
+        public void Resolve(XddParameterList parameterList)
         {
             TriggerConditionParam.Resolve(parameterList);
             TriggerConditionMode.Resolve(parameterList);

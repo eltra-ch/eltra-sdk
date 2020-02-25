@@ -1,14 +1,14 @@
 ﻿using System.Xml;
 
 using EltraCloudContracts.ObjectDictionary.Common.DeviceDescription.Profiles.Application.Parameters;
-using EltraCloudContracts.ObjectDictionary.Epos4.DeviceDescription.Common;
-using EltraCloudContracts.ObjectDictionary.Epos4.DeviceDescription.Profiles.Application.Parameters;
+using EltraCloudContracts.ObjectDictionary.Xdd.DeviceDescription.Common;
+using EltraCloudContracts.ObjectDictionary.Xdd.DeviceDescription.Profiles.Application.Parameters;
 
 namespace EltraCloudContracts.ObjectDictionary.Epos4.DeviceDescription.Profiles.Device.DataRecorder.Parameters
 {
     public class DataRecorderParameter
     {
-        public Epos4ParamIdRef ParamIdRef { get; set; }
+        public XddParamIdRef ParamIdRef { get; set; }
         
         public Parameter Parameter { get; set; }
 
@@ -20,7 +20,7 @@ namespace EltraCloudContracts.ObjectDictionary.Epos4.DeviceDescription.Profiles.
             {
                 if (childNode.Name == "paramIDRef")
                 {
-                    var paramIdRef = new Epos4ParamIdRef();
+                    var paramIdRef = new XddParamIdRef();
 
                     if (!paramIdRef.Parse(childNode))
                     {
@@ -35,7 +35,7 @@ namespace EltraCloudContracts.ObjectDictionary.Epos4.DeviceDescription.Profiles.
             return result;
         }
 
-        public void Resolve(ParameterList parameterList)
+        public void Resolve(XddParameterList parameterList)
         {
             Parameter = parameterList.FindParameter(ParamIdRef.UniqueIdRef) as Parameter;
         }

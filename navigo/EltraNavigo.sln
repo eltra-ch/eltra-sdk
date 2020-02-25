@@ -11,13 +11,13 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EltraNavigo.iOS", "EltraNav
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EltraNavigo", "EltraNavigo\EltraNavigo\EltraNavigo.csproj", "{669433DD-FA1A-4A98-A30A-A65F7A9F3F7E}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EltraConnector", "Xternals\Connect\EltraConnector\EltraConnector.csproj", "{EA98E84E-3E8E-4F5D-8377-CB8658EBDF9B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EltraConnector", "..\xternals\Connect\EltraConnector\EltraConnector.csproj", "{EA98E84E-3E8E-4F5D-8377-CB8658EBDF9B}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EltraCommon", "Xternals\Common\EltraCommon\EltraCommon.csproj", "{D5CB1686-F4F6-470A-89C7-71941A3924F9}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EltraCommon", "..\xternals\Common\EltraCommon\EltraCommon.csproj", "{D5CB1686-F4F6-470A-89C7-71941A3924F9}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EltraCloudContracts", "Xternals\Common\EltraCloudContracts\EltraCloudContracts.csproj", "{EE136B72-E890-4078-A5C9-4BBD87229FFB}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EltraCloudContracts", "..\xternals\Common\EltraCloudContracts\EltraCloudContracts.csproj", "{EE136B72-E890-4078-A5C9-4BBD87229FFB}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EltraResources", "Xternals\Common\EltraResources\EltraResources.csproj", "{BDC23CFD-B6D8-4C9C-97C2-90C567ECF7B1}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EltraResources", "..\xternals\Common\EltraResources\EltraResources.csproj", "{BDC23CFD-B6D8-4C9C-97C2-90C567ECF7B1}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

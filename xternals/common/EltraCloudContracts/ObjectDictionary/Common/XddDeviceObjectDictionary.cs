@@ -1,5 +1,5 @@
 using EltraCloudContracts.Contracts.Devices;
-using EltraCloudContracts.ObjectDictionary.Epos4.DeviceDescription;
+using EltraCloudContracts.ObjectDictionary;
 
 namespace EltraCloudContracts.ObjectDictionary.Common
 {
@@ -20,7 +20,7 @@ namespace EltraCloudContracts.ObjectDictionary.Common
 
             if (content != null)
             {
-                var xdd = new Xdd(Device) { DataSource = content };
+                var xdd = new Xdd.DeviceDescription.XddDeviceDescription(Device) { DataSource = content };
 
                 SetDeviceDescription(xdd);
 

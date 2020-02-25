@@ -164,15 +164,15 @@
     </PackageReference>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\Xternals\Common\EltraCloudContracts\EltraCloudContracts.csproj">
+    <ProjectReference Include="..\..\..\Xternals\Common\EltraCloudContracts\EltraCloudContracts.csproj">
       <Project>{ee136b72-e890-4078-a5c9-4bbd87229ffb}</Project>
       <Name>EltraCloudContracts</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\Xternals\Common\EltraCommon\EltraCommon.csproj">
+    <ProjectReference Include="..\..\..\Xternals\Common\EltraCommon\EltraCommon.csproj">
       <Project>{D5CB1686-F4F6-470A-89C7-71941A3924F9}</Project>
       <Name>EltraCommon</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\Xternals\Connect\EltraConnector\EltraConnector.csproj">
+    <ProjectReference Include="..\..\..\Xternals\Connect\EltraConnector\EltraConnector.csproj">
       <Project>{ea98e84e-3e8e-4f5d-8377-cb8658ebdf9b}</Project>
       <Name>EltraConnector</Name>
     </ProjectReference>

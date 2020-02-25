@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Xml;
 using EltraCloudContracts.ObjectDictionary.Common.DeviceDescription.Profiles.Application.Parameters;
-using EltraCloudContracts.ObjectDictionary.Epos4.DeviceDescription.Profiles.Application.Parameters;
+using EltraCloudContracts.ObjectDictionary.Xdd.DeviceDescription.Profiles.Application.Parameters;
 
 namespace EltraCloudContracts.ObjectDictionary.Epos4.DeviceDescription.Profiles.Device.DataRecorder
 {
@@ -70,7 +70,7 @@ namespace EltraCloudContracts.ObjectDictionary.Epos4.DeviceDescription.Profiles.
             return result;
         }
 
-        public void ResolveParameterReferences(ParameterList parameterList)
+        public void ResolveParameterReferences(XddParameterList parameterList)
         {
             Parameters.Resolve(parameterList);
 

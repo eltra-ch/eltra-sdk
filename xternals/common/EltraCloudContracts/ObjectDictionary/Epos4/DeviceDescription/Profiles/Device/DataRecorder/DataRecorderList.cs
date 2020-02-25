@@ -1,7 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Xml;
 
-using EltraCloudContracts.ObjectDictionary.Epos4.DeviceDescription.Profiles.Application.Parameters;
+using EltraCloudContracts.ObjectDictionary.Xdd.DeviceDescription.Profiles.Application.Parameters;
+using EltraCloudContracts.ObjectDictionary.Xdd.DeviceDescription.Profiles.Device;
 
 namespace EltraCloudContracts.ObjectDictionary.Epos4.DeviceDescription.Profiles.Device.DataRecorder
 {
@@ -9,14 +10,14 @@ namespace EltraCloudContracts.ObjectDictionary.Epos4.DeviceDescription.Profiles.
     {
         #region Private fields
         
-        private readonly DeviceManager _deviceManager;
+        private readonly XddDeviceManager _deviceManager;
         private List<DataRecorder> _dataRecorder;
 
         #endregion
 
         #region Constructors
 
-        public DataRecorderList(DeviceManager deviceManager)
+        public DataRecorderList(XddDeviceManager deviceManager)
         {
             _deviceManager = deviceManager;
         }
@@ -59,7 +60,7 @@ namespace EltraCloudContracts.ObjectDictionary.Epos4.DeviceDescription.Profiles.
 
         #endregion
 
-        public void ResolveParameterReferences(ParameterList parameterList)
+        public void ResolveParameterReferences(XddParameterList parameterList)
         {
             foreach (var dataRecorder in DataRecorders)
             {

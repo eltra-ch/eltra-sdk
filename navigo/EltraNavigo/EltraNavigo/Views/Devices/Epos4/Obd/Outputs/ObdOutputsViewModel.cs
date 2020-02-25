@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using EltraCloudContracts.ObjectDictionary.Common.DeviceDescription.Profiles.Application.Parameters;
-using EltraCloudContracts.ObjectDictionary.Epos4.DeviceDescription.Profiles.Application.Parameters;
+using EltraCloudContracts.ObjectDictionary.Xdd.DeviceDescription.Profiles.Application.Parameters;
 using EltraNavigo.Controls;
 using EltraNavigo.Views.Obd.Outputs.Events;
 
@@ -124,7 +124,7 @@ namespace EltraNavigo.Views.Obd.Outputs
         {
             foreach (var parameter in parameters)
             {
-                if (parameter is Epos4Parameter param)
+                if (parameter is XddParameter param)
                 {
                     var searchPattern = $"{param.Index};0x{param.Index:X4};{param.Label}".ToLower();
 

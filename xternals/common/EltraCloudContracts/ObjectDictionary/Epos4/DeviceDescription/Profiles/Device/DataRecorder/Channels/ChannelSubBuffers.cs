@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Xml;
 using EltraCloudContracts.ObjectDictionary.Common.DeviceDescription.Profiles.Application.Parameters;
-using EltraCloudContracts.ObjectDictionary.Epos4.DeviceDescription.Common;
-using EltraCloudContracts.ObjectDictionary.Epos4.DeviceDescription.Profiles.Application.Parameters;
+using EltraCloudContracts.ObjectDictionary.Xdd.DeviceDescription.Common;
+using EltraCloudContracts.ObjectDictionary.Xdd.DeviceDescription.Profiles.Application.Parameters;
 
 namespace EltraCloudContracts.ObjectDictionary.Epos4.DeviceDescription.Profiles.Device.DataRecorder.Channels
 {
@@ -10,7 +10,7 @@ namespace EltraCloudContracts.ObjectDictionary.Epos4.DeviceDescription.Profiles.
     {
         #region Properties
 
-        public List<Epos4ParamIdRef> ParamIdRefs { get; set; }
+        public List<XddParamIdRef> ParamIdRefs { get; set; }
         public List<Parameter> Parameters { get; set; }
 
         #endregion
@@ -21,13 +21,13 @@ namespace EltraCloudContracts.ObjectDictionary.Epos4.DeviceDescription.Profiles.
         {
             bool result = true;
 
-            ParamIdRefs = new List<Epos4ParamIdRef>();
+            ParamIdRefs = new List<XddParamIdRef>();
 
             foreach (XmlNode childNode in node.ChildNodes)
             {
                 if (childNode.Name == "paramIDRef")
                 {
-                    var paramIdRef = new Epos4ParamIdRef();
+                    var paramIdRef = new XddParamIdRef();
 
                     if (!paramIdRef.Parse(childNode))
                     {
@@ -42,7 +42,7 @@ namespace EltraCloudContracts.ObjectDictionary.Epos4.DeviceDescription.Profiles.
             return result;
         }
 
-        public void Resolve(ParameterList parameterList)
+        public void Resolve(XddParameterList parameterList)
         {
             Parameters = new List<Parameter>();
 
