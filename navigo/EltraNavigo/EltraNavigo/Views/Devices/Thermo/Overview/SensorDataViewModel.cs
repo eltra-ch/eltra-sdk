@@ -17,7 +17,6 @@ namespace EltraNavigo.Views.Devices.Thermo.Overview
 
         private ParameterLabelViewModel _actualHumidity;
         private ParameterLabelViewModel _actualPressure;
-        private ParameterLabelViewModel _actualAltitude;
         private ParameterLabelViewModel _humidityTimestamp;
         
         private ParameterLabelViewModel _actualTimestamp;
@@ -37,7 +36,6 @@ namespace EltraNavigo.Views.Devices.Thermo.Overview
 
             _actualHumidity = new ParameterLabelViewModel(this, "PARAM_ActualHumidity");
             _actualPressure = new ParameterLabelViewModel(this, "PARAM_Pressure");
-            _actualAltitude = new ParameterLabelViewModel(this, "PARAM_Altitude");
 
             _humidityTimestamp = new ParameterLabelViewModel(this, "PARAM_HumidityTimestamp") { ShowLabel = false };
             
@@ -88,12 +86,6 @@ namespace EltraNavigo.Views.Devices.Thermo.Overview
             set => SetProperty(ref _actualPressure, value);
         }
 
-        public ParameterLabelViewModel ActualAltitude
-        {
-            get => _actualAltitude;
-            set => SetProperty(ref _actualAltitude, value);
-        }
-
         public ParameterLabelViewModel HumidityTimestamp
         {
             get => _humidityTimestamp;
@@ -142,7 +134,6 @@ namespace EltraNavigo.Views.Devices.Thermo.Overview
 
                 ActualHumidity.InitModelData();
                 ActualPressure.InitModelData();
-                ActualAltitude.InitModelData();
 
                 HumidityTimestamp.InitModelData();
 

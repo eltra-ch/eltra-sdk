@@ -15,7 +15,6 @@
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
-                <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
 
             <Grid.ColumnDefinitions>
@@ -40,10 +39,6 @@
             </Frame>
 
             <Frame Grid.Row="4" Grid.Column="0" Padding="0">
-                <Label Text="Altitude:" VerticalOptions="Center"/>
-            </Frame>
-
-            <Frame Grid.Row="5" Grid.Column="0" Padding="0">
                 <Label Text="Last change:" VerticalOptions="Center"/>
             </Frame>
             
@@ -64,10 +59,6 @@
             </Frame>
 
             <Frame Grid.Row="4" Grid.Column="1" Padding="0">
-                <parameters:ParameterLabelView BindingContext="{Binding ActualAltitude}"/>
-            </Frame>
-
-            <Frame Grid.Row="5" Grid.Column="1" Padding="0">
                 <parameters:ParameterLabelView BindingContext="{Binding ActualTimestamp}" FontSize="Small"/>
             </Frame>
         </Grid>
