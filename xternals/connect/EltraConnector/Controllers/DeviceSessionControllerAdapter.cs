@@ -280,53 +280,62 @@ namespace EltraConnector.Controllers
                             {
                                 MsgLogger.WriteDebug($"{GetType().Name} - ExecuteCommand", $"Clone Command '{commandName}'");
 
-                                var deviceCommandCopy = deviceCommand.Clone();
+                                var clonedDeviceCommand = deviceCommand.Clone();
 
-                                MsgLogger.WriteDebug($"{GetType().Name} - ExecuteCommand", $"Sync Command '{commandName}'");
-
-                                deviceCommandCopy.Sync(executeCommand.Command);
-
-                                MsgLogger.WriteDebug($"{GetType().Name} - ExecuteCommand", $"Execute Command '{commandName}', session '{executeCommand.SessionUuid}'");
-
-                                try
+                                if (clonedDeviceCommand != null)
                                 {
-                                    result = deviceCommandCopy.Execute(executeCommand.SessionUuid);
-                                }
-                                catch (Exception e)
-                                {
-                                    MsgLogger.Exception($"{GetType().Name} - ExecuteCommand", e);
-                                }
+                                    MsgLogger.WriteDebug($"{GetType().Name} - ExecuteCommand", $"Sync Command '{commandName}'");
 
-                                if (result)
-                                {
-                                    MsgLogger.WriteDebug($"{GetType().Name} - ExecuteCommand", $"Sync Response Command '{commandName}'");
+                                    clonedDeviceCommand.Sync(executeCommand.Command);
 
-                                    executeCommand.Command?.Sync(deviceCommandCopy);
+                                    MsgLogger.WriteDebug($"{GetType().Name} - ExecuteCommand", $"Execute Command '{commandName}', session '{executeCommand.SessionUuid}'");
 
-                                    MsgLogger.WriteDebug($"{GetType().Name} - ExecuteCommand", $"Push Response for Command '{commandName}'");
-
-                                    result = await DeviceControllerAdapter.PushCommand(executeCommand, ExecCommandStatus.Executed);
+                                    try
+                                    {
+                                        result = clonedDeviceCommand.Execute(executeCommand.SessionUuid);
+                                    }
+                                    catch (Exception e)
+                                    {
+                                        MsgLogger.Exception($"{GetType().Name} - ExecuteCommand", e);
+                                    }
 
                                     if (result)
                                     {
-                                        MsgLogger.WriteDebug($"{GetType().Name} - ExecuteCommand", $"Command '{commandName}' successfully processed!");
+                                        MsgLogger.WriteDebug($"{GetType().Name} - ExecuteCommand", $"Sync Response Command '{commandName}'");
+
+                                        executeCommand.Command?.Sync(clonedDeviceCommand);
+
+                                        MsgLogger.WriteDebug($"{GetType().Name} - ExecuteCommand", $"Push Response for Command '{commandName}'");
+
+                                        result = await DeviceControllerAdapter.PushCommand(executeCommand, ExecCommandStatus.Executed);
+
+                                        if (result)
+                                        {
+                                            MsgLogger.WriteDebug($"{GetType().Name} - ExecuteCommand", $"Command '{commandName}' successfully processed!");
+                                        }
+                                        else
+                                        {
+                                            MsgLogger.WriteError($"{GetType().Name} - ExecuteCommand", $"Command '{commandName}' not found!");
+                                        }
                                     }
                                     else
                                     {
-                                        MsgLogger.WriteError($"{GetType().Name} - ExecuteCommand", $"Command '{commandName}' not found!");
+                                        var command = executeCommand.Command;
+
+                                        MsgLogger.WriteError($"{GetType().Name} - ExecuteCommand",
+                                            command != null
+                                                ? $"Command '{command.Name}' uuid '{executeCommand.CommandUuid}' execution failed!"
+                                                : $"Command '?' uuid '{executeCommand.CommandUuid}' execution failed!");
+
+                                        await DeviceControllerAdapter.SetCommandStatus(executeCommand,
+                                            ExecCommandStatus.Failed);
                                     }
                                 }
                                 else
                                 {
-                                    var command = executeCommand.Command;
+                                    await DeviceControllerAdapter.SetCommandStatus(executeCommand, ExecCommandStatus.Failed);
 
-                                    MsgLogger.WriteError($"{GetType().Name} - ExecuteCommand",
-                                        command != null
-                                            ? $"Command '{command.Name}' uuid '{executeCommand.CommandUuid}' execution failed!"
-                                            : $"Command '?' uuid '{executeCommand.CommandUuid}' execution failed!");
-
-                                    await DeviceControllerAdapter.SetCommandStatus(executeCommand,
-                                        ExecCommandStatus.Failed);
+                                    MsgLogger.WriteError($"{GetType().Name} - ExecuteCommand", $"Command '{commandName}' cloning failed!");
                                 }
                             }
                             catch (Exception e)

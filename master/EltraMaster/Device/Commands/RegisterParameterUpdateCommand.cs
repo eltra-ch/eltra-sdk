@@ -7,6 +7,9 @@ namespace EltraMaster.Device.Commands
 {
     public class RegisterParameterUpdateCommand : DeviceCommand
     {
+        public RegisterParameterUpdateCommand()
+        { }
+
         public RegisterParameterUpdateCommand(EltraDevice device)
             : base(device)
         {
