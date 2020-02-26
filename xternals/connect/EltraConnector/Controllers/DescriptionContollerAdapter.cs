@@ -12,9 +12,9 @@ using EltraCloudContracts.Contracts.Devices;
 
 namespace EltraConnector.Controllers
 {
-    public class DescriptionContollerAdapter : CloudControllerAdapter
+    public class DescriptionControllerAdapter : CloudControllerAdapter
     {
-        public DescriptionContollerAdapter(string url)
+        public DescriptionControllerAdapter(string url)
             : base(url)
         {
 

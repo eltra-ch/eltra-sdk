@@ -3,11 +3,9 @@ using System.Net;
 using System.Threading.Tasks;
 using System.Web;
 using EltraConnector.Controllers.Base;
-using EltraConnector.Transport;
 using EltraCommon.Helpers;
 using EltraCommon.Logger;
 using EltraCloudContracts.Contracts.Results;
-using EltraCloudContracts.Contracts.Sessions;
 using EltraCloudContracts.Contracts.Users;
 using Newtonsoft.Json;
 
@@ -15,12 +13,15 @@ namespace EltraConnector.Controllers
 {
     public class AuthControllerAdapter : CloudControllerAdapter
     {
-        private readonly CloudTransporter _transporter;
+        #region Constructors
 
         public AuthControllerAdapter(string url) : base(url)
         {
-            _transporter = new CloudTransporter();
         }
+
+        #endregion
+
+        #region Methods
 
         public async Task<bool> LoginExists(string login)
         {
@@ -34,7 +35,7 @@ namespace EltraConnector.Controllers
 
                 var url = UrlHelper.BuildUrl(Url, "api/auth/login-exists", query);
 
-                var json = await _transporter.Get(url);
+                var json = await Transporter.Get(url);
 
                 if (!string.IsNullOrEmpty(json))
                 {
@@ -67,7 +68,7 @@ namespace EltraConnector.Controllers
 
                 var url = UrlHelper.BuildUrl(Url, "api/auth/login-is-valid", query);
 
-                var json = await _transporter.Get(url);
+                var json = await Transporter.Get(url);
 
                 if (!string.IsNullOrEmpty(json))
                 {
@@ -97,7 +98,7 @@ namespace EltraConnector.Controllers
 
                 var json = JsonConvert.SerializeObject(authData);
 
-                var response = await _transporter.Post(Url, path, json);
+                var response = await Transporter.Post(Url, path, json);
 
                 if (response.StatusCode == HttpStatusCode.OK)
                 {
@@ -126,7 +127,7 @@ namespace EltraConnector.Controllers
 
                 var url = UrlHelper.BuildUrl(Url, "api/auth/sign-out", query);
 
-                var json = await _transporter.Get(url);
+                var json = await Transporter.Get(url);
 
                 if (!string.IsNullOrEmpty(json))
                 {
@@ -156,7 +157,7 @@ namespace EltraConnector.Controllers
 
                 var json = JsonConvert.SerializeObject(authData);
 
-                var response = await _transporter.Post(Url, path, json);
+                var response = await Transporter.Post(Url, path, json);
 
                 if (response.StatusCode == HttpStatusCode.OK)
                 {
@@ -172,5 +173,7 @@ namespace EltraConnector.Controllers
 
             return result;
         }
+
+        #endregion
     }
 }

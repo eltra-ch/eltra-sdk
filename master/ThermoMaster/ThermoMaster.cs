@@ -2,7 +2,6 @@
 using EltraMaster;
 using System.Threading.Tasks;
 using ThermoMaster.DeviceManager;
-using ThermoMaster.DeviceManager.Device;
 using ThermoMaster.DeviceManager.Wrapper;
 using ThermoMaster.Settings;
 

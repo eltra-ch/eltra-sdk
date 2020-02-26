@@ -1,35 +1,169 @@
 ﻿using System.Threading.Tasks;
 using EltraCommon.Logger;
 using EltraCloudContracts.Contracts.Users;
+using EltraConnector.Controllers;
+using System;
+using EltraConnector.Controllers.Base.Events;
 
 namespace EltraConnector.SyncAgent
 {
     class Authentication
     {
-        private readonly SyncCloudAgent _agent;
+        #region Private fields
+
+        private readonly AuthControllerAdapter _authControllerAdapter;
+
         private UserAuthData _authData;
         private string _token;
+        private bool _good;
 
-        public Authentication(SyncCloudAgent agent)
+        #endregion
+
+        #region Constructors
+
+        public Authentication(string url)
         {
-            _agent = agent;
+            _good = true;
+
+            _authControllerAdapter = new AuthControllerAdapter(url);
+
+            _authControllerAdapter.GoodChanged += OnAuthControllerAdapterGoodChanged;
         }
+
+        #endregion
+
+        #region Properties
+
+        public bool Good
+        {
+            get => _good;
+            set
+            {
+                _good = value;
+                OnGoodChanged();
+            }
+        }
+
+        #endregion
+
+        #region Events
+
+        public event EventHandler<GoodChangedEventArgs> GoodChanged;
+
+        #endregion
+
+        #region Events handling
+
+        private void OnGoodChanged()
+        {
+            GoodChanged?.Invoke(this, new GoodChangedEventArgs() { Good = Good });
+        }
+
+        private void OnAuthControllerAdapterGoodChanged(object sender, Controllers.Base.Events.GoodChangedEventArgs e)
+        {
+            Good = e.Good;
+        }
+
+        #endregion
+
+        #region Methods
 
         public async Task<bool> SignIn()
         {
-            _token = await _agent.SignIn(_authData);
+            _token = await SignIn(_authData);
 
             return !string.IsNullOrEmpty(_token);
         }
 
         public async Task<bool> SignOut()
         {
-            return await _agent.SignOut(_token);
+            return await SignOut(_token);
         }
 
         public async Task<bool> IsValid()
         {
-            return await _agent.IsAuthValid(_authData);
+            return await IsValid(_authData);
+        }
+
+        public async Task<string> SignIn(UserAuthData authData)
+        {
+            string result = string.Empty;
+
+            _authData = authData;
+
+            try
+            {
+                result = await _authControllerAdapter.SignIn(authData);
+            }
+            catch (Exception e)
+            {
+                MsgLogger.Exception($"{GetType().Name} - SignIn", e);
+            }
+
+            return result;
+        }
+        public async Task<bool> SignOut(string token)
+        {
+            bool result = false;
+
+            try
+            {
+                result = await _authControllerAdapter.SignOut(token);
+            }
+            catch (Exception e)
+            {
+                MsgLogger.Exception($"{GetType().Name} - SignOut", e);
+            }
+
+            return result;
+        }
+
+        public async Task<bool> Register(UserAuthData authData)
+        {
+            bool result = false;
+
+            try
+            {
+                result = await _authControllerAdapter.Register(authData);
+            }
+            catch (Exception e)
+            {
+                MsgLogger.Exception($"{GetType().Name} - Register", e);
+            }
+
+            return result;
+        }
+
+        public async Task<bool> IsValid(UserAuthData authData)
+        {
+            bool result = false;
+
+            try
+            {
+                result = await _authControllerAdapter.IsValid(authData.Login, authData.Password);
+            }
+            catch (Exception e)
+            {
+                MsgLogger.Exception($"{GetType().Name} - IsAuthValid", e);
+            }
+
+            return result;
+        }
+
+        public async Task<bool> LoginExists(string login)
+        {
+            bool result = false;
+
+            try
+            {
+                result = await _authControllerAdapter.LoginExists(login);
+            }
+            catch (Exception e)
+            {
+                MsgLogger.Exception($"{GetType().Name} - LoginExists", e);
+            }
+
+            return result;
         }
 
         public async Task<bool> Login(UserAuthData authData)
@@ -38,9 +172,9 @@ namespace EltraConnector.SyncAgent
 
             _authData = authData;
 
-            if (!await _agent.LoginExists(authData.Login))
+            if (!await LoginExists(authData.Login) && Good)
             {
-                if (await _agent.Register(authData))
+                if (await Register(authData))
                 {
                     MsgLogger.Print($"New login {authData.Login} registered successfully");
                 }
@@ -53,5 +187,12 @@ namespace EltraConnector.SyncAgent
 
             return result;
         }
+
+        public void Stop()
+        {
+            _authControllerAdapter?.Stop();
+        }
+
+        #endregion
     }
 }

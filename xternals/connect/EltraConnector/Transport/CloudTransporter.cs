@@ -2,12 +2,12 @@
 using System.IO;
 using System.Net;
 using System.Net.Http;
-using System.Net.WebSockets;
+using System.Net.Sockets;
 using System.Text;
-using System.Threading;
 using System.Threading.Tasks;
 
 using EltraCommon.Logger;
+using EltraConnector.Transport.Events;
 
 namespace EltraConnector.Transport
 {
@@ -19,8 +19,9 @@ namespace EltraConnector.Transport
         private const int DefaultMaxWaitTimeInSec = 15;
         private const int DefaultRetryTimeout = 100;
 
+        private SocketError _socketError;
+
         private static HttpClient _client;
-        private ClientWebSocket _webSocketClient;
         
         #endregion
 
@@ -31,6 +32,8 @@ namespace EltraConnector.Transport
             MaxRetryTimeout = DefaultRetryTimeout;
             MaxRetryCount = DefaultMaxRetryCount;
             MaxWaitTimeInSec = DefaultMaxWaitTimeInSec;
+
+            SocketError = SocketError.Success;
         }
 
         #endregion
@@ -43,11 +46,39 @@ namespace EltraConnector.Transport
 
         private HttpClient Client => _client ?? (_client = CreateHttpClient());
 
-        private ClientWebSocket ClientWebSocket => _webSocketClient ?? (_webSocketClient = CreateWebSocketClient());
+        public SocketError SocketError 
+        { 
+            get => _socketError;
+            set
+            {
+                _socketError = value;
+                OnSocketErrorChanged();
+            }
+        }
+
+        #endregion
+
+        #region Events
+
+        public event EventHandler<SocketErrorChangedEventAgs> SocketErrorChanged;
+
+        #endregion
+
+        #region Events handling
+
+        private void OnSocketErrorChanged()
+        {
+            SocketErrorChanged?.Invoke(this, new SocketErrorChangedEventAgs() { SocketError = SocketError });
+        }
 
         #endregion
 
         #region Methods
+
+        private void ResetSocketError()
+        {
+            SocketError = SocketError.Success;
+        }
 
         private HttpClient CreateHttpClient()
         {
@@ -56,13 +87,6 @@ namespace EltraConnector.Transport
             return client;
         }
 
-        private ClientWebSocket CreateWebSocketClient()
-        {
-            var result = new ClientWebSocket();
-
-            return result;
-        }
-        
         private async Task ExceptionHandling(int tryCount, Exception e)
         {
             if (tryCount < MaxRetryCount)
@@ -75,11 +99,27 @@ namespace EltraConnector.Transport
             }
         }
 
+        private async Task HttRequestExceptionHandling(int tryCount, HttpRequestException e)
+        {
+            await ExceptionHandling(tryCount, e.InnerException);
+
+            if (e.InnerException is SocketException socketException)
+            {
+                SocketError = socketException.SocketErrorCode;
+            }
+            else
+            {
+                SocketError = SocketError.SocketError;
+            }
+        }
+
         public async Task<TransporterResponse> Post(string url, string path, string json)
         {
             TransporterResponse result = new TransporterResponse();
             
             int tryCount = 0;
+
+            ResetSocketError();
 
             do
             {
@@ -113,8 +153,9 @@ namespace EltraConnector.Transport
                 }
                 catch (HttpRequestException e)
                 {
-                    await ExceptionHandling(tryCount, e);
-                    result.Exception = e;
+                    await HttRequestExceptionHandling(tryCount, e);
+
+                    result.Exception = e.InnerException;
                 }
                 catch (Exception e)
                 {
@@ -131,6 +172,8 @@ namespace EltraConnector.Transport
             string result = string.Empty;
             int tryCount = 0;
 
+            ResetSocketError();
+            
             do
             {
                 try
@@ -170,7 +213,7 @@ namespace EltraConnector.Transport
                 }
                 catch (HttpRequestException e)
                 {
-                    await ExceptionHandling(tryCount, e);
+                    await HttRequestExceptionHandling(tryCount, e);
                 }
                 catch (Exception e)
                 {
@@ -186,6 +229,8 @@ namespace EltraConnector.Transport
             string result = string.Empty;
 
             int tryCount = 0;
+
+            ResetSocketError();
 
             do
             {
@@ -209,7 +254,7 @@ namespace EltraConnector.Transport
                 }
                 catch (HttpRequestException e)
                 {
-                    await ExceptionHandling(tryCount, e);
+                    await HttRequestExceptionHandling(tryCount, e);
                 }
                 catch (Exception e)
                 {
@@ -224,7 +269,9 @@ namespace EltraConnector.Transport
         {
             var result = new TransporterResponse();
             int tryCount = 0;
-            
+
+            ResetSocketError();
+
             do
             {
                 try
@@ -255,7 +302,7 @@ namespace EltraConnector.Transport
                 }
                 catch (HttpRequestException e)
                 {
-                    await ExceptionHandling(tryCount, e);
+                    await HttRequestExceptionHandling(tryCount, e);
                 }
                 catch (Exception e)
                 {

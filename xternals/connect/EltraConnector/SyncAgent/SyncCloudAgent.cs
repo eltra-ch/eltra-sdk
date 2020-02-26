@@ -9,6 +9,7 @@ using EltraCommon.Logger;
 using EltraCloudContracts.Contracts.Users;
 using System.Threading.Tasks;
 using EltraCloudContracts.Contracts.Devices;
+using EltraConnector.Controllers.Base.Events;
 
 namespace EltraConnector.SyncAgent
 {
@@ -16,14 +17,13 @@ namespace EltraConnector.SyncAgent
     {
         #region Private fields
 
-        private readonly AuthControllerAdapter _authControllerAdapter;
         private readonly DeviceSessionControllerAdapter _sessionControllerAdapter;
+        
         private readonly SessionUpdater _sessionUpdater;
         private readonly CommandExecutor _commandExecutor;
         private readonly WsConnectionManager _wsConnectionManager;
-        private readonly string _url;
-        private readonly UserAuthData _authData;
         private readonly Authentication _authentication;
+        private bool _good;
 
         #endregion
 
@@ -31,13 +31,13 @@ namespace EltraConnector.SyncAgent
 
         public SyncCloudAgent(string url, UserAuthData authData, uint updateInterval, uint timeout)
         {
-            _url = url;
-            _authData = authData;
+            Url = url;
+            AuthData = authData;
 
-            _authentication = new Authentication(this);
+            _good = true;
+            _authentication = new Authentication(url);
             _wsConnectionManager = new WsConnectionManager() { HostUrl = url };
 
-            _authControllerAdapter = new AuthControllerAdapter(url);
             _sessionControllerAdapter = new DeviceSessionControllerAdapter(url, authData, updateInterval, timeout) { WsConnectionManager = _wsConnectionManager };
 
             _sessionUpdater = new SessionUpdater(_sessionControllerAdapter, updateInterval, timeout);
@@ -52,10 +52,22 @@ namespace EltraConnector.SyncAgent
 
         public event EventHandler<SessionStatusChangedEventArgs> RemoteSessionStatusChanged;
 
+        public event EventHandler<GoodChangedEventArgs> GoodChanged;
+
         #endregion
 
         #region Events handling
-               
+
+        private void OnAdapterGoodChanged(object sender, GoodChangedEventArgs e)
+        {
+            Good = _sessionControllerAdapter.Good && _authentication.Good;
+        }
+
+        private void OnGoodChanged()
+        {
+            GoodChanged?.Invoke(this, new GoodChangedEventArgs() { Good = Good });
+        }
+
         private void OnSessionRegistered(object sender, SessionRegistrationEventArgs e)
         {
             var session = e.Session;
@@ -79,9 +91,23 @@ namespace EltraConnector.SyncAgent
 
         #region Properties
 
-        public string Url => _url;
+        public string Url { get; }
 
-        public UserAuthData AuthData => _authData;
+        public UserAuthData AuthData { get; }
+
+        public bool Good
+        {
+            get => _good;
+            set
+            {
+                if (_good != value)
+                {
+                    _good = value;
+
+                    OnGoodChanged();
+                }
+            }
+        }
 
         #endregion
 
@@ -91,6 +117,9 @@ namespace EltraConnector.SyncAgent
         {
             _sessionControllerAdapter.SessionRegistered += OnSessionRegistered;
             _commandExecutor.RemoteSessionStatusChanged += OnRemoteSessionStatusChanged;
+
+            _sessionControllerAdapter.GoodChanged += OnAdapterGoodChanged;
+            _authentication.GoodChanged += OnAdapterGoodChanged;
         }
 
         private async Task<bool> RegisterSession()
@@ -207,80 +236,35 @@ namespace EltraConnector.SyncAgent
 
         public async Task<bool> IsAuthValid(UserAuthData authData)
         {
-            bool result = false;
-
-            try
-            {
-                result = await _authControllerAdapter.IsValid(authData.Login, authData.Password);
-            }
-            catch (Exception e)
-            {
-                MsgLogger.Exception($"{GetType().Name} - IsAuthValid", e);
-            }
+            bool result = await _authentication.IsValid(authData);
 
             return result;
         }
 
         public async Task<bool> LoginExists(string login)
         {
-            bool result = false;
-
-            try
-            {
-                result = await _authControllerAdapter.LoginExists(login);
-            }
-            catch (Exception e)
-            {
-                MsgLogger.Exception($"{GetType().Name} - LoginExists", e);
-            }
+            bool result = await _authentication.LoginExists(login);
 
             return result;
         }
 
         public async Task<string> SignIn(UserAuthData authData)
         {
-            string result = string.Empty;
-
-            try
-            {
-                result = await _authControllerAdapter.SignIn(authData);
-            }
-            catch (Exception e)
-            {
-                MsgLogger.Exception($"{GetType().Name} - SignIn", e);
-            }
+            string result = await _authentication.SignIn(authData);
 
             return result;
         }
 
         public async Task<bool> SignOut(string token)
         {
-            bool result = false;
-
-            try
-            {
-                result = await _authControllerAdapter.SignOut(token);
-            }
-            catch (Exception e)
-            {
-                MsgLogger.Exception($"{GetType().Name} - SignOut", e);
-            }
+            bool result = await _authentication.SignOut(token);
 
             return result;
         }
 
         public async Task<bool> Register(UserAuthData authData)
         {
-            bool result = false;
-
-            try
-            {
-                result = await _authControllerAdapter.Register(authData);
-            }
-            catch (Exception e)
-            {
-                MsgLogger.Exception($"{GetType().Name} - Register", e);
-            }
+            bool result = await _authentication.Register(authData);
 
             return result;
         }
@@ -301,7 +285,7 @@ namespace EltraConnector.SyncAgent
 
             MsgLogger.WriteDebug($"{GetType().Name} - Stop", "Session controller stopped 3/4");
 
-            _authControllerAdapter?.Stop();
+            _authentication?.Stop();
 
             MsgLogger.WriteDebug($"{GetType().Name} - Stop", "Auth controller stopped 4/4");
 

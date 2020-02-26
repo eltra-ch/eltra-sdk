@@ -28,7 +28,7 @@ namespace EltraConnector.Controllers
         private SessionDevices _sessionDevices;
         private DeviceCommandsControllerAdapter _deviceCommandsControllerAdapter;
         private ParameterControllerAdapter _parameterControllerAdapter;
-        private DescriptionContollerAdapter _descriptionContollerAdapter;
+        private DescriptionControllerAdapter _descriptionContollerAdapter;
 
         #endregion
 
@@ -45,11 +45,11 @@ namespace EltraConnector.Controllers
 
         private SessionDevices SessionDevices => _sessionDevices ?? (_sessionDevices = new SessionDevices { SessionUuid = Session.Uuid });
 
-        public DeviceCommandsControllerAdapter DeviceCommandsAdapter => _deviceCommandsControllerAdapter ?? (_deviceCommandsControllerAdapter = new DeviceCommandsControllerAdapter(Url, Session));
+        public DeviceCommandsControllerAdapter DeviceCommandsAdapter => _deviceCommandsControllerAdapter ?? (_deviceCommandsControllerAdapter = CreateDeviceCommandsAdapter());
 
-        public ParameterControllerAdapter ParameterAdapter => _parameterControllerAdapter ?? (_parameterControllerAdapter = new ParameterControllerAdapter(Url, Session));
+        public ParameterControllerAdapter ParameterAdapter => _parameterControllerAdapter ?? (_parameterControllerAdapter = CreateParameterAdapter());
 
-        public DescriptionContollerAdapter DescriptionContollerAdapter => _descriptionContollerAdapter ?? (_descriptionContollerAdapter = new DescriptionContollerAdapter(Url));
+        public DescriptionControllerAdapter DescriptionContollerAdapter => _descriptionContollerAdapter ?? (_descriptionContollerAdapter = CreateDescriptionAdapter());
 
         #endregion
 
@@ -86,6 +86,33 @@ namespace EltraConnector.Controllers
         #endregion
 
         #region Methods
+
+        private DeviceCommandsControllerAdapter CreateDeviceCommandsAdapter()
+        {
+            var adapter = new DeviceCommandsControllerAdapter(Url, Session);
+
+           AddChild(adapter);
+
+           return adapter;
+        }
+
+        private ParameterControllerAdapter CreateParameterAdapter()
+        {
+            var adapter = new ParameterControllerAdapter(Url, Session);
+
+            AddChild(adapter);
+
+            return adapter;
+        }
+
+        private DescriptionControllerAdapter CreateDescriptionAdapter()
+        {
+            var adapter = new DescriptionControllerAdapter(Url);
+
+            AddChild(adapter);
+
+            return adapter;
+        }
 
         public override bool Stop()
         {

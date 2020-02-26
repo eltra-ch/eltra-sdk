@@ -38,7 +38,7 @@ namespace EltraConnector.Controllers
         private DeviceControllerAdapter DeviceControllerAdapter => _deviceControllerAdapter ?? (_deviceControllerAdapter = CreateDeviceController());
 
         private ParameterControllerAdapter ParameterControllerAdapter =>
-            _parameterControllerAdapter ?? (_parameterControllerAdapter = new ParameterControllerAdapter(Url, Session));
+            _parameterControllerAdapter ?? (_parameterControllerAdapter = CreateParameterControllerAdapter());
 
         private List<EltraDevice> Devices => _devices ?? (_devices = new List<EltraDevice>());
 
@@ -94,13 +94,24 @@ namespace EltraConnector.Controllers
 
         #region Methods
 
+        private ParameterControllerAdapter CreateParameterControllerAdapter()
+        {
+            var adapter = new ParameterControllerAdapter(Url, Session);
+
+            AddChild(adapter);
+
+            return adapter;
+        }
+
         private DeviceControllerAdapter CreateDeviceController()
         {
-            DeviceControllerAdapter result = new DeviceControllerAdapter(Url, Session);
+            var adapter = new DeviceControllerAdapter(Url, Session);
 
-            RegisterDeviceEvents(result);
+            AddChild(adapter);
 
-            return result;
+            RegisterDeviceEvents(adapter);
+
+            return adapter;
         }
 
         private void RegisterDeviceEvents(DeviceControllerAdapter deviceControllerAdapter)
