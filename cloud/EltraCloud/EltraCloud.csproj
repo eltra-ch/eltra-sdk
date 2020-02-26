@@ -18,6 +18,13 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="wwwroot\lib\NewFolder\**" />
+    <Content Remove="wwwroot\lib\NewFolder\**" />
+    <EmbeddedResource Remove="wwwroot\lib\NewFolder\**" />
+    <None Remove="wwwroot\lib\NewFolder\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <None Remove="prebuild.cmd" />
     <None Remove="prebuild.sh" />
     <None Remove="publish.sh" />
@@ -73,10 +80,6 @@
     <PackageReference Include="Swashbuckle.AspNetCore" Version="5.0.0-rc5" />
     <PackageReference Include="Swashbuckle.AspNetCore.Swagger" Version="5.0.0-rc5" />
     <PackageReference Include="Swashbuckle.AspNetCore.SwaggerUI" Version="5.0.0-rc5" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="wwwroot\lib\NewFolder\" />
   </ItemGroup>
 
   <ItemGroup>

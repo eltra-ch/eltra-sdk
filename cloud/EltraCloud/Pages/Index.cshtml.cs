@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using EltraCloud.Services;
@@ -55,6 +56,11 @@ namespace EltraCloud.Pages
         #endregion
 
         #region Methods
+
+        public void ObdClick(object sender, EventArgs e)
+        {
+            UpdateSessions();
+        }
 
         public void OnGet()
         {

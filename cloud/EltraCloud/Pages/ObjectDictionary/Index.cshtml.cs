@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 using System.Linq;
 
 using EltraCloud.Pages.ObjectDictionary.Models;
@@ -12,7 +11,6 @@ using EltraCloudContracts.ObjectDictionary.Common.DeviceDescription.Profiles.App
 using EltraCloudContracts.ObjectDictionary.Xdd.DeviceDescription.Profiles.Application.Parameters;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using Microsoft.AspNetCore.Mvc.Rendering;
 
 #pragma warning disable CS1591
 
@@ -23,16 +21,7 @@ namespace EltraCloud.Pages.ObjectDictionary
         private readonly ISessionService _sessionService;
         private readonly object _lock = new Object();
 
-        private List<Session> _sessions;
         private List<ParameterModel> _parameters;
-        private List<SelectListItem> _sessionSelection;
-        
-        [BindProperty]
-        public List<SelectListItem> SessionSelection => _sessionSelection ?? (_sessionSelection = new List<SelectListItem>());
-
-        [BindProperty]
-        [Display(Name = "Active sessions")]
-        public int SelectedSessionId { get; set; }
         
         [BindProperty]
         public List<ParameterModel> Parameters
@@ -45,22 +34,6 @@ namespace EltraCloud.Pages.ObjectDictionary
             _sessionService = sessionService;
         }
         
-        private void BuildSessionSelection()
-        {
-            int count = 0;
-
-            SelectedSessionId = 1;
-
-            foreach (var session in _sessions)
-            {
-                var item = new SelectListItem {Value = $"{count + 1}", Text = session.Uuid};
-
-                SessionSelection?.Add(item);
-
-                count++;
-            }
-        }
-
         public IActionResult OnPostAsync(ObjectDictionaryModel _)
         {
             if (!ModelState.IsValid)    
@@ -71,69 +44,16 @@ namespace EltraCloud.Pages.ObjectDictionary
             return RedirectToPage();
         }
 
-        private EltraDevice GetActiveDevice()
-        {
-            EltraDevice result = null;
-            var sessionUuid = Request.Cookies["session"];
-
-            if (_sessions != null && _sessions.Count > 0)
-            {
-                if (!string.IsNullOrEmpty(sessionUuid))
-                {
-                    foreach (var s in _sessions)
-                    {
-                        var device = GetActiveDevice(s);
-
-                        if (s.Uuid == sessionUuid && device != null)
-                        {
-                            result = device;
-                            break;
-                        }
-                    }
-
-                    if(result == null)
-                    {
-                        result = GetFirstDevice();
-                    }
-                }
-                else
-                {
-                    result = GetFirstDevice();
-                }
-            }
-
-            return result;
-        }
-
-        private EltraDevice GetFirstDevice()
+        private EltraDevice GetActiveDevice(string sessionUuid, string serialNumberText)
         {
             EltraDevice result = null;
 
-            foreach (var s in _sessions)
+            if (!string.IsNullOrEmpty(sessionUuid))
             {
-                var device = GetActiveDevice(s);
+                var devices = _sessionService.GetSessionDevices(sessionUuid);
 
-                if (device != null)
-                {
-                    result = device;
-                    break;
-                }
-            }
-
-            return result;
-        }
-
-        private EltraDevice GetActiveDevice(Session session)
-        {
-            EltraDevice result = null;
-            var serialNumberText = Request.Cookies["serialNumber"];
-
-            var devices  =_sessionService.GetSessionDevices(session.Uuid);
-
-            if (devices.Count > 0)
-            {
-                if (!string.IsNullOrEmpty(serialNumberText))
-                {
+                if (devices != null)
+                {   
                     foreach (var device in devices)
                     {
                         if (ulong.TryParse(serialNumberText, out var serialNumber) && device.Identification.SerialNumber == serialNumber)
@@ -141,24 +61,16 @@ namespace EltraCloud.Pages.ObjectDictionary
                             result = device;
                             break;
                         }
-                    }
-                }
-                else
-                {
-                    result = devices.FirstOrDefault();
+                    }                    
                 }
             }
 
             return result;
         }
-        
-        public void OnGet()
+                
+        public void OnGet(string sessionUuid, string serialNumber)
         {
-            _sessions = _sessionService.GetSessions();
-
-            BuildSessionSelection();
-
-            var device = GetActiveDevice();
+            var device = GetActiveDevice(sessionUuid, serialNumber);
             
             if (device != null)
             {

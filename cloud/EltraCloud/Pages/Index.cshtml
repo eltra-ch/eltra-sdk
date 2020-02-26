@@ -5,8 +5,7 @@
 }
 
 <script>
-    function OnSessionSelected(element, uuid)
-    {
+    function OnSessionSelected(element, uuid) {
         document.cookie = "session=" + uuid;
     }
 
@@ -15,7 +14,7 @@
     }
 </script>
 
-<br/>
+<br />
 
 <h4>Sessions</h4>
 
@@ -23,31 +22,20 @@
     <table class="table table-striped" data-click-to-select="true" data-toggle="table" data-single-select="true">
         <thead>
             <tr>
-                <!--<th class="text-center">Active</th>-->
-
                 <th>User</th>
                 <th>Status</th>
                 <th>Date</th>
             </tr>
         </thead>
-            @{ int count = 0; }
-            @foreach (var session in Model.Sessions)
-            {
-    <tr>
-        <!--<td>
-        <div class="align-content-center text-center">
-            @{
-                string id = $"SessionRadio{@count}";}
-            <input id="@id" type="radio" name="radiogroupsessions" onclick="OnSessionSelected(this, '@session.Uuid')">
-        </div>
-    </td>-->
-        <td>@session.User.AuthData.Name</td>
-        <td>@session.Status</td>
-        <td>@session.Modified</td>
-    </tr>
-                count++;
-            }
-</table>
+        @foreach (var session in Model.Sessions)
+        {
+            <tr>
+                <td>@session.User.AuthData.Name</td>
+                <td>@session.Status</td>
+                <td>@session.Modified</td>
+            </tr>
+        }
+    </table>
 </p>
 
 <h4>Devices</h4>
@@ -56,7 +44,6 @@
     <table class="table table-striped" data-click-to-select="true" data-toggle="table" data-single-select="true">
         <thead>
             <tr>
-                <!--<th class="text-center">Active</th>-->
                 <th>Image</th>
                 <th>Device Name</th>
                 <th>Product Name</th>
@@ -66,7 +53,7 @@
         </thead>
         @{
             var devices = Model.Devices;
-            count = 0;
+
             if (devices != null)
             {
                 foreach (var device in devices)
@@ -74,37 +61,26 @@
                     var imageSrc = device.ImageSrc;
                     var productName = device.ProductName;
 
-                <tr>
-                    <!--<td>
-        <div class="align-content-center text-center">
-            @{
-                string id = $"DeviceRadio{@count}";}
-            <input id="@id"
-                   type="radio"
-                   name="radiogroupdevice"
-                   onclick="OnDeviceSelected(this, '@device.Identification.SerialNumber')">
-        </div>
-    </td>-->
-
-                    <td>
-                        <div class="border-dark align-content-center text-center">
-                            <img src="@imageSrc" height="64" />
-                        </div>
-                    </td>
-                    <td>@device.Name</td>
-                    <td>@productName</td>
-                    <td>@Html.Raw("0x")@device.Identification.SerialNumber.ToString("X")</td>
-                    <td>
-                        @Html.Raw("0x")@device.Version.SoftwareVersion.ToString("X")
-                        @Html.Raw("0x")@device.Version.HardwareVersion.ToString("X")
-                        @Html.Raw("0x")@device.Version.ApplicationNumber.ToString("X")
-                        @Html.Raw("0x")@device.Version.ApplicationVersion.ToString("X")
-                    </td>
-                </tr>
-
-                    count++;
+                    <tr>
+                        <td>
+                            <div class="border-dark align-content-center text-center">
+                                <img src="@imageSrc" height="64" />
+                            </div>
+                        </td>
+                        <td> 
+                            <a href="./ObjectDictionary?sessionUuid=@device.SessionUuid&serialNumber=@device.Identification.SerialNumber">@device.Name</a>
+                        </td>
+                        <td>@productName</td>
+                        <td>@Html.Raw("0x")@device.Identification.SerialNumber.ToString("X")</td>
+                        <td>
+                            @Html.Raw("0x")@device.Version.SoftwareVersion.ToString("X")
+                            @Html.Raw("0x")@device.Version.HardwareVersion.ToString("X")
+                            @Html.Raw("0x")@device.Version.ApplicationNumber.ToString("X")
+                            @Html.Raw("0x")@device.Version.ApplicationVersion.ToString("X")
+                        </td>
+                    </tr>
                 }
             }
         }
-    </table>
-</p>
+        </table>
+        </p>
