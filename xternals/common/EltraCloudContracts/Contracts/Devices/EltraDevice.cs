@@ -4,10 +4,12 @@ using EltraCommon.Logger;
 using EltraCloudContracts.Contracts.CommandSets;
 using EltraCloudContracts.ObjectDictionary.Common;
 using EltraCloudContracts.ObjectDictionary.Common.DeviceDescription.Profiles.Application.Parameters;
-using EltraCloudContracts.ObjectDictionary.DeviceDescription;
 using EltraCloudContracts.ObjectDictionary.DeviceDescription.Factory;
 using EltraCloudContracts.ObjectDictionary.Factory;
 using EltraCloudContracts.Contracts.ToolSet;
+using EltraCloudContracts.ObjectDictionary.Common.DeviceDescription;
+using EltraCloudContracts.ObjectDictionary.DeviceDescription.Events;
+using EltraCloudContracts.ObjectDictionary.DeviceDescription;
 
 namespace EltraCloudContracts.Contracts.Devices
 {
@@ -20,7 +22,7 @@ namespace EltraCloudContracts.Contracts.Devices
         private DeviceVersion _version;
         private DeviceCommandSet _commandSet;
         private DeviceToolSet _toolSet;
-        private DeviceDescriptionFile _deviceDescription;
+        private Dd _deviceDescription;
         private DeviceIdentification _deviceIdentification;
         private DeviceStatus _status;
         
@@ -43,6 +45,15 @@ namespace EltraCloudContracts.Contracts.Devices
         protected virtual void OnStatusChanged()
         {
             StatusChanged?.Invoke(this, new EventArgs());
+        }
+
+        #endregion
+
+        #region Events handling
+
+        private void OnDeviceDescriptionFileStateChanged(object sender, DeviceDescriptionEventArgs e)
+        {
+            
         }
 
         #endregion
@@ -102,20 +113,12 @@ namespace EltraCloudContracts.Contracts.Devices
         [DataMember]
         public string ProductName  
         {
-            get
-            {
-                if(string.IsNullOrEmpty(_productName))
-                {
-                    _productName = DeviceDescription?.ProductName;
-                }
-
-                return _productName;
-            }
+            get => _productName;
             set => _productName = value;
         }
 
         [IgnoreDataMember]
-        public DeviceDescriptionFile DeviceDescription
+        public Dd DeviceDescription
         {
             get => _deviceDescription;
             set => _deviceDescription = value;
@@ -194,9 +197,13 @@ namespace EltraCloudContracts.Contracts.Devices
         {
         }
 
-        public virtual void CreateDeviceDescription()
+        public virtual async void ReadDeviceDescriptionFile()
         {
-            DeviceDescription = DeviceDescriptionFactory.CreateDeviceDescription(this);
+            var deviceDescriptionFile = DeviceDescriptionFactory.CreateDeviceDescriptionFile(this);
+
+            deviceDescriptionFile.StateChanged += OnDeviceDescriptionFileStateChanged;
+
+            await deviceDescriptionFile.Read();
         }
 
         public virtual bool CreateObjectDictionary()
@@ -247,6 +254,30 @@ namespace EltraCloudContracts.Contracts.Devices
             if (ObjectDictionary != null)
             {
                 result = ObjectDictionary.SearchParameter(index, subIndex);
+            }
+
+            return result;
+        }
+
+        public bool CreateDeviceDescription(DeviceDescriptionFile deviceDescriptionFile)
+        {
+            bool result = false;
+            var content = deviceDescriptionFile?.Content;
+
+            if (content != null)
+            {
+                var deviceDescription = DeviceDescriptionFactory.CreateDeviceDescription(this, deviceDescriptionFile);
+
+                if (deviceDescription.Parse())
+                {
+                    DeviceDescription = deviceDescription;
+
+                    result = true;
+                }
+                else
+                {
+                    MsgLogger.WriteError($"{GetType().Name} - CreateDeviceDescription", "Parsing device description failed!");
+                }
             }
 
             return result;

@@ -1,10 +1,13 @@
 ﻿using EltraCloudContracts.Contracts.Devices;
+using EltraCloudContracts.ObjectDictionary.Common.DeviceDescription;
+using EltraCloudContracts.ObjectDictionary.Xdd.DeviceDescription;
+using System;
 
 namespace EltraCloudContracts.ObjectDictionary.DeviceDescription.Factory
 {
     public static class DeviceDescriptionFactory
     {
-        public static DeviceDescriptionFile CreateDeviceDescription(EltraDevice device)
+        public static DeviceDescriptionFile CreateDeviceDescriptionFile(EltraDevice device)
         {
             DeviceDescriptionFile result;
 
@@ -19,6 +22,29 @@ namespace EltraCloudContracts.ObjectDictionary.DeviceDescription.Factory
                 default:
                     result = new XddDeviceDescriptionFile(device);
                     break;
+            }
+
+            return result;
+        }
+
+        public static Dd CreateDeviceDescription(EltraDevice device, DeviceDescriptionFile deviceDescriptionFile)
+        {
+            Dd result = null;
+            var content = deviceDescriptionFile?.Content;
+
+            if (content != null && device != null)
+            {
+                switch (device.Name)
+                {
+                    case "EPOS2":
+                        throw new NotImplementedException();
+                    case "EPOS4":
+                        result = new XddDeviceDescription(device) { DataSource = content };
+                        break;
+                    default:
+                        result = new XddDeviceDescription(device) { DataSource = content };
+                        break;
+                }
             }
 
             return result;

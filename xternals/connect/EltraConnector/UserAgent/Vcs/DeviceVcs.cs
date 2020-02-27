@@ -149,7 +149,7 @@ namespace EltraConnector.UserAgent.Vcs
 
             await Task.Run(async () =>
             {
-                var deviceDescription = DeviceDescriptionFactory.CreateDeviceDescription(device);
+                var deviceDescription = DeviceDescriptionFactory.CreateDeviceDescriptionFile(device);
 
                 if(deviceDescription!=null)
                 { 
@@ -159,14 +159,15 @@ namespace EltraConnector.UserAgent.Vcs
                         {
                             if (sender is DeviceDescriptionFile deviceDescriptionFile)
                             {
-                                deviceDescriptionFile.Device.CreateObjectDictionary();
+                                if (device.CreateDeviceDescription(deviceDescriptionFile))
+                                {
+                                    device.CreateObjectDictionary();
+                                }
 
                                 token.Set();
                             }
                         }
                     };
-
-                    device.DeviceDescription = deviceDescription;
 
                     await deviceDescription.Read();
                 }

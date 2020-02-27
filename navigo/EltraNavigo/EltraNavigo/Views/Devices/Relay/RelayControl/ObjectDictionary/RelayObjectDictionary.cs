@@ -10,12 +10,7 @@ namespace EltraNavigo.Views.RelayControl.ObjectDictionary
             : base(device)
         {   
         }
-
-        protected override bool CreateDeviceDescription()
-        {
-            return true;
-        }
-
+        
         #endregion
 
         #region Methods

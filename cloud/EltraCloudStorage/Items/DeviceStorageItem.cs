@@ -184,11 +184,7 @@ namespace EltraCloudStorage.Items
                     {
                         productName = device.ProductName;
                     }
-                    else if(device.DeviceDescription != null)
-                    {
-                        productName = device.DeviceDescription.ProductName;
-                    }
-
+                    
                     command.Parameters.Add(new DbParameterWrapper("@product_name", productName));
 
                     command.Parameters.Add(new DbParameterWrapper("@device_version_idref", deviceVersionIdref));
@@ -264,109 +260,5 @@ namespace EltraCloudStorage.Items
 
             return result;
         }
-
-        public bool GetDevicesByStatus(DeviceStatus status, out List<EltraDevice> deviceList)
-        {
-            bool result = false;
-
-            deviceList = new List<EltraDevice>();
-
-            try
-            {
-                string commandText = DbCommandTextFactory.GetCommandText(Engine, new DbCommandTextSelect(SelectQuery.SelectDevicesByStatus));
-
-                using (var command = DbCommandFactory.GetCommand(Engine, commandText, Connection))
-                {
-                    command.Parameters.Add(new DbParameterWrapper("@status", (int)status));
-
-                    var reader = command.ExecuteReader();
-
-                    while (reader.Read())
-                    {
-                        var device = new EltraDevice
-                        {
-                            Identification = new DeviceIdentification() { SerialNumber = Convert.ToUInt64(reader.GetValue(0)) },
-                            Name = reader.GetString(1),
-                            
-                            Version =
-                                         {
-                                             HardwareVersion = (ushort)reader.GetInt32(3),
-                                             SoftwareVersion = (ushort)reader.GetInt32(4),
-                                             ApplicationNumber = (ushort)reader.GetInt32(5),
-                                             ApplicationVersion = (ushort)reader.GetInt32(6)
-                                         },
-                            Status = status,
-                            Modified = reader.GetDateTime(8),
-                            Created = reader.GetDateTime(9)
-                        };
-
-                        device.DeviceDescription = new DeviceDescriptionFile(device)
-                            { ProductName = reader.GetString(2) };
-
-                        deviceList.Add(device);
-                    }
-
-                    result = true;
-                }
-            }
-            catch (Exception e)
-            {
-                MsgLogger.Exception($"{GetType().Name} - GetDevicesByStatus", e);
-            }
-
-            return result;
-        }
-
-        public bool GetDevices(out List<EltraDevice> deviceList)
-        {
-            bool result = false;
-
-            deviceList = new List<EltraDevice>();
-
-            try
-            {
-                string commandText = DbCommandTextFactory.GetCommandText(Engine, new DbCommandTextSelect(SelectQuery.SelectDevices));
-
-                using (var command = DbCommandFactory.GetCommand(Engine, commandText, Connection))
-                {
-                    var reader = command.ExecuteReader();
-
-                    while (reader.Read())
-                    {
-                        var device = new EltraDevice
-                        {
-                            Identification = new DeviceIdentification() { SerialNumber = Convert.ToUInt64(reader.GetValue(0)) },
-                            
-                            Name = reader.GetString(1),
-                            
-                            Version =
-                                         {
-                                             HardwareVersion = (ushort)reader.GetInt32(3),
-                                             SoftwareVersion = (ushort)reader.GetInt32(4),
-                                             ApplicationNumber = (ushort)reader.GetInt32(5),
-                                             ApplicationVersion = (ushort)reader.GetInt32(6)
-                                         },
-                            Status = (DeviceStatus)reader.GetInt32(7),
-                            Modified = reader.GetDateTime(8),
-                            Created = reader.GetDateTime(9)
-                        };
-
-                        device.DeviceDescription = new DeviceDescriptionFile(device)
-                            {ProductName = reader.GetString(2)};
-
-                        deviceList.Add(device);
-                    }
-
-                    result = true;
-                }
-            }
-            catch (Exception e)
-            {
-                MsgLogger.Exception($"{GetType().Name} - GetDevices", e);
-            }
-
-            return result;
-        }
-        
     }
 }

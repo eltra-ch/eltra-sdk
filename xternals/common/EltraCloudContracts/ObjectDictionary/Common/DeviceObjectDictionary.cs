@@ -12,15 +12,15 @@ namespace EltraCloudContracts.ObjectDictionary.Common
         #region Private fields
 
         private List<ParameterBase> _parameters;
-        private EltraDevice _device;
-        
+                
         #endregion
 
         #region Constructors
 
         public DeviceObjectDictionary(EltraDevice device)
         {
-            _device = device;
+            Device = device;
+            _xdd = device?.DeviceDescription;
         }
 
         #endregion
@@ -33,7 +33,7 @@ namespace EltraCloudContracts.ObjectDictionary.Common
             private set => _parameters = value; 
         }
 
-        protected EltraDevice Device => _device;
+        protected EltraDevice Device { get; }
 
         #endregion
         
@@ -45,25 +45,17 @@ namespace EltraCloudContracts.ObjectDictionary.Common
 
         #region Methods
 
-        protected abstract bool CreateDeviceDescription();
-        
         public virtual bool Open()
         {
             bool result = false;
 
             try
             {
-                if(CreateDeviceDescription())
+                if(_xdd != null)
                 {
-                    if (_xdd.Parse())
-                    {
-                        SetParameters(_xdd.Parameters);
-                        result = true;
-                    }
-                    else
-                    {
-                        MsgLogger.WriteError($"{GetType().Name} - Open", "Parsing device description failed!");
-                    }
+                    SetParameters(_xdd.Parameters);
+
+                    result = true;
                 }
                 else
                 {
@@ -84,11 +76,6 @@ namespace EltraCloudContracts.ObjectDictionary.Common
         protected void SetParameters(List<ParameterBase> parameters)
         {
             Parameters = parameters;
-        }
-
-        protected void SetDeviceDescription(Dd xdd)
-        {
-            _xdd = xdd;
         }
 
         protected Dd GetDeviceDescription()

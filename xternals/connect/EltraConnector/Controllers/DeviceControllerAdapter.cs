@@ -70,11 +70,17 @@ namespace EltraConnector.Controllers
         {
             if (e.State == DeviceDescriptionState.Read)
             {
-                if (sender is DeviceDescriptionFile deviceDescription)
+                if (sender is DeviceDescriptionFile deviceDescriptionFile)
                 {
-                    var device = deviceDescription.Device;
+                    var device = deviceDescriptionFile.Device;
 
-                    device.CreateObjectDictionary();
+                    if (device != null)
+                    {
+                        if (device.CreateDeviceDescription(deviceDescriptionFile))
+                        {
+                            device.CreateObjectDictionary();
+                        }
+                    }
                 }
             }
             else if(e.State == DeviceDescriptionState.Failed)
@@ -154,16 +160,14 @@ namespace EltraConnector.Controllers
                 {
                     foreach (var device in devices)
                     {
-                        var deviceDescription = DeviceDescriptionFactory.CreateDeviceDescription(device);
+                        var deviceDescriptionFile = DeviceDescriptionFactory.CreateDeviceDescriptionFile(device);
 
-                        if (deviceDescription != null)
+                        if (deviceDescriptionFile != null)
                         {
-                            deviceDescription.Url = Url;
-                            deviceDescription.StateChanged += OnDeviceDescriptionStateChanged;
+                            deviceDescriptionFile.Url = Url;
+                            deviceDescriptionFile.StateChanged += OnDeviceDescriptionStateChanged;
 
-                            device.DeviceDescription = deviceDescription;
-
-                            await deviceDescription.Read();
+                            await deviceDescriptionFile.Read();
                         }
                         else
                         {

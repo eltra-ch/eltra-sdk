@@ -1,10 +1,7 @@
 ﻿using EltraCloudContracts.Contracts.Devices;
-using EltraCloudContracts.ObjectDictionary.Common;
 using EltraCloudContracts.ObjectDictionary.Common.DeviceDescription.Profiles.Application.Parameters;
 using EltraCloudContracts.ObjectDictionary.DeviceDescription;
 using EltraCloudContracts.ObjectDictionary.DeviceDescription.Events;
-using EltraCloudContracts.ObjectDictionary.Xdd;
-using EltraCommon.Logger;
 using EltraConnector.SyncAgent;
 using EltraMaster.Device.Commands;
 using EltraMaster.Device.ParameterConnection;
@@ -73,24 +70,27 @@ namespace EltraMaster.Device
             if (CloudAgent != null)
             {
                 CreateCommunication();
-                CreateDeviceDescription();
+                ReadDeviceDescriptionFile();
             }
         }
 
         protected virtual void CreateCommunication()
         {
         }
-
+        
         private void OnDeviceDescriptionStateChanged(object sender, DeviceDescriptionEventArgs e)
         {
             if (e.State == DeviceDescriptionState.Read)
             {
-                AddDeviceTools(e.DeviceDescription as XddDeviceDescriptionFile);
+                if (CreateDeviceDescription(e.DeviceDescription))
+                {
+                    AddDeviceTools(e.DeviceDescription as XddDeviceDescriptionFile);
 
-                CreateObjectDictionary();
-                CreateConnectionManager();
+                    CreateObjectDictionary();
+                    CreateConnectionManager();
 
-                OnInitialized();
+                    OnInitialized();
+                }
             }
         }
 
@@ -107,17 +107,17 @@ namespace EltraMaster.Device
             AddCommand(new SetObjectCommand(this));
         }
 
-        public override async void CreateDeviceDescription()
+        public override async void ReadDeviceDescriptionFile()
         {
-            DeviceDescription = new XddDeviceDescriptionFile(this)
+            var deviceDescription = new XddDeviceDescriptionFile(this)
             {
                 Url = CloudAgent.Url,
                 SourceFile = DeviceDescriptionFilePath
             };
 
-            DeviceDescription.StateChanged += OnDeviceDescriptionStateChanged;
+            deviceDescription.StateChanged += OnDeviceDescriptionStateChanged;
 
-            await DeviceDescription.Read();
+            await deviceDescription.Read();
         }
 
         private void AddDeviceTools(XddDeviceDescriptionFile xdd)
@@ -135,30 +135,7 @@ namespace EltraMaster.Device
         {
             ParameterConnectionManager = new ParameterConnectionManager(this);
         }
-
-        public override bool CreateObjectDictionary()
-        {
-            var objectDictionary = new XddObjectDictionary(this);
-
-            bool result = objectDictionary.Open();
-
-            if (objectDictionary.Open())
-            {
-                ObjectDictionary = objectDictionary;
-
-                Status = DeviceStatus.Ready;
-
-                result = true;
-            }
-            else
-            {
-                MsgLogger.WriteError($"{GetType().Name} - CreateObjectDictionary", "Cannot open object dictionary!");
-            }
-
-            return result;
-        }
-
-
+               
         protected void StartParameterConnectionManager(ref List<Task> tasks)
         {
             var task = ParameterConnectionManager.StartAsync();
@@ -168,7 +145,6 @@ namespace EltraMaster.Device
                 tasks.Add(task);
             }
         }
-
 
         public bool ReadParameter(Parameter parameter)
         {

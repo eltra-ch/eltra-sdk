@@ -594,19 +594,20 @@ namespace EltraCloud.Services
 
             if (device != null && device.DeviceDescription == null)
             {
-                var deviceDescription = DeviceDescriptionFactory.CreateDeviceDescription(device);
+                var deviceDescriptionFile = DeviceDescriptionFactory.CreateDeviceDescriptionFile(device);
 
-                if(deviceDescription != null)
+                if(deviceDescriptionFile != null)
                 {
                     var content = DownloadDeviceDescription(device.Version);
 
                     if(content!=null)
                     {
-                        deviceDescription.Content = content.PlainContent;
+                        deviceDescriptionFile.Content = content.PlainContent;
 
-                        device.DeviceDescription = deviceDescription;
-
-                        result = CreateObjectDictionary(device, deviceDescription);
+                        if (device.CreateDeviceDescription(deviceDescriptionFile))
+                        {
+                            result = CreateObjectDictionary(device, deviceDescriptionFile);
+                        }
                     }
                 }
             }
@@ -736,23 +737,6 @@ namespace EltraCloud.Services
                 if (ResourceHelper.GetBase64ImageFromResources(fileName, out var base64Image))
                 {
                     device.ProductPicture = base64Image;
-                }
-                else
-                {
-                    if(device.DeviceDescription != null)
-                    {
-                        string url = $"{device?.DeviceDescription?.Url}";
-
-                        if(!string.IsNullOrEmpty(url))
-                        {
-                            if(!url.EndsWith('/'))
-                            {
-                                url += "/";                                
-                            }
-
-                            device.ProductPicture = $"{url}../thumbnails/{fileName}";
-                        }
-                    }
                 }
             }
         }

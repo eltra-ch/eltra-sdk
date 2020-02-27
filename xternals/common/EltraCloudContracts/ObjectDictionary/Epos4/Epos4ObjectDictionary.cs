@@ -1,5 +1,4 @@
-﻿
-using EltraCloudContracts.Contracts.Devices;
+﻿using EltraCloudContracts.Contracts.Devices;
 using EltraCloudContracts.ObjectDictionary.Xdd;
 using EltraCloudContracts.ObjectDictionary.Common.DeviceDescription.Profiles.Application.Parameters;
 using EltraCloudContracts.ObjectDictionary.Epos4.DeviceDescription;

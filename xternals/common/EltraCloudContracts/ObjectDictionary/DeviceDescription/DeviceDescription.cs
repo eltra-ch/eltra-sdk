@@ -73,7 +73,7 @@ namespace EltraCloudContracts.ObjectDictionary.DeviceDescription
             if (device != null)
             {                
                 SerialNumber = device.Identification.SerialNumber;
-                PlainContent = device.DeviceDescription?.Content;
+                PlainContent = device.DeviceDescription?.DataSource;
 
                 if (!string.IsNullOrEmpty(PlainContent))
                 {
