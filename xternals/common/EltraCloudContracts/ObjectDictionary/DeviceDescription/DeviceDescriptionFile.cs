@@ -134,39 +134,7 @@ namespace EltraCloudContracts.ObjectDictionary.DeviceDescription
             
             return result;
         }
-
-        public async Task<bool> Exists(DeviceDescription deviceDescription)
-        {
-            bool result = false;
-
-            try
-            {
-                var query = HttpUtility.ParseQueryString(string.Empty);
-
-                query["hashCode"] = deviceDescription.HashCode;
-
-                var url = UrlHelper.BuildUrl(Url, "api/description/exists", query);
-
-                var json = await Get(url);
-
-                if (!string.IsNullOrEmpty(json))
-                {
-                    var requestResult = JsonConvert.DeserializeObject<RequestResult>(json);
-
-                    if (requestResult != null)
-                    {
-                        result = requestResult.Result;
-                    }
-                }
-            }
-            catch (Exception e)
-            {
-                MsgLogger.Exception($"{GetType().Name} - Exists", e);
-            }
-
-            return result;
-        }
-
+        
         private async Task<DeviceDescription> Download(DeviceVersion deviceVersion)
         {
             DeviceDescription result = null;

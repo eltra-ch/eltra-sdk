@@ -1,8 +1,9 @@
 ﻿using System.Xml;
-
+using EltraCloudContracts.Contracts.Devices;
 using EltraCloudContracts.ObjectDictionary.Xdd.DeviceDescription.Profiles.Application;
 using EltraCloudContracts.ObjectDictionary.Xdd.DeviceDescription.Profiles.Application.Parameters;
 using EltraCloudContracts.ObjectDictionary.Xdd.DeviceDescription.Profiles.Device;
+using EltraCloudContracts.ObjectDictionary.Xdd.DeviceDescription.Profiles.Identity;
 
 namespace EltraCloudContracts.ObjectDictionary.Xdd.DeviceDescription.Profiles
 {
@@ -10,15 +11,16 @@ namespace EltraCloudContracts.ObjectDictionary.Xdd.DeviceDescription.Profiles
     {
         #region Private fields
 
+        private XddDeviceIdentity _deviceIdentity;
         private XddApplicationProcess _applicationProcess;
         private XddDeviceManager _deviceManager;
-        private readonly Contracts.Devices.EltraDevice _device;
+        private readonly EltraDevice _device;
 
         #endregion
 
         #region Constructors
 
-        public XddProfileBody(Contracts.Devices.EltraDevice device)
+        public XddProfileBody(EltraDevice device)
         {
             _device = device;
         }
@@ -30,6 +32,8 @@ namespace EltraCloudContracts.ObjectDictionary.Xdd.DeviceDescription.Profiles
         protected XddApplicationProcess ApplicationProcess => _applicationProcess ?? (_applicationProcess = new XddApplicationProcess(_device, DeviceManager));
 
         protected XddDeviceManager DeviceManager => _deviceManager ?? (_deviceManager = new XddDeviceManager());
+
+        protected XddDeviceIdentity DeviceIdentity => _deviceIdentity ?? (_deviceIdentity = new XddDeviceIdentity(_device));
 
         public XddParameterList ParameterList => ApplicationProcess.ParameterList;
 
@@ -43,7 +47,15 @@ namespace EltraCloudContracts.ObjectDictionary.Xdd.DeviceDescription.Profiles
 
             foreach (XmlNode childNode in profileBodyNode.ChildNodes)
             {
-                if (childNode.Name == "ApplicationProcess")
+                if (childNode.Name == "DeviceIdentity")
+                {
+                    if (!DeviceIdentity.Parse(childNode))
+                    {
+                        result = false;
+                        break;
+                    }
+                }
+                else if (childNode.Name == "ApplicationProcess")
                 {
                     if (!ApplicationProcess.Parse(childNode))
                     {

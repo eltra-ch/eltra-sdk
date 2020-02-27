@@ -598,7 +598,7 @@ namespace EltraCloudStorage.Services
             return result;
         }
 
-        public override bool DeviceDescriptionExists(string hashCode)
+        public override bool DeviceDescriptionExists(ulong serialNumber, string hashCode)
         {
             bool result = false;
 
@@ -606,7 +606,7 @@ namespace EltraCloudStorage.Services
             {
                 if (sessionStorage != null)
                 {
-                    result = sessionStorage.DeviceDescriptionExists(hashCode);
+                    result = sessionStorage.DeviceDescriptionExists(serialNumber, hashCode);
                 }
             }
 

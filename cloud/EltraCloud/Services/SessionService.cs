@@ -729,13 +729,13 @@ namespace EltraCloud.Services
         
         private void UpdateDeviceImage(EltraDevice device)
         {
-            if(device!=null)
+            if(device!=null && string.IsNullOrEmpty(device.ProductPicture))
             { 
                 string fileName = DeviceToPictureFileNameConverter(device);
             
                 if (ResourceHelper.GetBase64ImageFromResources(fileName, out var base64Image))
                 {
-                    device.ImageSrc = base64Image;
+                    device.ProductPicture = base64Image;
                 }
                 else
                 {
@@ -750,7 +750,7 @@ namespace EltraCloud.Services
                                 url += "/";                                
                             }
 
-                            device.ImageSrc = $"{url}../thumbnails/{fileName}";
+                            device.ProductPicture = $"{url}../thumbnails/{fileName}";
                         }
                     }
                 }
@@ -864,13 +864,13 @@ namespace EltraCloud.Services
             return result;
         }
 
-        public override bool DeviceDescriptionExists(string hashCode)
+        public override bool DeviceDescriptionExists(ulong serialNumber, string hashCode)
         {
             bool result = false;
 
             if (_storageService != null)
             {
-                result = _storageService.DeviceDescriptionExists(hashCode);
+                result = _storageService.DeviceDescriptionExists(serialNumber, hashCode);
             }
 
             return result;

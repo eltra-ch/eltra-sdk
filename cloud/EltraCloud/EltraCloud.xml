@@ -156,10 +156,11 @@
             <param name="deviceDescription">Device description object</param>
             <returns>RequestResult</returns>
         </member>
-        <member name="M:EltraCloud.Controllers.DescriptionController.DeviceDescriptionExists(System.String)">
+        <member name="M:EltraCloud.Controllers.DescriptionController.DeviceDescriptionExists(System.UInt64,System.String)">
             <summary>
             Check if device description exists
             </summary>
+            <param name="serialNumber">device id</param>
             <param name="hashCode">content hash code (md5)</param>
             <returns>RequestResult</returns>
         </member>

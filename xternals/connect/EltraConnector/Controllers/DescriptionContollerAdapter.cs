@@ -51,6 +51,7 @@ namespace EltraConnector.Controllers
             {
                 var query = HttpUtility.ParseQueryString(string.Empty);
 
+                query["serialNumber"] = $"{deviceDescription.SerialNumber}";
                 query["hashCode"] = deviceDescription.HashCode;
 
                 var url = UrlHelper.BuildUrl(Url, "api/description/exists", query);

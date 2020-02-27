@@ -1209,13 +1209,13 @@ namespace EltraCloudStorage.Items
 
         #region Device Description
         
-        public bool DeviceDescriptionExists(string hashCode)
+        public bool DeviceDescriptionExists(ulong serialNumber, string hashCode)
         {
             bool result = false;
 
             if (_deviceDescriptionStorage != null)
             {
-                result = _deviceDescriptionStorage.Exists(hashCode);
+                result = _deviceDescriptionStorage.Exists(serialNumber, hashCode);
             }
 
             return result;

@@ -444,6 +444,11 @@ namespace EltraCloudStorage.DataSource.CommandText
                                 " set sl.status = @status, sl.modified = NOW()" +
                                 " where sm.uuid = @uuid or ss.uuid = @uuid;";
                     break;
+                case UpdateQuery.UpdateDeviceDescriptionReference:
+                    {
+                        result = "update device set device_description_idref=@device_description_id, modified=NOW() where serial_number=@serial_number";
+                    }
+                    break;
             }
 
             return result;

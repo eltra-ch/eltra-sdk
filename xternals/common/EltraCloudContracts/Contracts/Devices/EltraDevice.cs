@@ -122,7 +122,7 @@ namespace EltraCloudContracts.Contracts.Devices
         }
 
         [IgnoreDataMember]
-        public string ImageSrc { get; set; }
+        public string ProductPicture { get; set; }
 
         #endregion
 

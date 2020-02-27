@@ -20,6 +20,9 @@ namespace EltraCloudContracts.ObjectDictionary.DeviceDescription
         }
 
         [DataMember]
+        public ulong SerialNumber { get; set; }
+
+        [DataMember]
         public DeviceVersion Version { get; set; }
 
         [DataMember]
@@ -68,7 +71,8 @@ namespace EltraCloudContracts.ObjectDictionary.DeviceDescription
         private void Init(EltraDevice device)
         {
             if (device != null)
-            {
+            {                
+                SerialNumber = device.Identification.SerialNumber;
                 PlainContent = device.DeviceDescription?.Content;
 
                 if (!string.IsNullOrEmpty(PlainContent))

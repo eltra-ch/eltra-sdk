@@ -57,11 +57,6 @@ namespace EltraCloud.Pages
 
         #region Methods
 
-        public void ObdClick(object sender, EventArgs e)
-        {
-            UpdateSessions();
-        }
-
         public void OnGet()
         {
             UpdateSessions();

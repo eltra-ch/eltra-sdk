@@ -21,9 +21,23 @@ namespace EltraCloudStorage.Items
             AddChild(_deviceVersionStorage);
         }
         
-        public bool Exists(string hashCode)
+        public bool Exists(ulong serialNumber, string hashCode)
         {
             bool result = false;
+
+            if (GetDeviceDescriptionId(hashCode, out var deviceDescriptionId))
+            {
+                result = UpdateDeviceDescriptionReference(serialNumber, deviceDescriptionId);
+            }
+
+            return result;
+        }
+
+        private bool GetDeviceDescriptionId(string hashCode, out int deviceDescriptionId)
+        {
+            bool result = false;
+
+            deviceDescriptionId = 0;
 
             try
             {
@@ -37,9 +51,9 @@ namespace EltraCloudStorage.Items
 
                     if (queryResult != null && !(queryResult is DBNull))
                     {
-                        var id = Convert.ToInt32(queryResult);
+                        deviceDescriptionId = Convert.ToInt32(queryResult);
 
-                        result = id > 0;
+                        result = true;
                     }
                 }
             }
@@ -141,6 +155,40 @@ namespace EltraCloudStorage.Items
                 {
                     MsgLogger.WriteError($"{GetType().Name} - Upload", $"cannot retrieve device version id ({deviceDescription.Version})");
                 }
+            }
+
+            if(GetDeviceDescriptionId(deviceDescription.HashCode, out deviceDescriptionId))
+            {
+                result = UpdateDeviceDescriptionReference(deviceDescription.SerialNumber, deviceDescriptionId);
+            }
+
+            return result;
+        }
+
+        private bool UpdateDeviceDescriptionReference(ulong serialNumber, int deviceDescriptionId)
+        {
+            bool result = false;
+
+            try
+            {
+                string commandText = DbCommandTextFactory.GetCommandText(Engine, new DbCommandTextUpdate(UpdateQuery.UpdateDeviceDescriptionReference));
+
+                using (var command = DbCommandFactory.GetCommand(Engine, commandText, Connection))
+                {
+                    command.Parameters.Add(new DbParameterWrapper("@serial_number", serialNumber));
+                    command.Parameters.Add(new DbParameterWrapper("@device_description_id", deviceDescriptionId));
+
+                    var queryResult = command.ExecuteNonQuery();
+
+                    if (queryResult > 0)
+                    {
+                        result = true;
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                MsgLogger.Exception($"{GetType().Name} - AddDeviceDescription", e);
             }
 
             return result;

@@ -83,7 +83,7 @@ namespace EltraCloudStorage.Services
         public abstract List<ParameterUniqueIdValuePair> GetParameterPairHistory(ulong serialNumber, string uniqueId1, string uniqueId2, DateTime from, DateTime to);
         public abstract DeviceDescription DownloadDeviceDescription(DeviceVersion version);
         public abstract bool UploadDeviceDescription(DeviceDescription deviceDescription);
-        public abstract bool DeviceDescriptionExists(string hashCode);
+        public abstract bool DeviceDescriptionExists(ulong serialNumber, string hashCode);
         public abstract List<EltraDevice> GetSessionDevices(string uuid);
         public abstract bool GetSessionDevicesCount(Session session, out int count);
         public abstract bool CreateSessionLink(string uuid, List<Session> sessions);

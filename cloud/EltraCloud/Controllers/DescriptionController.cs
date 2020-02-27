@@ -88,15 +88,16 @@ namespace EltraCloud.Controllers
         /// <summary>
         /// Check if device description exists
         /// </summary>
+        /// <param name="serialNumber">device id</param>
         /// <param name="hashCode">content hash code (md5)</param>
         /// <returns>RequestResult</returns>
         [HttpGet("exists")]
-        public IActionResult DeviceDescriptionExists(string hashCode)
+        public IActionResult DeviceDescriptionExists(ulong serialNumber, string hashCode)
         {
             var startTime = MsgLogger.BeginTimeMeasure();
             var requestResult = new RequestResult();
 
-            requestResult.Result = _sessionService.DeviceDescriptionExists(hashCode);
+            requestResult.Result = _sessionService.DeviceDescriptionExists(serialNumber, hashCode);
 
             MsgLogger.EndTimeMeasure($"{GetType().Name} - DeviceDescriptionExists", startTime, $"device description, hash='{hashCode}' exists, result={requestResult.Result}");
 

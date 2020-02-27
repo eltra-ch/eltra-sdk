@@ -3,6 +3,7 @@ using EltraCloudContracts.ObjectDictionary.Common;
 using EltraCloudContracts.ObjectDictionary.Common.DeviceDescription.Profiles.Application.Parameters;
 using EltraCloudContracts.ObjectDictionary.DeviceDescription;
 using EltraCloudContracts.ObjectDictionary.DeviceDescription.Events;
+using EltraCloudContracts.ObjectDictionary.Xdd;
 using EltraCommon.Logger;
 using EltraConnector.SyncAgent;
 using EltraMaster.Device.Commands;
@@ -137,7 +138,7 @@ namespace EltraMaster.Device
 
         public override bool CreateObjectDictionary()
         {
-            var objectDictionary = new XddDeviceObjectDictionary(this);
+            var objectDictionary = new XddObjectDictionary(this);
 
             bool result = objectDictionary.Open();
 

@@ -26,6 +26,7 @@ namespace EltraCloudStorage.DataSource.CommandText.Database.Definitions
         UpdateToolSet,
         UpdateDeviceDescription,
         SetSessionLinkStatus,
-        SetSessionLinkStatusBySessionId
+        SetSessionLinkStatusBySessionId,
+        UpdateDeviceDescriptionReference
     }
 }

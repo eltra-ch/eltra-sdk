@@ -186,7 +186,7 @@ namespace EltraConnector.Controllers
 
             try
             {
-                await UploadDescription(device);
+                await UploadDeviceDescription(device);
 
                 SessionDevices.AddDevice(device);
 
@@ -222,7 +222,7 @@ namespace EltraConnector.Controllers
             return result;
         }
 
-        private async Task UploadDescription(EltraDevice device)
+        private async Task UploadDeviceDescription(EltraDevice device)
         {
             var description = new DeviceDescription(device);
 
