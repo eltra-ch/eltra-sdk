@@ -27,7 +27,7 @@ namespace EposMaster.DeviceManager.Device
 
         public bool Equals(MotionControllerDevice motionControllerDevice)
         {
-            bool result = Name == motionControllerDevice.Name;
+            bool result = Family == motionControllerDevice.Family;
 
             if (result && InterfaceName != motionControllerDevice.InterfaceName)
             {
@@ -49,7 +49,7 @@ namespace EposMaster.DeviceManager.Device
 
         public bool Equals(EposDevice eposDevice)
         {
-            bool result = Name == eposDevice.Name;
+            bool result = Family == eposDevice.Family;
 
             if (result && InterfaceName != eposDevice.InterfaceName)
             {

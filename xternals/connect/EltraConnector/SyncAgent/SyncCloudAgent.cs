@@ -155,7 +155,7 @@ namespace EltraConnector.SyncAgent
                 if (await RegisterSession())
                 {
                     MsgLogger.WriteLine(
-                        $"register(+) device='{device.Name}', serial number=0x{device.Identification.SerialNumber:X}");
+                        $"register(+) device='{device.Family}', serial number=0x{device.Identification.SerialNumber:X}");
 
                     var registered = await _sessionControllerAdapter.IsDeviceRegistered(device);
 
@@ -207,7 +207,7 @@ namespace EltraConnector.SyncAgent
                 
                 if (registered)
                 {
-                    MsgLogger.WriteLine($"unregister(-) device='{device.Name}', serial number=0x{device.Identification.SerialNumber:X}");
+                    MsgLogger.WriteLine($"unregister(-) device='{device.Family}', serial number=0x{device.Identification.SerialNumber:X}");
 
                     await _sessionControllerAdapter.UnregisterDevice(device);
                 }

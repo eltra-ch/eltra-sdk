@@ -51,22 +51,22 @@ namespace EposMaster.DeviceManager
 
                 RegisterDeviceEvents(eposDevice);
 
-                MsgLogger.WriteDebug($"{GetType().Name} - method", $"try to connect to device {eposDevice.Name}");
+                MsgLogger.WriteDebug($"{GetType().Name} - method", $"try to connect to device {eposDevice.Family}");
 
                 if (!await ConnectDevice(eposDevice))
                 {
-                    MsgLogger.WriteError($"{GetType().Name} - OnDeviceDetected", $"connect to device {eposDevice.Name} failed!");
+                    MsgLogger.WriteError($"{GetType().Name} - OnDeviceDetected", $"connect to device {eposDevice.Family} failed!");
 
                     UnregisterDeviceEvents(eposDevice);
                 }
                 else
                 {
-                    MsgLogger.WriteDebug($"{GetType().Name} - method", $"connect to device {eposDevice.Name} successful");
+                    MsgLogger.WriteDebug($"{GetType().Name} - method", $"connect to device {eposDevice.Family} successful");
                 }
             }
             else
             {
-                MsgLogger.WriteLine($"device: {device.Name} not supported!");
+                MsgLogger.WriteLine($"device: {device.Family} not supported!");
             }
         }
 
@@ -106,14 +106,14 @@ namespace EposMaster.DeviceManager
                 {
                     case DeviceStatus.Connected:
                     {
-                        MsgLogger.WriteLine($"Connected: device='{device.Name}', serial number=0x{device.Identification.SerialNumber:X}");
+                        MsgLogger.WriteLine($"Connected: device='{device.Family}', serial number=0x{device.Identification.SerialNumber:X}");
 
                         await CloudAgent.RegisterDevice(device);
 
                     } break;
                     case DeviceStatus.Disconnected:
                     {
-                        MsgLogger.WriteLine($"Disconnected: device = {device.Name} - Unregister");
+                        MsgLogger.WriteLine($"Disconnected: device = {device.Family} - Unregister");
 
                         await CloudAgent.UnregisterDevice(device);
 
@@ -140,7 +140,7 @@ namespace EposMaster.DeviceManager
             }
             else
             {
-                MsgLogger.WriteError($"{GetType().Name} - ConnectDevice", $"connection to {device.Name} failed, agent not ready!");
+                MsgLogger.WriteError($"{GetType().Name} - ConnectDevice", $"connection to {device.Family} failed, agent not ready!");
             }
 
             return result;

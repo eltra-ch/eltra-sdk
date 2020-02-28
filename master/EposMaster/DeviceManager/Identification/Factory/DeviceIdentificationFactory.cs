@@ -8,7 +8,7 @@ namespace EposMaster.DeviceManager.Identification.Factory
         {
             EposDeviceIdentification result = null;
 
-            switch (device.Name)
+            switch (device.Family)
             {
                 case "EPOS2":
                     result = new Epos2DeviceIdentification(device);

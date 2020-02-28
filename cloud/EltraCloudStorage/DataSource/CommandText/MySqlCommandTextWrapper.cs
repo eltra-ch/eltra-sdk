@@ -32,22 +32,22 @@ namespace EltraCloudStorage.DataSource.CommandText
                     break;
                 case SelectQuery.SelectDeviceBySerialNumber:
                     result =
-                        "select d.device_name, d.product_name, dv.hardware_version, dv.software_version, dv.application_version, dv.application_number, d.status, d.modified from device as d inner join device_version as dv on d.device_version_idref=dv.device_version_id where serial_number=@serial_number";
+                        "select d.product_family, d.product_name, dv.hardware_version, dv.software_version, dv.application_version, dv.application_number, d.status, d.modified from device as d inner join device_version as dv on d.device_version_idref=dv.device_version_id where serial_number=@serial_number";
                     break;
                 case SelectQuery.SelectDeviceIdBySerialNumber:
                     result = "select device_id from device where serial_number=@serial_number";
                     break;
                 case SelectQuery.SelectDeviceById:
                     result =
-                        "select d.serial_number, d.device_name, d.product_name, dv.hardware_version, dv.software_version, dv.application_version, dv.application_number, d.status, d.modified from device as d inner join device_version as dv on d.device_version_idref=dv.device_version_id where device_id=@device_id";
+                        "select d.serial_number, d.product_family, d.product_name, dv.hardware_version, dv.software_version, dv.application_version, dv.application_number, d.status, d.modified from device as d inner join device_version as dv on d.device_version_idref=dv.device_version_id where device_id=@device_id";
                     break;
                 case SelectQuery.SelectDevicesByStatus:
                     result =
-                        "select d.serial_number, d.device_name, d.product_name, dv.hardware_version, dv.software_version, dv.application_number,dv.application_version, d.status, d.modified, d.created from device as d inner join device_version as dv on d.device_version_idref=dv.device_version_id where `status`=@status";
+                        "select d.serial_number, d.product_family, d.product_name, dv.hardware_version, dv.software_version, dv.application_number,dv.application_version, d.status, d.modified, d.created from device as d inner join device_version as dv on d.device_version_idref=dv.device_version_id where `status`=@status";
                     break;
                 case SelectQuery.SelectDevices:
                     result =
-                        "select d.serial_number, d.device_name, d.product_name, dv.hardware_version, dv.software_version, dv.application_number,dv.application_version, d.status, d.modified, d.created from device as d inner join device_version as dv on d.device_version_idref=dv.device_version_id";
+                        "select d.serial_number, d.product_family, d.product_name, dv.hardware_version, dv.software_version, dv.application_number,dv.application_version, d.status, d.modified, d.created from device as d inner join device_version as dv on d.device_version_idref=dv.device_version_id";
                     break;
                 case SelectQuery.SelectDeviceUserById:
                     result =
@@ -223,14 +223,14 @@ namespace EltraCloudStorage.DataSource.CommandText
                              " where d.serial_number = @serialNumber and s.status = @status";
                     break;
                 case SelectQuery.SelectDevicebySerialNumber:
-                    result = "select s.uuid, d.device_id, d.device_name, d.serial_number, d.status, d.modified, d.created, dv.hardware_version, dv.software_version, dv.application_number, dv.application_version from session_devices as sd"
+                    result = "select s.uuid, d.device_id, d.product_family, d.serial_number, d.status, d.modified, d.created, dv.hardware_version, dv.software_version, dv.application_number, dv.application_version from session_devices as sd"
                             + " inner join session as s on s.session_id = sd.session_idref"
                             + " inner join device as d on d.device_id = sd.device_idref"
                             + " inner join device_version as dv on d.device_version_idref = dv.device_version_id"
                             + " where d.serial_number = @serial_number and s.status = @status";
                     break;
                 case SelectQuery.SelectDevicesbySessionId:
-                    result = "select d.device_id, d.device_name, d.serial_number, d.status, d.modified, d.created, dv.hardware_version, dv.software_version, dv.application_number, dv.application_version from session_devices as sd"
+                    result = "select d.device_id, d.product_family, d.serial_number, d.status, d.modified, d.created, dv.hardware_version, dv.software_version, dv.application_number, dv.application_version from session_devices as sd"
                              + " inner join session as s on s.session_id = sd.session_idref"
                              + " inner join device as d on d.device_id = sd.device_idref"
                              + " inner join device_version as dv on d.device_version_idref = dv.device_version_id"
@@ -485,8 +485,8 @@ namespace EltraCloudStorage.DataSource.CommandText
                              "values (@hardware_version, @software_version, @application_version, @application_number, NOW(), NOW())";
                     break;
                 case InsertQuery.InsertDevice:
-                    result = "INSERT INTO device (serial_number,device_name,product_name,device_version_idref,device_description_idref,status,created,modified) " +
-                                "VALUES(@serial_number,@device_name,@product_name,@device_version_idref,@device_description_idref,@status,NOW(),NOW())";
+                    result = "INSERT INTO device (serial_number,product_family,product_name,device_version_idref,device_description_idref,status,created,modified) " +
+                                "VALUES(@serial_number,@product_family,@product_name,@device_version_idref,@device_description_idref,@status,NOW(),NOW())";
                     break;
                 case InsertQuery.InsertDeviceUser:
                     result = "insert into device_user(login_name, user_name, password, `status`,created,modified) values(@login_name, @user_name, @password, @status,NOW(),NOW())";

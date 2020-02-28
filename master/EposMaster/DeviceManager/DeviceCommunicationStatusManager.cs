@@ -22,7 +22,7 @@ namespace EposMaster.DeviceManager
             
             if(_device!=null)
             {
-                LockingObjectName = $"Global\\VcsDevice{_device.Name}{_device.InterfaceName}{_device.PortName}";
+                LockingObjectName = $"Global\\VcsDevice{_device.Family}{_device.InterfaceName}{_device.PortName}";
             }
         }
 
@@ -52,7 +52,7 @@ namespace EposMaster.DeviceManager
                 MsgLogger.Exception($"{GetType().Name} - method", e);
             }
 
-            MsgLogger.WriteDebug($"{GetType().Name} - method", $"Is device {_device.Name} connected = {result}");
+            MsgLogger.WriteDebug($"{GetType().Name} - method", $"Is device {_device.Family} connected = {result}");
 
             return result;
         }
@@ -83,7 +83,7 @@ namespace EposMaster.DeviceManager
                 MsgLogger.Exception($"{GetType().Name} - method", e);
             }
 
-            MsgLogger.WriteLine($"Set device {_device.Name} connected = {result}");
+            MsgLogger.WriteLine($"Set device {_device.Family} connected = {result}");
 
             return result;
         }
@@ -119,7 +119,7 @@ namespace EposMaster.DeviceManager
                 result = true;
             }
             
-            MsgLogger.WriteLine($"Set device {_device.Name} disconnected = {result}");
+            MsgLogger.WriteLine($"Set device {_device.Family} disconnected = {result}");
         }
 
         #endregion

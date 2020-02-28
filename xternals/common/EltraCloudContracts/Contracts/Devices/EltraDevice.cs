@@ -87,7 +87,7 @@ namespace EltraCloudContracts.Contracts.Devices
         public string SessionUuid { get; set; }
 
         [DataMember]
-        public string Name { get; set; }
+        public string Family { get; set; }
 
         [DataMember]
         public DeviceIdentification Identification
@@ -133,7 +133,7 @@ namespace EltraCloudContracts.Contracts.Devices
         public DeviceObjectDictionary ObjectDictionary { get; set; }
 
         [DataMember]
-        public string ProductName { get; set; }
+        public string Name { get; set; }
 
         [IgnoreDataMember]
         public Dd DeviceDescription

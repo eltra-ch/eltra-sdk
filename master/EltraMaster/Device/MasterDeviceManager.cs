@@ -93,7 +93,7 @@ namespace EltraMaster.Device
             {
                 device.Disconnect();
 
-                MsgLogger.WriteLine($"Disconnected: device = {device.Name} - Unregister");
+                MsgLogger.WriteLine($"Disconnected: device = {device.Family} - Unregister");
 
                 await CloudAgent.UnregisterDevice(device);
 
@@ -105,7 +105,7 @@ namespace EltraMaster.Device
         {
             foreach (var device in DeviceList)
             {
-                MsgLogger.WriteLine($"Connected: device='{device.Name}', serial number=0x{device.Identification.SerialNumber:X}");
+                MsgLogger.WriteLine($"Connected: device='{device.Family}', serial number=0x{device.Identification.SerialNumber:X}");
 
                 device.Status = DeviceStatus.Ready;
 

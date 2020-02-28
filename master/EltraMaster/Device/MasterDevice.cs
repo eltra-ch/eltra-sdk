@@ -21,9 +21,9 @@ namespace EltraMaster.Device
 
         #region Constructors
 
-        public MasterDevice(string name, string deviceDescriptionFilePath)
+        public MasterDevice(string family, string deviceDescriptionFilePath)
         {
-            Name = name;
+            Family = family;
             DeviceDescriptionFilePath = deviceDescriptionFilePath;
 
             CreateCommandSet();

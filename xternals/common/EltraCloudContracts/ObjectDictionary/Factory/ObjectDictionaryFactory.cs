@@ -12,11 +12,11 @@ namespace EltraCloudContracts.ObjectDictionary.Factory
         {
             DeviceObjectDictionary result = null;
 
-            if (device.Name == "EPOS2")
+            if (device.Family == "EPOS2")
             {
                 throw new NotImplementedException();
             }
-            else if (device.Name == "EPOS4")
+            else if (device.Family == "EPOS4")
             {
                 result = new Epos4ObjectDictionary(device);
             }

@@ -116,10 +116,10 @@ namespace EposMaster.DeviceManager.Scanner
             return result;
         }
 
-        private async Task<List<MotionControllerDevice>> GetDevices(string deviceName)
+        private async Task<List<MotionControllerDevice>> GetDevices(string familyName)
         {
             var result = new List<MotionControllerDevice>();
-            var protocolStackNames = GetProtocolStackNames(deviceName);
+            var protocolStackNames = GetProtocolStackNames(familyName);
             var scanningSettings = _settings.Scanning;
 
             foreach (var protocolStackName in protocolStackNames)
@@ -130,7 +130,7 @@ namespace EposMaster.DeviceManager.Scanner
                     continue;
                 }
 
-                var interfaceNames = GetProtocolInterfaceNames(deviceName, protocolStackName);
+                var interfaceNames = GetProtocolInterfaceNames(familyName, protocolStackName);
 
                 foreach (var interfaceName in interfaceNames)
                 {
@@ -140,15 +140,15 @@ namespace EposMaster.DeviceManager.Scanner
                         continue;
                     }
 
-                    var portNames = await GetPortNamesAsync(deviceName, protocolStackName, interfaceName);
+                    var portNames = await GetPortNamesAsync(familyName, protocolStackName, interfaceName);
 
                     foreach (var portName in portNames)
                     {
-                        var device = new MotionControllerDevice(deviceName, ""/*TODO*/)
+                        var device = new MotionControllerDevice(familyName, ""/*TODO*/)
                         {
                             ProtocolStackName = protocolStackName,
                             InterfaceName = interfaceName,
-                            Name = deviceName,
+                            Family = familyName,
                             PortName = portName
                         };
 
@@ -179,9 +179,9 @@ namespace EposMaster.DeviceManager.Scanner
                                                   existingDevice.Status == DeviceStatus.Disconnected ||
                                                   existingDevice.Status == DeviceStatus.Unregistered)
                     {
-						MsgLogger.WriteDebug($"{GetType().Name} - method", $"create device name='{device.Name}', protocol='{device.ProtocolStackName}', intf='{device.InterfaceName}', port='{device.PortName}'");
+						MsgLogger.WriteDebug($"{GetType().Name} - method", $"create device name='{device.Family}', protocol='{device.ProtocolStackName}', intf='{device.InterfaceName}', port='{device.PortName}'");
 						
-                        var eposDevice = EposDeviceFactory.CreateDevice(device.Name,
+                        var eposDevice = EposDeviceFactory.CreateDevice(device.Family,
                             device.InterfaceName,
                             device.ProtocolStackName,
                             device.PortName);

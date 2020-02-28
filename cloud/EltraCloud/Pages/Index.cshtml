@@ -59,7 +59,7 @@
                 foreach (var device in devices)
                 {
                     var imageSrc = device.ProductPicture;
-                    var productName = device.ProductName;
+                    var productName = device.Name;
 
                     <tr>
                         <td>
@@ -68,7 +68,7 @@
                             </div>
                         </td>
                         <td> 
-                            <a href="./ObjectDictionary?sessionUuid=@device.SessionUuid&serialNumber=@device.Identification.SerialNumber">@device.Name</a>
+                            <a href="./ObjectDictionary?sessionUuid=@device.SessionUuid&serialNumber=@device.Identification.SerialNumber">@device.Family</a>
                         </td>
                         <td>@productName</td>
                         <td>@Html.Raw("0x")@device.Identification.SerialNumber.ToString("X")</td>

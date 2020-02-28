@@ -175,18 +175,9 @@ namespace EltraCloudStorage.Items
                 using (var command = DbCommandFactory.GetCommand(Engine, commandText, Connection))
                 {
                     command.Parameters.Add(new DbParameterWrapper("@serial_number", device.Identification.SerialNumber));
-                    command.Parameters.Add(new DbParameterWrapper("@device_name", device.Name));
+                    command.Parameters.Add(new DbParameterWrapper("@product_family", device.Family));
+                    command.Parameters.Add(new DbParameterWrapper("@product_name", device.Name));
                     command.Parameters.Add(new DbParameterWrapper("@device_description_idref", deviceDescriptionId));
-
-                    string productName = string.Empty;
-
-                    if(!string.IsNullOrEmpty(device.ProductName))
-                    {
-                        productName = device.ProductName;
-                    }
-                    
-                    command.Parameters.Add(new DbParameterWrapper("@product_name", productName));
-
                     command.Parameters.Add(new DbParameterWrapper("@device_version_idref", deviceVersionIdref));
                     command.Parameters.Add(new DbParameterWrapper("@status", (int)device.Status));
 

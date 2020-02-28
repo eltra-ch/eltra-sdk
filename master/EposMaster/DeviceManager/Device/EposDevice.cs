@@ -45,7 +45,7 @@ namespace EposMaster.DeviceManager.Device
             var eposEventArgs = e as EposCommunicationEventArgs;
             var status = eposEventArgs?.Status;
 
-            MsgLogger.WriteDebug($"{GetType().Name} - method", $"Device: {device.Name} ({device.PortName}) - state = {status}");
+            MsgLogger.WriteDebug($"{GetType().Name} - method", $"Device: {device.Family} ({device.PortName}) - state = {status}");
 
             switch (status)
             {
@@ -91,13 +91,13 @@ namespace EposMaster.DeviceManager.Device
             {
                 Status = DeviceStatus.Identified;
 
-                MsgLogger.WriteLine($"Identified device='{e.Device.Name}' has serial number=0x{e.SerialNumber:X}");
+                MsgLogger.WriteLine($"Identified device='{e.Device.Family}' has serial number=0x{e.SerialNumber:X}");
 
                 (Version as EposDeviceVersion)?.Read();
             }
             else if (e.State == DeviceIdentificationState.Failed)
             {
-                MsgLogger.WriteLine($"Device: {e.Device.Name} ({(e.Device as EposDevice)?.PortName}) - Identification failed, reason={e.LastErrorCode}");
+                MsgLogger.WriteLine($"Device: {e.Device.Family} ({(e.Device as EposDevice)?.PortName}) - Identification failed, reason={e.LastErrorCode}");
             }
         }
 

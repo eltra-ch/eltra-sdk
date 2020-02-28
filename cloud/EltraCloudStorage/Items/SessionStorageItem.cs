@@ -211,13 +211,13 @@ namespace EltraCloudStorage.Items
                         {
                             var device = new EltraDevice();
                             var deviceId = reader.GetInt32(0);
-                            var deviceName = reader.GetString(1);
+                            var family = reader.GetString(1);
                             var serialNumber = reader.GetUInt32(2);
                             var deviceStatus = (DeviceStatus)reader.GetInt32(3);
                             var modified = reader.GetDateTime(4);
                             var created = reader.GetDateTime(5);
 
-                            device.Name = deviceName;
+                            device.Family = family;
                             device.SessionUuid = uuid;
 
                             device.Identification.SerialNumber = serialNumber;
@@ -1273,13 +1273,13 @@ namespace EltraCloudStorage.Items
                             deviceId = reader.GetInt32(1);
 
                             var sessionId = reader.GetString(0);
-                            var deviceName = reader.GetString(2);
+                            var family = reader.GetString(2);
                             var serialNumber = reader.GetUInt32(3);
                             var deviceStatus = (DeviceStatus)reader.GetInt32(4);
                             var modified = reader.GetDateTime(5);
                             var created = reader.GetDateTime(6);
 
-                            device.Name = deviceName;
+                            device.Family = family;
 
                             device.Identification.SerialNumber = serialNumber;
 

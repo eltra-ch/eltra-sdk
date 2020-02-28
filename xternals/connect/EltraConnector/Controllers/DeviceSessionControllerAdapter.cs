@@ -86,7 +86,7 @@ namespace EltraConnector.Controllers
             }
             else if (e.State == RegistrationState.Failed)
             {
-                MsgLogger.WriteError($"{GetType().Name} - OnDeviceRegistrationStateChanged", $"Device ({device.Name}) registration failed!");
+                MsgLogger.WriteError($"{GetType().Name} - OnDeviceRegistrationStateChanged", $"Device ({device.Family}) registration failed!");
             }
         }
         

@@ -137,8 +137,8 @@ namespace EltraNavigo.Views.DeviceList
         {
             if(Device!=null && Device.Status == DeviceStatus.Ready)
             {
-                Name = Device.Name;
-                Description = Device.ProductName;
+                Name = Device.Family;
+                Description = Device.Name;
 
                 Version = $"0x{Device.Version.HardwareVersion:X} 0x{Device.Version.SoftwareVersion:X} 0x{Device.Version.ApplicationNumber:X} 0x{Device.Version.ApplicationVersion:X}";
 

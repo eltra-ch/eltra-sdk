@@ -11,7 +11,7 @@ namespace EltraCloudContracts.ObjectDictionary.DeviceDescription.Factory
         {
             DeviceDescriptionFile result;
 
-            switch (device.Name)
+            switch (device.Family)
             {
                 case "EPOS2":
                     result = new Epos2DeviceDescriptionFile(device);
@@ -34,7 +34,7 @@ namespace EltraCloudContracts.ObjectDictionary.DeviceDescription.Factory
 
             if (content != null && device != null)
             {
-                switch (device.Name)
+                switch (device.Family)
                 {
                     case "EPOS2":
                         throw new NotImplementedException();

@@ -33,7 +33,7 @@ namespace EltraConnector.Controllers
 
             if (device != null)
             {
-                MsgLogger.WriteLine($"get device='{device.Name}', serial number=0x{device.Identification.SerialNumber:X} commands");
+                MsgLogger.WriteLine($"get device='{device.Family}', serial number=0x{device.Identification.SerialNumber:X} commands");
 
                 try
                 {
@@ -67,7 +67,7 @@ namespace EltraConnector.Controllers
 
             if (device != null)
             {
-                MsgLogger.WriteLine($"get command '{commandName}' from device='{device.Name}', serial number=0x{device.Identification.SerialNumber:X}");
+                MsgLogger.WriteLine($"get command '{commandName}' from device='{device.Family}', serial number=0x{device.Identification.SerialNumber:X}");
 
                 try
                 {
@@ -115,7 +115,7 @@ namespace EltraConnector.Controllers
 
             try
             {
-                MsgLogger.WriteLine($"push command='{execCommand.Command.Name}' to device='{execCommand.Command.Device.Name}':0x{execCommand.SerialNumber:X}");
+                MsgLogger.WriteLine($"push command='{execCommand.Command.Name}' to device='{execCommand.Command.Device.Family}':0x{execCommand.SerialNumber:X}");
 
                 var postResult = await Transporter.Post(Url, "api/command/push", execCommand.ToJson());
 

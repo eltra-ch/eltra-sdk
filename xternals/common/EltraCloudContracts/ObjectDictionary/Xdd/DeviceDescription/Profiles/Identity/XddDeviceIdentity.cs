@@ -112,7 +112,7 @@ namespace EltraCloudContracts.ObjectDictionary.Xdd.DeviceDescription.Profiles.Id
         {
             if (_device != null)
             {
-                _device.ProductName = ProductName;
+                _device.Name = ProductName;
             }
         }
 

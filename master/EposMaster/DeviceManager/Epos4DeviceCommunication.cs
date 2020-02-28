@@ -62,9 +62,9 @@ namespace EposMaster.DeviceManager
 
                         lock (SyncObject)
                         {
-                            MsgLogger.WriteDebug($"{GetType().Name} - method", $"VcsOpenDevice - device name='{device.Name}', interface='{device.InterfaceName}', port='{device.PortName}'");
+                            MsgLogger.WriteDebug($"{GetType().Name} - method", $"VcsOpenDevice - device name='{device.Family}', interface='{device.InterfaceName}', port='{device.PortName}'");
 
-                            KeyHandle = VcsWrapper.Device.VcsOpenDevice(device.Name, device.ProtocolStackName,
+                            KeyHandle = VcsWrapper.Device.VcsOpenDevice(device.Family, device.ProtocolStackName,
                                 device.InterfaceName, device.PortName, ref lastErrorCode);
                         }
 
