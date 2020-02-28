@@ -604,10 +604,19 @@ namespace EltraCloud.Services
                     {
                         deviceDescriptionFile.Content = content.PlainContent;
 
-                        if (device.CreateDeviceDescription(deviceDescriptionFile))
-                        {
-                            result = CreateObjectDictionary(device, deviceDescriptionFile);
-                        }
+                        device.StatusChanged += (sender, args) => { 
+                        
+                            if(device.Status == DeviceStatus.Ready)
+                            {
+                                if (!UpdateParameters(device))
+                                {
+                                    MsgLogger.WriteWarning($"{GetType().Name} - CreateObjectDictionary", $"update parameters for device '0x{device.Identification.SerialNumber:X4}' failed, first registration?");
+                                }
+                            }
+
+                        };
+
+                        device.CreateDeviceDescription(deviceDescriptionFile);
                     }
                 }
             }
@@ -684,41 +693,6 @@ namespace EltraCloud.Services
             return result;
         }
 
-        private bool CreateObjectDictionary(EltraDevice device, DeviceDescriptionFile _)
-        {
-            bool result = false;
-
-            try
-            {
-                var objectDictionary = ObjectDictionaryFactory.CreateObjectDictionary(device);
-                
-                if (objectDictionary != null)
-                {
-                    if (objectDictionary.Open())
-                    {
-                        device.ObjectDictionary = objectDictionary;
-
-                        if (!UpdateParameters(device))
-                        {
-                            MsgLogger.WriteWarning($"{GetType().Name} - CreateObjectDictionary", $"update parameters for device '0x{device.Identification.SerialNumber:X4}' failed, first registration?");
-                        }
-
-                        result = true;
-                    }
-                }
-                else
-                {
-                    MsgLogger.WriteError($"{GetType().Name} - CreateObjectDictionary", $"Cannot create object dictionary for device = {device.Name}");
-                }
-            }
-            catch(Exception e)
-            {
-                MsgLogger.Exception($"{GetType().Name} - CreateObjectDictionary", e);
-            }
-
-            return result;
-        }
-        
         private string DeviceToPictureFileNameConverter(EltraDevice device)
         {
             var version = device?.Version;

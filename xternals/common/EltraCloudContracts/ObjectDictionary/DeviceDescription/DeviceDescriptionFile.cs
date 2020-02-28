@@ -4,7 +4,6 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using System.Web;
 using EltraCloudContracts.Contracts.Devices;
-using EltraCloudContracts.Contracts.Results;
 using EltraCloudContracts.ObjectDictionary.DeviceDescription.Events;
 using EltraCommon.Helpers;
 using EltraCommon.Logger;
@@ -70,29 +69,34 @@ namespace EltraCloudContracts.ObjectDictionary.DeviceDescription
 
         #region Events
 
-        public event EventHandler<DeviceDescriptionEventArgs> StateChanged;
+        public event EventHandler<DeviceDescriptionFileEventArgs> StateChanged;
 
         #endregion
 
         #region Events handling
 
-        protected virtual void OnDeviceDescriptionStateChanged(DeviceDescriptionEventArgs e)
+        protected virtual void OnDeviceDescriptionStateChanged(DeviceDescriptionFileEventArgs e)
         {
             StateChanged?.Invoke(this, e);
         }
 
         private void OnContentChanged()
         {
-            ReadProductName();
-            
-            if(!ReadDeviceVersion())
+            if (!string.IsNullOrEmpty(Content))
             {
-                MsgLogger.WriteError($"{GetType().Name} - OnContentChanged", "read device version failed!");
-            }
+                ReadProductName();
 
-            if (!ReadDeviceTools())
-            {
-                MsgLogger.WriteError($"{GetType().Name} - OnContentChanged", "read device tools failed!");
+                if (!ReadDeviceVersion())
+                {
+                    MsgLogger.WriteError($"{GetType().Name} - OnContentChanged", "read device version failed!");
+                }
+
+                if (!ReadDeviceTools())
+                {
+                    MsgLogger.WriteError($"{GetType().Name} - OnContentChanged", "read device tools failed!");
+                }
+
+                OnDeviceDescriptionStateChanged(new DeviceDescriptionFileEventArgs { DeviceDescriptionFile = this, State = DeviceDescriptionState.Read });
             }
         }
 
@@ -170,23 +174,32 @@ namespace EltraCloudContracts.ObjectDictionary.DeviceDescription
             return result;
         }
         
-        public virtual async Task Read()
+        public virtual async Task<bool> Read()
         {
+            bool result = false;
+
             if(File.Exists(SourceFile))
             {
                 if (string.IsNullOrEmpty(Content))
                 {
-                    ReadFile();
+                    result = ReadFile();
+                }
+                else
+                {
+                    result = true;
                 }
             }
             else
             {
-                await DownloadFile();
+                result = await DownloadFile();
             }
+
+            return result;
         }
 
-        private async Task DownloadFile()
+        private async Task<bool> DownloadFile()
         {
+            bool result = false;
             var deviceDescription = await Download(Device.Version);
 
             if (deviceDescription != null)
@@ -195,9 +208,13 @@ namespace EltraCloudContracts.ObjectDictionary.DeviceDescription
 
                 if (!string.IsNullOrEmpty(Content))
                 {
-                    OnDeviceDescriptionStateChanged(new DeviceDescriptionEventArgs { DeviceDescription = this, State = DeviceDescriptionState.Read });
+                    result = true;
+
+                    OnDeviceDescriptionStateChanged(new DeviceDescriptionFileEventArgs { DeviceDescriptionFile = this, State = DeviceDescriptionState.Read });
                 }
             }
+
+            return result;
         }
 
         protected virtual void ReadProductName()
@@ -227,8 +244,6 @@ namespace EltraCloudContracts.ObjectDictionary.DeviceDescription
                     if (!string.IsNullOrEmpty(Content))
                     {
                         result = true;
-
-                        OnDeviceDescriptionStateChanged(new DeviceDescriptionEventArgs { DeviceDescription = this, State = DeviceDescriptionState.Read });
                     }
                 }
                 else if(!string.IsNullOrEmpty(SourceFile))
@@ -242,7 +257,7 @@ namespace EltraCloudContracts.ObjectDictionary.DeviceDescription
             }
             catch (Exception e)
             {
-                OnDeviceDescriptionStateChanged(new DeviceDescriptionEventArgs { DeviceDescription = this, State = DeviceDescriptionState.Failed, Exception = e });
+                OnDeviceDescriptionStateChanged(new DeviceDescriptionFileEventArgs { DeviceDescriptionFile = this, State = DeviceDescriptionState.Failed, Exception = e });
             }
 
             return result;

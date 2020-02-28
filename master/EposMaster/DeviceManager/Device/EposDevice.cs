@@ -38,23 +38,6 @@ namespace EposMaster.DeviceManager.Device
             CreateStatusManager();
             CreateVersion();
         }
-
-        private void OnDeviceDescriptionStateChanged(object sender, DeviceDescriptionEventArgs e)
-        {
-            if(e.State == DeviceDescriptionState.Read)
-            {
-                Status = DeviceStatus.DescriptionAvailable;
-
-                var msg = $"Device '{e.DeviceDescription.ProductName}' description read - Status: {Status}";
-
-                MsgLogger.WriteLine(msg);
-
-                if (CreateObjectDictionary())
-                {
-                    Status = DeviceStatus.Connected;
-                }
-            }
-        }
         
         private void OnCommunicationStatusChanged(object sender, DeviceCommunicationEventArgs e)
         {
@@ -90,7 +73,7 @@ namespace EposMaster.DeviceManager.Device
             }
         }
         
-        private async void OnVersionUpdated(object sender, DeviceVersionEventArgs e)
+        private void OnVersionUpdated(object sender, DeviceVersionEventArgs e)
         {
             Status = DeviceStatus.VersionAvailable;
 
@@ -99,7 +82,7 @@ namespace EposMaster.DeviceManager.Device
 
             MsgLogger.WriteLine(msg);
 
-            await DeviceDescription.Read();
+            ReadDeviceDescriptionFile();
         }
         
         protected void OnIdentificationStateChanged(object sender, DeviceIdentificationEventArgs e)
@@ -150,8 +133,6 @@ namespace EposMaster.DeviceManager.Device
             {
                 eposDeviceIdentification.StateChanged += OnIdentificationStateChanged;
             }
-            
-            DeviceDescription.StateChanged += OnDeviceDescriptionStateChanged;
         }
         
         public async Task<bool> Connect()

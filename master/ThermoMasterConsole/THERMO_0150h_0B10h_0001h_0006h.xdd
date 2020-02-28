@@ -15,7 +15,7 @@
 				<deviceFamily readOnly="true">
 					<label lang="en-TT">Thermo Controller</label>
 				</deviceFamily>
-				<productFamily readOnly="true">Thermo</productFamily>
+				<productFamily readOnly="true">THERMO</productFamily>
 				<productName readOnly="true">Thermo 4R-TH</productName>
 				<productText readOnly="true">
 					<label lang="en-TT">Thermo 4R-TH is ...</label>

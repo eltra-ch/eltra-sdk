@@ -65,12 +65,13 @@ namespace EltraMaster.Device
             Initialized?.Invoke(this, new EventArgs());
         }
 
-        protected virtual void OnCloudAgentChanged()
+        protected virtual async void OnCloudAgentChanged()
         {
             if (CloudAgent != null)
             {
                 CreateCommunication();
-                ReadDeviceDescriptionFile();
+
+                await ReadDeviceDescriptionFile();
             }
         }
 
@@ -78,22 +79,6 @@ namespace EltraMaster.Device
         {
         }
         
-        private void OnDeviceDescriptionStateChanged(object sender, DeviceDescriptionEventArgs e)
-        {
-            if (e.State == DeviceDescriptionState.Read)
-            {
-                if (CreateDeviceDescription(e.DeviceDescription))
-                {
-                    AddDeviceTools(e.DeviceDescription as XddDeviceDescriptionFile);
-
-                    CreateObjectDictionary();
-                    CreateConnectionManager();
-
-                    OnInitialized();
-                }
-            }
-        }
-
         #endregion
 
         #region Methods
@@ -107,17 +92,27 @@ namespace EltraMaster.Device
             AddCommand(new SetObjectCommand(this));
         }
 
-        public override async void ReadDeviceDescriptionFile()
+        public override async Task<bool> ReadDeviceDescriptionFile()
         {
-            var deviceDescription = new XddDeviceDescriptionFile(this)
+            var deviceDescriptionFile = new XddDeviceDescriptionFile(this)
             {
                 Url = CloudAgent.Url,
                 SourceFile = DeviceDescriptionFilePath
             };
 
-            deviceDescription.StateChanged += OnDeviceDescriptionStateChanged;
+            StatusChanged += (sender, args) => 
+            {
+                if(Status == DeviceStatus.Ready)
+                {
+                    AddDeviceTools(deviceDescriptionFile);
 
-            await deviceDescription.Read();
+                    CreateConnectionManager();
+
+                    OnInitialized();
+                }
+            };
+
+            return await ReadDeviceDescriptionFile(deviceDescriptionFile);
         }
 
         private void AddDeviceTools(XddDeviceDescriptionFile xdd)

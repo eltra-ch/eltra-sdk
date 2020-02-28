@@ -66,29 +66,6 @@ namespace EltraConnector.Controllers
             RegistrationStateChanged?.Invoke(this, e);
         }
         
-        private void OnDeviceDescriptionStateChanged(object sender, DeviceDescriptionEventArgs e)
-        {
-            if (e.State == DeviceDescriptionState.Read)
-            {
-                if (sender is DeviceDescriptionFile deviceDescriptionFile)
-                {
-                    var device = deviceDescriptionFile.Device;
-
-                    if (device != null)
-                    {
-                        if (device.CreateDeviceDescription(deviceDescriptionFile))
-                        {
-                            device.CreateObjectDictionary();
-                        }
-                    }
-                }
-            }
-            else if(e.State == DeviceDescriptionState.Failed)
-            {
-                MsgLogger.WriteLine(LogMsgType.Debug, $"device description read failed!, reason = '{e?.Exception?.Message}'");
-            }
-        }
-
         #endregion
 
         #region Methods
@@ -165,9 +142,11 @@ namespace EltraConnector.Controllers
                         if (deviceDescriptionFile != null)
                         {
                             deviceDescriptionFile.Url = Url;
-                            deviceDescriptionFile.StateChanged += OnDeviceDescriptionStateChanged;
 
-                            await deviceDescriptionFile.Read();
+                            if(!await device.ReadDeviceDescriptionFile(deviceDescriptionFile))
+                            {
+                                MsgLogger.WriteError($"{GetType().Name} - GetSessionDevices", "read device description file failed!");
+                            }
                         }
                         else
                         {

@@ -2,9 +2,9 @@
 
 namespace EltraCloudContracts.ObjectDictionary.DeviceDescription.Events
 {
-    public class DeviceDescriptionEventArgs : EventArgs
+    public class DeviceDescriptionFileEventArgs : EventArgs
     {
-        public DeviceDescriptionFile DeviceDescription { get; set; }
+        public DeviceDescriptionFile DeviceDescriptionFile { get; set; }
 
         public DeviceDescriptionState State { get; set; }
 

@@ -1,8 +1,10 @@
 ﻿using System;
+using System.IO;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using EltraCloudContracts.Contracts.Devices;
 using EltraCloudContracts.Contracts.Sessions;
+using EltraCommon.Logger;
 using EltraNavigo.Controls;
 using EltraResources;
 using Xamarin.Forms;
@@ -56,7 +58,7 @@ namespace EltraNavigo.Views.DeviceList
 
         #region Properties
 
-        public EltraCloudContracts.Contracts.Devices.EltraDevice Device { get; }
+        public EltraDevice Device { get; }
 
         public string Name
         {
@@ -154,12 +156,34 @@ namespace EltraNavigo.Views.DeviceList
 
         private void CreateImage()
         {
-            var fileName = DeviceToPictureFileNameConverter();
-            
-            var eltraResource = new EltraResource();
-            string imageResourceName = eltraResource.GetImageSourceName("devices.thumbnails", $"{fileName}");
+            try
+            {
+                if (!string.IsNullOrEmpty(Device.ProductPicture))
+                {
+                    var base64Prefix = "data:image/png;base64,";
+                    string imageBase64 = Device.ProductPicture;
+                    
+                    if (imageBase64.StartsWith(base64Prefix))
+                    {
+                        imageBase64 = imageBase64.Substring(base64Prefix.Length);
+                    }
 
-            Image = ImageSource.FromResource(imageResourceName, eltraResource.Assembly);
+                    Image = ImageSource.FromStream(() => new MemoryStream(Convert.FromBase64String(imageBase64)));
+                }
+                else
+                {
+                    var fileName = DeviceToPictureFileNameConverter();
+
+                    var eltraResource = new EltraResource();
+                    string imageResourceName = eltraResource.GetImageSourceName("devices.thumbnails", $"{fileName}");
+
+                    Image = ImageSource.FromResource(imageResourceName, eltraResource.Assembly);
+                }
+            }
+            catch(Exception e)
+            {
+                MsgLogger.Exception($"{GetType().Name} - CreateImage", e);
+            }
         }
         
         private string DeviceToPictureFileNameConverter()

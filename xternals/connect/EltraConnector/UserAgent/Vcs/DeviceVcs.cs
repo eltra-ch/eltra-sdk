@@ -149,30 +149,18 @@ namespace EltraConnector.UserAgent.Vcs
 
             await Task.Run(async () =>
             {
-                var deviceDescription = DeviceDescriptionFactory.CreateDeviceDescriptionFile(device);
-
-                if(deviceDescription!=null)
+                device.StatusChanged += (sender, args) => 
                 { 
-                    deviceDescription.StateChanged += (sender, args) =>
+                    if(device.Status == DeviceStatus.Ready)
                     {
-                        if (args.State == DeviceDescriptionState.Read)
-                        {
-                            if (sender is DeviceDescriptionFile deviceDescriptionFile)
-                            {
-                                if (device.CreateDeviceDescription(deviceDescriptionFile))
-                                {
-                                    device.CreateObjectDictionary();
-                                }
-
-                                token.Set();
-                            }
-                        }
-                    };
-
-                    await deviceDescription.Read();
-                }
-                else
+                        token.Set();
+                    }
+                };
+                
+                if(!await device.ReadDeviceDescriptionFile())
                 {
+                    MsgLogger.WriteError($"{GetType().Name} - DownloadObjectDictionary", "read device description file failed!");
+
                     device.Status = DeviceStatus.Ready;
 
                     token.Set();

@@ -10,6 +10,7 @@ using EltraCloudContracts.Contracts.ToolSet;
 using EltraCloudContracts.ObjectDictionary.Common.DeviceDescription;
 using EltraCloudContracts.ObjectDictionary.DeviceDescription.Events;
 using EltraCloudContracts.ObjectDictionary.DeviceDescription;
+using System.Threading.Tasks;
 
 namespace EltraCloudContracts.Contracts.Devices
 {
@@ -18,14 +19,13 @@ namespace EltraCloudContracts.Contracts.Devices
     {
         #region Private fields
 
-        private string _productName;
         private DeviceVersion _version;
         private DeviceCommandSet _commandSet;
         private DeviceToolSet _toolSet;
-        private Dd _deviceDescription;
         private DeviceIdentification _deviceIdentification;
         private DeviceStatus _status;
-        
+        private Dd _deviceDescription;
+
         #endregion
 
         #region Constructors
@@ -51,9 +51,32 @@ namespace EltraCloudContracts.Contracts.Devices
 
         #region Events handling
 
-        private void OnDeviceDescriptionFileStateChanged(object sender, DeviceDescriptionEventArgs e)
+        private void OnDeviceDescriptionFileStateChanged(object sender, DeviceDescriptionFileEventArgs e)
         {
-            
+            if (e.State == DeviceDescriptionState.Read)
+            {
+                Status = DeviceStatus.DescriptionAvailable;
+
+                if (!CreateDeviceDescription(e.DeviceDescriptionFile))
+                {
+                    MsgLogger.WriteError($"{GetType().Name} - OnDeviceDescriptionFileStateChanged", $"create device description failed!");
+                }
+            }
+            else if (e.State == DeviceDescriptionState.Failed)
+            {
+                MsgLogger.WriteError($"{GetType().Name} - OnDeviceDescriptionFileStateChanged", $"device description read failed!, reason = '{e?.Exception?.Message}'");
+            }
+        }
+
+        private void OnDeviceDescriptionChanged()
+        {
+            if (DeviceDescription != null)
+            {
+                if (!CreateObjectDictionary())
+                {
+                    MsgLogger.WriteError($"{GetType().Name} - OnDeviceDescriptionFileStateChanged", $"create object dictionary failed!");
+                }
+            }
         }
 
         #endregion
@@ -95,7 +118,6 @@ namespace EltraCloudContracts.Contracts.Devices
                 if (_status != value)
                 {
                     _status = value;
-
                     OnStatusChanged();
                 }
             }
@@ -111,17 +133,20 @@ namespace EltraCloudContracts.Contracts.Devices
         public DeviceObjectDictionary ObjectDictionary { get; set; }
 
         [DataMember]
-        public string ProductName  
-        {
-            get => _productName;
-            set => _productName = value;
-        }
+        public string ProductName { get; set; }
 
         [IgnoreDataMember]
         public Dd DeviceDescription
         {
             get => _deviceDescription;
-            set => _deviceDescription = value;
+            set 
+            {
+                if (_deviceDescription != value)
+                {
+                    _deviceDescription = value;
+                    OnDeviceDescriptionChanged();
+                }
+            }
         }
 
         [IgnoreDataMember]
@@ -197,16 +222,28 @@ namespace EltraCloudContracts.Contracts.Devices
         {
         }
 
-        public virtual async void ReadDeviceDescriptionFile()
+        public virtual async Task<bool> ReadDeviceDescriptionFile()
         {
             var deviceDescriptionFile = DeviceDescriptionFactory.CreateDeviceDescriptionFile(this);
 
-            deviceDescriptionFile.StateChanged += OnDeviceDescriptionFileStateChanged;
-
-            await deviceDescriptionFile.Read();
+            return await ReadDeviceDescriptionFile(deviceDescriptionFile);
         }
 
-        public virtual bool CreateObjectDictionary()
+        public async Task<bool> ReadDeviceDescriptionFile(DeviceDescriptionFile deviceDescriptionFile)
+        {
+            bool result = false;
+
+            if (deviceDescriptionFile != null)
+            {
+                deviceDescriptionFile.StateChanged += OnDeviceDescriptionFileStateChanged;
+
+                result = await deviceDescriptionFile.Read();
+            }
+
+            return result;
+        }
+
+        private bool CreateObjectDictionary()
         {
             bool result = false;
 
@@ -278,6 +315,10 @@ namespace EltraCloudContracts.Contracts.Devices
                 {
                     MsgLogger.WriteError($"{GetType().Name} - CreateDeviceDescription", "Parsing device description failed!");
                 }
+            }
+            else
+            {
+                MsgLogger.WriteError($"{GetType().Name} - CreateDeviceDescription", "Content is empty!");
             }
 
             return result;
