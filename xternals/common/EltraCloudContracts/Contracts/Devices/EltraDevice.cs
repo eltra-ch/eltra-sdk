@@ -251,6 +251,11 @@ namespace EltraCloudContracts.Contracts.Devices
             {
                 if (Status != DeviceStatus.Ready || ObjectDictionary == null)
                 {
+                    if(Status == DeviceStatus.Ready && ObjectDictionary == null)
+                    {
+                        Status = DeviceStatus.DescriptionAvailable;
+                    }
+
                     ObjectDictionary = ObjectDictionaryFactory.CreateObjectDictionary(this);
 
                     if (ObjectDictionary != null)
@@ -307,6 +312,7 @@ namespace EltraCloudContracts.Contracts.Devices
 
                 if (deviceDescription.Parse())
                 {
+
                     DeviceDescription = deviceDescription;
 
                     result = true;

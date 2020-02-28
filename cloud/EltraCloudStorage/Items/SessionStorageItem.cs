@@ -209,7 +209,6 @@ namespace EltraCloudStorage.Items
                     {
                         while (reader != null && reader.Read())
                         {
-                            var device = new EltraDevice();
                             var deviceId = reader.GetInt32(0);
                             var family = reader.GetString(1);
                             var serialNumber = reader.GetUInt32(2);
@@ -217,12 +216,14 @@ namespace EltraCloudStorage.Items
                             var modified = reader.GetDateTime(4);
                             var created = reader.GetDateTime(5);
 
+                            var device = new EltraDevice();
+
                             device.Family = family;
                             device.SessionUuid = uuid;
 
                             device.Identification.SerialNumber = serialNumber;
 
-                            device.Status = deviceStatus;
+                            device.Status = DeviceStatus.VersionAvailable;
                             device.Modified = modified;
                             device.Created = created;
 
