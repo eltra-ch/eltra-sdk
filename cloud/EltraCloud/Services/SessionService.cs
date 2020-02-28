@@ -4,7 +4,6 @@ using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
 using EltraCloudStorage.Services;
-using EltraCommon.Helpers;
 using EltraCloud.DataSource;
 using EltraCloudContracts.Contracts.CommandSets;
 using EltraCloudContracts.Contracts.Devices;
@@ -12,12 +11,11 @@ using EltraCloudContracts.Contracts.Parameters;
 using EltraCloudContracts.Contracts.Sessions;
 using EltraCloudContracts.ObjectDictionary.Common.DeviceDescription.Profiles.Application.Parameters;
 using EltraCloudContracts.ObjectDictionary.DeviceDescription;
-using EltraCloudContracts.ObjectDictionary.DeviceDescription.Events;
 using EltraCloudContracts.ObjectDictionary.DeviceDescription.Factory;
-using EltraCloudContracts.ObjectDictionary.Factory;
 using EltraCloud.Services.Events;
 using EltraCommon.Logger;
 using Microsoft.AspNetCore.Http;
+using EltraResources.Helpers;
 
 #pragma warning disable CS1591, CA1063
 
@@ -704,13 +702,22 @@ namespace EltraCloud.Services
         
         private void UpdateDeviceImage(EltraDevice device)
         {
+            const string unknownDeviceImage = "FFFF.png";
+
             if(device!=null && string.IsNullOrEmpty(device.ProductPicture))
             { 
                 string fileName = DeviceToPictureFileNameConverter(device);
             
-                if (ResourceHelper.GetBase64ImageFromResources(fileName, out var base64Image))
+                if (ResourceHelper.GetBase64ImageFromResources("devices.thumbnails", fileName, out var base64Image))
                 {
                     device.ProductPicture = base64Image;
+                }
+                else
+                {
+                    if (ResourceHelper.GetBase64ImageFromResources("devices.thumbnails", unknownDeviceImage, out base64Image))
+                    {
+                        device.ProductPicture = base64Image;
+                    }
                 }
             }
         }

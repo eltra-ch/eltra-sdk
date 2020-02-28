@@ -73,7 +73,7 @@ namespace EposMaster.DeviceManager.Device
             }
         }
         
-        private void OnVersionUpdated(object sender, DeviceVersionEventArgs e)
+        private async void OnVersionUpdated(object sender, DeviceVersionEventArgs e)
         {
             Status = DeviceStatus.VersionAvailable;
 
@@ -82,7 +82,7 @@ namespace EposMaster.DeviceManager.Device
 
             MsgLogger.WriteLine(msg);
 
-            ReadDeviceDescriptionFile();
+            await ReadDeviceDescriptionFile();
         }
         
         protected void OnIdentificationStateChanged(object sender, DeviceIdentificationEventArgs e)

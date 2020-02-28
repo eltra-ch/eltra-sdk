@@ -48,28 +48,6 @@
     <None Remove="Resources\EPOS4_0150h_6552h_0000h_0000h.xdd" />
     <None Remove="Resources\EPOS4_0160h_6750h_FF00h_00D0h.xdd" />
   </ItemGroup>
-
-  <ItemGroup>
-    <EmbeddedResource Include="Resources\0B10.png" />
-    <EmbeddedResource Include="Resources\6050.png" />
-    <EmbeddedResource Include="Resources\6150.png" />
-    <EmbeddedResource Include="Resources\6350.png" />
-    <EmbeddedResource Include="Resources\6450.png" />
-    <EmbeddedResource Include="Resources\6551.png" />
-    <EmbeddedResource Include="Resources\6552.png" />
-    <EmbeddedResource Include="Resources\6750.png" />
-    <EmbeddedResource Include="Resources\A000.png" />
-    <EmbeddedResource Include="Resources\EPOS2_2126h_6220h_0000h_0000h.eds" />
-    <EmbeddedResource Include="Resources\EPOS4_0110h_6150h_0000h_0000h.xdd" />
-    <EmbeddedResource Include="Resources\EPOS4_0110h_6551h_0000h_0000h.xdd" />
-    <EmbeddedResource Include="Resources\EPOS4_0150h_6050h_0000h_0000h.xdd" />
-    <EmbeddedResource Include="Resources\EPOS4_0150h_6150h_0000h_0000h.xdd" />
-    <EmbeddedResource Include="Resources\EPOS4_0150h_6350h_0000h_0000h.xdd" />
-    <EmbeddedResource Include="Resources\EPOS4_0150h_6450h_0000h_0000h.xdd" />
-    <EmbeddedResource Include="Resources\EPOS4_0150h_6551h_0000h_0000h.xdd" />
-    <EmbeddedResource Include="Resources\EPOS4_0150h_6552h_0000h_0000h.xdd" />
-    <EmbeddedResource Include="Resources\EPOS4_0160h_6750h_FF00h_00D0h.xdd" />
-  </ItemGroup>
  
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="3.1.2" />
@@ -83,9 +61,14 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\xternals\common\EltraResources\EltraResources.csproj" />
     <ProjectReference Include="..\EltraCloudStorage\EltraCloudStorage.csproj" />
     <ProjectReference Include="..\..\xternals\common\EltraCloudContracts\EltraCloudContracts.csproj" />
     <ProjectReference Include="..\..\xternals\common\EltraCommon\EltraCommon.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Resources\" />
   </ItemGroup>
 
 </Project>

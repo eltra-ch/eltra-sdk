@@ -26,6 +26,7 @@
     <None Remove="devices\thumbnails\6552.png" />
     <None Remove="devices\thumbnails\6750.png" />
     <None Remove="devices\thumbnails\A000.png" />
+    <None Remove="devices\thumbnails\FFFF.png" />
   </ItemGroup>
 
   <ItemGroup>
@@ -50,6 +51,7 @@
     <EmbeddedResource Include="devices\thumbnails\6552.png" />
     <EmbeddedResource Include="devices\thumbnails\6750.png" />
     <EmbeddedResource Include="devices\thumbnails\A000.png" />
+    <EmbeddedResource Include="devices\thumbnails\FFFF.png" />
   </ItemGroup>
 
 </Project>
