@@ -7,10 +7,11 @@ using System.Threading.Tasks;
 using EltraMaster.Status;
 using EltraMaster.Events;
 using EltraMaster.Device;
+using EltraCommon.Ipc;
 
 namespace EltraMaster
 {
-    public class Master
+    public class EltraMasterConnector
     {
         #region Constructors
 
@@ -21,7 +22,7 @@ namespace EltraMaster
 
         #region Constructors
 
-        public Master()
+        public EltraMasterConnector()
         {
             _cancellationTokenSource = new CancellationTokenSource();
         }
@@ -164,6 +165,77 @@ namespace EltraMaster
         public void Stop()
         {
             _cancellationTokenSource.Cancel();
+        }
+
+        public bool RunAsService(string appName, MasterDeviceManager masterDeviceManager, string host, uint updateInterval, uint timeout, string login, string userName, string password)
+        {
+            bool result = false;
+            MsgLogger.WriteFlow($"Start '{appName}'");
+
+            var npServer = new NpServer() { Name = appName };
+
+            if (npServer.Start())
+            {
+                npServer.StepRequested += (sender, e) =>
+                {
+                    MsgLogger.WriteFlow("stop request received ...");
+
+                    Stop();
+                };
+
+                var authData = new UserAuthData() { Login = login, PlainPassword = password, Name = userName };
+
+                if (MasterConsole.MasterConsole.CheckAuthData(ref authData))
+                {
+                    result = true;
+
+                    MsgLogger.WriteFlow($"host='{host}', user={login}, pwd='{password}'");
+
+                    var task = Task.Run(async ()=>
+                    {
+                        await Start(host, authData, masterDeviceManager, updateInterval, timeout);
+                    });
+
+                    task.Wait();
+                }
+                else
+                {
+                    MsgLogger.WriteFlow("you have to enter login and password to proceed!");
+                }
+
+                npServer.Stop();
+            }
+            else
+            {
+                Console.WriteLine("start failed!");
+            }
+
+            return result;
+        }
+
+        public bool Stop(string appName)
+        {
+            bool result = false;
+            const int requestTimeout = 3000;
+
+            var client = new NpClient() { Name = appName, Timeout = requestTimeout };
+
+            if (client.Stop())
+            {
+                MsgLogger.WriteFlow("stop request sent successfully!");
+                result = true;
+            }
+            else
+            {
+                MsgLogger.WriteError("RunOptionsAndReturnExitCode", "stop request sending failed!");
+            }
+
+            return result;
+        }
+
+        public virtual Task Start(string host, UserAuthData authData)
+        {
+            return Task.CompletedTask;
         }
 
         #endregion

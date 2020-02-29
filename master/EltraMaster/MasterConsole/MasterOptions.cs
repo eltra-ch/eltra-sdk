@@ -1,9 +1,9 @@
 ﻿using CommandLine;
 
-namespace ThermoMasterConsole
+namespace EltraMaster.MasterConsole
 {
-    class Options
-    {        
+    public class MasterOptions
+    {
         [Option('h', "host", Default = null, HelpText = "target host", Required = false)]
         public string Host { get; set; }
 

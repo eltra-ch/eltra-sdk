@@ -4,7 +4,7 @@ using Thermometer.DeviceManager.Device;
 
 namespace Thermometer.DeviceManager
 {
-    class ThermoDeviceManager : MasterDeviceManager
+    public class ThermoDeviceManager : MasterDeviceManager
     {
         public ThermoDeviceManager(MasterSettings settings)
         {

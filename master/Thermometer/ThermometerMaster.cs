@@ -1,13 +1,12 @@
 ﻿using EltraCloudContracts.Contracts.Users;
 using ThermoMaster.Settings;
 using System.Threading.Tasks;
-using Thermometer.DeviceManager.Device;
 using EltraMaster;
 using Thermometer.DeviceManager;
 
 namespace ThermoMaster
 {
-    public class ThermometerMaster : Master
+    public class ThermometerMaster : EltraMasterConnector
     {
         #region Constructors
 
@@ -26,7 +25,7 @@ namespace ThermoMaster
 
         #region Methods
 
-        public async Task Start(string host, UserAuthData authData)
+        public override async Task Start(string host, UserAuthData authData)
         {
             await Start(host, authData, new ThermoDeviceManager(_settings), _settings.UpdateInterval, _settings.Timeout);
         }

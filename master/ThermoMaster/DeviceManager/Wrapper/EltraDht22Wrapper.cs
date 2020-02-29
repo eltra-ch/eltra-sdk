@@ -1,5 +1,5 @@
 using EltraCommon.Logger;
-using EltraMaster.Dll.Wrapper;
+using EltraMaster.Dll;
 using System;
 using System.Runtime.InteropServices;
 

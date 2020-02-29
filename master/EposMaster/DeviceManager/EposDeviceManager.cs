@@ -12,7 +12,7 @@ using EltraMaster.Device;
 
 namespace EposMaster.DeviceManager
 {
-    class EposDeviceManager : MasterDeviceManager
+    public class EposDeviceManager : MasterDeviceManager
     {
         #region Private fields
         
@@ -24,6 +24,8 @@ namespace EposMaster.DeviceManager
 
         public EposDeviceManager(MasterSettings settings)
         {
+            VcsWrapper.Device.Init();
+
             _deviceScanner = new DeviceScanner(settings);
 
             RegisterEvents();
@@ -79,6 +81,8 @@ namespace EposMaster.DeviceManager
             DisconnectAllDevices();
 
             await _deviceScanner.Stop();
+
+            VcsWrapper.Device.Cleanup();
 
             base.Dispose(finalize);
         }

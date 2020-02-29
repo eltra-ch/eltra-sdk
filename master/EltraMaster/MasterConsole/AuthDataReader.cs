@@ -1,10 +1,9 @@
-﻿using EltraCloudContracts.Contracts.Users;
-using System;
+﻿using System;
 using System.Linq;
 
-namespace RelayMaster.Auth
+namespace EltraMaster.MasterConsole
 {
-    class ConsoleAuthDataReader
+    internal class AuthDataReader
     {
         public bool ReadLogin(out string login)
         {

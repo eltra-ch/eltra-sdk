@@ -1,12 +1,11 @@
 ﻿using System;
 using EltraCommon.Logger;
-using EltraCloudContracts.Contracts.Users;
 using ThermoMaster.Settings;
-using RelayMaster.Auth;
-using ThermoMaster;
 using CommandLine;
 using System.Collections.Generic;
-using EltraCommon.Ipc;
+using EltraMaster.MasterConsole;
+using Thermometer.DeviceManager;
+using EltraMaster;
 
 namespace ThermoMasterConsole
 {
@@ -14,83 +13,42 @@ namespace ThermoMasterConsole
     {
         static void Main(string[] args)
         {
-            Parser.Default.ParseArguments<Options>(args)
+            Parser.Default.ParseArguments<MasterOptions>(args)
                 .WithParsed(RunOptionsAndReturnExitCode)
                 .WithNotParsed(HandleParseError);
 
             MsgLogger.WriteFlow( "Exit");
         }
 
-        private static void RunOptionsAndReturnExitCode(Options opts)
+        private static void RunOptionsAndReturnExitCode(MasterOptions opts)
         {
-            var settings = new MasterSettings();
-
-            var host = settings.Host;
-            var authData = settings.Auth.AuthData;
             var appName = AppDomain.CurrentDomain.FriendlyName;
-            var master = new ThermometerMaster(settings);
-
-            if (!string.IsNullOrEmpty(opts.Login))
-            {
-                authData.Login = opts.Login;
-            }
-
-            if (!string.IsNullOrEmpty(opts.Password))
-            {
-                authData.PlainPassword = opts.Password;
-            }
+            var settings = new MasterSettings();
+            var host = settings.Host;
+            string login = settings.Auth.AuthData.Login;
+            string password = settings.Auth.AuthData.PlainPassword;
 
             if (!string.IsNullOrEmpty(opts.Host))
             {
                 host = opts.Host;
             }
 
-            if(opts.Stop)
+            if (!string.IsNullOrEmpty(opts.Login))
             {
-                var client = new NpClient() { Name = appName, Timeout = 3000 };
-
-                if (client.Stop())
-                {
-                    MsgLogger.WriteFlow("stop request sent successfully!");
-                }
-                else
-                {
-                    MsgLogger.WriteError("RunOptionsAndReturnExitCode", "stop request sending failed!"); 
-                }
+                login = opts.Login;
             }
-            else
+
+            if (!string.IsNullOrEmpty(opts.Password))
             {
-                MsgLogger.WriteFlow($"Start '{appName}'");
+                password = opts.Password;
+            }
 
-                var npServer = new NpServer() { Name = appName };
+            var master = new EltraMasterConnector();
 
-                if (npServer.Start())
-                {
-                    npServer.StepRequested += (sender, e) => 
-					{ 
-						MsgLogger.WriteFlow("stop request received ...");
-						
-						master.Stop(); 
-					};
-
-                    if (CheckAuthData(ref authData))
-                    {
-                        MsgLogger.WriteFlow($"host='{host}', user={authData.Login}, pwd='{authData.PlainPassword}', timeout = {settings.Timeout}");
-
-                        master.Start(host, authData).Wait();
-                    }
-                    else
-                    {
-                        MsgLogger.WriteFlow("you have to enter login and password to proceed!");
-                    }
-
-                    npServer.Stop();
-                }
-                else
-                {
-                    Console.WriteLine("start failed!");
-                }
-            }            
+            if(!master.RunAsService(appName, new ThermoDeviceManager(settings), host, settings.UpdateInterval, settings.Timeout, login, settings.Auth.Name, password))
+            {
+                MsgLogger.WriteError(appName, "starting master service failed!");
+            }
         }
         
         private static void HandleParseError(IEnumerable<Error> errs)
@@ -102,41 +60,5 @@ namespace ThermoMasterConsole
                 Console.WriteLine(err);
             }
         }
-
-        private static bool CheckAuthData(ref UserAuthData authData)
-        {
-            bool result = false;
-
-            if(string.IsNullOrEmpty(authData.Login) ||
-               authData.Login == "?" ||
-               string.IsNullOrEmpty(authData.PlainPassword))
-            {
-                var consoleAuthDataReader = new ConsoleAuthDataReader();
-
-                Console.Write("Login:");
-
-                if(consoleAuthDataReader.ReadLogin(out var login))
-                {
-                    Console.WriteLine("");
-                    Console.Write("Password:");
-
-                    if(consoleAuthDataReader.ReadPassword(out var pass))
-                    {
-                        Console.WriteLine("");
-
-                        authData.Login = login;
-                        authData.PlainPassword = pass;
-                         
-                        result = true;
-                    }
-                }
-            }
-            else
-            {
-                result = true;
-            }
-
-            return result;
-        }        
     }
 }

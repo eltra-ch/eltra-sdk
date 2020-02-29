@@ -2,7 +2,7 @@
 using System.Runtime.InteropServices;
 using EltraMaster.Os.Linux;
 
-namespace EltraMaster.Dll.Wrapper
+namespace EltraMaster.Dll
 {
 #pragma warning disable CA1401 // P/Invokes should not be visible
 #pragma warning disable CA2101 // Specify marshaling for P/Invoke string arguments
@@ -54,7 +54,7 @@ namespace EltraMaster.Dll.Wrapper
             {
                 fileName = $"{libName}.dll";
 
-                dll = EltraMaster.Os.Windows.KernelDll.LoadLibrary(fileName);
+                dll = Os.Windows.KernelDll.LoadLibrary(fileName);
 
                 if (dll == IntPtr.Zero)
                 {
@@ -93,7 +93,7 @@ namespace EltraMaster.Dll.Wrapper
             }
             else
             {
-                result = EltraMaster.Os.Windows.KernelDll.FreeLibrary(dllHandle);
+                result = Os.Windows.KernelDll.FreeLibrary(dllHandle);
             }
 
             return result;
