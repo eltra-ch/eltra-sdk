@@ -5,7 +5,7 @@
     <ProduceAssemblyReference>true</ProduceAssemblyReference>
     <LangVersion>7.1</LangVersion>
     <Company>Eltra mobile solutions</Company>
-	<Authors>Eltra mobile solutions</Authors>
+	<Authors>Dawid Sienkiewicz</Authors>
     <Product>Eltra Navigo</Product>
     <Copyright>eltra.ch</Copyright>
     <Version>1.0.4.7</Version>

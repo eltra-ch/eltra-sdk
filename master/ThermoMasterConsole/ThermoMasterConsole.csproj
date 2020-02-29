@@ -5,7 +5,7 @@
     <TargetFramework>netcoreapp3.1</TargetFramework>
 	<LangVersion>7.1</LangVersion>
 	<Company>eltra.ch</Company>
-	<Authors>eltra.ch mobile solutions</Authors>
+	<Authors>Dawid Sienkiewicz</Authors>
 	<Product>Thermo Master Console</Product>
   </PropertyGroup>
    

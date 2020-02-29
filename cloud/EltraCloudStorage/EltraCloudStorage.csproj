@@ -3,8 +3,8 @@
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
 	<LangVersion>7.1</LangVersion>
-	<Authors>eltra.ch</Authors>
-	<Company>eltra.ch Mobile Solutions</Company>
+	<Authors>Dawid Sienkiewicz</Authors>
+	<Company>eltra.ch</Company>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">

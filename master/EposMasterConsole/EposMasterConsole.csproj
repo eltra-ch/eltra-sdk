@@ -5,7 +5,7 @@
     <TargetFramework>netcoreapp2.2</TargetFramework>
 	<LangVersion>7.1</LangVersion>
 	<Company>eltra.ch</Company>
-	<Authors>eltra.ch mobile solutions</Authors>
+	<Authors>Dawid Sienkiewicz</Authors>
 	<Product>Epos Master Console</Product>
   </PropertyGroup>
    

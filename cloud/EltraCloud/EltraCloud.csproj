@@ -5,7 +5,7 @@
     <AspNetCoreHostingModel>InProcess</AspNetCoreHostingModel>
 	<LangVersion>7.1</LangVersion>
 	<Company>eltra.ch</Company>
-	<Authors>eltra.ch Mobile Solutions</Authors>
+	<Authors>Dawid Sienkiewicz</Authors>
 	<AddRazorSupportForMvc>true</AddRazorSupportForMvc>
   </PropertyGroup>
 
