@@ -805,9 +805,9 @@ namespace EltraCloud.Services
         }
 
 
-        public override DeviceDescription DownloadDeviceDescription(DeviceVersion version)
+        public override DeviceDescriptionPayload DownloadDeviceDescription(DeviceVersion version)
         {
-            DeviceDescription result = null;
+            DeviceDescriptionPayload result = null;
 
             if (_storageService != null)
             {
@@ -817,7 +817,7 @@ namespace EltraCloud.Services
             return result;
         }
 
-        public override bool UploadDeviceDescription(DeviceDescription deviceDescription)
+        public override bool UploadDeviceDescription(DeviceDescriptionPayload deviceDescription)
         {
             bool result = false;
 

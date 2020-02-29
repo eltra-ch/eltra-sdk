@@ -81,8 +81,8 @@ namespace EltraCloudStorage.Services
         public abstract bool SignOutUser(string token);
         public abstract List<ParameterValue> GetParameterHistory(ulong serialNumber, string uniqueId, DateTime from, DateTime to);
         public abstract List<ParameterUniqueIdValuePair> GetParameterPairHistory(ulong serialNumber, string uniqueId1, string uniqueId2, DateTime from, DateTime to);
-        public abstract DeviceDescription DownloadDeviceDescription(DeviceVersion version);
-        public abstract bool UploadDeviceDescription(DeviceDescription deviceDescription);
+        public abstract DeviceDescriptionPayload DownloadDeviceDescription(DeviceVersion version);
+        public abstract bool UploadDeviceDescription(DeviceDescriptionPayload deviceDescription);
         public abstract bool DeviceDescriptionExists(ulong serialNumber, string hashCode);
         public abstract List<EltraDevice> GetSessionDevices(string uuid);
         public abstract bool GetSessionDevicesCount(Session session, out int count);

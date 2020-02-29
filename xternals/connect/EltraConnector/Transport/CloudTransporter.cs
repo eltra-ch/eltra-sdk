@@ -15,7 +15,7 @@ namespace EltraConnector.Transport
     {
         #region Private fields
 
-        private const int DefaultMaxRetryCount = 3;
+        private const int DefaultMaxRetryCount = 1;
         private const int DefaultMaxWaitTimeInSec = 15;
         private const int DefaultRetryTimeout = 100;
 

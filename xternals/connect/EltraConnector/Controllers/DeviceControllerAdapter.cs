@@ -14,7 +14,6 @@ using EltraConnector.Extensions;
 using EltraCloudContracts.Contracts.Results;
 using EltraCloudContracts.ObjectDictionary.Common.DeviceDescription.Profiles.Application.Parameters;
 using EltraCloudContracts.ObjectDictionary.DeviceDescription;
-using EltraCloudContracts.ObjectDictionary.DeviceDescription.Events;
 using EltraCloudContracts.ObjectDictionary.DeviceDescription.Factory;
 using EltraCloudContracts.Contracts.Parameters;
 using EltraCloudContracts.Contracts.Users;
@@ -63,6 +62,26 @@ namespace EltraConnector.Controllers
 
         protected virtual void OnRegistrationStateChanged(RegistrationEventArgs e)
         {
+            switch(e.State)
+            {
+                case RegistrationState.Registered:
+                    MsgLogger.WriteFlow($"device '{e.Device.Name}' registered successfully.");
+                    break;
+                case RegistrationState.Unregistered:
+                    MsgLogger.WriteFlow($"device '{e.Device.Name}' unregistered successfully.");
+                    break;
+                case RegistrationState.Failed:
+                    if(e.Exception!=null)
+                    {
+                        MsgLogger.Exception($"{GetType().Name} - OnRegistrationStateChanged", e.Exception);
+                    }
+                    else
+                    {
+                        MsgLogger.WriteError($"{GetType().Name} - OnRegistrationStateChanged", $"device '{e.Device.Name}' register failed, reason = {e.Reason}!");
+                    }
+                    break;
+            }
+
             RegistrationStateChanged?.Invoke(this, e);
         }
         
@@ -169,50 +188,81 @@ namespace EltraConnector.Controllers
 
             try
             {
-                await UploadDeviceDescription(device);
-
-                SessionDevices.AddDevice(device);
-
-                var sessionDevice = new SessionDevice { SessionUuid = Session.Uuid, Device = device };
-                var path = "api/device/add";
-                var postResult = await Transporter.Post(Url, path, sessionDevice.ToJson());
-
-                if (postResult.StatusCode == System.Net.HttpStatusCode.OK)
+                if (await UploadDeviceDescription(device))
                 {
-                    result = bool.TryParse(postResult.Content, out result);
-                }
+                    var sessionDevice = new SessionDevice { SessionUuid = Session.Uuid, Device = device };
+                    var path = "api/device/add";
+                    var postResult = await Transporter.Post(Url, path, sessionDevice.ToJson());
 
-                if (result)
-                {
-                    OnRegistrationStateChanged(new RegistrationEventArgs { Session = Session, Device = device, State = RegistrationState.Registered });
+                    if (postResult.StatusCode == System.Net.HttpStatusCode.OK)
+                    {
+                        result = bool.TryParse(postResult.Content, out result);
+                    }
+
+                    if (result)
+                    {
+                        SessionDevices.AddDevice(device);
+
+                        OnRegistrationStateChanged(new RegistrationEventArgs { Session = Session, Device = device, State = RegistrationState.Registered });
+                    }
+                    else
+                    {
+                        OnRegistrationStateChanged(new RegistrationEventArgs
+                        {
+                            Session = Session,
+                            Device = device,
+                            Exception = postResult.Exception,
+                            Reason = $"post failed, status code = {postResult.StatusCode}",
+                            State = RegistrationState.Failed
+                        });
+                    }
                 }
                 else
                 {
                     OnRegistrationStateChanged(new RegistrationEventArgs
                     {
                         Session = Session,
-                        Device = device,
-                        Exception = postResult.Exception,
-                        State = RegistrationState.Failed
+                        Device = device,                        
+                        State = RegistrationState.Failed,
+                        Reason = "upload device description failed",
                     });
                 }
             }
             catch (Exception e)
             {
-                OnRegistrationStateChanged(new RegistrationEventArgs { Session = Session, Device = device, Exception = e, State = RegistrationState.Failed });
+                OnRegistrationStateChanged(new RegistrationEventArgs { Session = Session, 
+                                                                       Device = device, 
+                                                                       Exception = e, 
+                                                                       Reason = "exception",
+                                                                       State = RegistrationState.Failed });
             }
 
             return result;
         }
 
-        private async Task UploadDeviceDescription(EltraDevice device)
+        private async Task<bool> UploadDeviceDescription(EltraDevice device)
         {
-            var description = new DeviceDescription(device);
+            bool result;
+            var deviceDescriptionPayload = new DeviceDescriptionPayload(device);
 
-            if (!await DescriptionContollerAdapter.Exists(description))
+            if (!await DescriptionContollerAdapter.Exists(deviceDescriptionPayload))
             {
-                await DescriptionContollerAdapter.Upload(description);
+                deviceDescriptionPayload.CallerUuid = Session.Uuid;
+
+                result = await DescriptionContollerAdapter.Upload(deviceDescriptionPayload);
+
+                if (!result)
+                {
+                    MsgLogger.WriteError($"{GetType().Name} - UploadDeviceDescription", "Upload device description failed!");
+                }
             }
+            else
+            {
+                MsgLogger.WriteDebug($"{GetType().Name} - UploadDeviceDescription", "Device description already exists");
+                result = true;
+            }
+
+            return result;
         }
 
         public async Task<bool> IsDeviceRegistered(string uuid, EltraDevice device)

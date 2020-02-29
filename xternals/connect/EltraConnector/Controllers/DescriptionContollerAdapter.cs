@@ -20,7 +20,7 @@ namespace EltraConnector.Controllers
 
         }
 
-        public async Task<bool> Upload(DeviceDescription deviceDescription)
+        public async Task<bool> Upload(DeviceDescriptionPayload deviceDescription)
         {
             bool result = false;
 
@@ -43,7 +43,7 @@ namespace EltraConnector.Controllers
             return result;
         }
 
-        public async Task<bool> Exists(DeviceDescription deviceDescription)
+        public async Task<bool> Exists(DeviceDescriptionPayload deviceDescription)
         {
             bool result = false;
 
@@ -76,9 +76,9 @@ namespace EltraConnector.Controllers
             return result;
         }
 
-        public async Task<DeviceDescription> Download(DeviceVersion deviceVersion)
+        public async Task<DeviceDescriptionPayload> Download(DeviceVersion deviceVersion)
         {
-            DeviceDescription result = null;
+            DeviceDescriptionPayload result = null;
 
             try
             {
@@ -95,7 +95,7 @@ namespace EltraConnector.Controllers
 
                 if (!string.IsNullOrEmpty(json))
                 {
-                    result = JsonConvert.DeserializeObject<DeviceDescription>(json);
+                    result = JsonConvert.DeserializeObject<DeviceDescriptionPayload>(json);
 
                     if(result!=null)
                     {

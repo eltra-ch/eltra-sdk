@@ -139,9 +139,9 @@ namespace EltraCloudContracts.ObjectDictionary.DeviceDescription
             return result;
         }
         
-        private async Task<DeviceDescription> Download(DeviceVersion deviceVersion)
+        private async Task<DeviceDescriptionPayload> Download(DeviceVersion deviceVersion)
         {
-            DeviceDescription result = null;
+            DeviceDescriptionPayload result = null;
 
             try
             {
@@ -158,7 +158,7 @@ namespace EltraCloudContracts.ObjectDictionary.DeviceDescription
 
                 if (!string.IsNullOrEmpty(json))
                 {
-                    result = JsonConvert.DeserializeObject<DeviceDescription>(json);
+                    result = JsonConvert.DeserializeObject<DeviceDescriptionPayload>(json);
 
                     if (result != null)
                     {

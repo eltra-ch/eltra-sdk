@@ -65,7 +65,7 @@ namespace EltraCloudStorage.Items
             return result;
         }
 
-        public bool Changed(DeviceDescription deviceDescription, out int deviceDescriptionId)
+        public bool Changed(DeviceDescriptionPayload deviceDescription, out int deviceDescriptionId)
         {
             bool result = false;
 
@@ -101,7 +101,7 @@ namespace EltraCloudStorage.Items
             return result;
         }
 
-        private bool UpdateDeviceDescription(int deviceDescriptionId, DeviceDescription deviceDescription)
+        private bool UpdateDeviceDescription(int deviceDescriptionId, DeviceDescriptionPayload deviceDescription)
         {
             bool result = false;
 
@@ -132,7 +132,7 @@ namespace EltraCloudStorage.Items
             return result;
         }
 
-        public bool Upload(DeviceDescription deviceDescription)
+        public bool Upload(DeviceDescriptionPayload deviceDescription)
         {
             bool result = false;
             
@@ -194,7 +194,7 @@ namespace EltraCloudStorage.Items
             return result;
         }
 
-        private bool AddDeviceDescription(DeviceDescription deviceDescription, int deviceVersionId)
+        private bool AddDeviceDescription(DeviceDescriptionPayload deviceDescription, int deviceVersionId)
         {
             bool result = false;
 
@@ -273,9 +273,9 @@ namespace EltraCloudStorage.Items
             return result;
         }
 
-        private DeviceDescription GetDeviceDescription(int deviceVersionId)
+        private DeviceDescriptionPayload GetDeviceDescription(int deviceVersionId)
         {
-            DeviceDescription result = null;
+            DeviceDescriptionPayload result = null;
             string commandText = DbCommandTextFactory.GetCommandText(Engine, new DbCommandTextSelect(SelectQuery.GetDeviceDescription));
 
             using (var command = DbCommandFactory.GetCommand(Engine, commandText, Connection))
@@ -286,7 +286,7 @@ namespace EltraCloudStorage.Items
                 {
                     if (reader.Read())
                     {
-                        result = new DeviceDescription
+                        result = new DeviceDescriptionPayload
                         {
                             Content = reader.GetString(1),
                             Encoding = reader.GetString(2),
@@ -299,9 +299,9 @@ namespace EltraCloudStorage.Items
             return result;
         }
 
-        public DeviceDescription Download(DeviceVersion deviceVersion)
+        public DeviceDescriptionPayload Download(DeviceVersion deviceVersion)
         {
-            DeviceDescription result = null;
+            DeviceDescriptionPayload result = null;
 
             try
             {

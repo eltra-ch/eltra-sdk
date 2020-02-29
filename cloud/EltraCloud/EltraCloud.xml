@@ -149,7 +149,7 @@
             <returns>DeviceDescription</returns>
             <response code="404">Description not found</response>
         </member>
-        <member name="M:EltraCloud.Controllers.DescriptionController.Upload(EltraCloudContracts.ObjectDictionary.DeviceDescription.DeviceDescription)">
+        <member name="M:EltraCloud.Controllers.DescriptionController.Upload(EltraCloudContracts.ObjectDictionary.DeviceDescription.DeviceDescriptionPayload)">
             <summary>
             Upload device description
             </summary>

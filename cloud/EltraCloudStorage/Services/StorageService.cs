@@ -568,9 +568,9 @@ namespace EltraCloudStorage.Services
 
         #region Device Description
 
-        public override DeviceDescription DownloadDeviceDescription(DeviceVersion version)
+        public override DeviceDescriptionPayload DownloadDeviceDescription(DeviceVersion version)
         {
-            DeviceDescription result = null;
+            DeviceDescriptionPayload result = null;
 
             using (var sessionStorage = CreateSessionStorage())
             {
@@ -583,7 +583,7 @@ namespace EltraCloudStorage.Services
             return result;
         }
 
-        public override bool UploadDeviceDescription(DeviceDescription deviceDescription)
+        public override bool UploadDeviceDescription(DeviceDescriptionPayload deviceDescription)
         {
             bool result = false;
 

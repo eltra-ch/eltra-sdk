@@ -73,12 +73,15 @@ namespace EltraCloud.Controllers
         /// <param name="deviceDescription">Device description object</param>
         /// <returns>RequestResult</returns>
         [HttpPost("upload")]
-        public IActionResult Upload([FromBody]DeviceDescription deviceDescription)
+        public IActionResult Upload([FromBody]DeviceDescriptionPayload deviceDescription)
         {
             var startTime = MsgLogger.BeginTimeMeasure();
             var requestResult = new RequestResult();
-            
-            requestResult.Result = _sessionService.UploadDeviceDescription(deviceDescription);
+
+            if (_sessionService.SessionExists(deviceDescription.CallerUuid))
+            {
+                requestResult.Result = _sessionService.UploadDeviceDescription(deviceDescription);
+            }
 
             MsgLogger.EndTimeMeasure($"{GetType().Name} - Upload", startTime, $"upload device description '{deviceDescription.Version}', result={requestResult.Result}");
 

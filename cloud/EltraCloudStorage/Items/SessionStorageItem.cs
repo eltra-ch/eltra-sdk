@@ -1222,7 +1222,7 @@ namespace EltraCloudStorage.Items
             return result;
         }
 
-        public bool UploadDeviceDescription(DeviceDescription deviceDescription)
+        public bool UploadDeviceDescription(DeviceDescriptionPayload deviceDescription)
         {
             bool result = false;
 
@@ -1234,9 +1234,9 @@ namespace EltraCloudStorage.Items
             return result;
         }
 
-        public DeviceDescription DownloadDeviceDescription(DeviceVersion version)
+        public DeviceDescriptionPayload DownloadDeviceDescription(DeviceVersion version)
         {
-            DeviceDescription result = null;
+            DeviceDescriptionPayload result = null;
 
             if (_deviceDescriptionStorage != null)
             {

@@ -102,8 +102,8 @@ namespace EltraCloud.Services
 
         #region Device Description
 
-        public abstract DeviceDescription DownloadDeviceDescription(DeviceVersion version);
-        public abstract bool UploadDeviceDescription(DeviceDescription deviceDescription);
+        public abstract DeviceDescriptionPayload DownloadDeviceDescription(DeviceVersion version);
+        public abstract bool UploadDeviceDescription(DeviceDescriptionPayload deviceDescription);
         public abstract bool DeviceDescriptionExists(ulong serialNumber, string hashCode);
 
         #endregion

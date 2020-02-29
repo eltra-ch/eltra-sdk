@@ -6,18 +6,31 @@ using System.Runtime.Serialization;
 namespace EltraCloudContracts.ObjectDictionary.DeviceDescription
 {
     [DataContract]
-    public class DeviceDescription
+    public class DeviceDescriptionPayload
     {
+        #region Private fields
+
         private string _plainContent;
 
-        public DeviceDescription()
+        #endregion
+
+        #region Constructors
+
+        public DeviceDescriptionPayload()
         {
         }
 
-        public DeviceDescription(EltraDevice device)
+        public DeviceDescriptionPayload(EltraDevice device)
         {
             Init(device);
         }
+
+        #endregion
+
+        #region Properties
+
+        [DataMember]
+        public string CallerUuid { get; set; }
 
         [DataMember]
         public ulong SerialNumber { get; set; }
@@ -68,6 +81,10 @@ namespace EltraCloudContracts.ObjectDictionary.DeviceDescription
         [DataMember]
         public DateTime Modified { get; set; }
 
+        #endregion
+
+        #region Methods
+
         private void Init(EltraDevice device)
         {
             if (device != null)
@@ -87,5 +104,6 @@ namespace EltraCloudContracts.ObjectDictionary.DeviceDescription
             Modified = DateTime.Now;
         }
 
+        #endregion
     }
 }
