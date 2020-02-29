@@ -3,6 +3,7 @@ using EltraCloudContracts.Contracts.Results;
 using EltraCloudContracts.Contracts.Users;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
+using Swashbuckle.AspNetCore.Annotations;
 
 namespace EltraCloud.Controllers
 {
@@ -38,6 +39,12 @@ namespace EltraCloud.Controllers
         /// <param name="authData">UserAuthData</param>
         /// <return>RequestResult</return>
         [HttpPost("register")]
+        [SwaggerOperation(
+            Summary = "Register master",
+            Description = "Requires master",
+            OperationId = "AuthRegister"
+
+        )]
         public IActionResult Register([FromBody] UserAuthData authData)
         {
             var requestResult = new RequestResult();
@@ -62,6 +69,12 @@ namespace EltraCloud.Controllers
         /// <param name="authData">UserAuthData</param>
         /// <returns>AuthRequestResult</returns>
         [HttpPost("sign-in")]
+        [SwaggerOperation(
+            Summary = "Logging in master",
+            Description = "Requires master",
+            OperationId = "AuthSignIn"
+
+        )]
         public IActionResult SignIn([FromBody]UserAuthData authData)
         {
             var requestResult = new AuthRequestResult();
@@ -87,6 +100,12 @@ namespace EltraCloud.Controllers
         /// <param name="token">user token</param>
         /// <returns>RequestResult</returns>
         [HttpGet("sign-out")]
+        [SwaggerOperation(
+            Summary = "Logging off master",
+            Description = "Requires master",
+            OperationId = "AuthSignOut"
+
+        )]
         public IActionResult SignOut(string token)
         {
             var requestResult = new RequestResult();
@@ -110,6 +129,12 @@ namespace EltraCloud.Controllers
         /// </summary>
         /// <param name="login">login name</param>
         [HttpGet("login-exists")]
+        [SwaggerOperation(
+            Summary = "Check is login name exists",
+            Description = "AuthExists",
+            Tags = new[] { "Internal" }
+        )]
+        [ApiExplorerSettings(IgnoreApi = true)]
         public IActionResult Exists(string login)
         {
             var requestResult = new RequestResult();
@@ -134,6 +159,14 @@ namespace EltraCloud.Controllers
         /// <param name="login">login name</param>
         /// <param name="password">password</param>
         [HttpGet("login-is-valid")]
+        [SwaggerOperation(
+            Summary = "Validates login data",
+            Description = "Requires admin privileges",
+            OperationId = "AuthIsValid",
+            Tags = new[] { "Internal" }
+            
+        )]
+        [ApiExplorerSettings(IgnoreApi = true)]
         public IActionResult IsValid(string login, string password)
         {
             var requestResult = new RequestResult();

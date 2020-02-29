@@ -137,6 +137,7 @@ namespace EltraCloud.Controllers
         /// <returns>RequestResult</returns>
         //GET
         [HttpGet("exists")]
+        [ApiExplorerSettings(IgnoreApi = true)]
         public IActionResult Exists(string uuid, string sessionUuid)
         {
             var requestResult = new RequestResult();

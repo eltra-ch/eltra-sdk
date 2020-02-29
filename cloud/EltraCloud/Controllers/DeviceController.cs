@@ -146,6 +146,7 @@ namespace EltraCloud.Controllers
         /// <param name="deviceLock"></param>
         /// <returns></returns>
         [HttpPost("can-agent-lock")]
+        [ApiExplorerSettings(IgnoreApi = true)]
         public IActionResult CanLock([FromBody]DeviceLock deviceLock)
         {
             var requestResult = new RequestResult();
@@ -173,6 +174,7 @@ namespace EltraCloud.Controllers
         /// <param name="deviceLock"></param>
         /// <returns></returns>
         [HttpPost("is-locked-by-agent")]
+        [ApiExplorerSettings(IgnoreApi = true)]
         public IActionResult IsLocked([FromBody]DeviceLock deviceLock)
         {
             var requestResult = new RequestResult();

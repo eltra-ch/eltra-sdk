@@ -105,6 +105,7 @@ namespace EltraCloud
                 var xmlFile = Path.ChangeExtension(typeof(Startup).Assembly.Location, ".xml");
                 
                 c.IncludeXmlComments(xmlFile);
+                c.EnableAnnotations();
             });
         }
         
