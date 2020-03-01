@@ -7,7 +7,7 @@ namespace EltraCloudContracts.Contracts.Sessions
     public class SessionStatusUpdate
     {
         [DataMember]
-        public string Id { get; set; }
+        public string SessionUuid { get; set; }
 
         [DataMember]
         public UserAuthData AuthData { get; set; }

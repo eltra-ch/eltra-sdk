@@ -17,11 +17,19 @@ namespace EltraCloud.Channels.Processors
 {
     public class SessionChannelProcessor : IChannelProcessor
     {
+        #region Private fields
+
+        private Ip2LocationService _locationService;
+
+        #endregion
+
         #region Constructors
 
-        public SessionChannelProcessor(IPAddress source, WebSocket webSocket, ISessionService sessionService)
+        public SessionChannelProcessor(IPAddress source, WebSocket webSocket, ISessionService sessionService, Ip2LocationService ip2LocationService)
             : base(source, webSocket, sessionService)
         {
+            _locationService = ip2LocationService;
+
             Reader = new ChannelReader(source, webSocket);
         }
 
@@ -39,11 +47,11 @@ namespace EltraCloud.Channels.Processors
                 {
                     if (await Send(new WsMessageAck()))
                     {
-                        var instance = JsonConvert.DeserializeObject<SessionStatusUpdate>(msg.Data);
+                        var sessionStatusUpdate = JsonConvert.DeserializeObject<SessionStatusUpdate>(msg.Data);
 
-                        if (instance != null)
+                        if (sessionStatusUpdate != null)
                         {
-                            result = SessionService.SetSessionStatus(instance.Id, instance.AuthData.Login, instance.Status);
+                            result = SessionService.UpdateSessionStatus(_locationService.FindAddress(Source), sessionStatusUpdate);
 
                             MsgLogger.WriteDebug($"{GetType().Name} - ProcessMsg", $"send session status, result={result}");
 

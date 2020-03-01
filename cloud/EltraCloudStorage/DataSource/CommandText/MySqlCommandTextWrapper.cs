@@ -399,7 +399,7 @@ namespace EltraCloudStorage.DataSource.CommandText
                     result = "update session set `status`=@status, modified=NOW() where uuid=@uuid";
                     break;
                 case UpdateQuery.UpdateSessionStatusById:
-                    result = "update session set `status`=@status, modified=NOW() where session_id=@session_id";
+                    result = "update session set `status`=@status, location_idref=@location_id, modified=NOW() where session_id=@session_id";
                     break;
                 case UpdateQuery.UpdateSessionDeviceStatus:
                     result = "UPDATE device set `status` = @status, modified=NOW() where serial_number=@serialNumber and device_id = " +

@@ -27,6 +27,7 @@ namespace EltraCloud
         #region Private fields
                 
         private SessionService _sessionService;
+        private Ip2LocationService _locationService;
 
         #endregion
 
@@ -80,9 +81,10 @@ namespace EltraCloud
             var storage = new Storage(Configuration);
 
             CreateSessionService(storage);
+            CreateIp2LocationService();
 
             services.AddSingleton<IAuthService>(CreateAuthService(storage));
-            services.AddSingleton<IIp2LocationService>(CreateIp2LocationService());
+            services.AddSingleton<IIp2LocationService>(_locationService);
 
             services.AddSingleton<ISessionService>(_sessionService);
 
@@ -121,15 +123,13 @@ namespace EltraCloud
             _sessionService.Start();
         }
 
-        private Ip2LocationService CreateIp2LocationService()
+        private void CreateIp2LocationService()
         {
             string filePath = Configuration.GetValue<string>("Ip2Location:CsvFilePath");
 
-            var ip2LocationService = new Ip2LocationService { Ip2LocationFile = filePath };
+            _locationService = new Ip2LocationService { Ip2LocationFile = filePath };
 
-            ip2LocationService.Start();
-
-            return ip2LocationService;
+            _locationService.Start();
         }
 
         ///<summary>This method gets called by the runtime. Use this method to configure the HTTP request pipeline.</summary> 
@@ -214,7 +214,7 @@ namespace EltraCloud
             var webSocket = await context.WebSockets.AcceptWebSocketAsync();
 
             var socketFinishedTcs = new TaskCompletionSource<object>();
-            var webSocketChannelProcessor = new ChannelProcessor(_sessionService);
+            var webSocketChannelProcessor = new ChannelProcessor(_sessionService, _locationService);
 
             if (webSocketChannelProcessor != null)
             {

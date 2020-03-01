@@ -15,9 +15,7 @@ namespace EltraCloudStorage.Services
 
         public abstract bool SessionExists(Session session);
         public abstract bool SessionExists(string sessionId);
-
-        public abstract bool SetSessionStatus(string userLoginName, string sessionUuid, SessionStatus sessionStatus);
-
+                
         public abstract bool SetSessionStatus(string sessionUuid, SessionStatus sessionStatus);
 
         public abstract bool UpdateDeviceStatus(string userLogin, string sessionUuid, ulong deviceSerialNumber, DeviceStatus deviceStatus);

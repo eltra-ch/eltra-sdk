@@ -5,6 +5,7 @@ using EltraCloudContracts.Contracts.Sessions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
+using EltraCloudContracts.Contracts.Users;
 
 namespace EltraCloud.Controllers
 {
@@ -72,23 +73,6 @@ namespace EltraCloud.Controllers
             return result;
         }
 
-        private bool IsSessionValidForUser(string uuid, string login, string password)
-        {
-            bool result = false;
-            var sessions = _sessionService.GetSessions(login, password);
-
-            foreach (var session in sessions)
-            {
-                if (session.Uuid == uuid)
-                {
-                    result = true;
-                    break;
-                }
-            }
-
-            return result;
-        }
-
         /// <summary>
         /// Get Session by Id
         /// </summary>
@@ -102,30 +86,21 @@ namespace EltraCloud.Controllers
             IActionResult result = NotFound();
             var startTime = MsgLogger.BeginTimeMeasure();
 
-            if (IsSessionValidForUser(uuid, login, password))
-            {
-                var session = _sessionService.GetSession(uuid);
-            
-                if (session != null)
-                {
-                    string json = JsonConvert.SerializeObject(session);
-                    
-                    result = Content(json, "application/json");
+            var session = _sessionService.GetSession(uuid, new UserAuthData() { Login = login, Password = password });
 
-                    MsgLogger.EndTimeMeasure($"{GetType().Name} - GetSession", startTime, $"session '{uuid}' success");
-                }
-                else
-                {
-                    MsgLogger.EndTimeMeasure($"{GetType().Name} - GetSession", startTime, $"session '{uuid}' not found!");
-                }
+            if (session != null)
+            {
+                string json = JsonConvert.SerializeObject(session);
+
+                result = Content(json, "application/json");
+
+                MsgLogger.EndTimeMeasure($"{GetType().Name} - GetSession", startTime, $"session '{uuid}' success");
             }
             else
             {
-                result = Forbid();
-
-                MsgLogger.EndTimeMeasure($"{GetType().Name} - GetSession", startTime, $"session '{uuid}' invalid credentials!");
+                MsgLogger.EndTimeMeasure($"{GetType().Name} - GetSession", startTime, $"session '{uuid}' not found!");
             }
-            
+
             return result;
         }
 
@@ -165,20 +140,25 @@ namespace EltraCloud.Controllers
         {
             var startTime = MsgLogger.BeginTimeMeasure();
             var requestResult = new RequestResult();
-            var address = _contextAccessor.HttpContext.Connection.RemoteIpAddress;
             
-            var ipLocation = _locationService.FindAddress(address);
-
-            if (ipLocation != null)
-            {
-                session.IpLocation = ipLocation;
-            }
+            UpdateSessionLocation(session);
 
             requestResult.Result = _sessionService.AddSession(session);
 
             MsgLogger.EndTimeMeasure($"{GetType().Name} - Add", startTime, $"session add '{session.Uuid}', result={requestResult.Result}");
 
             return Content(JsonConvert.SerializeObject(requestResult), "application/json");
+        }
+
+        private void UpdateSessionLocation(Session session)
+        {
+            var address = _contextAccessor.HttpContext.Connection.RemoteIpAddress;
+            var ipLocation = _locationService.FindAddress(address);
+
+            if (ipLocation != null)
+            {
+                session.IpLocation = ipLocation;
+            }
         }
 
         /// <summary>
@@ -191,10 +171,21 @@ namespace EltraCloud.Controllers
         {
             var requestResult = new RequestResult();
             var startTime = MsgLogger.BeginTimeMeasure();
+            var address = _contextAccessor.HttpContext.Connection.RemoteIpAddress;
+            var ipLocation = _locationService.FindAddress(address);
 
-            requestResult.Result = _sessionService.SetSessionStatus(statusUpdate.Id, statusUpdate.AuthData.Login, statusUpdate.Status);
-            
-            MsgLogger.EndTimeMeasure($"{GetType().Name} - UpdateStatus", startTime, $"update session '{statusUpdate.Id}', status={statusUpdate.Status} , result={requestResult.Result}");
+            if (_sessionService.UpdateSessionStatus(ipLocation, statusUpdate))
+            {
+                requestResult.Result = true;
+            }
+            else
+            {
+                requestResult.ErrorCode = ErrorCodes.Failure;
+                requestResult.Message = "Update session status failed!";
+                requestResult.Result = false;
+            }
+
+            MsgLogger.EndTimeMeasure($"{GetType().Name} - UpdateStatus", startTime, $"update session '{statusUpdate.SessionUuid}', status={statusUpdate.Status} , result={requestResult.Result}");
 
             return Content(JsonConvert.SerializeObject(requestResult), "application/json");
         }
@@ -213,7 +204,7 @@ namespace EltraCloud.Controllers
             var startTime = MsgLogger.BeginTimeMeasure();
             IActionResult result = Forbid();
 
-            if (IsSessionValidForUser(uuid, login, password))
+            if (_sessionService.GetSession(uuid, new UserAuthData() { Login = login, Password = password }) !=null)
             {
                 var devices = _sessionService.GetSessionDevices(uuid);
 

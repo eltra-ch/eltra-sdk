@@ -5,6 +5,7 @@ using EltraCloudContracts.Contracts.CommandSets;
 using EltraCloudContracts.Contracts.Devices;
 using EltraCloudContracts.Contracts.Parameters;
 using EltraCloudContracts.Contracts.Sessions;
+using EltraCloudContracts.Contracts.Users;
 using EltraCloudContracts.ObjectDictionary.Common.DeviceDescription.Profiles.Application.Parameters;
 using EltraCloudContracts.ObjectDictionary.DeviceDescription;
 using EltraCommon.Logger;
@@ -59,11 +60,13 @@ namespace EltraCloud.Services
 
         public abstract bool AddSession(Session session);
         public abstract Session GetSession(string uuid);
+        public abstract Session GetSession(string uuid, UserAuthData authData);
         public abstract List<Session> GetSessions();
         public abstract List<Session> GetSessions(string login, string password);
         public abstract List<EltraDevice> GetSessionDevices(string sessionUuid);
         public abstract bool SessionExists(string id);
-        public abstract bool SetSessionStatus(string sessionId, string loginName, SessionStatus status);
+        public abstract bool UpdateSession(Session session);
+        public abstract bool UpdateSessionStatus(IpLocation source, SessionStatusUpdate sessionUpdate);
         public abstract bool SetSessionStatus(string sessionId, SessionStatus status);
         public abstract List<Session> GetSessions(SessionStatus status, bool devicesOnly);
         public abstract bool CreateSessionLink(string uuid, List<Session> sessions);

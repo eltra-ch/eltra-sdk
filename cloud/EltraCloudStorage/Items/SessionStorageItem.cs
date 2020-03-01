@@ -1100,7 +1100,7 @@ namespace EltraCloudStorage.Items
 
                     if (result)
                     {
-                        result = SessionExists(session, deviceUserId) ? UpdateSessionStatus(session, deviceUserId) : AddSession(session, deviceUserId, locationId);
+                        result = SessionExists(session, deviceUserId) ? UpdateSessionStatus(session, deviceUserId, locationId) : AddSession(session, deviceUserId, locationId);
                     }
 
                     if (result)
@@ -1165,9 +1165,17 @@ namespace EltraCloudStorage.Items
                         result = GetSetDeviceUserId(deviceUser, out deviceUserId);
                     }
 
+                    var ipLocation = session.IpLocation;
+                    int locationId = 0;
+
+                    if (ipLocation != null)
+                    {
+                        result = GetSetDeviceLocationId(ipLocation, out locationId);
+                    }
+
                     if (result)
                     {
-                        result = UpdateSessionStatus(session, deviceUserId);
+                        result = UpdateSessionStatus(session, deviceUserId, locationId);
                     }
 
                     if (result)
@@ -1179,28 +1187,6 @@ namespace EltraCloudStorage.Items
                         transaction.Rollback();
                     }
                 }
-            }
-
-            return result;
-        }
-
-        public bool UpdateSessionStatus(string loginName, string uuid, SessionStatus sessionStatus)
-        {
-            bool result = false;
-            var transaction = Connection?.BeginTransaction();
-
-            if (_userStorage != null && _userStorage.GetDeviceUserIdByLoginName(loginName, out var deviceUserId))
-            {
-                result = UpdateSessionStatus(uuid, deviceUserId, sessionStatus);
-            }
-
-            if (result)
-            {
-                transaction?.Commit();
-            }
-            else
-            {
-                transaction?.Rollback();
             }
 
             return result;
@@ -1675,19 +1661,19 @@ namespace EltraCloudStorage.Items
             return result;
         }
 
-        private bool UpdateSessionStatus(Session session, int userId)
+        private bool UpdateSessionStatus(Session session, int userId, int locationId)
         {
             bool result = false;
 
             if (session != null)
             {
-                result = UpdateSessionStatus(session.Uuid, userId, session.Status);
+                result = UpdateSessionStatus(session.Uuid, userId, session.Status, locationId);
             }
 
             return result;
         }
         
-        private bool UpdateSessionStatus(string uuid, int userId, SessionStatus status)
+        private bool UpdateSessionStatus(string uuid, int userId, SessionStatus status, int locationId)
         {
             bool result = false;
             
@@ -1701,6 +1687,7 @@ namespace EltraCloudStorage.Items
                     {
                         command.Parameters.Add(new DbParameterWrapper("@session_id", sessionId));
                         command.Parameters.Add(new DbParameterWrapper("@status", (int)status));
+                        command.Parameters.Add(new DbParameterWrapper("@location_id", (int)locationId));
 
                         var queryResult = command.ExecuteNonQuery();
 

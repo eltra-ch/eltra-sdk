@@ -112,11 +112,11 @@ namespace EltraConnector.SyncAgent
 
                                 if (sessionStatusUpdate != null)
                                 {
-                                    if (sessionStatusUpdate.Id != _sessionControllerAdapter.Session.Uuid)
+                                    if (sessionStatusUpdate.SessionUuid != _sessionControllerAdapter.Session.Uuid)
                                     {
-                                        MsgLogger.WriteDebug($"{GetType().Name} - Execute", $"session {sessionStatusUpdate.Id}, status changed to {sessionStatusUpdate.Status}");
+                                        MsgLogger.WriteDebug($"{GetType().Name} - Execute", $"session {sessionStatusUpdate.SessionUuid}, status changed to {sessionStatusUpdate.Status}");
 
-                                        OnRemoteSessionStatusChanged(new SessionStatusChangedEventArgs() { Uuid = sessionStatusUpdate.Id, Status = sessionStatusUpdate.Status });
+                                        OnRemoteSessionStatusChanged(new SessionStatusChangedEventArgs() { Uuid = sessionStatusUpdate.SessionUuid, Status = sessionStatusUpdate.Status });
                                     }
                                 }
                             }

@@ -4,9 +4,11 @@
     {
         Undefined,
         Success,
+        Failure,
         DeviceLocked,
         DeviceLockFailed,
         DeviceNotLocked,
-        DeviceUnlockFailed
+        DeviceUnlockFailed,
+        Forbid
     }
 }

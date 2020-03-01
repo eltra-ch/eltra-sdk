@@ -10,13 +10,13 @@ namespace EltraCloud.Channels.Factory
 {
     public static class ChannelProcessorFactory
     {
-        public static IChannelProcessor CreateProcessor(string channelName, IPAddress source, WebSocket webSocket, ISessionService sessionService)
+        public static IChannelProcessor CreateProcessor(string channelName, IPAddress source, WebSocket webSocket, ISessionService sessionService, Ip2LocationService locationService)
         {
             IChannelProcessor processor = null;
 
             if (channelName == "SessionUpdate")
             {
-                processor = new SessionChannelProcessor(source, webSocket, sessionService);
+                processor = new SessionChannelProcessor(source, webSocket, sessionService, locationService);
             }
             else if (channelName == "CommandsExecution")
             {

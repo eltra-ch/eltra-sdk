@@ -128,21 +128,6 @@ namespace EltraCloudStorage.Services
             return result;
         }
 
-        public override bool SetSessionStatus(string userLoginName, string sessionUuid, SessionStatus sessionStatus)
-        {
-            bool result = false;
-
-            using (var sessionStorage = CreateSessionStorage())
-            {
-                if (sessionStorage != null)
-                {
-                    result = sessionStorage.UpdateSessionStatus(userLoginName, sessionUuid, sessionStatus);
-                }
-            }
-
-            return result;
-        }
-
         public override bool SetSessionLinkStatus(string sessionUuid, SessionStatus status)
         {
             bool result = false;

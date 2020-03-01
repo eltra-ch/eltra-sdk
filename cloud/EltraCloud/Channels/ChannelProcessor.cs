@@ -18,6 +18,7 @@ namespace EltraCloud.Channels
         #region Private fields
 
         private readonly ISessionService _sessionService;
+        private readonly Ip2LocationService _locationService;
         private WebSocket _webSocket;
         private IPAddress _source;
 
@@ -25,9 +26,10 @@ namespace EltraCloud.Channels
 
         #region Constructors
 
-        public ChannelProcessor(ISessionService sessionService)
+        public ChannelProcessor(ISessionService sessionService, Ip2LocationService locationService)
         {
             _sessionService = sessionService;
+            _locationService = locationService;
         }
 
         #endregion
@@ -42,7 +44,7 @@ namespace EltraCloud.Channels
             {
                 MsgLogger.WriteLine($"Create channel='{msg.ChannelName}' processor, source = {_source.ToString()}");
 
-                var processor = ChannelProcessorFactory.CreateProcessor(msg.ChannelName, _source, _webSocket, _sessionService);
+                var processor = ChannelProcessorFactory.CreateProcessor(msg.ChannelName, _source, _webSocket, _sessionService, _locationService);
 
                 if (processor!=null)
                 { 

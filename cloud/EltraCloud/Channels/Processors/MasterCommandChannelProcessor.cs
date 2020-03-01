@@ -61,7 +61,7 @@ namespace EltraCloud.Channels.Processors
 
                 foreach (var linkedUuid in linkedUuids)
                 {
-                    var statusUpdate = new SessionStatusUpdate() { Status = e.Status, Id = linkedUuid };
+                    var statusUpdate = new SessionStatusUpdate() { Status = e.Status, SessionUuid = linkedUuid };
 
                     if (_sessionIdentification.Uuid != linkedUuid)
                     {

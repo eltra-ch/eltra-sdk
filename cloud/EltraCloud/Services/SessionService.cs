@@ -16,6 +16,8 @@ using EltraCloud.Services.Events;
 using EltraCommon.Logger;
 using Microsoft.AspNetCore.Http;
 using EltraResources.Helpers;
+using EltraCloudContracts.Contracts.Users;
+using System.Net;
 
 #pragma warning disable CS1591, CA1063
 
@@ -116,6 +118,8 @@ namespace EltraCloud.Services
 
             if (session != null)
             {
+                session.Status = SessionStatus.Online;
+
                 result = _storageService.UpdateSession(session);
             }
 
@@ -189,22 +193,31 @@ namespace EltraCloud.Services
             return result;
         }
 
-        public override bool SetSessionStatus(string sessionId, string loginName, SessionStatus status)
+        public override bool UpdateSession(Session session)
         {
             bool result = false;
-            var currentStatus = _storageService.GetSessionStatus(sessionId);
 
-            if (_storageService.SetSessionStatus(loginName, sessionId, status))
+            if (session != null)
             {
-                result = true;
+                var uuid = session.Uuid;
+                var currentStatus = _storageService.GetSessionStatus(uuid);
+                var newStatus = session.Status;
 
-                if (currentStatus != status)
+                if (currentStatus != SessionStatus.Undefined)
                 {
-                    OnSessionStatusChanged(sessionId, status);
-
-                    if (status == SessionStatus.Offline)
+                    if (_storageService.UpdateSession(session))
                     {
-                        result = _storageService.SetSessionLinkStatus(sessionId, status);
+                        result = true;
+
+                        if (currentStatus != newStatus)
+                        {
+                            OnSessionStatusChanged(uuid, newStatus);
+
+                            if (session.Status == SessionStatus.Offline)
+                            {
+                                result = _storageService.SetSessionLinkStatus(uuid, newStatus);
+                            }
+                        }
                     }
                 }
             }
@@ -212,6 +225,49 @@ namespace EltraCloud.Services
             return result;
         }
 
+        public override Session GetSession(string uuid, UserAuthData authData)
+        {
+            Session result = null;
+
+            if (authData != null)
+            {
+                var login = authData.Login;
+                var password = authData.Password;
+                var sessions = GetSessions(login, password);
+
+                foreach (var session in sessions)
+                {
+                    if (session.Uuid == uuid)
+                    {
+                        result = session;
+                        break;
+                    }
+                }
+            }
+
+            return result;
+        }
+
+        public override bool UpdateSessionStatus(IpLocation ipLocation, SessionStatusUpdate sessionUpdate)
+        {
+            bool result = false;
+
+            if (sessionUpdate != null)
+            {
+                var session = GetSession(sessionUpdate.SessionUuid, sessionUpdate.AuthData);
+
+                if(session!=null)
+                {
+                    session.Status = sessionUpdate.Status;
+                    session.IpLocation = ipLocation;
+
+                    result = UpdateSession(session);
+                }
+            }
+
+            return result;
+        }
+        
         public override bool SetSessionStatus(string sessionId, SessionStatus status)
         {
             bool result = false;
