@@ -112,37 +112,7 @@ namespace EltraCloudStorage.Services
 
             return result;
         }
-
-        public override bool SessionExists(Session session)
-        {
-            bool result = false;
-
-            using (var sessionStorage = CreateSessionStorage())
-            {
-                if (sessionStorage != null)
-                {
-                    result = sessionStorage.SessionExists(session);
-                }
-            }
-
-            return result;
-        }
-
-        public override bool SessionExists(string sessionId)
-        {
-            bool result = false;
-
-            using (var sessionStorage = CreateSessionStorage())
-            {
-                if (sessionStorage != null)
-                {
-                    result = sessionStorage.SessionExists(sessionId);
-                }
-            }
-
-            return result;
-        }
-
+        
         public override bool SetSessionLinkStatus(string sessionUuid, SessionStatus status)
         {
             bool result = false;
@@ -172,23 +142,7 @@ namespace EltraCloudStorage.Services
 
             return result;
         }
-
-        public override bool UpdateDeviceStatus(string userLogin, string sessionUuid, ulong deviceSerialNumber, DeviceStatus deviceStatus)
-        {
-            bool result = false;
-
-            using (var sessionStorage = CreateSessionStorage())
-            {
-                if (sessionStorage != null)
-                {
-                    result = sessionStorage.UpdateDeviceStatus(userLogin, sessionUuid, deviceSerialNumber,
-                        deviceStatus);
-                }
-            }
-
-            return result;
-        }
-
+        
         public override bool RemoveDevice(ulong serialNumber)
         {
             bool result = false;
@@ -319,19 +273,7 @@ namespace EltraCloudStorage.Services
 
             return result;
         }
-
-        public override List<Session> GetSessionsOlderThan(SessionStatus status, int minutes)
-        {
-            var result = new List<Session>();
-
-            using (var sessionStorage = CreateSessionStorage())
-            {
-                result.AddRange(sessionStorage?.GetSessionsOlderThan(status, minutes));
-            }
-
-            return result;
-        }
-
+        
         public override List<Session> GetSessions(SessionStatus status, bool deviceOnly)
         {
             var result = new List<Session>();
@@ -483,25 +425,6 @@ namespace EltraCloudStorage.Services
             using (var sessionStorage = CreateSessionStorage())
             {
                 result = sessionStorage?.GetExecCommands(sessionUuid, status);
-            }
-
-            return result;
-        }
-
-        public override List<ExecuteCommand> GetExecCommands(List<ExecuteCommandStatus> commands)
-        {
-            List<ExecuteCommand> result;
-
-            using (var sessionStorage = CreateSessionStorage())
-            {
-                var commandUuids = new List<string>();
-
-                foreach(var command in commands)
-                {
-                    commandUuids.Add(command.CommandUuid);                    
-                }
-
-                result = sessionStorage?.GetExecCommands(commandUuids);
             }
 
             return result;

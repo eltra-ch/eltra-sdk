@@ -12,13 +12,8 @@ namespace EltraCloudStorage.Services
     public abstract class IStorageService
     {
         public abstract bool UpdateSession(Session session);
-
-        public abstract bool SessionExists(Session session);
-        public abstract bool SessionExists(string sessionId);
-                
+                        
         public abstract bool SetSessionStatus(string sessionUuid, SessionStatus sessionStatus);
-
-        public abstract bool UpdateDeviceStatus(string userLogin, string sessionUuid, ulong deviceSerialNumber, DeviceStatus deviceStatus);
 
         public abstract bool RemoveDevice(ulong serialNumber);
 
@@ -33,8 +28,6 @@ namespace EltraCloudStorage.Services
 
         public abstract List<ExecuteCommand> GetExecCommands(string sessionUuid, ExecCommandStatus[] status);
 
-        public abstract List<ExecuteCommand> GetExecCommands(List<ExecuteCommandStatus> commands);
-
         public abstract ExecuteCommand PopCommand(string uuid, ulong serialNumber, ExecCommandStatus status);
 
         public abstract bool SetCommand(ExecuteCommand executeCommand);
@@ -42,8 +35,6 @@ namespace EltraCloudStorage.Services
         public abstract bool SetCommandStatus(ExecuteCommandStatus commandStatus);
         
         public abstract bool SetCommandCommStatus(ExecuteCommandStatus commandStatus);
-
-        public abstract List<Session> GetSessionsOlderThan(SessionStatus status, int minutes);
 
         public abstract List<Session> GetSessions(SessionStatus status, bool deviceOnly);
         public abstract List<Session> GetSessions(string login, string password, SessionStatus status);

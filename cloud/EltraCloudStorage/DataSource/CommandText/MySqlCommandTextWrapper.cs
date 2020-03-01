@@ -22,36 +22,12 @@ namespace EltraCloudStorage.DataSource.CommandText
 
             switch (Query)
             {
-                case SelectQuery.SelectDeviceVersion:
-                    result =
-                        "select hardware_version, software_version, application_number, application_version from device_version where device_version_id=@device_version_id";
-                    break;
                 case SelectQuery.SelectDeviceVersionId:
                     result =
                         "select device_version_id from device_version where hardware_version=@hardware_version and software_version=@software_version and application_number=@application_number and application_version=@application_version";
                     break;
-                case SelectQuery.SelectDeviceBySerialNumber:
-                    result =
-                        "select d.product_family, d.product_name, dv.hardware_version, dv.software_version, dv.application_version, dv.application_number, d.status, d.modified from device as d inner join device_version as dv on d.device_version_idref=dv.device_version_id where serial_number=@serial_number";
-                    break;
                 case SelectQuery.SelectDeviceIdBySerialNumber:
                     result = "select device_id from device where serial_number=@serial_number";
-                    break;
-                case SelectQuery.SelectDeviceById:
-                    result =
-                        "select d.serial_number, d.product_family, d.product_name, dv.hardware_version, dv.software_version, dv.application_version, dv.application_number, d.status, d.modified from device as d inner join device_version as dv on d.device_version_idref=dv.device_version_id where device_id=@device_id";
-                    break;
-                case SelectQuery.SelectDevicesByStatus:
-                    result =
-                        "select d.serial_number, d.product_family, d.product_name, dv.hardware_version, dv.software_version, dv.application_number,dv.application_version, d.status, d.modified, d.created from device as d inner join device_version as dv on d.device_version_idref=dv.device_version_id where `status`=@status";
-                    break;
-                case SelectQuery.SelectDevices:
-                    result =
-                        "select d.serial_number, d.product_family, d.product_name, dv.hardware_version, dv.software_version, dv.application_number,dv.application_version, d.status, d.modified, d.created from device as d inner join device_version as dv on d.device_version_idref=dv.device_version_id";
-                    break;
-                case SelectQuery.SelectDeviceUserById:
-                    result =
-                        "select login_name, user_name, status, modified from device_user where device_user_id=@device_user_id";
                     break;
                 case SelectQuery.SelectDeviceUserIdByLoginName:
                     result = "select device_user_id from device_user where login_name=@login_name";
@@ -81,19 +57,6 @@ namespace EltraCloudStorage.DataSource.CommandText
                 case SelectQuery.GetParameterValue:
                     result = "SELECT pv.actual_value, pv.created FROM parameter_value AS pv" +
                                 " WHERE pv.parameter_value_id = @parameterId";
-                    /*result = "SELECT pv1.actual_value, pv1.created FROM parameter_value AS pv1" +
-                                " WHERE pv1.parameter_value_id = (SELECT id FROM(" +
-                                " SELECT MAX(pv.parameter_value_id) as id FROM parameter_value AS pv" +
-                                " INNER JOIN parameter AS p ON p.parameter_id = pv.parameter_idref" +
-                                " INNER JOIN device as d ON d.device_id = pv.device_idref" +
-                                " WHERE d.serial_number = @serial_number AND p.index = @index AND p.sub_index = @subindex) as latest_pv);";*/
-                    /*result = "SET @pv_id = (" +
-                                " SELECT MAX(pv.parameter_value_id) as id FROM parameter_value AS pv" +
-                                " INNER JOIN parameter AS p ON p.parameter_id = pv.parameter_idref" +
-                                " INNER JOIN device as d ON d.device_id = pv.device_idref" +
-                                " WHERE d.serial_number = @serial_number AND p.index = @index AND p.sub_index = @subindex);" +
-                                " SELECT pv1.actual_value, pv1.created FROM parameter_value AS pv1" +
-                                " WHERE pv1.parameter_value_id = @pv_id;";*/
                     break;                
                 case SelectQuery.SelectParameterHistory:
                     result = "select pv.actual_value, pv.created from parameter_value as pv" +
@@ -181,9 +144,6 @@ namespace EltraCloudStorage.DataSource.CommandText
                     result =
                         "select * from exec_command_parameter WHERE exec_command_idref=@exec_command_id AND command_parameter_idref=@command_parameter_id";
                     break;
-                case SelectQuery.SelectSessionOlderThanMin:
-                    result = "SELECT uuid, modified from session WHERE modified<=DATE_SUB(NOW(), INTERVAL @minutes MINUTE) AND status=@status";
-                    break;
                 case SelectQuery.SelectSessionsByStatus:
                     result = "select s.uuid, s.modified, s.created, s.timeout, du.login_name, du.user_name, du.password, du.status, du.modified, du.created, l.ip,l.country_code,l.country,l.region,l.city,l.latitude,l.longitude" + 
                                 " from session as s" +
@@ -258,9 +218,6 @@ namespace EltraCloudStorage.DataSource.CommandText
                                 " where ec.uuid=@uuid and d.serial_number = @serial_number and " + 
                                 " c.name = @command_name and s.uuid=@session_uuid order by ec.exec_command_id desc";
                     break;
-                case SelectQuery.SelectLocationByIp:
-                    result = "SELECT country_code, country, region, city, latitude, longitude, created, modified FROM location where ip = @ip";
-                    break;
                 case SelectQuery.SelectLocationIdByIp:
                     result = "SELECT location_id FROM location where ip = @ip";
                     break;
@@ -332,13 +289,6 @@ namespace EltraCloudStorage.DataSource.CommandText
                                     " where dd.device_version_idref = @versionId and dd.hash_code <> @hash_code;";
                     }
                     break;
-                case SelectQuery.GetDeviceVersionId:
-                    {
-                        result = "select d.device_version_idref from device as d" +
-                                    " inner join session_devices as sd on sd.device_idref = d.device_id" +
-                                    " inner join session as s on s.session_id = sd.session_idref" +
-                                    " where s.uuid = @uuid;";
-                    } break;
                 case SelectQuery.GetDeviceTools:
                     {
                         result = "select dt.name, dt.uuid from device_tool as dt" +
@@ -467,12 +417,6 @@ namespace EltraCloudStorage.DataSource.CommandText
 
             switch (CommandTextDelete)
             {
-                case DeleteQuery.DeleteDevice:
-                    result = "delete from device where device_id=@device_id";
-                    break;
-                case DeleteQuery.DeleteDeviceVersion:
-                    result = "delete from device_version where device_version_id=@device_version_id";
-                    break;
                 case DeleteQuery.UnlockDevice:
                     result = "delete from device_lock where device_idref=(select device_id from device where serial_number=@serial_number)";
                     break;

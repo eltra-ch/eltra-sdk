@@ -19,48 +19,43 @@
         public double Latitude { get; set; }
         public double Longitude { get; set; }
 
-        public override bool Equals(object obj)
+        public bool Equals(IpLocation location)
         {
-            bool result = false;
+            bool result = true;
             
-            if(obj is IpLocation location)
+            if(location.Ip != Ip)
             {
-                result = true;
+                result = false;
+            }
 
-                if(location.Ip != Ip)
-                {
-                    result = false;
-                }
+            if (result && location.CountryCode != CountryCode)
+            {
+                result = false;
+            }
 
-                if (result && location.CountryCode != CountryCode)
-                {
-                    result = false;
-                }
+            if (result && location.Country != Country)
+            {
+                result = false;
+            }
 
-                if (result && location.Country != Country)
-                {
-                    result = false;
-                }
+            if (result && location.Region != Region)
+            {
+                result = false;
+            }
 
-                if (result && location.Region != Region)
-                {
-                    result = false;
-                }
+            if (result && location.City != City)
+            {
+                result = false;
+            }
 
-                if (result && location.City != City)
-                {
-                    result = false;
-                }
+            if (result && location.Latitude != Latitude)
+            {
+                result = false;
+            }
 
-                if (result && location.Latitude != Latitude)
-                {
-                    result = false;
-                }
-
-                if (result && location.Longitude != Longitude)
-                {
-                    result = false;
-                }
+            if (result && location.Longitude != Longitude)
+            {
+                result = false;
             }
 
             return result;

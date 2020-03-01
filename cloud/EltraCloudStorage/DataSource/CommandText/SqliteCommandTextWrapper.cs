@@ -16,30 +16,11 @@ namespace EltraCloudStorage.DataSource.CommandText
 
             switch (Query)
             {
-                case SelectQuery.SelectDeviceVersion:
-                    result = "select hardware_version, software_version, application_number, application_version from device_version where device_version_id=@device_version_id";
-                    break;
                 case SelectQuery.SelectDeviceVersionId:
                     result = "select device_version_id from device_version where hardware_version=@hardware_version and software_version=@software_version and application_number=@application_number and application_version=@application_version";
                     break;
-                case SelectQuery.SelectDeviceBySerialNumber:
-                    result = "select d.device_name, d.product_name, dv.hardware_version, dv.software_version, dv.application_version, dv.application_number, d.status, d.modified from device as d inner join device_version as dv on d.device_version_idref=dv.device_version_id where serial_number=@serial_number";
-                    break;
                 case SelectQuery.SelectDeviceIdBySerialNumber:
                     result = "select device_id from device where serial_number=@serial_number";
-                    break;
-                case SelectQuery.SelectDeviceById:
-                    result = "select d.serial_number, d.device_name, d.product_name, dv.hardware_version, dv.software_version, dv.application_version, dv.application_number, d.status, d.modified from device as d inner join device_version as dv on d.device_version_idref=dv.device_version_id where device_id=@device_id";
-                    break;
-                case SelectQuery.SelectDevicesByStatus:
-                    result = "select d.serial_number, d.device_name, d.product_name, dv.hardware_version, dv.software_version, dv.application_number,dv.application_version, d.status, d.modified, d.created from device as d inner join device_version as dv on d.device_version_idref=dv.device_version_id where [status]=@status";
-                    break;
-                case SelectQuery.SelectDevices:
-                    result = "select d.serial_number, d.device_name, d.product_name, dv.hardware_version, dv.software_version, dv.application_number,dv.application_version, d.status, d.modified, d.created from device as d inner join device_version as dv on d.device_version_idref=dv.device_version_id";
-                    break;
-                case SelectQuery.SelectDeviceUserById:
-                    result =
-                        "select login_name, user_name, status, modified from device_user where device_user_id=@device_user_id";
                     break;
                 case SelectQuery.SelectDeviceUserIdByLoginName:
                     result = "select device_user_id from device_user where login_name=@login_name";
@@ -142,11 +123,9 @@ namespace EltraCloudStorage.DataSource.CommandText
 
             switch (CommandTextDelete)
             {
-                case DeleteQuery.DeleteDevice:
-                    result = "delete from device where device_id=@device_id";
+                case DeleteQuery.DeleteUndefined: 
                     break;
-                case DeleteQuery.DeleteDeviceVersion:
-                    result = "delete from device_version where device_version_id=@device_version_id";
+                case DeleteQuery.UnlockDevice:
                     break;
             }
 

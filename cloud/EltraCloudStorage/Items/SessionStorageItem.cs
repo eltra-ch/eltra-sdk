@@ -1000,39 +1000,7 @@ namespace EltraCloudStorage.Items
 
             return result;
         }
-
-        public List<Session> GetSessionsOlderThan(SessionStatus status, int minutes)
-        {
-            List<Session> result = new List<Session>();
-
-            try
-            {
-                string commandText = DbCommandTextFactory.GetCommandText(Engine, new DbCommandTextSelect(SelectQuery.SelectSessionOlderThanMin));
-
-                using (var command = DbCommandFactory.GetCommand(Engine, commandText, Connection))
-                {
-                    command.Parameters.Add(new DbParameterWrapper("@minutes", minutes));
-                    command.Parameters.Add(new DbParameterWrapper("@status", (int)status));
-
-                    using (var reader = command.ExecuteReader())
-                    {
-                        while (reader != null && reader.Read())
-                        {
-                            var session = new Session {Uuid = reader.GetString(0), Modified = reader.GetDateTime(1)};
-
-                            result.Add(session);
-                        }
-                    }
-                }
-            }
-            catch (Exception e)
-            {
-                MsgLogger.Exception("SessionStorageItem", e);;
-            }
-
-            return result;
-        }
-
+        
         public bool AddSessionDevice(SessionDevice sessionDevice)
         {
             bool result = false;
@@ -1140,81 +1108,6 @@ namespace EltraCloudStorage.Items
                 }
             }
             
-            return result;
-        }
-
-        public bool SessionExists(string sessionId)
-        {
-            var result = GetSessionIdByUuid(sessionId, out var id) && id > 0;
-
-            return result;
-        }
-
-        public bool SessionExists(Session session)
-        {
-            bool result = false;
-
-            if (session != null)
-            {
-                var deviceUser = session.User;
-                int deviceUserId = 0;
-
-                if (deviceUser != null)
-                {
-                    result = GetSetDeviceUserId(deviceUser, out deviceUserId);
-                }
-
-                if (result)
-                {
-                    result = SessionExists(session, deviceUserId);
-                }
-            }
-
-            return result;
-        }
-
-        public bool UpdateSessionStatus(Session session)
-        {
-            bool result = false;
-
-            if (session != null)
-            {
-                var transaction = Connection?.BeginTransaction();
-
-                if (transaction != null)
-                {
-                    var deviceUser = session.User;
-                    int deviceUserId = 0;
-
-                    if (deviceUser != null)
-                    {
-                        result = GetSetDeviceUserId(deviceUser, out deviceUserId);
-                    }
-
-                    var ipLocation = session.IpLocation;
-                    int locationId = 0;
-
-                    if (ipLocation != null)
-                    {
-                        result = GetSetDeviceLocationId(ipLocation, out locationId);
-                    }
-
-                    if (result)
-                    {
-                        result = UpdateSessionStatus(session, deviceUserId, locationId);
-                    }
-
-                    if (result)
-                    {
-                        transaction.Commit();
-                    }
-                    else
-                    {
-                        transaction.Rollback();
-                    }
-                }
-            }
-
             return result;
         }
 
@@ -1331,37 +1224,6 @@ namespace EltraCloudStorage.Items
             return result;
         }
         
-        public bool UpdateDeviceStatus(string userLogin, string sessionUuid, ulong deviceSerialNumber, DeviceStatus deviceStatus)
-        {
-            bool result = false;
-
-            try
-            {
-                string commandText = DbCommandTextFactory.GetCommandText(Engine, new DbCommandTextUpdate(UpdateQuery.UpdateSessionDeviceStatus));
-
-                using (var command = DbCommandFactory.GetCommand(Engine, commandText, Connection))
-                {
-                    command.Parameters.Add(new DbParameterWrapper("@uuid", sessionUuid));
-                    command.Parameters.Add(new DbParameterWrapper("@status", (int)deviceStatus));
-                    command.Parameters.Add(new DbParameterWrapper("@login", userLogin));
-                    command.Parameters.Add(new DbParameterWrapper("@serialNumber", deviceSerialNumber));
-
-                    int queryResult = command.ExecuteNonQuery();
-
-                    if (queryResult > 0)
-                    {
-                        result = true;
-                    }
-                }
-            }
-            catch (Exception e)
-            {
-                MsgLogger.Exception("SessionStorageItem", e);;
-            }
-
-            return result;
-        }
-
         public bool RemoveDevice(ulong serialNumber)
         {
             bool result = false;
@@ -1521,13 +1383,6 @@ namespace EltraCloudStorage.Items
         public List<ExecuteCommand> GetExecCommands(string sessionUuid, ExecCommandStatus[] status)
         {
             var result = _execCommandStorage.GetExecCommands(sessionUuid, status);
-
-            return result;
-        }
-
-        public List<ExecuteCommand> GetExecCommands(List<string> commandUuids)
-        {
-            var result = _execCommandStorage.GetExecCommands(commandUuids);
 
             return result;
         }

@@ -9,8 +9,6 @@ namespace EltraCloudStorage.DataSource.CommandText.Database.Definitions
     public enum DeleteQuery
     {
         DeleteUndefined,
-        DeleteDeviceVersion,
-        DeleteDevice,
         UnlockDevice
     }
 }
