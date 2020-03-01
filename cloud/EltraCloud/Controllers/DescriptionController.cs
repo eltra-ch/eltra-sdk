@@ -3,6 +3,7 @@ using EltraCloudContracts.Contracts.Devices;
 using EltraCloudContracts.Contracts.Results;
 using EltraCloudContracts.ObjectDictionary.DeviceDescription;
 using EltraCommon.Logger;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 
@@ -18,6 +19,8 @@ namespace EltraCloud.Controllers
         #region Private fields
 
         private readonly ISessionService _sessionService;
+        private readonly IHttpContextAccessor _contextAccessor;
+        private readonly IIp2LocationService _locationService;
 
         #endregion
 
@@ -26,10 +29,14 @@ namespace EltraCloud.Controllers
         /// <summary>
         /// Device description constructor
         /// </summary>
+        /// <param name="contextAccessor"></param>
         /// <param name="sessionService"></param>
-        public DescriptionController(ISessionService sessionService)
+        /// <param name="locationService"></param>
+        public DescriptionController(IHttpContextAccessor contextAccessor, ISessionService sessionService, Ip2LocationService locationService)
         {
+            _contextAccessor = contextAccessor;
             _sessionService = sessionService;
+            _locationService = locationService;
         }
 
         #endregion
@@ -67,6 +74,21 @@ namespace EltraCloud.Controllers
             return result;
         }
 
+        private bool IsRemoteSessionValid(string uuid)
+        {
+            bool result = false;
+            var sessionLocation = _sessionService.GetSessionLocation(uuid);
+            var address = _contextAccessor.HttpContext.Connection.RemoteIpAddress;
+            var ipLocation = _locationService.FindAddress(address);
+
+            if (sessionLocation != null && ipLocation != null && ipLocation.Equals(sessionLocation))
+            {
+                result = true;
+            }
+
+            return result;
+        }
+
         /// <summary>
         /// Upload device description
         /// </summary>
@@ -78,9 +100,15 @@ namespace EltraCloud.Controllers
             var startTime = MsgLogger.BeginTimeMeasure();
             var requestResult = new RequestResult();
 
-            if (_sessionService.SessionExists(deviceDescription.CallerUuid))
+            if (IsRemoteSessionValid(deviceDescription.CallerUuid))
             {
                 requestResult.Result = _sessionService.UploadDeviceDescription(deviceDescription);
+            }
+            else
+            {
+                requestResult.Result = false;
+                requestResult.ErrorCode = ErrorCodes.Forbid;
+                requestResult.Message = "Access danied";
             }
 
             MsgLogger.EndTimeMeasure($"{GetType().Name} - Upload", startTime, $"upload device description '{deviceDescription.Version}', result={requestResult.Result}");
@@ -91,18 +119,28 @@ namespace EltraCloud.Controllers
         /// <summary>
         /// Check if device description exists
         /// </summary>
+        /// <param name="uuid">Caller uuid</param>
         /// <param name="serialNumber">device id</param>
         /// <param name="hashCode">content hash code (md5)</param>
         /// <returns>RequestResult</returns>
         [HttpGet("exists")]
-        public IActionResult DeviceDescriptionExists(ulong serialNumber, string hashCode)
+        public IActionResult DeviceDescriptionExists(string uuid, ulong serialNumber, string hashCode)
         {
             var startTime = MsgLogger.BeginTimeMeasure();
             var requestResult = new RequestResult();
 
-            requestResult.Result = _sessionService.DeviceDescriptionExists(serialNumber, hashCode);
+            if (IsRemoteSessionValid(uuid))
+            {
+                requestResult.Result = _sessionService.DeviceDescriptionExists(serialNumber, hashCode);
 
-            MsgLogger.EndTimeMeasure($"{GetType().Name} - DeviceDescriptionExists", startTime, $"device description, hash='{hashCode}' exists, result={requestResult.Result}");
+                MsgLogger.EndTimeMeasure($"{GetType().Name} - DeviceDescriptionExists", startTime, $"device description, hash='{hashCode}' exists, result={requestResult.Result}");
+            }
+            else
+            {
+                requestResult.Result = false;
+                requestResult.ErrorCode = ErrorCodes.Forbid;
+                requestResult.Message = "Access danied";
+            }
 
             return Content(JsonConvert.SerializeObject(requestResult), "application/json");
         }

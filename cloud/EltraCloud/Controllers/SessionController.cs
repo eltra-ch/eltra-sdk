@@ -104,6 +104,21 @@ namespace EltraCloud.Controllers
             return result;
         }
 
+        private bool IsRemoteSessionValid(string uuid)
+        {
+            bool result = false;
+            var sessionLocation = _sessionService.GetSessionLocation(uuid);
+            var address = _contextAccessor.HttpContext.Connection.RemoteIpAddress;
+            var ipLocation = _locationService.FindAddress(address);
+
+            if (sessionLocation != null && ipLocation != null && ipLocation.Equals(sessionLocation))
+            {
+                result = true;
+            }
+
+            return result;
+        }
+
         /// <summary>
         /// Check if session exists
         /// </summary>
@@ -118,13 +133,22 @@ namespace EltraCloud.Controllers
             var requestResult = new RequestResult();
             var startTime = MsgLogger.BeginTimeMeasure();
 
-            var checkResult = _sessionService.SessionExists(sessionUuid);
+            if (IsRemoteSessionValid(sessionUuid))
+            {
+                var checkResult = _sessionService.SessionExists(sessionUuid);
 
-            MsgLogger.EndTimeMeasure($"{GetType().Name} - Exists", startTime, $"session '{sessionUuid}' exists result={checkResult}");
-
-            requestResult.Result = checkResult;
+                requestResult.Result = checkResult;
+            }
+            else
+            {
+                requestResult.Result = false;
+                requestResult.ErrorCode = ErrorCodes.Forbid;
+                requestResult.Message = "Session location doesn't match";
+            }
 
             var json = JsonConvert.SerializeObject(requestResult);
+
+            MsgLogger.EndTimeMeasure($"{GetType().Name} - Exists", startTime, $"session '{sessionUuid}' exists result={requestResult.Result}");
 
             return Content(json, "application/json");
         }

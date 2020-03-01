@@ -21,6 +21,7 @@ namespace EltraCloud.Controllers
 
         private readonly ISessionService _sessionService;
         private readonly IHttpContextAccessor _contextAccessor;
+        private readonly IIp2LocationService _locationService;
 
         #endregion
 
@@ -31,10 +32,12 @@ namespace EltraCloud.Controllers
         /// </summary>
         /// <param name="contextAccessor"></param>
         /// <param name="sessionService"></param>
-        public DeviceController(IHttpContextAccessor contextAccessor, ISessionService sessionService)
+        /// <param name="locationService"></param>
+        public DeviceController(IHttpContextAccessor contextAccessor, ISessionService sessionService, Ip2LocationService locationService)
         {
             _contextAccessor = contextAccessor;
             _sessionService = sessionService;
+            _locationService = locationService;
         }
 
         #endregion
@@ -52,12 +55,14 @@ namespace EltraCloud.Controllers
         public IActionResult DeviceExists(string uuid, string sessionUuid, string serialNumber)
         {
             bool result = false;
-
             var startTime = MsgLogger.BeginTimeMeasure();
-
-            if (ulong.TryParse(serialNumber, out var sn))
+            
+            if (IsRemoteSessionValid(uuid))
             {
-                result = _sessionService.DeviceExists(sessionUuid, sn);
+                if (ulong.TryParse(serialNumber, out var sn))
+                {
+                    result = _sessionService.DeviceExists(sessionUuid, sn);
+                }
             }
 
             MsgLogger.EndTimeMeasure($"{GetType().Name} - DeviceExists", startTime, $"device serial number='0x{serialNumber:X4}' exists, result={result}");
@@ -82,6 +87,21 @@ namespace EltraCloud.Controllers
             return Json(result);
         }
 
+        private bool IsRemoteSessionValid(string uuid)
+        {
+            bool result = false;
+            var sessionLocation = _sessionService.GetSessionLocation(uuid);
+            var address = _contextAccessor.HttpContext.Connection.RemoteIpAddress;
+            var ipLocation = _locationService.FindAddress(address);
+
+            if (sessionLocation != null && ipLocation != null && ipLocation.Equals(sessionLocation))
+            {
+                result = true;
+            }
+
+            return result;
+        }
+
         /// <summary>
         /// Remove device
         /// </summary>
@@ -93,10 +113,13 @@ namespace EltraCloud.Controllers
         {
             var startTime = MsgLogger.BeginTimeMeasure();
             bool result = false;
-
-            if (ulong.TryParse(serialNumber, out var sn))
+            
+            if (IsRemoteSessionValid(uuid))
             {
-                result = _sessionService.RemoveDevice(uuid, sn);
+                if (ulong.TryParse(serialNumber, out var sn))
+                {
+                    result = _sessionService.RemoveDevice(uuid, sn);
+                }
             }
 
             MsgLogger.EndTimeMeasure($"{GetType().Name} - RemoveDevice", startTime, $"remove device serial number='{serialNumber}', result={result}");
@@ -114,24 +137,33 @@ namespace EltraCloud.Controllers
         {
             var requestResult = new RequestResult();
             var startTime = MsgLogger.BeginTimeMeasure();
-            
-            if (_sessionService.CanLockDevice(deviceLock.AgentUuid, deviceLock.SerialNumber))
+
+            if (IsRemoteSessionValid(deviceLock.AgentUuid))
             {
-                if (_sessionService.LockDevice(deviceLock.AgentUuid, deviceLock.SerialNumber))
+                if (_sessionService.CanLockDevice(deviceLock.AgentUuid, deviceLock.SerialNumber))
                 {
-                    requestResult.Message = "Device locked";
+                    if (_sessionService.LockDevice(deviceLock.AgentUuid, deviceLock.SerialNumber))
+                    {
+                        requestResult.Message = "Device locked";
+                    }
+                    else
+                    {
+                        requestResult.ErrorCode = ErrorCodes.DeviceLockFailed;
+                        requestResult.Message = "Device already locked";
+                        requestResult.Result = false;
+                    }
                 }
                 else
                 {
-                    requestResult.ErrorCode = ErrorCodes.DeviceLockFailed;
+                    requestResult.ErrorCode = ErrorCodes.DeviceLocked;
                     requestResult.Message = "Device already locked";
                     requestResult.Result = false;
                 }
             }
             else
             {
-                requestResult.ErrorCode = ErrorCodes.DeviceLocked;
-                requestResult.Message = "Device already locked";
+                requestResult.ErrorCode = ErrorCodes.Forbid;
+                requestResult.Message = "Access danied";
                 requestResult.Result = false;
             }
 
@@ -151,15 +183,24 @@ namespace EltraCloud.Controllers
         {
             var requestResult = new RequestResult();
             var startTime = MsgLogger.BeginTimeMeasure();
-            
-            if (_sessionService.CanLockDevice(deviceLock.AgentUuid, deviceLock.SerialNumber))
+
+            if (IsRemoteSessionValid(deviceLock.AgentUuid))
             {
-                requestResult.Result = true;
+                if (_sessionService.CanLockDevice(deviceLock.AgentUuid, deviceLock.SerialNumber))
+                {
+                    requestResult.Result = true;
+                }
+                else
+                {
+                    requestResult.ErrorCode = ErrorCodes.DeviceLocked;
+                    requestResult.Message = "Device already locked";
+                    requestResult.Result = false;
+                }
             }
             else
             {
-                requestResult.ErrorCode = ErrorCodes.DeviceLocked;
-                requestResult.Message = "Device already locked";
+                requestResult.ErrorCode = ErrorCodes.Forbid;
+                requestResult.Message = "Access danied";
                 requestResult.Result = false;
             }
 
@@ -179,15 +220,24 @@ namespace EltraCloud.Controllers
         {
             var requestResult = new RequestResult();
             var startTime = MsgLogger.BeginTimeMeasure();
-            
-            if (_sessionService.IsDeviceLockedByAgent(deviceLock.AgentUuid, deviceLock.SerialNumber))
+
+            if (IsRemoteSessionValid(deviceLock.AgentUuid))
             {
-                requestResult.Message = "Device locked";
+                if (_sessionService.IsDeviceLockedByAgent(deviceLock.AgentUuid, deviceLock.SerialNumber))
+                {
+                    requestResult.Message = "Device locked";
+                }
+                else
+                {
+                    requestResult.ErrorCode = ErrorCodes.DeviceLocked;
+                    requestResult.Message = "Device locked by another agent";
+                    requestResult.Result = false;
+                }
             }
             else
             {
-                requestResult.ErrorCode = ErrorCodes.DeviceLocked;
-                requestResult.Message = "Device locked by another agent";
+                requestResult.ErrorCode = ErrorCodes.Forbid;
+                requestResult.Message = "Access danied";
                 requestResult.Result = false;
             }
 
@@ -207,19 +257,28 @@ namespace EltraCloud.Controllers
             var startTime = MsgLogger.BeginTimeMeasure();
             var requestResult = new RequestResult();
 
-            if (_sessionService.IsDeviceLockedByAgent(deviceLock.AgentUuid, deviceLock.SerialNumber))
+            if (IsRemoteSessionValid(deviceLock.AgentUuid))
             {
-                if (!_sessionService.UnlockDevice(deviceLock.AgentUuid, deviceLock.SerialNumber))
+                if (_sessionService.IsDeviceLockedByAgent(deviceLock.AgentUuid, deviceLock.SerialNumber))
                 {
-                    requestResult.ErrorCode = ErrorCodes.DeviceUnlockFailed;
-                    requestResult.Message = "Device unlock failed!";
+                    if (!_sessionService.UnlockDevice(deviceLock.AgentUuid, deviceLock.SerialNumber))
+                    {
+                        requestResult.ErrorCode = ErrorCodes.DeviceUnlockFailed;
+                        requestResult.Message = "Device unlock failed!";
+                        requestResult.Result = false;
+                    }
+                }
+                else
+                {
+                    requestResult.ErrorCode = ErrorCodes.DeviceNotLocked;
+                    requestResult.Message = "Device is not locked";
                     requestResult.Result = false;
                 }
             }
             else
             {
-                requestResult.ErrorCode = ErrorCodes.DeviceNotLocked;
-                requestResult.Message = "Device is not locked";
+                requestResult.ErrorCode = ErrorCodes.Forbid;
+                requestResult.Message = "Access danied";
                 requestResult.Result = false;
             }
 

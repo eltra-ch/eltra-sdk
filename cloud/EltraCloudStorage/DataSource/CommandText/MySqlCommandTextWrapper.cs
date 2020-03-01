@@ -206,6 +206,13 @@ namespace EltraCloudStorage.DataSource.CommandText
                              " inner join location as l on s.location_idref=l.location_id" +
                              " where s.status=@status and du.login_name=@login and du.password=@password";
                     break;
+                case SelectQuery.GetSessionLocation:
+                    result = "select" +
+                             " l.ip,l.country_code,l.country,l.region,l.city,l.latitude,l.longitude" +
+                             " from session as s " +
+                             " inner join location as l on s.location_idref=l.location_id" +
+                             " where s.uuid=@uuid";
+                    break;
                 case SelectQuery.SelectSessionByUuid:
                     result = "select s.uuid, s.status, s.modified, s.created, du.login_name, du.user_name, du.password, du.status, du.modified, du.created," + 
                              " l.ip,l.country_code,l.country,l.region,l.city,l.latitude,l.longitude" +
@@ -220,7 +227,7 @@ namespace EltraCloudStorage.DataSource.CommandText
                              " inner join location as l on s.location_idref=l.location_id" +
                              " inner join session_devices as sd on sd.session_idref = s.session_id" +
                              " inner join device as d on d.device_id = sd.device_idref" +
-                             " where d.serial_number = @serialNumber and s.status = @status";
+                             " where d.serial_number = @serialNumber and s.status = @status order by s.modified desc";
                     break;
                 case SelectQuery.SelectDevicebySerialNumber:
                     result = "select s.uuid, d.device_id, d.product_family, d.serial_number, d.status, d.modified, d.created, dv.hardware_version, dv.software_version, dv.application_number, dv.application_version from session_devices as sd"

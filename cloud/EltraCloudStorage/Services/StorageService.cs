@@ -48,6 +48,21 @@ namespace EltraCloudStorage.Services
 
         #region Service interface
 
+        public override IpLocation GetSessionLocation(string uuid)
+        {
+            IpLocation result = null;
+
+            using (var sessionStorage = CreateSessionStorage())
+            {
+                if (sessionStorage != null)
+                {
+                    result = sessionStorage.GetSessionLocation(uuid);
+                }
+            }
+
+            return result;
+        }
+
         public override List<EltraDevice> GetSessionDevices(string uuid)
         {
             var result = new List<EltraDevice>();

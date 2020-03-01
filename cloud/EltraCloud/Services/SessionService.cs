@@ -136,6 +136,15 @@ namespace EltraCloud.Services
             return _storageService.GetLinkedSessionUuids(uuid, isMaster);
         }
 
+        public override IpLocation GetSessionLocation(string uuid)
+        {
+            IpLocation result;
+
+            result = _storageService.GetSessionLocation(uuid);
+
+            return result;
+        }
+
         public override EltraDevice FindDevice(ulong serialNumber)
         {
             var start = MsgLogger.BeginTimeMeasure();

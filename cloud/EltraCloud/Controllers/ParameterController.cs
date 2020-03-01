@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 
 using Newtonsoft.Json;
 using System;
+using Microsoft.AspNetCore.Http;
 
 namespace EltraCloud.Controllers
 {
@@ -15,15 +16,46 @@ namespace EltraCloud.Controllers
     [ApiController]
     public class ParameterController : Controller
     {
+        #region Private fields
+
         private readonly ISessionService _sessionService;
+        private readonly IHttpContextAccessor _contextAccessor;
+        private readonly IIp2LocationService _locationService;
+
+        #endregion
+
+        #region Constructors
 
         /// <summary>
         /// Parameter controller constructor
         /// </summary>
+        /// <param name="contextAccessor"></param>
+        /// <param name="locationService"></param>
         /// <param name="sessionService"></param>
-        public ParameterController(ISessionService sessionService)
+        public ParameterController(IHttpContextAccessor contextAccessor, IIp2LocationService locationService, ISessionService sessionService)
         {
+            _contextAccessor = contextAccessor;
             _sessionService = sessionService;
+            _locationService = locationService;
+        }
+
+        #endregion
+
+        #region Methods
+
+        private bool IsRemoteSessionValid(string uuid)
+        {
+            bool result = false;
+            var sessionLocation = _sessionService.GetSessionLocation(uuid);
+            var address = _contextAccessor.HttpContext.Connection.RemoteIpAddress;
+            var ipLocation = _locationService.FindAddress(address);
+
+            if (sessionLocation != null && ipLocation != null && ipLocation.Equals(sessionLocation))
+            {
+                result = true;
+            }
+
+            return result;
         }
 
         /// <summary>
@@ -35,12 +67,19 @@ namespace EltraCloud.Controllers
         public IActionResult Update([FromBody] ParameterUpdate parameterUpdate)
         {
             var startTime = MsgLogger.BeginTimeMeasure();
+            var location = _sessionService.GetSessionLocation(parameterUpdate.SessionUuid);
+            var address = _contextAccessor.HttpContext.Connection.RemoteIpAddress;
+            var ipLocation = _locationService.FindAddress(address);
+            bool result = false;
 
-            MsgLogger.WriteDebug($"{GetType().Name} - Update", $"Update Parameter Value, {parameterUpdate.Parameter.UniqueId}");
+            if (ipLocation.Equals(location))
+            {
+                MsgLogger.WriteDebug($"{GetType().Name} - Update", $"Update Parameter Value, {parameterUpdate.Parameter.UniqueId}");
 
-            var result = _sessionService.UpdateParameterValue(parameterUpdate);
+                result = _sessionService.UpdateParameterValue(parameterUpdate);
 
-            MsgLogger.EndTimeMeasure($"{GetType().Name} - Update", startTime, $"update parameter '{parameterUpdate.Parameter.UniqueId}', result={result}");
+                MsgLogger.EndTimeMeasure($"{GetType().Name} - Update", startTime, $"update parameter '{parameterUpdate.Parameter.UniqueId}', result={result}");
+            }
 
             return Json(result);
         }
@@ -58,7 +97,7 @@ namespace EltraCloud.Controllers
         {
             IActionResult result = NotFound();
             var startTime = MsgLogger.BeginTimeMeasure();
-
+            
             var parameterEntry = _sessionService.GetParameter(serialNumber, index, subIndex);
 
             if (parameterEntry != null)
@@ -195,5 +234,7 @@ namespace EltraCloud.Controllers
 
             return result;
         }
+
+        #endregion
     }
 }

@@ -72,6 +72,8 @@ namespace EltraCloud.Services
         public abstract bool CreateSessionLink(string uuid, List<Session> sessions);
         public abstract List<string> GetLinkedSessionUuids(string uuid, bool isMaster);
 
+        public abstract IpLocation GetSessionLocation(string uuid);
+
         #endregion
 
         #region Parameters

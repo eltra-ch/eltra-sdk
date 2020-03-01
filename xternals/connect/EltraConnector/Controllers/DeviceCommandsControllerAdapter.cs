@@ -73,6 +73,7 @@ namespace EltraConnector.Controllers
                 {
                     var query = HttpUtility.ParseQueryString(string.Empty);
 
+                    query["uuid"] = Session.Uuid;
                     query["serialNumber"] = $"{device.Identification.SerialNumber}";
                     query["commandName"] = $"{commandName}";
 

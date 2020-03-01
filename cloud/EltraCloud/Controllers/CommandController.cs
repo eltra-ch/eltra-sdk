@@ -3,6 +3,7 @@ using EltraCloud.Services;
 using EltraCloudContracts.Contracts.CommandSets;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
+using Microsoft.AspNetCore.Http;
 
 namespace EltraCloud.Controllers
 {
@@ -16,6 +17,8 @@ namespace EltraCloud.Controllers
         #region Private fields
 
         private readonly ISessionService _sessionService;
+        private readonly IHttpContextAccessor _contextAccessor;
+        private readonly IIp2LocationService _locationService;
 
         #endregion
 
@@ -24,15 +27,34 @@ namespace EltraCloud.Controllers
         /// <summary>
         /// CommandController constructor
         /// </summary>
+        /// <param name="contextAccessor"></param>
         /// <param name="sessionService"></param>
-        public CommandController(ISessionService sessionService)
+        /// <param name="locationService"></param>
+        public CommandController(IHttpContextAccessor contextAccessor, ISessionService sessionService, Ip2LocationService locationService)
         {
+            _contextAccessor = contextAccessor;
             _sessionService = sessionService;
+            _locationService = locationService;
         }
 
         #endregion
 
         #region Methods
+
+        private bool IsRemoteSessionValid(string uuid)
+        {
+            bool result = false;
+            var sessionLocation = _sessionService.GetSessionLocation(uuid);
+            var address = _contextAccessor.HttpContext.Connection.RemoteIpAddress;
+            var ipLocation = _locationService.FindAddress(address);
+
+            if (sessionLocation != null && ipLocation != null && ipLocation.Equals(sessionLocation))
+            {
+                result = true;
+            }
+
+            return result;
+        }
 
         /// <summary>
         /// Get all commands supported by device
@@ -47,19 +69,26 @@ namespace EltraCloud.Controllers
 
             var startTime = MsgLogger.BeginTimeMeasure();
 
-            var commandSet = _sessionService.GetDeviceCommands(serialNumber);
-
-            if (commandSet != null)
+            if (IsRemoteSessionValid(uuid))
             {
-                var json = JsonConvert.SerializeObject(commandSet);
+                var commandSet = _sessionService.GetDeviceCommands(serialNumber);
 
-                MsgLogger.EndTimeMeasure($"{GetType().Name} - GetDeviceCommands", startTime, $"get commands, device serial number='0x{serialNumber:X4}', commands count={commandSet.Commands.Count} - success");
+                if (commandSet != null)
+                {
+                    var json = JsonConvert.SerializeObject(commandSet);
 
-                result = Content(json, "application/json");
+                    MsgLogger.EndTimeMeasure($"{GetType().Name} - GetDeviceCommands", startTime, $"get commands, device serial number='0x{serialNumber:X4}', commands count={commandSet.Commands.Count} - success");
+
+                    result = Content(json, "application/json");
+                }
+                else
+                {
+                    MsgLogger.EndTimeMeasure($"{GetType().Name} - GetDeviceCommands", startTime, $"get commands, device serial number='0x{serialNumber:X4}' - failed!");
+                }
             }
             else
             {
-                MsgLogger.EndTimeMeasure($"{GetType().Name} - GetDeviceCommands", startTime, $"get commands, device serial number='0x{serialNumber:X4}' - failed!");
+                result = Forbid();
             }
 
             return result;
@@ -68,30 +97,38 @@ namespace EltraCloud.Controllers
         /// <summary>
         /// Get device command 
         /// </summary>
+        /// <param name="uuid">caller uuid</param>
         /// <param name="serialNumber">device identification</param>
         /// <param name="commandName">command name</param>
         /// <returns>DeviceCommand</returns>
         [HttpGet("command")]
         [ProducesResponseType(404, Type = typeof(void))]
-        public IActionResult GetDeviceCommand(ulong serialNumber, string commandName)
+        public IActionResult GetDeviceCommand(string uuid, ulong serialNumber, string commandName)
         {
             IActionResult result = NotFound();
 
             var startTime = MsgLogger.BeginTimeMeasure();
 
-            var command = _sessionService.GetDeviceCommand(serialNumber, commandName);
-
-            if (command != null)
+            if (IsRemoteSessionValid(uuid))
             {
-                var json = JsonConvert.SerializeObject(command);
+                var command = _sessionService.GetDeviceCommand(serialNumber, commandName);
 
-                MsgLogger.EndTimeMeasure($"{GetType().Name} - GetDeviceCommand", startTime, $"get command '{commandName}', device serial number='0x{serialNumber:X4}'");
+                if (command != null)
+                {
+                    var json = JsonConvert.SerializeObject(command);
 
-                result = Content(json, "application/json");
+                    MsgLogger.EndTimeMeasure($"{GetType().Name} - GetDeviceCommand", startTime, $"get command '{commandName}', device serial number='0x{serialNumber:X4}'");
+
+                    result = Content(json, "application/json");
+                }
+                else
+                {
+                    MsgLogger.EndTimeMeasure($"{GetType().Name} - GetDeviceCommand", startTime, $"get command '{commandName}', device serial number='0x{serialNumber:X4}' failed!");
+                }
             }
             else
             {
-                MsgLogger.EndTimeMeasure($"{GetType().Name} - GetDeviceCommand", startTime, $"get command '{commandName}', device serial number='0x{serialNumber:X4}' failed!");
+                result = Forbid();
             }
 
             return result;
@@ -107,17 +144,20 @@ namespace EltraCloud.Controllers
         [HttpPost("push")]
         public IActionResult PushCommand([FromBody]ExecuteCommand executeCommand)
         {
-            IActionResult result;
+            IActionResult result = Forbid();
 
             var startTime = MsgLogger.BeginTimeMeasure();
 
-            if (_sessionService.PushCommand(executeCommand))
+            if (IsRemoteSessionValid(executeCommand.SessionUuid))
             {
-                result = Ok();
-            }
-            else
-            {
-                result = UnprocessableEntity();
+                if (_sessionService.PushCommand(executeCommand))
+                {
+                    result = Ok();
+                }
+                else
+                {
+                    result = UnprocessableEntity();
+                }
             }
 
             MsgLogger.EndTimeMeasure($"{GetType().Name} - PushCommand", startTime, $"set command '{executeCommand.Command.Name}', result={result}");
@@ -139,13 +179,20 @@ namespace EltraCloud.Controllers
 
             var startTime = MsgLogger.BeginTimeMeasure();
 
-            if (_sessionService.SetCommandStatus(commandStatus))
+            if (IsRemoteSessionValid(commandStatus.SessionUuid))
             {
-                result = Ok();
+                if (_sessionService.SetCommandStatus(commandStatus))
+                {
+                    result = Ok();
+                }
+                else
+                {
+                    result = UnprocessableEntity();
+                }
             }
             else
             {
-                result = UnprocessableEntity();
+                result = Forbid();
             }
 
             MsgLogger.EndTimeMeasure($"{GetType().Name} - SetStatus", startTime, $"set command '{commandStatus.CommandName}' status={commandStatus.Status} , result={result}");
@@ -169,21 +216,28 @@ namespace EltraCloud.Controllers
 
             var startTime = MsgLogger.BeginTimeMeasure();
 
-            var execCommandStatus = _sessionService.GetCommandStatus(commandUuid, sessionUuid, serialNumber, commandName);
-
-            if (execCommandStatus != null)
+            if (IsRemoteSessionValid(uuid))
             {
-                var json = JsonConvert.SerializeObject(execCommandStatus);
+                var execCommandStatus = _sessionService.GetCommandStatus(commandUuid, sessionUuid, serialNumber, commandName);
 
-                result = Content(json, "application/json");
+                if (execCommandStatus != null)
+                {
+                    var json = JsonConvert.SerializeObject(execCommandStatus);
 
-                MsgLogger.EndTimeMeasure($"{GetType().Name} - GetStatus", startTime,
-                    $"get command '{commandName}', status '{execCommandStatus.Status}'  - device serial number='0x{serialNumber:X4}'");
+                    result = Content(json, "application/json");
+
+                    MsgLogger.EndTimeMeasure($"{GetType().Name} - GetStatus", startTime,
+                        $"get command '{commandName}', status '{execCommandStatus.Status}'  - device serial number='0x{serialNumber:X4}'");
+                }
+                else
+                {
+                    MsgLogger.EndTimeMeasure($"{GetType().Name} - GetStatus", startTime,
+                        $"no command '{commandName}' status found! - device serial number='0x{serialNumber:X4}'");
+                }
             }
             else
             {
-                MsgLogger.EndTimeMeasure($"{GetType().Name} - GetStatus", startTime,
-                    $"no command '{commandName}' status found! - device serial number='0x{serialNumber:X4}'");
+                result = Forbid();
             }
             
             return result;
@@ -204,15 +258,22 @@ namespace EltraCloud.Controllers
 
             var startTime = MsgLogger.BeginTimeMeasure();
 
-            var executeCommand = _sessionService.PopCommand(commandUuid, serialNumber, status);
-            
-            if (executeCommand != null)
+            if (IsRemoteSessionValid(uuid))
             {
-                var json = JsonConvert.SerializeObject(executeCommand);
+                var executeCommand = _sessionService.PopCommand(commandUuid, serialNumber, status);
 
-                MsgLogger.EndTimeMeasure($"{GetType().Name} - PopCommand", startTime, $"next command, name='{executeCommand.Command.Name}' status={status} - device serial number='0x{serialNumber:X4}'");
+                if (executeCommand != null)
+                {
+                    var json = JsonConvert.SerializeObject(executeCommand);
 
-                result = Content(json, "application/json");
+                    MsgLogger.EndTimeMeasure($"{GetType().Name} - PopCommand", startTime, $"next command, name='{executeCommand.Command.Name}' status={status} - device serial number='0x{serialNumber:X4}'");
+
+                    result = Content(json, "application/json");
+                }
+            }
+            else
+            {
+                result = Forbid();
             }
             
             return result;
@@ -232,15 +293,22 @@ namespace EltraCloud.Controllers
 
             var startTime = MsgLogger.BeginTimeMeasure();
 
-            var executeCommands = _sessionService.PopCommands(serialNumber, status);
-            
-            if (executeCommands != null)
+            if (IsRemoteSessionValid(uuid))
             {
-                var json = JsonConvert.SerializeObject(executeCommands);
+                var executeCommands = _sessionService.PopCommands(serialNumber, status);
 
-                MsgLogger.EndTimeMeasure($"{GetType().Name} - PopCommands", startTime, $"next commands, count='{executeCommands.Count}' status={status} - device serial number='0x{serialNumber:X4}'");
+                if (executeCommands != null)
+                {
+                    var json = JsonConvert.SerializeObject(executeCommands);
 
-                result = Content(json, "application/json");
+                    MsgLogger.EndTimeMeasure($"{GetType().Name} - PopCommands", startTime, $"next commands, count='{executeCommands.Count}' status={status} - device serial number='0x{serialNumber:X4}'");
+
+                    result = Content(json, "application/json");
+                }
+            }
+            else
+            {
+                result = Forbid();
             }
             
             return result;

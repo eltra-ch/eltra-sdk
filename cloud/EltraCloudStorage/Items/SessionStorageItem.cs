@@ -77,6 +77,35 @@ namespace EltraCloudStorage.Items
 
         #region Session
 
+        public IpLocation GetSessionLocation(string uuid)
+        {
+            IpLocation result = null;
+
+            try
+            {
+                string commandText = DbCommandTextFactory.GetCommandText(Engine, new DbCommandTextSelect(SelectQuery.GetSessionLocation));
+
+                using (var command = DbCommandFactory.GetCommand(Engine, commandText, Connection))
+                {
+                    command.Parameters.Add(new DbParameterWrapper("@uuid", uuid));
+
+                    using (var reader = command.ExecuteReader())
+                    {
+                        if (reader != null && reader.Read())
+                        {
+                            result = ReadIpLocation(reader, 0);
+                        }
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                MsgLogger.Exception($"{GetType().Name} - GetSessionStatus", e); ;
+            }
+
+            return result;
+        }
+
         private List<DeviceTool> GetTools(int deviceId)
         {
             var result = new List<DeviceTool>();
@@ -1046,22 +1075,19 @@ namespace EltraCloudStorage.Items
 
             try
             {
-                if (GetSessionIdByUuid(uuid, out var sessionId) && sessionId > 0)
+                string commandText = DbCommandTextFactory.GetCommandText(Engine, new DbCommandTextUpdate(UpdateQuery.UpdateSessionStatus));
+
+                using (var command = DbCommandFactory.GetCommand(Engine, commandText, Connection))
                 {
-                    string commandText = DbCommandTextFactory.GetCommandText(Engine, new DbCommandTextUpdate(UpdateQuery.UpdateSessionStatusById));
+                    command.Parameters.Add(new DbParameterWrapper("@uuid", uuid));
+                    command.Parameters.Add(new DbParameterWrapper("@status", (int)status));
 
-                    using (var command = DbCommandFactory.GetCommand(Engine, commandText, Connection))
+                    var queryResult = command.ExecuteNonQuery();
+
+                    if (queryResult > 0)
                     {
-                        command.Parameters.Add(new DbParameterWrapper("@session_id", sessionId));
-                        command.Parameters.Add(new DbParameterWrapper("@status", (int)status));
-
-                        var queryResult = command.ExecuteNonQuery();
-
-                        if (queryResult > 0)
-                        {
-                            result = true;
-                        }                        
-                    }
+                        result = true;
+                    }                        
                 }
             }
             catch (Exception e)

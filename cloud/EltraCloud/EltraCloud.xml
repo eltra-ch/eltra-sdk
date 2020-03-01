@@ -58,11 +58,13 @@
             Command controller
             </summary>
         </member>
-        <member name="M:EltraCloud.Controllers.CommandController.#ctor(EltraCloud.Services.ISessionService)">
+        <member name="M:EltraCloud.Controllers.CommandController.#ctor(Microsoft.AspNetCore.Http.IHttpContextAccessor,EltraCloud.Services.ISessionService,EltraCloud.Services.Ip2LocationService)">
             <summary>
             CommandController constructor
             </summary>
+            <param name="contextAccessor"></param>
             <param name="sessionService"></param>
+            <param name="locationService"></param>
         </member>
         <member name="M:EltraCloud.Controllers.CommandController.GetDeviceCommands(System.String,System.UInt64)">
             <summary>
@@ -71,10 +73,11 @@
             <param name="uuid">session uuid</param>
             <param name="serialNumber">device identification</param>
         </member>
-        <member name="M:EltraCloud.Controllers.CommandController.GetDeviceCommand(System.UInt64,System.String)">
+        <member name="M:EltraCloud.Controllers.CommandController.GetDeviceCommand(System.String,System.UInt64,System.String)">
             <summary>
             Get device command 
             </summary>
+            <param name="uuid">caller uuid</param>
             <param name="serialNumber">device identification</param>
             <param name="commandName">command name</param>
             <returns>DeviceCommand</returns>
@@ -132,11 +135,13 @@
             Device description api
             </summary>
         </member>
-        <member name="M:EltraCloud.Controllers.DescriptionController.#ctor(EltraCloud.Services.ISessionService)">
+        <member name="M:EltraCloud.Controllers.DescriptionController.#ctor(Microsoft.AspNetCore.Http.IHttpContextAccessor,EltraCloud.Services.ISessionService,EltraCloud.Services.Ip2LocationService)">
             <summary>
             Device description constructor
             </summary>
+            <param name="contextAccessor"></param>
             <param name="sessionService"></param>
+            <param name="locationService"></param>
         </member>
         <member name="M:EltraCloud.Controllers.DescriptionController.Download(System.UInt16,System.UInt16,System.UInt16,System.UInt16)">
             <summary>
@@ -156,10 +161,11 @@
             <param name="deviceDescription">Device description object</param>
             <returns>RequestResult</returns>
         </member>
-        <member name="M:EltraCloud.Controllers.DescriptionController.DeviceDescriptionExists(System.UInt64,System.String)">
+        <member name="M:EltraCloud.Controllers.DescriptionController.DeviceDescriptionExists(System.String,System.UInt64,System.String)">
             <summary>
             Check if device description exists
             </summary>
+            <param name="uuid">Caller uuid</param>
             <param name="serialNumber">device id</param>
             <param name="hashCode">content hash code (md5)</param>
             <returns>RequestResult</returns>
@@ -169,12 +175,13 @@
             Device Controller
             </summary>
         </member>
-        <member name="M:EltraCloud.Controllers.DeviceController.#ctor(Microsoft.AspNetCore.Http.IHttpContextAccessor,EltraCloud.Services.ISessionService)">
+        <member name="M:EltraCloud.Controllers.DeviceController.#ctor(Microsoft.AspNetCore.Http.IHttpContextAccessor,EltraCloud.Services.ISessionService,EltraCloud.Services.Ip2LocationService)">
             <summary>
             DeviceController Constructor
             </summary>
             <param name="contextAccessor"></param>
             <param name="sessionService"></param>
+            <param name="locationService"></param>
         </member>
         <member name="M:EltraCloud.Controllers.DeviceController.DeviceExists(System.String,System.String,System.String)">
             <summary>
@@ -233,10 +240,12 @@
             Parameter controller
             </summary>
         </member>
-        <member name="M:EltraCloud.Controllers.ParameterController.#ctor(EltraCloud.Services.ISessionService)">
+        <member name="M:EltraCloud.Controllers.ParameterController.#ctor(Microsoft.AspNetCore.Http.IHttpContextAccessor,EltraCloud.Services.IIp2LocationService,EltraCloud.Services.ISessionService)">
             <summary>
             Parameter controller constructor
             </summary>
+            <param name="contextAccessor"></param>
+            <param name="locationService"></param>
             <param name="sessionService"></param>
         </member>
         <member name="M:EltraCloud.Controllers.ParameterController.Update(EltraCloudContracts.Contracts.Parameters.ParameterUpdate)">

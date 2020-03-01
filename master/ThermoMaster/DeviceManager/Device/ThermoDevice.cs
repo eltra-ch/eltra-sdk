@@ -17,6 +17,7 @@ namespace ThermoMaster.DeviceManager.Device
 
         private SensorConnectionManager _sensorConnectionManager;
         private readonly MasterSettings _settings;
+        private int[] _pins;
 
         #endregion
 
@@ -42,24 +43,11 @@ namespace ThermoMaster.DeviceManager.Device
 
         public int[] Pins
         {
-            get
-            {
-                int[] result = null;
-
-                if (Communication is ThermoDeviceCommunication communication)
-                {
-                    result = communication.RelayPins;
-                }
-
-                return result;
-            }
+            get => _pins;
             set
             {
-                if (Communication is ThermoDeviceCommunication communication)
-                {
-                    communication.RelayPins = value;
-                }
-
+                _pins = value;
+                
                 OnPinsChanged();
             }
         }
@@ -116,7 +104,11 @@ namespace ThermoMaster.DeviceManager.Device
 
         protected override void CreateCommunication()
         {
-            Communication = new ThermoDeviceCommunication(this, Settings);
+            var communication = new ThermoDeviceCommunication(this, Settings);
+
+            communication.RelayPins = Pins;
+
+            Communication = communication;
         }
 
         protected override void StartConnectionManagersAsync(ref List<Task> tasks)

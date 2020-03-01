@@ -60,6 +60,7 @@
         GetSessionLink,
         GetLinkedMasterSessionUuids,
         GetLinkedSlaveSessionUuids,
-        GetSessionStatus
+        GetSessionStatus,
+        GetSessionLocation
     }
 }
