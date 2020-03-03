@@ -1,0 +1,3 @@
+[submodule "xternals/common"]
+	path = xternals/common
+	url = https://github.com/eltra-ch/eltra-common.git
