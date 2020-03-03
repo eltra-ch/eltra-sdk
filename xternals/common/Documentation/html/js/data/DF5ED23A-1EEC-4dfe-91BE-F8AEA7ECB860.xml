@@ -1,6 +1,0 @@
-tocTab[tocTab.length] = new Array("0.6.1.1.2:1", "", "App (EPOS Navigo)", "EARoot/EA6/EA1/EA1/EA2/EA1062.htm", "5.png", "E1049", "0", "", "Class0","{8B6704D7-5A11-4417-96A6-CD2DC472E20F}");
-tocTab[tocTab.length] = new Array("0.6.1.1.2.1", "1", "Diagrams", "EARoot/EA6/EA1/EA1/EA2/EA1/EA1070.htm", "4.png", "", "", "{4E1B9F95-BACF-4232-AE9D-E5EEAC9216F8}", "Package");
-tocTab[tocTab.length] = new Array("0.6.1.1.2.2", "1", "Controls", "EARoot/EA6/EA1/EA1/EA2/EA2/EA1073.htm", "4.png", "", "", "{359C8575-269F-4e9d-9FAF-DE9D94B66D17}", "Package");
-tocTab[tocTab.length] = new Array("0.6.1.1.2.3", "1", "Device", "EARoot/EA6/EA1/EA1/EA2/EA3/EA1117.htm", "4.png", "", "", "{FE37FD80-E665-4f4b-9748-40934CE21643}", "Package");
-tocTab[tocTab.length] = new Array("0.6.1.1.2.4", "1", "Resources", "EARoot/EA6/EA1/EA1/EA2/EA4/EA1123.htm", "4.png", "", "", "{35F4B4BA-B4DE-472a-B1F7-30D63EC4CAAE}", "Package");
-tocTab[tocTab.length] = new Array("0.6.1.1.2.5", "1", "Views", "EARoot/EA6/EA1/EA1/EA2/EA5/EA1125.htm", "4.png", "", "", "{D67DA14C-8E01-4b12-88AC-A3DD94761F08}", "Package");

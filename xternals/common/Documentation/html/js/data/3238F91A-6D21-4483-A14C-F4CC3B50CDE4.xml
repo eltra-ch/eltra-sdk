@@ -1,4 +1,0 @@
-tocTab[tocTab.length] = new Array("0.2.2.2.1.2.1.1:1", "", "DeleteQuery", "EARoot/EA2/EA2/EA2/EA1/EA2/EA1/EA1/EA197.htm", "247.png", "E69", "0", "", "Enumeration0","{F9FC81A3-70F4-4218-8DEF-5D57FBB9CA74}");
-tocTab[tocTab.length] = new Array("0.2.2.2.1.2.1.1:2", "", "InsertQuery", "EARoot/EA2/EA2/EA2/EA1/EA2/EA1/EA1/EA198.htm", "247.png", "E70", "0", "", "Enumeration0","{F91330A8-BAFD-431c-B42D-6C8091CA2A17}");
-tocTab[tocTab.length] = new Array("0.2.2.2.1.2.1.1:3", "", "SelectQuery", "EARoot/EA2/EA2/EA2/EA1/EA2/EA1/EA1/EA199.htm", "247.png", "E71", "0", "", "Enumeration0","{79FC9EB3-588C-4fbf-AD41-8C5D076DDF1A}");
-tocTab[tocTab.length] = new Array("0.2.2.2.1.2.1.1:4", "", "UpdateQuery", "EARoot/EA2/EA2/EA2/EA1/EA2/EA1/EA1/EA200.htm", "247.png", "E72", "0", "", "Enumeration0","{C675DDD1-F351-4380-B81C-606CCE22AD63}");

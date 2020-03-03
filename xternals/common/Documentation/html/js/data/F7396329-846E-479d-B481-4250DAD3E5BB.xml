@@ -1,3 +1,0 @@
-tocTab[tocTab.length] = new Array("0.6.1.1.2.5.11.1:1", "", "PvmControlView", "EARoot/EA6/EA1/EA1/EA2/EA5/EA11/EA1/EA1287.htm", "5.png", "E1025", "0", "", "Class0","{D20EC738-D753-4332-81E6-69A773CDA581}");
-tocTab[tocTab.length] = new Array("0.6.1.1.2.5.11.1:2", "", "PvmControlViewModel", "EARoot/EA6/EA1/EA1/EA2/EA5/EA11/EA1/EA1288.htm", "5.png", "E1026", "0", "", "Class0","{F4682EBC-2389-4319-8C26-0E3871AB52BA}");
-tocTab[tocTab.length] = new Array("0.6.1.1.2.5.11.1.1", "1", "Triggers", "EARoot/EA6/EA1/EA1/EA2/EA5/EA11/EA1/EA1/EA1290.htm", "4.png", "", "", "{A5D8C423-5C1E-4105-B5AA-2ECEA18E1504}", "Package");

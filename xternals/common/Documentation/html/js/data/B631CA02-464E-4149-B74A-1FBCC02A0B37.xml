@@ -1,3 +1,0 @@
-tocTab[tocTab.length] = new Array("0.5.2.1.1.1:1", "", "Class Hierarchy", "EARoot/EA5/EA2/EA1/EA1/EA1/EA743.htm", "175.png", "23", "0", "", "Logical diagram0","{4C1AC30C-F3C1-4801-8BA5-3A71C92EB49D}");
-tocTab[tocTab.length] = new Array("0.5.2.1.1.1:2", "", "Scanning sequence", "EARoot/EA5/EA2/EA1/EA1/EA1/EA745.htm", "185.png", "24", "0", "", "Sequence diagram0","{EFEE4AA3-7348-4f6c-96F5-76CA17E09249}");
-tocTab[tocTab.length] = new Array("0.5.2.1.1.1.1", "1", "Elements", "EARoot/EA5/EA2/EA1/EA1/EA1/EA1/EA755.htm", "4.png", "", "", "{0B9D7B7F-3B43-4c06-9B5D-FB609DF82618}", "Package");

@@ -1,3 +1,0 @@
-tocTab[tocTab.length] = new Array("0.4.1.1.2.1:1", "", "CloudControllerAdapter", "EARoot/EA4/EA1/EA1/EA2/EA1/EA624.htm", "5.png", "E429", "0", "", "Class0","{9A23B1E0-3FC2-478f-9D8A-E966901F8E25}");
-tocTab[tocTab.length] = new Array("0.4.1.1.2.1:2", "", "CloudSessionControllerAdapter", "EARoot/EA4/EA1/EA1/EA2/EA1/EA625.htm", "5.png", "E430", "0", "", "Class0","{72442ED7-0EE6-410e-A1FD-2004A60FF817}");
-tocTab[tocTab.length] = new Array("0.4.1.1.2.1.1", "1", "Diagrams", "EARoot/EA4/EA1/EA1/EA2/EA1/EA1/EA631.htm", "4.png", "", "", "{AA13AF93-E59F-49aa-A01F-D4084E3302EF}", "Package");

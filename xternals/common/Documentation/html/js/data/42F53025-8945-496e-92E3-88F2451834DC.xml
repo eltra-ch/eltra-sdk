@@ -1,5 +1,0 @@
-tocTab[tocTab.length] = new Array("0.5.2.1.1.5:1", "", "Epos2DeviceIdentification", "EARoot/EA5/EA2/EA1/EA1/EA5/EA984.htm", "5.png", "E676", "0", "", "Class0","{C3DB90B2-43D4-4ef3-A1B9-655A651BE247}");
-tocTab[tocTab.length] = new Array("0.5.2.1.1.5:2", "", "Epos4DeviceIdentification", "EARoot/EA5/EA2/EA1/EA1/EA5/EA985.htm", "5.png", "E677", "0", "", "Class0","{7735F478-84A5-4797-BA9B-2357E049AC3A}");
-tocTab[tocTab.length] = new Array("0.5.2.1.1.5:3", "", "EposDeviceIdentification", "EARoot/EA5/EA2/EA1/EA1/EA5/EA986.htm", "5.png", "E678", "0", "", "Class0","{FFF9F8C4-E257-4d25-AC1A-AB7AF4F47CE9}");
-tocTab[tocTab.length] = new Array("0.5.2.1.1.5.1", "1", "Events", "EARoot/EA5/EA2/EA1/EA1/EA5/EA1/EA989.htm", "4.png", "", "", "{B0D8C578-3904-44ca-A788-A7454FF17E4F}", "Package");
-tocTab[tocTab.length] = new Array("0.5.2.1.1.5.2", "1", "Factory", "EARoot/EA5/EA2/EA1/EA1/EA5/EA2/EA992.htm", "4.png", "", "", "{5516B690-C56A-4ebd-88D1-4FF61C0B0D44}", "Package");

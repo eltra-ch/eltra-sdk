@@ -1,5 +1,0 @@
-tocTab[tocTab.length] = new Array("0.2.2.2.4.1:1", "", "Class Hierarchy", "EARoot/EA2/EA2/EA2/EA4/EA1/EA250.htm", "175.png", "13", "0", "", "Logical diagram0","{C06B9679-23DB-40ff-B3D6-2C0A9B9F6C16}");
-tocTab[tocTab.length] = new Array("0.2.2.2.4.1:2", "", "DeviceCommandSetItem Class Hierarchy", "EARoot/EA2/EA2/EA2/EA4/EA1/EA252.htm", "175.png", "14", "0", "", "Logical diagram0","{D620454F-CCF8-47a9-94D7-821B8DC68ABA}");
-tocTab[tocTab.length] = new Array("0.2.2.2.4.1:3", "", "ExecCommandStorageItem Class Hierarchy", "EARoot/EA2/EA2/EA2/EA4/EA1/EA254.htm", "175.png", "15", "0", "", "Logical diagram0","{7C79E4B5-F958-4b9e-ABF2-C6C3755D5032}");
-tocTab[tocTab.length] = new Array("0.2.2.2.4.1:4", "", "SessionStorageItem Class Hierarchy", "EARoot/EA2/EA2/EA2/EA4/EA1/EA256.htm", "175.png", "18", "0", "", "Logical diagram0","{0A20D86E-4C6D-4440-9295-36529CB92757}");
-tocTab[tocTab.length] = new Array("0.2.2.2.4.1:5", "", "StorageItem Class Hierarchy", "EARoot/EA2/EA2/EA2/EA4/EA1/EA258.htm", "175.png", "16", "0", "", "Logical diagram0","{0759775F-331C-4877-840C-29E8DC2A3DF6}");

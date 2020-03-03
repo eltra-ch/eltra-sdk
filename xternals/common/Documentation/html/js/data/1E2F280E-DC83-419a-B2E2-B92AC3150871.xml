@@ -1,6 +1,0 @@
-tocTab[tocTab.length] = new Array("0.2.2.2.1.2.1:1", "", "DbCommandText", "EARoot/EA2/EA2/EA2/EA1/EA2/EA1/EA190.htm", "5.png", "E73", "0", "", "Class0","{23B398D9-3826-4260-8B44-CB6210FA74E7}");
-tocTab[tocTab.length] = new Array("0.2.2.2.1.2.1:2", "", "DbCommandTextDelete", "EARoot/EA2/EA2/EA2/EA1/EA2/EA1/EA191.htm", "5.png", "E74", "0", "", "Class0","{A812ADD4-B3FD-464c-9F49-C895FD41074E}");
-tocTab[tocTab.length] = new Array("0.2.2.2.1.2.1:3", "", "DbCommandTextInsert", "EARoot/EA2/EA2/EA2/EA1/EA2/EA1/EA192.htm", "5.png", "E75", "0", "", "Class0","{1795731D-BBD9-4a0e-9415-492961F8E313}");
-tocTab[tocTab.length] = new Array("0.2.2.2.1.2.1:4", "", "DbCommandTextSelect", "EARoot/EA2/EA2/EA2/EA1/EA2/EA1/EA193.htm", "5.png", "E76", "0", "", "Class0","{B1AAC2FD-A9C1-4234-9FD2-8144664D817A}");
-tocTab[tocTab.length] = new Array("0.2.2.2.1.2.1:5", "", "DbCommandTextUpdate", "EARoot/EA2/EA2/EA2/EA1/EA2/EA1/EA194.htm", "5.png", "E77", "0", "", "Class0","{10B503A4-99C0-4fb0-ADFA-0E8AC1697B26}");
-tocTab[tocTab.length] = new Array("0.2.2.2.1.2.1.1", "1", "Definitions", "EARoot/EA2/EA2/EA2/EA1/EA2/EA1/EA1/EA196.htm", "4.png", "", "", "{3238F91A-6D21-4483-A14C-F4CC3B50CDE4}", "Package");

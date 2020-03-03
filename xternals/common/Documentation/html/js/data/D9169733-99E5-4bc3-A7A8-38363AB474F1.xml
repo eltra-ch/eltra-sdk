@@ -1,4 +1,0 @@
-tocTab[tocTab.length] = new Array("0.3.1.1.2.1:1", "", "DbCommandWrapper", "EARoot/EA3/EA1/EA1/EA2/EA1/EA380.htm", "5.png", "E253", "0", "", "Class0","{9337C427-BBAE-48a2-BE2D-80D5197FACD1}");
-tocTab[tocTab.length] = new Array("0.3.1.1.2.1:2", "", "MySqlCommandWrapper", "EARoot/EA3/EA1/EA1/EA2/EA1/EA382.htm", "5.png", "E254", "0", "", "Class0","{9CF18D9B-8413-470f-8173-9FC8A19CB8D9}");
-tocTab[tocTab.length] = new Array("0.3.1.1.2.1:3", "", "SqliteCommandWrapper", "EARoot/EA3/EA1/EA1/EA2/EA1/EA383.htm", "5.png", "E255", "0", "", "Class0","{FEB2E0E2-DB75-4d83-A183-359DB3D81244}");
-tocTab[tocTab.length] = new Array("0.3.1.1.2.1.1", "1", "Factory", "EARoot/EA3/EA1/EA1/EA2/EA1/EA1/EA384.htm", "4.png", "", "", "{1732904B-9B8A-4fe7-9D25-BE0CB8197606}", "Package");

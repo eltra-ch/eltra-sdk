@@ -1,4 +1,0 @@
-tocTab[tocTab.length] = new Array("0.6.1.1.2.5.5:1", "", "DataRecorderView", "EARoot/EA6/EA1/EA1/EA2/EA5/EA5/EA1161.htm", "5.png", "E931", "0", "", "Class0","{1E5868FB-C6D2-4f9a-83FA-D6BC249496E1}");
-tocTab[tocTab.length] = new Array("0.6.1.1.2.5.5:2", "", "DataRecorderViewModel", "EARoot/EA6/EA1/EA1/EA2/EA5/EA5/EA1162.htm", "5.png", "E932", "0", "", "Class0","{F8A3824B-C179-4ab5-995B-969B0F831D92}");
-tocTab[tocTab.length] = new Array("0.6.1.1.2.5.5.1", "1", "Series", "EARoot/EA6/EA1/EA1/EA2/EA5/EA5/EA1/EA1165.htm", "4.png", "", "", "{D51E0A83-0B3D-44da-A227-0B969D269562}", "Package");
-tocTab[tocTab.length] = new Array("0.6.1.1.2.5.5.2", "1", "Triggers", "EARoot/EA6/EA1/EA1/EA2/EA5/EA5/EA2/EA1167.htm", "4.png", "", "", "{BA19A0C6-9458-4620-B8EF-370DCD120031}", "Package");

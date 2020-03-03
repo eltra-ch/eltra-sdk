@@ -1,7 +1,0 @@
-tocTab[tocTab.length] = new Array("0.6.1.1.2.5.11:1", "", "PvmView", "EARoot/EA6/EA1/EA1/EA2/EA5/EA11/EA1283.htm", "5.png", "E1039", "0", "", "Class0","{A06A997B-F168-4339-95E8-1F86AE26C6DA}");
-tocTab[tocTab.length] = new Array("0.6.1.1.2.5.11:2", "", "PvmViewModel", "EARoot/EA6/EA1/EA1/EA2/EA5/EA11/EA1284.htm", "5.png", "E1040", "0", "", "Class0","{D7C86084-6B9F-4bc5-8524-97163922F1E9}");
-tocTab[tocTab.length] = new Array("0.6.1.1.2.5.11.1", "1", "Control", "EARoot/EA6/EA1/EA1/EA2/EA5/EA11/EA1/EA1286.htm", "4.png", "", "", "{F7396329-846E-479d-B481-4250DAD3E5BB}", "Package");
-tocTab[tocTab.length] = new Array("0.6.1.1.2.5.11.2", "1", "Inputs", "EARoot/EA6/EA1/EA1/EA2/EA5/EA11/EA2/EA1295.htm", "4.png", "", "", "{E9971E29-350F-435a-81E3-32D4FDF06110}", "Package");
-tocTab[tocTab.length] = new Array("0.6.1.1.2.5.11.3", "1", "OpMode", "EARoot/EA6/EA1/EA1/EA2/EA5/EA11/EA3/EA1298.htm", "4.png", "", "", "{6387FF9A-0F2C-4a23-A142-E24E33318D15}", "Package");
-tocTab[tocTab.length] = new Array("0.6.1.1.2.5.11.4", "1", "Outputs", "EARoot/EA6/EA1/EA1/EA2/EA5/EA11/EA4/EA1301.htm", "4.png", "", "", "{41B3720D-D53C-4474-BAFB-D57D62F2B130}", "Package");
-tocTab[tocTab.length] = new Array("0.6.1.1.2.5.11.5", "1", "Status", "EARoot/EA6/EA1/EA1/EA2/EA5/EA11/EA5/EA1304.htm", "4.png", "", "", "{EF429656-A40B-4fcd-B0BE-2A80EA23C598}", "Package");

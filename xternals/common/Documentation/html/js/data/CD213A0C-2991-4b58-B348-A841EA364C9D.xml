@@ -1,8 +1,0 @@
-tocTab[tocTab.length] = new Array("0.3.1.1.1.1:1", "", "DeviceCommand", "EARoot/EA3/EA1/EA1/EA1/EA1/EA312.htm", "5.png", "E215", "0", "", "Class0","{7AA0C594-B3B6-4ecc-817E-65790D56C84C}");
-tocTab[tocTab.length] = new Array("0.3.1.1.1.1:2", "", "DeviceCommandParameter", "EARoot/EA3/EA1/EA1/EA1/EA1/EA313.htm", "5.png", "E216", "0", "", "Class0","{61573355-ED09-4ed9-B7F9-2EF928FB9CE8}");
-tocTab[tocTab.length] = new Array("0.3.1.1.1.1:3", "", "DeviceCommandSet", "EARoot/EA3/EA1/EA1/EA1/EA1/EA314.htm", "5.png", "E217", "0", "", "Class0","{605B2837-DC37-4c66-AD42-457A900F9115}");
-tocTab[tocTab.length] = new Array("0.3.1.1.1.1:4", "", "DeviceCommandStatus", "EARoot/EA3/EA1/EA1/EA1/EA1/EA315.htm", "247.png", "E218", "0", "", "Enumeration0","{E55D6684-C69C-4208-BCD1-E63BACFD5DB6}");
-tocTab[tocTab.length] = new Array("0.3.1.1.1.1:5", "", "ExecuteCommand", "EARoot/EA3/EA1/EA1/EA1/EA1/EA317.htm", "5.png", "E219", "0", "", "Class0","{108A2566-58D4-426b-B5F6-56A74DCDD020}");
-tocTab[tocTab.length] = new Array("0.3.1.1.1.1:6", "", "ExecuteCommandStatus", "EARoot/EA3/EA1/EA1/EA1/EA1/EA318.htm", "5.png", "E220", "0", "", "Class0","{CE534381-1785-4dc8-A16F-C4E22285BF52}");
-tocTab[tocTab.length] = new Array("0.3.1.1.1.1:7", "", "ParameterType", "EARoot/EA3/EA1/EA1/EA1/EA1/EA319.htm", "247.png", "E221", "0", "", "Enumeration0","{E7674A3A-476F-4a7f-9BDE-EAF126E147DD}");
-tocTab[tocTab.length] = new Array("0.3.1.1.1.1.1", "1", "Diagrams", "EARoot/EA3/EA1/EA1/EA1/EA1/EA1/EA324.htm", "4.png", "", "", "{C7F9E343-48FA-4817-A549-A590417C59D5}", "Package");

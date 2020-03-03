@@ -1,6 +1,0 @@
-tocTab[tocTab.length] = new Array("0.3.1.1.3.3.2.2.2.1.3:1", "", "TriggerCondition", "EARoot/EA3/EA1/EA1/EA3/EA3/EA2/EA2/EA2/EA1/EA3/EA568.htm", "5.png", "E393", "0", "", "Class0","{42209E6A-E32B-4cee-B501-21C8A1C5937F}");
-tocTab[tocTab.length] = new Array("0.3.1.1.3.3.2.2.2.1.3:2", "", "TriggerConditionHigh", "EARoot/EA3/EA1/EA1/EA3/EA3/EA2/EA2/EA2/EA1/EA3/EA569.htm", "5.png", "E394", "0", "", "Class0","{C287652C-21A7-4f9f-AB51-136D7FE6DDB7}");
-tocTab[tocTab.length] = new Array("0.3.1.1.3.3.2.2.2.1.3:3", "", "TriggerConditionLow", "EARoot/EA3/EA1/EA1/EA3/EA3/EA2/EA2/EA2/EA1/EA3/EA570.htm", "5.png", "E395", "0", "", "Class0","{B1AF3586-FFFA-43fc-8295-7C2CA85370D6}");
-tocTab[tocTab.length] = new Array("0.3.1.1.3.3.2.2.2.1.3:4", "", "TriggerConditionMask", "EARoot/EA3/EA1/EA1/EA3/EA3/EA2/EA2/EA2/EA1/EA3/EA571.htm", "5.png", "E396", "0", "", "Class0","{314AE517-F5B7-42da-9615-C711408CB5A1}");
-tocTab[tocTab.length] = new Array("0.3.1.1.3.3.2.2.2.1.3:5", "", "TriggerConditionMode", "EARoot/EA3/EA1/EA1/EA3/EA3/EA2/EA2/EA2/EA1/EA3/EA572.htm", "5.png", "E397", "0", "", "Class0","{465FFBBE-6614-40cc-A395-F37F81A0E2C0}");
-tocTab[tocTab.length] = new Array("0.3.1.1.3.3.2.2.2.1.3:6", "", "TriggerConditionParam", "EARoot/EA3/EA1/EA1/EA3/EA3/EA2/EA2/EA2/EA1/EA3/EA573.htm", "5.png", "E398", "0", "", "Class0","{AD7C9C30-5E1D-4b6b-A9F4-7203FA8071DE}");

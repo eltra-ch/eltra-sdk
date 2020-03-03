@@ -1,3 +1,0 @@
-tocTab[tocTab.length] = new Array("0.3.1.1.2.6:1", "", "DbTransactionWrapper", "EARoot/EA3/EA1/EA1/EA2/EA6/EA418.htm", "5.png", "E285", "0", "", "Class0","{8CA045E5-CCBD-44d9-900F-24A7BB39532E}");
-tocTab[tocTab.length] = new Array("0.3.1.1.2.6:2", "", "MySqlTransactionWrapper", "EARoot/EA3/EA1/EA1/EA2/EA6/EA419.htm", "5.png", "E286", "0", "", "Class0","{F73521DF-F27B-4008-AC65-9AAC79A55C76}");
-tocTab[tocTab.length] = new Array("0.3.1.1.2.6:3", "", "SqliteTransactionWrapper", "EARoot/EA3/EA1/EA1/EA2/EA6/EA420.htm", "5.png", "E287", "0", "", "Class0","{F91411EC-FD0C-4523-B952-FF218A96FAAB}");

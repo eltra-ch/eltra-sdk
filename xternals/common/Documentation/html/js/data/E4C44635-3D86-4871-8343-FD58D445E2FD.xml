@@ -1,9 +1,0 @@
-tocTab[tocTab.length] = new Array("0.3.1.1.3.3.2.2.1.4:1", "", "Epos4DecimalPlaces", "EARoot/EA3/EA1/EA1/EA3/EA3/EA2/EA2/EA1/EA4/EA527.htm", "5.png", "E364", "0", "", "Class0","{982E90C1-3E7D-44a4-9C6E-4B76FC16EF8A}");
-tocTab[tocTab.length] = new Array("0.3.1.1.3.3.2.2.1.4:2", "", "Epos4Multiplier", "EARoot/EA3/EA1/EA1/EA3/EA3/EA2/EA2/EA1/EA4/EA528.htm", "5.png", "E365", "0", "", "Class0","{E0DBCD56-09ED-417d-B42C-74A337382E3F}");
-tocTab[tocTab.length] = new Array("0.3.1.1.3.3.2.2.1.4:3", "", "Epos4Unit", "EARoot/EA3/EA1/EA1/EA3/EA3/EA2/EA2/EA1/EA4/EA529.htm", "5.png", "E366", "0", "", "Class0","{C3D8D27D-0B94-4d93-BF9D-EAE52C912A8E}");
-tocTab[tocTab.length] = new Array("0.3.1.1.3.3.2.2.1.4:4", "", "Epos4UnitConfiguration", "EARoot/EA3/EA1/EA1/EA3/EA3/EA2/EA2/EA1/EA4/EA530.htm", "5.png", "E367", "0", "", "Class0","{27B55E65-A130-4e59-9F79-49A8231BAF45}");
-tocTab[tocTab.length] = new Array("0.3.1.1.3.3.2.2.1.4:5", "", "Epos4UnitConfigurationValue", "EARoot/EA3/EA1/EA1/EA3/EA3/EA2/EA2/EA1/EA4/EA531.htm", "5.png", "E368", "0", "", "Class0","{18275D6C-4B5D-4d7c-885B-1B657FF39F1D}");
-tocTab[tocTab.length] = new Array("0.3.1.1.3.3.2.2.1.4:6", "", "Epos4UnitPhysicalQuantity", "EARoot/EA3/EA1/EA1/EA3/EA3/EA2/EA2/EA1/EA4/EA532.htm", "5.png", "E369", "0", "", "Class0","{E2584284-BC8E-4d88-A51F-F5573FEA87E8}");
-tocTab[tocTab.length] = new Array("0.3.1.1.3.3.2.2.1.4:7", "", "Epos4UnitReference", "EARoot/EA3/EA1/EA1/EA3/EA3/EA2/EA2/EA1/EA4/EA533.htm", "5.png", "E370", "0", "", "Class0","{751AC9D4-A1E1-4f78-AB36-D708F7E92AFF}");
-tocTab[tocTab.length] = new Array("0.3.1.1.3.3.2.2.1.4:8", "", "Epos4Units", "EARoot/EA3/EA1/EA1/EA3/EA3/EA2/EA2/EA1/EA4/EA534.htm", "5.png", "E371", "0", "", "Class0","{09FB5C51-7B35-4ce5-86D7-C7C861E8B05A}");
-tocTab[tocTab.length] = new Array("0.3.1.1.3.3.2.2.1.4:9", "", "Epos4UnitsList", "EARoot/EA3/EA1/EA1/EA3/EA3/EA2/EA2/EA1/EA4/EA535.htm", "5.png", "E372", "0", "", "Class0","{4AAF3765-0DE5-4da2-9347-A16E4C4CD07D}");

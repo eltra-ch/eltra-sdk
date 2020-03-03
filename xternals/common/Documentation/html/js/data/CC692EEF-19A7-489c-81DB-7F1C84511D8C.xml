@@ -1,5 +1,0 @@
-tocTab[tocTab.length] = new Array("0.3.1.1.3.3.2.1:1", "", "Epos4Description", "EARoot/EA3/EA1/EA1/EA3/EA3/EA2/EA1/EA491.htm", "5.png", "E337", "0", "", "Class0","{D4A6B1E0-917D-46cb-BF60-C66FA6A88575}");
-tocTab[tocTab.length] = new Array("0.3.1.1.3.3.2.1:2", "", "Epos4Label", "EARoot/EA3/EA1/EA1/EA3/EA3/EA2/EA1/EA492.htm", "5.png", "E338", "0", "", "Class0","{1738507E-5775-4339-9B84-9FAF3A97D595}");
-tocTab[tocTab.length] = new Array("0.3.1.1.3.3.2.1:3", "", "Epos4ParamIdRef", "EARoot/EA3/EA1/EA1/EA3/EA3/EA2/EA1/EA493.htm", "5.png", "E339", "0", "", "Class0","{1D570FB5-206D-48d1-B5CC-482D709A6A65}");
-tocTab[tocTab.length] = new Array("0.3.1.1.3.3.2.1:4", "", "Epos4Value", "EARoot/EA3/EA1/EA1/EA3/EA3/EA2/EA1/EA494.htm", "5.png", "E340", "0", "", "Class0","{80E7EE66-0833-4368-A85C-C1154E671011}");
-tocTab[tocTab.length] = new Array("0.3.1.1.3.3.2.1:5", "", "Epos4ValueEntry", "EARoot/EA3/EA1/EA1/EA3/EA3/EA2/EA1/EA495.htm", "5.png", "E341", "0", "", "Class0","{9B64197A-4F67-4d56-9144-24A02CC1EC9E}");

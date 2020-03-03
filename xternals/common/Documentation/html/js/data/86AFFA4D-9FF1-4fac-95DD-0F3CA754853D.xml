@@ -1,6 +1,0 @@
-tocTab[tocTab.length] = new Array("0.3.1.1.3.1.2.2.1.2:1", "", "Parameter", "EARoot/EA3/EA1/EA1/EA3/EA1/EA2/EA2/EA1/EA2/EA457.htm", "5.png", "E311", "0", "", "Class0","{7928C0B8-E8AC-45dd-B5D0-B962D8F5D113}");
-tocTab[tocTab.length] = new Array("0.3.1.1.3.1.2.2.1.2:2", "", "ParameterBase", "EARoot/EA3/EA1/EA1/EA3/EA1/EA2/EA2/EA1/EA2/EA458.htm", "5.png", "E312", "0", "", "Class0","{BC317854-84F3-49d0-BFE8-27B55D0C9C02}");
-tocTab[tocTab.length] = new Array("0.3.1.1.3.1.2.2.1.2:3", "", "ParameterComparer", "EARoot/EA3/EA1/EA1/EA3/EA1/EA2/EA2/EA1/EA2/EA459.htm", "5.png", "E313", "0", "", "Class0","{EB2540D0-CD66-4668-B4A2-A36C8D8E8425}");
-tocTab[tocTab.length] = new Array("0.3.1.1.3.1.2.2.1.2:4", "", "ParameterValue", "EARoot/EA3/EA1/EA1/EA3/EA1/EA2/EA2/EA1/EA2/EA460.htm", "5.png", "E314", "0", "", "Class0","{AD614E4A-A5ED-4f6b-8FFE-79060C5E9016}");
-tocTab[tocTab.length] = new Array("0.3.1.1.3.1.2.2.1.2:5", "", "StructuredParameter", "EARoot/EA3/EA1/EA1/EA3/EA1/EA2/EA2/EA1/EA2/EA461.htm", "5.png", "E315", "0", "", "Class0","{7C23A312-8EAF-4bc4-A19A-270FF3D8D3A8}");
-tocTab[tocTab.length] = new Array("0.3.1.1.3.1.2.2.1.2.1", "1", "Events", "EARoot/EA3/EA1/EA1/EA3/EA1/EA2/EA2/EA1/EA2/EA1/EA462.htm", "4.png", "", "", "{DAEFF0DD-C807-4433-93DF-8E26380C5E47}", "Package");

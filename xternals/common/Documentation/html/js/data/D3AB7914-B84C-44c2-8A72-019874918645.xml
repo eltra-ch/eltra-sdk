@@ -1,8 +1,0 @@
-tocTab[tocTab.length] = new Array("0.4.1.1.1", "1", "Classes", "EARoot/EA4/EA1/EA1/EA1/EA611.htm", "4.png", "", "", "{02B21DA9-FCB4-4e9c-89A3-C52B2D28D90D}", "Package");
-tocTab[tocTab.length] = new Array("0.4.1.1.2", "1", "Controllers", "EARoot/EA4/EA1/EA1/EA2/EA614.htm", "4.png", "", "", "{B59E9375-45ED-40ee-8608-6E1CCC421744}", "Package");
-tocTab[tocTab.length] = new Array("0.4.1.1.3", "1", "Definitions", "EARoot/EA4/EA1/EA1/EA3/EA648.htm", "4.png", "", "", "{9D193E81-2461-4023-A188-19C17E377FA5}", "Package");
-tocTab[tocTab.length] = new Array("0.4.1.1.4", "1", "Events", "EARoot/EA4/EA1/EA1/EA4/EA650.htm", "4.png", "", "", "{3CD1D997-CE1F-4aaa-AC3E-976D56C1A417}", "Package");
-tocTab[tocTab.length] = new Array("0.4.1.1.5", "1", "Extensions", "EARoot/EA4/EA1/EA1/EA5/EA654.htm", "4.png", "", "", "{6E87B93F-BF9F-4039-94C2-ED4A6F8C1339}", "Package");
-tocTab[tocTab.length] = new Array("0.4.1.1.6", "1", "SyncAgent", "EARoot/EA4/EA1/EA1/EA6/EA656.htm", "4.png", "", "", "{38FE1AA0-03CE-455c-844A-E79FF70E9137}", "Package");
-tocTab[tocTab.length] = new Array("0.4.1.1.7", "1", "Transport", "EARoot/EA4/EA1/EA1/EA7/EA667.htm", "4.png", "", "", "{1AD1AC7E-1101-425a-88F0-96A0180D0373}", "Package");
-tocTab[tocTab.length] = new Array("0.4.1.1.8", "1", "UserAgent", "EARoot/EA4/EA1/EA1/EA8/EA671.htm", "4.png", "", "", "{5500F5BA-B15F-421c-B077-E20B6BB08C75}", "Package");

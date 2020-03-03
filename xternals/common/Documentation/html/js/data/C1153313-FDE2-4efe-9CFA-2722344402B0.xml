@@ -1,7 +1,0 @@
-tocTab[tocTab.length] = new Array("0.3.1.1.1.1", "1", "CommandSets", "EARoot/EA3/EA1/EA1/EA1/EA1/EA311.htm", "4.png", "", "", "{CD213A0C-2991-4b58-B348-A841EA364C9D}", "Package");
-tocTab[tocTab.length] = new Array("0.3.1.1.1.2", "1", "DataRecorder", "EARoot/EA3/EA1/EA1/EA1/EA2/EA328.htm", "4.png", "", "", "{10DB3045-D0F3-4064-B222-200B2E23E1B0}", "Package");
-tocTab[tocTab.length] = new Array("0.3.1.1.1.3", "1", "Devices", "EARoot/EA3/EA1/EA1/EA1/EA3/EA331.htm", "4.png", "", "", "{7631F2CA-EB7B-442e-974A-9FC7E1C72B5C}", "Package");
-tocTab[tocTab.length] = new Array("0.3.1.1.1.4", "1", "Parameters", "EARoot/EA3/EA1/EA1/EA1/EA4/EA346.htm", "4.png", "", "", "{B8D5D9D3-B476-40af-B585-CD647970879C}", "Package");
-tocTab[tocTab.length] = new Array("0.3.1.1.1.5", "1", "Results", "EARoot/EA3/EA1/EA1/EA1/EA5/EA349.htm", "4.png", "", "", "{E1D7453D-098F-4980-BF52-60F82F2C26B4}", "Package");
-tocTab[tocTab.length] = new Array("0.3.1.1.1.6", "1", "Sessions", "EARoot/EA3/EA1/EA1/EA1/EA6/EA352.htm", "4.png", "", "", "{A68861D6-CE54-4415-AC19-EC72377EEB34}", "Package");
-tocTab[tocTab.length] = new Array("0.3.1.1.1.7", "1", "Users", "EARoot/EA3/EA1/EA1/EA1/EA7/EA367.htm", "4.png", "", "", "{7A857229-BC3F-4250-A185-E5680B29FDA2}", "Package");

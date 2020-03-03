@@ -1,3 +1,0 @@
-tocTab[tocTab.length] = new Array("0.2.2:1", "", "", "EARoot/EA2/EA2/EA55.htm", "101.png", "E2628", "0", "", "InteractionFragment0","{D7F64541-B8A4-4570-A5BE-5834E933967E}");
-tocTab[tocTab.length] = new Array("0.2.2.1", "1", "EltraCloud", "EARoot/EA2/EA2/EA56.htm", "4.png", "", "", "{FCC68575-CA7A-4e89-9E98-1EA4A3DACACC}", "Package");
-tocTab[tocTab.length] = new Array("0.2.2.2", "1", "EltraCloudStorage", "EARoot/EA2/EA2/EA2/EA163.htm", "4.png", "", "", "{AE342D0F-AD7D-4cb3-BD78-5AC4569CC1E0}", "Package");

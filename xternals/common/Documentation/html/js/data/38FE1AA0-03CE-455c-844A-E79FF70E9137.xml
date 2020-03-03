@@ -1,5 +1,0 @@
-tocTab[tocTab.length] = new Array("0.4.1.1.6:1", "", "CommandExecutor", "EARoot/EA4/EA1/EA1/EA6/EA657.htm", "5.png", "E452", "0", "", "Class0","{60BF6D70-E31C-4bc2-85AF-90B8355115F2}");
-tocTab[tocTab.length] = new Array("0.4.1.1.6:2", "", "SessionUpdater", "EARoot/EA4/EA1/EA1/EA6/EA659.htm", "5.png", "E453", "0", "", "Class0","{96BB7D28-1F94-4d77-82E5-4E3ACED02334}");
-tocTab[tocTab.length] = new Array("0.4.1.1.6:3", "", "SyncCloudAgent", "EARoot/EA4/EA1/EA1/EA6/EA660.htm", "5.png", "E454", "0", "", "Class0","{3A775E02-B8C4-4337-9D7E-29E3A8F8C3FF}");
-tocTab[tocTab.length] = new Array("0.4.1.1.6:4", "", "REST", "EARoot/EA4/EA1/EA1/EA6/EA661.htm", "111.png", "E2698", "E454", "", "RequiredInterface0","{75120C86-5529-4578-8657-12F32E2E446D}");
-tocTab[tocTab.length] = new Array("0.4.1.1.6.1", "1", "Diagrams", "EARoot/EA4/EA1/EA1/EA6/EA1/EA664.htm", "4.png", "", "", "{2EC4A0B4-B8FC-4fd4-A565-52A52EB770B1}", "Package");

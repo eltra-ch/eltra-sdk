@@ -1,7 +1,0 @@
-tocTab[tocTab.length] = new Array("0.3.1.1.3.3.2.2.1.1:1", "", "DataTypeList", "EARoot/EA3/EA1/EA1/EA3/EA3/EA2/EA2/EA1/EA1/EA508.htm", "5.png", "E345", "0", "", "Class0","{A423A7F9-180B-458e-B3E3-4F3785055552}");
-tocTab[tocTab.length] = new Array("0.3.1.1.3.3.2.2.1.1:2", "", "Epos4DataType", "EARoot/EA3/EA1/EA1/EA3/EA3/EA2/EA2/EA1/EA1/EA509.htm", "5.png", "E346", "0", "", "Class0","{A986C05E-99B8-447a-A58C-572A6C92C20D}");
-tocTab[tocTab.length] = new Array("0.3.1.1.3.3.2.2.1.1:3", "", "Epos4DataTypeReference", "EARoot/EA3/EA1/EA1/EA3/EA3/EA2/EA2/EA1/EA1/EA510.htm", "5.png", "E347", "0", "", "Class0","{B35BBD16-CC20-4887-96DF-B3AF6BB1D75E}");
-tocTab[tocTab.length] = new Array("0.3.1.1.3.3.2.2.1.1:4", "", "Epos4EnumDataTypeReference", "EARoot/EA3/EA1/EA1/EA3/EA3/EA2/EA2/EA1/EA1/EA511.htm", "5.png", "E348", "0", "", "Class0","{56BC3247-A8D6-4085-B97C-BEDA8AED5044}");
-tocTab[tocTab.length] = new Array("0.3.1.1.3.3.2.2.1.1:5", "", "Epos4EnumEntry", "EARoot/EA3/EA1/EA1/EA3/EA3/EA2/EA2/EA1/EA1/EA512.htm", "5.png", "E349", "0", "", "Class0","{46566CEF-5247-42ed-9014-58651B2BF882}");
-tocTab[tocTab.length] = new Array("0.3.1.1.3.3.2.2.1.1:6", "", "Epos4StructDataType", "EARoot/EA3/EA1/EA1/EA3/EA3/EA2/EA2/EA1/EA1/EA513.htm", "5.png", "E350", "0", "", "Class0","{9CAA3081-9543-49f3-ADE7-3513BBFE29D4}");
-tocTab[tocTab.length] = new Array("0.3.1.1.3.3.2.2.1.1:7", "", "VarDeclaration", "EARoot/EA3/EA1/EA1/EA3/EA3/EA2/EA2/EA1/EA1/EA514.htm", "5.png", "E351", "0", "", "Class0","{153644C2-3C9B-4720-8648-A2785E3C40CB}");

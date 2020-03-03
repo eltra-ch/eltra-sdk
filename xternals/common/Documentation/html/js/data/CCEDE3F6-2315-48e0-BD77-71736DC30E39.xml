@@ -1,5 +1,0 @@
-tocTab[tocTab.length] = new Array("0.5.2.1.1.4:1", "", "DeviceCommunicationEventArgs", "EARoot/EA5/EA2/EA1/EA1/EA4/EA978.htm", "5.png", "E665", "0", "", "Class0","{20252C5E-555A-434c-8E24-5F7DC296D463}");
-tocTab[tocTab.length] = new Array("0.5.2.1.1.4:2", "", "DeviceCommunicationStatus", "EARoot/EA5/EA2/EA1/EA1/EA4/EA979.htm", "247.png", "E666", "0", "", "Enumeration0","{46F799C2-0BF4-4337-926C-40F7A6270C70}");
-tocTab[tocTab.length] = new Array("0.5.2.1.1.4:3", "", "DeviceVersionEventArgs", "EARoot/EA5/EA2/EA1/EA1/EA4/EA980.htm", "5.png", "E667", "0", "", "Class0","{99A3EB6E-637C-40ad-BDEE-2F0E51740E42}");
-tocTab[tocTab.length] = new Array("0.5.2.1.1.4:4", "", "EposDeviceEventArgs", "EARoot/EA5/EA2/EA1/EA1/EA4/EA981.htm", "5.png", "E668", "0", "", "Class0","{CAC7FB15-2B8A-4625-BD75-E4DD1CE4A6DE}");
-tocTab[tocTab.length] = new Array("0.5.2.1.1.4:5", "", "ScannerDeviceStatusChangedEventArgs", "EARoot/EA5/EA2/EA1/EA1/EA4/EA982.htm", "5.png", "E669", "0", "", "Class0","{ABE95B78-A347-4174-BD28-8C9825BD58B7}");

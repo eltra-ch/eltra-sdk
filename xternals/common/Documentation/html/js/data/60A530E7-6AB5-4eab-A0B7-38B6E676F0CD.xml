@@ -1,3 +1,0 @@
-tocTab[tocTab.length] = new Array("0.2.2.2.5.1:1", "", "Sequence - Add device", "EARoot/EA2/EA2/EA2/EA5/EA1/EA278.htm", "185.png", "21", "0", "", "Sequence diagram0","{B0613631-BE32-46e6-B529-6642C8853E3C}");
-tocTab[tocTab.length] = new Array("0.2.2.2.5.1:2", "", "Sequence - Add Session", "EARoot/EA2/EA2/EA2/EA5/EA1/EA280.htm", "185.png", "20", "0", "", "Sequence diagram0","{99A41DDE-1F85-4a9a-A3B9-31EA7BF0FF5D}");
-tocTab[tocTab.length] = new Array("0.2.2.2.5.1.1", "1", "Elements", "EARoot/EA2/EA2/EA2/EA5/EA1/EA1/EA287.htm", "4.png", "", "", "{14BE7D90-1531-4016-9304-41D57B3BEF3D}", "Package");
