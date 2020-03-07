@@ -12,7 +12,7 @@ namespace EposMaster.Settings
             _config = config;
         }
 
-        public UserAuthData AuthData => new UserAuthData { Login = Login, Name = Name, PlainPassword = Password};
+        public UserAuthData AuthData => new UserAuthData { Login = Login, Name = Name, Password = Password};
 
         public string Login
         {

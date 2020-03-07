@@ -8,7 +8,6 @@
 	<Authors>Dawid Sienkiewicz</Authors>
 	<Product>Thermometer Console</Product>
 	<PublishTrimmed>true</PublishTrimmed>
-	<PublishSingleFile>true</PublishSingleFile>
   </PropertyGroup>
    
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">

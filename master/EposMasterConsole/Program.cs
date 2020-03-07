@@ -26,7 +26,7 @@ namespace EposMasterConsole
             var settings = new MasterSettings();
             var host = settings.Host;
             string login = settings.Auth.AuthData.Login;
-            string password = settings.Auth.AuthData.PlainPassword;
+            string password = settings.Auth.AuthData.Password;
 
             if (!string.IsNullOrEmpty(opts.Host))
             {

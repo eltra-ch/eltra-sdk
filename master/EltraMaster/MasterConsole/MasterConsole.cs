@@ -11,7 +11,7 @@ namespace EltraMaster.MasterConsole
 
             if (string.IsNullOrEmpty(authData.Login) ||
                authData.Login == "?" ||
-               string.IsNullOrEmpty(authData.PlainPassword))
+               string.IsNullOrEmpty(authData.Password))
             {
                 var consoleAuthDataReader = new AuthDataReader();
 
@@ -27,7 +27,7 @@ namespace EltraMaster.MasterConsole
                         Console.WriteLine("");
 
                         authData.Login = login;
-                        authData.PlainPassword = pass;
+                        authData.Password = pass;
 
                         result = true;
                     }

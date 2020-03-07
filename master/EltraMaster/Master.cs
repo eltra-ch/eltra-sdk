@@ -183,7 +183,7 @@ namespace EltraMaster
                     Stop();
                 };
 
-                var authData = new UserAuthData() { Login = login, PlainPassword = password, Name = userName };
+                var authData = new UserAuthData() { Login = login, Password = password, Name = userName };
 
                 if (MasterConsole.MasterConsole.CheckAuthData(ref authData))
                 {
