@@ -248,9 +248,9 @@ namespace EltraConnector.SyncAgent
             return result;
         }
 
-        public async Task<string> SignIn(UserAuthData authData)
+        public async Task<bool> SignIn(UserAuthData authData)
         {
-            string result = await _authentication.SignIn(authData);
+            bool result = await _authentication.SignIn(authData);
 
             return result;
         }

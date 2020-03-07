@@ -14,7 +14,6 @@ namespace EltraConnector.SyncAgent
         private readonly AuthControllerAdapter _authControllerAdapter;
 
         private UserAuthData _authData;
-        private string _token;
         private bool _good;
 
         #endregion
@@ -70,14 +69,14 @@ namespace EltraConnector.SyncAgent
 
         public async Task<bool> SignIn()
         {
-            _token = await SignIn(_authData);
+            bool result = await SignIn(_authData);
 
-            return !string.IsNullOrEmpty(_token);
+            return result;
         }
 
         public async Task<bool> SignOut()
         {
-            return await SignOut(_token);
+            return await SignOut(_authData.Login);
         }
 
         public async Task<bool> IsValid()
@@ -85,9 +84,9 @@ namespace EltraConnector.SyncAgent
             return await IsValid(_authData);
         }
 
-        public async Task<string> SignIn(UserAuthData authData)
+        public async Task<bool> SignIn(UserAuthData authData)
         {
-            string result = string.Empty;
+            bool result = false;
 
             _authData = authData;
 

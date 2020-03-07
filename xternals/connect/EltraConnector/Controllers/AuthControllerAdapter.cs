@@ -88,9 +88,9 @@ namespace EltraConnector.Controllers
             return result;
         }
         
-        public async Task<string> SignIn(UserAuthData authData)
+        public async Task<bool> SignIn(UserAuthData authData)
         {
-            string result = string.Empty;
+            bool result = false;
 
             try
             {
@@ -102,9 +102,9 @@ namespace EltraConnector.Controllers
 
                 if (response.StatusCode == HttpStatusCode.OK)
                 {
-                    var requestResult = JsonConvert.DeserializeObject<AuthRequestResult>(response.Content);
+                    var requestResult = JsonConvert.DeserializeObject<RequestResult>(response.Content);
 
-                    result = requestResult.Token;
+                    result = true;
                 }
             }
             catch (Exception e)
