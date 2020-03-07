@@ -266,7 +266,7 @@ namespace EltraNavigo.Views.DeviceList
             {
                 if (Agent != null)
                 {
-                    _sessionDevices = await Agent.GetDevices(new UserAuthData { Login = DeviceLogin, PlainPassword = DevicePassword });
+                    _sessionDevices = await Agent.GetDevices(new UserAuthData { Login = DeviceLogin, Password = DevicePassword });
 
                     await ClearDevices();
 

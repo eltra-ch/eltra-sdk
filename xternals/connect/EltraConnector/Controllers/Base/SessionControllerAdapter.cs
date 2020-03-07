@@ -231,7 +231,7 @@ namespace EltraConnector.Controllers.Base
 
             try
             {
-                var statusUpdate = new SessionStatusUpdate { SessionUuid = Session.Uuid, Status = status, AuthData = User.AuthData };
+                var statusUpdate = new SessionStatusUpdate { SessionUuid = Session.Uuid, Status = status };
 
                 if (WsConnectionManager != null && WsConnectionManager.IsConnected(Session.Uuid))
                 {

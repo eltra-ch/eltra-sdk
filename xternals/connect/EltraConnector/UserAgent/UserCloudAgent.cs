@@ -18,6 +18,7 @@ using EltraCloudContracts.ObjectDictionary.Common.DeviceDescription.Profiles.App
 using EltraConnector.Ws;
 using EltraCloudContracts.Contracts.Parameters;
 using EltraConnector.Sessions;
+using EltraConnector.SyncAgent;
 
 namespace EltraConnector.UserAgent
 {
@@ -32,6 +33,8 @@ namespace EltraConnector.UserAgent
         private readonly ParameterUpdateManager _parameterUpdateManager;        
         private readonly List<DeviceCommand> _executedCommands;
         private readonly WsConnectionManager _wsConnectionManager;
+        private readonly Authentication _authentication;
+        private readonly UserAuthData _authData;
 
         private Session _session;
 
@@ -41,12 +44,15 @@ namespace EltraConnector.UserAgent
 
         public UserCloudAgent(string url, UserAuthData authData, uint updateInterval, uint timeout)
         {
+            _authData = authData;
+
             _wsConnectionManager = new WsConnectionManager() { HostUrl = url };
             
             _executedCommands = new List<DeviceCommand>();
 
             SessionAdapter = new UserSessionControllerAdapter(url, authData, updateInterval, timeout) { WsConnectionManager = _wsConnectionManager };
 
+            _authentication = new Authentication(url);
             _sessionUpdater = new SessionUpdater(SessionAdapter, updateInterval, timeout);
             _executeCommander = new ExecuteCommander(SessionAdapter);
             _parameterUpdateManager = new ParameterUpdateManager(SessionAdapter);
@@ -60,12 +66,15 @@ namespace EltraConnector.UserAgent
 
         public UserCloudAgent(string url, string uuid, UserAuthData authData, uint updateInterval, uint timeout)
         {
+            _authData = authData;
+
             _wsConnectionManager = new WsConnectionManager() { HostUrl = url };
             
             _executedCommands = new List<DeviceCommand>();
 
             SessionAdapter = new UserSessionControllerAdapter(url, uuid, authData, updateInterval, timeout) { WsConnectionManager = _wsConnectionManager };
 
+            _authentication = new Authentication(url);
             _sessionUpdater = new SessionUpdater(SessionAdapter, updateInterval, timeout);
             _executeCommander = new ExecuteCommander(SessionAdapter);
             _parameterUpdateManager = new ParameterUpdateManager(SessionAdapter);
@@ -218,7 +227,15 @@ namespace EltraConnector.UserAgent
 
         private async Task<bool> RegisterSession()
         {
-            var result = await SessionAdapter.Update();
+            bool result = false;
+
+            if (await Login(_authData))
+            {
+                if (await SignIn())
+                {
+                    result = await SessionAdapter.Update();
+                }
+            }
 
             return result;
         }
@@ -433,6 +450,26 @@ namespace EltraConnector.UserAgent
         public async Task<List<ParameterUniqueIdValuePair>> GetParameterHistoryPair(ulong serialNumber, string uniqueId1, string uniqueId2, DateTime from, DateTime to)
         {
             return await SessionAdapter.GetParameterHistoryPair(serialNumber, uniqueId1, uniqueId2, from, to);
+        }
+
+        public async Task<bool> SignIn()
+        {
+            return await _authentication.SignIn();
+        }
+
+        public async Task<bool> SignOut()
+        {
+            return await _authentication.SignOut();
+        }
+
+        public async Task<bool> IsAuthValid()
+        {
+            return await _authentication.IsValid();
+        }
+
+        public async Task<bool> Login(UserAuthData authData)
+        {
+            return await _authentication.Login(authData);
         }
 
         #endregion

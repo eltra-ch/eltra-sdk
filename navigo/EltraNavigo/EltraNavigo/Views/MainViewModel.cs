@@ -120,7 +120,7 @@ namespace EltraNavigo.Views
             const uint timeout = 60;
             const uint updateInterval = 30;
             
-            var agent = new DeviceAgent(Url, Uuid, new UserAuthData { Login = Login, PlainPassword = Password, Name = Name }, updateInterval, timeout);
+            var agent = new DeviceAgent(Url, Uuid, new UserAuthData { Login = Login, Password = Password, Name = Name }, updateInterval, timeout);
 
             return agent;
         }
