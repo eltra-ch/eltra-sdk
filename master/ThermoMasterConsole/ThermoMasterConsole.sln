@@ -7,11 +7,13 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ThermoMasterConsole", "Ther
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ThermoMaster", "..\ThermoMaster\ThermoMaster.csproj", "{C66B905C-278F-4FE3-88A6-339559187A93}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EltraConnector", "..\Xternals\Connect\EltraConnector\EltraConnector.csproj", "{0CABA914-1B24-4630-B3A8-B02AE402E731}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EltraCloudContracts", "..\..\xternals\common\EltraCloudContracts\EltraCloudContracts.csproj", "{89FC9FA4-FB48-44C1-9E2A-3B07BBFD9F05}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EltraCloudContracts", "..\Xternals\Common\EltraCloudContracts\EltraCloudContracts.csproj", "{8261AECD-C324-48BF-A2FA-88C352A44EB7}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EltraCommon", "..\..\xternals\common\EltraCommon\EltraCommon.csproj", "{1B43C770-4630-4F25-8F62-37FEDAAC0BB6}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EltraResources", "..\Xternals\Common\EltraResources\EltraResources.csproj", "{A1C97C54-4FAF-459E-8117-8270A6CC93F0}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EltraResources", "..\..\xternals\common\EltraResources\EltraResources.csproj", "{F313DB12-6071-480B-828C-3FEE75FCB2ED}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EltraConnector", "..\..\xternals\connect\EltraConnector\EltraConnector.csproj", "{C4DE8998-7356-496B-BE74-E9ADB4E6A1E7}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -27,18 +29,22 @@ Global
 		{C66B905C-278F-4FE3-88A6-339559187A93}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C66B905C-278F-4FE3-88A6-339559187A93}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C66B905C-278F-4FE3-88A6-339559187A93}.Release|Any CPU.Build.0 = Release|Any CPU
-		{0CABA914-1B24-4630-B3A8-B02AE402E731}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{0CABA914-1B24-4630-B3A8-B02AE402E731}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{0CABA914-1B24-4630-B3A8-B02AE402E731}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{0CABA914-1B24-4630-B3A8-B02AE402E731}.Release|Any CPU.Build.0 = Release|Any CPU
-		{8261AECD-C324-48BF-A2FA-88C352A44EB7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{8261AECD-C324-48BF-A2FA-88C352A44EB7}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{8261AECD-C324-48BF-A2FA-88C352A44EB7}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{8261AECD-C324-48BF-A2FA-88C352A44EB7}.Release|Any CPU.Build.0 = Release|Any CPU
-		{A1C97C54-4FAF-459E-8117-8270A6CC93F0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{A1C97C54-4FAF-459E-8117-8270A6CC93F0}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{A1C97C54-4FAF-459E-8117-8270A6CC93F0}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{A1C97C54-4FAF-459E-8117-8270A6CC93F0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{89FC9FA4-FB48-44C1-9E2A-3B07BBFD9F05}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{89FC9FA4-FB48-44C1-9E2A-3B07BBFD9F05}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{89FC9FA4-FB48-44C1-9E2A-3B07BBFD9F05}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{89FC9FA4-FB48-44C1-9E2A-3B07BBFD9F05}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1B43C770-4630-4F25-8F62-37FEDAAC0BB6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1B43C770-4630-4F25-8F62-37FEDAAC0BB6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1B43C770-4630-4F25-8F62-37FEDAAC0BB6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1B43C770-4630-4F25-8F62-37FEDAAC0BB6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F313DB12-6071-480B-828C-3FEE75FCB2ED}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F313DB12-6071-480B-828C-3FEE75FCB2ED}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F313DB12-6071-480B-828C-3FEE75FCB2ED}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F313DB12-6071-480B-828C-3FEE75FCB2ED}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C4DE8998-7356-496B-BE74-E9ADB4E6A1E7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C4DE8998-7356-496B-BE74-E9ADB4E6A1E7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C4DE8998-7356-496B-BE74-E9ADB4E6A1E7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C4DE8998-7356-496B-BE74-E9ADB4E6A1E7}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
