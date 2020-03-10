@@ -3,6 +3,7 @@ using EltraNavigo.Controls.Parameters;
 using System.Threading.Tasks;
 using EltraNavigo.Controls;
 using EltraCloudContracts.ObjectDictionary.Common.DeviceDescription.Profiles.Application.Parameters.Events;
+using System.Diagnostics;
 
 namespace EltraNavigo.Views.Devices.Thermo.Overview
 {
@@ -125,6 +126,10 @@ namespace EltraNavigo.Views.Devices.Thermo.Overview
         {
             IsBusy = true;
 
+            var sw1 = new Stopwatch();
+
+            sw1.Start();
+
             await Task.Run(() => { 
                 ActualTemperature.InitModelData();
                 ActualTemperatureExt.InitModelData();
@@ -140,11 +145,15 @@ namespace EltraNavigo.Views.Devices.Thermo.Overview
                 ActualTimestamp = HumidityTimestamp;
             });
 
+            var ts1 = sw1.ElapsedMilliseconds;
+
             _temperatureTimestamp.Model.ParameterChanged += OnTemperatureChanged;
             _temperatureTimestampExt.Model.ParameterChanged += OnTemperatureExtChanged;
             _humidityTimestamp.Model.ParameterChanged += OnHumidityChanged;
 
             await base.Show();
+
+            var ts2 = sw1.ElapsedMilliseconds;
 
             IsBusy = false;
         }

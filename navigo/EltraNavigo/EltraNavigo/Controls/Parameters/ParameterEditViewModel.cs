@@ -191,28 +191,40 @@ namespace EltraNavigo.Controls.Parameters
 
         public override async Task<bool> StartUpdate()
         {
-            if (!IsUpdating)
-            {
-                if (Vcs != null)
-                {
-                    Vcs.RegisterParameterUpdate(UniqueId);
-                }
+            bool result = true;
 
-                InitModelData();
+            if(!IsUpdating)
+            {
+                result = await base.StartUpdate();
+
+                if (result)
+                {
+                    if (Vcs != null)
+                    {
+                        Vcs.RegisterParameterUpdate(UniqueId);
+                    }
+
+                    InitModelData();
+                }
             }
 
-            return await base.StartUpdate();
+            return result;
         }
 
         public override async Task<bool> StopUpdate()
         {
-            bool result = await base.StopUpdate();
+            bool result = true;
 
-            if (result)
+            if (IsUpdating)
             {
-                if (Vcs != null && _parameter != null)
+                result = await base.StopUpdate();
+
+                if (result)
                 {
-                    Vcs.UnregisterParameterUpdate(_parameter?.UniqueId);
+                    if (Vcs != null && _parameter != null)
+                    {
+                        Vcs.UnregisterParameterUpdate(_parameter?.UniqueId);
+                    }
                 }
             }
 
@@ -223,30 +235,28 @@ namespace EltraNavigo.Controls.Parameters
         {
             IsBusy = true;
 
-            if (Vcs != null)
+            if (!IsVisible)
             {
-                Vcs.RegisterParameterUpdate(UniqueId);
+                RegisterEvents();
+
+                await base.Show();
             }
-
-            RegisterEvents();
-
-            InitModelData();
-
-            await base.Show();
 
             IsBusy = false;
         }
 
         public override async Task Hide()
         {
-            if (Vcs != null && _parameter != null)
+            IsBusy = true;
+
+            if (IsVisible)
             {
-                Vcs.UnregisterParameterUpdate(_parameter?.UniqueId);
+                UnregisterEvents();
+
+                await base.Hide();
             }
 
-            UnregisterEvents();
-
-            await base.Hide();
+            IsBusy = false;
         }
 
         public async Task<bool> TextChanged(string newValue)

@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Diagnostics;
+using System.Threading.Tasks;
 using EltraCloudContracts.ObjectDictionary.Common.DeviceDescription.Profiles.Application.Parameters;
 using EltraCloudContracts.ObjectDictionary.Common.DeviceDescription.Profiles.Application.Parameters.Events;
 using EltraCloudContracts.ObjectDictionary.Xdd.DeviceDescription.Profiles.Application.Parameters;
@@ -96,31 +97,37 @@ namespace EltraNavigo.Controls.Parameters
 
         public override async Task<bool> StartUpdate()
         {
+            bool result = true;
+
             if (!IsUpdating)
             {
-                if (Vcs != null)
-                {
-                    Vcs.RegisterParameterUpdate(UniqueId);
-                }
+                result = await base.StartUpdate();
 
-                await UpdateParameterValue();
+                if (result)
+                {
+                    Vcs?.RegisterParameterUpdate(UniqueId);
+
+                    await UpdateParameterValue();
+                }
             }
 
-            return await base.StartUpdate();
+            return result;
         }
 
         public override async Task<bool> StopUpdate()
         {
-            bool result = await base.StopUpdate();
+            bool result = true;
 
-            if (result)
+            if (IsUpdating)
             {
-                if (Vcs != null)
+                result = await base.StopUpdate();
+
+                if (result)
                 {
-                    Vcs.UnregisterParameterUpdate(_parameter?.UniqueId);
+                    Vcs?.UnregisterParameterUpdate(UniqueId);
                 }
             }
-
+            
             return result;
         }
 
@@ -128,41 +135,72 @@ namespace EltraNavigo.Controls.Parameters
         {
             IsBusy = true;
 
-            if (Vcs != null)
+            if (!IsVisible)
             {
-                Vcs.RegisterParameterUpdate(UniqueId);
+                RegisterEvents();
+
+                await base.Show();
             }
-
-            RegisterEvents();
-
-            await UpdateParameterValue();
-
-            await base.Show();
 
             IsBusy = false;
         }
 
-        private async Task UpdateParameterValue()
+        public override async Task Hide()
         {
+            if (IsVisible)
+            {
+                UnregisterEvents();
+
+                await base.Hide();
+            }
+        }
+
+        private async Task<bool> UpdateParameterValue()
+        {
+            bool result = false;
+
             if (Vcs != null)
             {
                 var parameterValue = await Vcs.GetParameterValue(UniqueId);
 
-                if (parameterValue != null && _parameter != null && _parameter.SetValue(parameterValue))
+                if (parameterValue != null)
                 {
-                    var valueAsText = _parameter.GetValueAsString();
-
-                    Xamarin.Forms.Device.BeginInvokeOnMainThread(() => {
-                        Value = valueAsText;
-                        Label = _parameter.Label;
-
-                        if (_parameter is XddParameter epos4Parameter)
+                    if (_parameter != null)
+                    {
+                        if (_parameter.SetValue(parameterValue))
                         {
-                            Unit = epos4Parameter.Unit.Label;
+                            var valueAsText = _parameter.GetValueAsString();
+
+                            Xamarin.Forms.Device.BeginInvokeOnMainThread(() =>
+                            {
+                                Value = valueAsText;
+                                Label = _parameter.Label;
+
+                                if (_parameter is XddParameter epos4Parameter)
+                                {
+                                    Unit = epos4Parameter.Unit.Label;
+                                }
+                            });
+
+                            result = true;
                         }
-                    });
-                }   
+                        else
+                        {
+                            Debug.Fail($"set parameter '{UniqueId}' value failed!");
+                        }
+                    }
+                    else
+                    {
+                        Debug.Fail($"get parameter '{UniqueId}' object failed!");
+                    }
+                }
+                else
+                {
+                    Debug.Fail($"get parameter '{UniqueId}' value failed!");
+                }
             }
+
+            return result;
         }
 
         private void RegisterEvents()
@@ -180,23 +218,6 @@ namespace EltraNavigo.Controls.Parameters
                 _parameter.ParameterChanged -= OnParameterChanged;
             }
         }
-
-        public override async Task Hide()
-        {
-            if (_parameter != null)
-            {
-                UnregisterEvents();
-
-                if (Vcs != null)
-                {
-                    Vcs.UnregisterParameterUpdate(_parameter.UniqueId);
-                }
-            }
-
-            await base.Hide();
-        }
-
-        
 
         #endregion
     }

@@ -23,6 +23,9 @@ namespace EltraNavigo.Views.Devices.Thermo.History
 
         #region Private fields
 
+        private PlotModel _tempPlotModel;
+        private PlotModel _humidityPlotModel;
+
         private DateTime _startDate;
         private DateTime _endDate;
         private TimeSpan _startTime;
@@ -54,10 +57,8 @@ namespace EltraNavigo.Views.Devices.Thermo.History
             Image = ImageSource.FromResource("EltraNavigo.Resources.presentation_32px.png");
             Uuid = "FBC7F717-5F88-449D-B13D-A6CB866863E9";
 
-            TempPlotModel = CreatePlotSeries(PlotTypes.All, "Temperature", OxyColors.CadetBlue, OxyColors.DarkBlue, 1, 0.5);
-            HumidityPlotModel = CreatePlotSeries(PlotTypes.Internal, "Humidity", OxyColors.Coral, OxyColors.Crimson, 2, 1);
-
             var now = DateTime.Now;
+            
             EndDate = now.Date;
             StartDate = EndDate - TimeSpan.FromMinutes(60*12);
             StartTime = new TimeSpan(now.Hour, now.Minute, now.Second);
@@ -76,9 +77,17 @@ namespace EltraNavigo.Views.Devices.Thermo.History
 
         #region Properties
 
-        public PlotModel TempPlotModel { get; set; }
+        public PlotModel TempPlotModel 
+        { 
+            get => _tempPlotModel; 
+            set => SetProperty(ref _tempPlotModel, value); 
+        }
 
-        public PlotModel HumidityPlotModel { get; set; }
+        public PlotModel HumidityPlotModel
+        {
+            get => _humidityPlotModel;
+            set => SetProperty(ref _humidityPlotModel, value);
+        }
 
         public DateTime StartDate
         {
@@ -349,6 +358,11 @@ namespace EltraNavigo.Views.Devices.Thermo.History
             var t1 = KalmanFilter(th1);
             var t2 = KalmanFilter(th2);
 
+            if (TempPlotModel == null)
+            {
+                TempPlotModel = CreatePlotSeries(PlotTypes.All, "Temperature", OxyColors.CadetBlue, OxyColors.DarkBlue, 1, 0.5);
+            }
+
             UpdatePlotSamples(TempPlotModel, t1, t2);
 
             var hh1 = await (Vcs as ThermoVcs).GetHumidityHistory(startDate, endDate);
@@ -359,7 +373,12 @@ namespace EltraNavigo.Views.Devices.Thermo.History
             MaxIntHum = maxInternalHValue;
 
             var h1 = KalmanFilter(hh1);
-            
+
+            if (HumidityPlotModel == null)
+            {
+                HumidityPlotModel = CreatePlotSeries(PlotTypes.Internal, "Humidity", OxyColors.Coral, OxyColors.Crimson, 2, 1);
+            }
+
             UpdatePlotSamples(HumidityPlotModel, h1);
 
             await GetRelaySensorHistory(startDate, endDate);
@@ -420,17 +439,6 @@ namespace EltraNavigo.Views.Devices.Thermo.History
             }
         }
         
-        public override async Task Show()
-        {
-            IsBusy = true;
-
-            await GetSensorHistory();
-
-            await base.Show();
-
-            IsBusy = false;
-        }
-
         private void EnablePanning(PlotModel model, bool enable)
         {
             foreach (var axis in model.Axes)
@@ -465,7 +473,7 @@ namespace EltraNavigo.Views.Devices.Thermo.History
                 Key = "YAxis",
                 Position = AxisPosition.Left,
                 MajorStep = majorStep,
-                MinorStep = minorStep
+                MinorStep = minorStep,
             };
 
             model.Axes.Add(xAxis);
@@ -483,7 +491,7 @@ namespace EltraNavigo.Views.Devices.Thermo.History
                 series.LineJoin = LineJoin.Bevel;
                 series.LineStyle = LineStyle.Solid;
                 series.StrokeThickness = 1;
-
+                
                 model.Series.Add(series);
             }
 
@@ -497,9 +505,7 @@ namespace EltraNavigo.Views.Devices.Thermo.History
                 seriesExt.LineStyle = LineStyle.Solid;
                 seriesExt.StrokeThickness = 1;
 
-                model.Series.Add(seriesExt);
-
-                model.InvalidatePlot(true);
+                model.Series.Add(seriesExt);                
             }
 
             return model;

@@ -179,6 +179,8 @@ namespace EltraNavigo.Controls
 
         public virtual async Task Show()
         {
+            IsBusy = true;
+
             if (!IsVisible)
             {
                 foreach (var child in SafeChildrenArray)
@@ -192,10 +194,14 @@ namespace EltraNavigo.Controls
 
                 await StartUpdate();
             }
+
+            IsBusy = false;
         }
 
         public virtual async Task Hide()
         {
+            IsBusy = true;
+
             if (IsVisible)
             {
                 await StopUpdate();
@@ -209,6 +215,8 @@ namespace EltraNavigo.Controls
 
                 OnVisibilityChanged();
             }
+
+            IsBusy = false;
         }
 
         public virtual async Task<bool> StartUpdate()
@@ -244,6 +252,8 @@ namespace EltraNavigo.Controls
             if (IsUpdating)
             {
                 IsUpdating = false;
+                
+                result = true;
 
                 foreach (var child in SafeChildrenArray)
                 {
@@ -254,10 +264,6 @@ namespace EltraNavigo.Controls
                         break;
                     }
                 }
-            }
-            else
-            {
-                result = false;
             }
 
             return result;
