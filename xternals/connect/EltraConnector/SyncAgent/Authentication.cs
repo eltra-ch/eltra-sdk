@@ -117,7 +117,7 @@ namespace EltraConnector.SyncAgent
             return result;
         }
 
-        public async Task<bool> Register(UserAuthData authData)
+        private async Task<bool> SignUp(UserAuthData authData)
         {
             bool result = false;
 
@@ -165,7 +165,7 @@ namespace EltraConnector.SyncAgent
             return result;
         }
 
-        public async Task<bool> Login(UserAuthData authData)
+        public async Task<bool> Register(UserAuthData authData)
         {
             bool result = true;
 
@@ -173,7 +173,7 @@ namespace EltraConnector.SyncAgent
 
             if (!await LoginExists(authData.Login) && Good)
             {
-                if (await Register(authData))
+                if (await SignUp(authData))
                 {
                     MsgLogger.Print($"New login {authData.Login} registered successfully");
                 }

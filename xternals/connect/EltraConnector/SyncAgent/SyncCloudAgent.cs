@@ -309,7 +309,7 @@ namespace EltraConnector.SyncAgent
 
         public async Task<bool> Login(UserAuthData authData)
         {
-            return await _authentication.Login(authData);
+            return await _authentication.Register(authData);
         }
 
         #endregion

@@ -19,6 +19,7 @@ using EltraConnector.Ws;
 using EltraCloudContracts.Contracts.Parameters;
 using EltraConnector.Sessions;
 using EltraConnector.SyncAgent;
+using EltraConnector.UserAgent.Definitions;
 
 namespace EltraConnector.UserAgent
 {
@@ -26,16 +27,16 @@ namespace EltraConnector.UserAgent
     {
         #region Private fields
 
-        private readonly Task _agentTask;
-        private readonly CancellationTokenSource _agentCancelationTokenSource;
-        private readonly SessionUpdater _sessionUpdater;
-        private readonly ExecuteCommander _executeCommander;
-        private readonly ParameterUpdateManager _parameterUpdateManager;        
         private readonly List<DeviceCommand> _executedCommands;
-        private readonly WsConnectionManager _wsConnectionManager;
-        private readonly Authentication _authentication;
         private readonly UserAuthData _authData;
+        private readonly UserSessionControllerAdapter _sessionAdapter;
 
+        private Task _agentTask;
+        private CancellationTokenSource _agentCancelationTokenSource;
+        private SessionUpdater _sessionUpdater;
+        private ExecuteCommander _executeCommander;
+        private ParameterUpdateManager _parameterUpdateManager;        
+        private Authentication _authentication;
         private Session _session;
 
         #endregion
@@ -45,45 +46,19 @@ namespace EltraConnector.UserAgent
         public UserCloudAgent(string url, UserAuthData authData, uint updateInterval, uint timeout)
         {
             _authData = authData;
-
-            _wsConnectionManager = new WsConnectionManager() { HostUrl = url };
-            
             _executedCommands = new List<DeviceCommand>();
+            _sessionAdapter = new UserSessionControllerAdapter(url, authData, updateInterval, timeout) { UseWebSockets = true };
 
-            SessionAdapter = new UserSessionControllerAdapter(url, authData, updateInterval, timeout) { WsConnectionManager = _wsConnectionManager };
-
-            _authentication = new Authentication(url);
-            _sessionUpdater = new SessionUpdater(SessionAdapter, updateInterval, timeout);
-            _executeCommander = new ExecuteCommander(SessionAdapter);
-            _parameterUpdateManager = new ParameterUpdateManager(SessionAdapter);
-
-            RegisterEvents();
-
-            _agentCancelationTokenSource = new CancellationTokenSource();
-
-            _agentTask = Task.Run(() => StartSession(_agentCancelationTokenSource.Token));
+            Initialize(url, updateInterval, timeout);
         }
 
         public UserCloudAgent(string url, string uuid, UserAuthData authData, uint updateInterval, uint timeout)
         {
             _authData = authData;
-
-            _wsConnectionManager = new WsConnectionManager() { HostUrl = url };
-            
             _executedCommands = new List<DeviceCommand>();
+            _sessionAdapter = new UserSessionControllerAdapter(url, uuid, authData, updateInterval, timeout) { UseWebSockets = true };
 
-            SessionAdapter = new UserSessionControllerAdapter(url, uuid, authData, updateInterval, timeout) { WsConnectionManager = _wsConnectionManager };
-
-            _authentication = new Authentication(url);
-            _sessionUpdater = new SessionUpdater(SessionAdapter, updateInterval, timeout);
-            _executeCommander = new ExecuteCommander(SessionAdapter);
-            _parameterUpdateManager = new ParameterUpdateManager(SessionAdapter);
-
-            RegisterEvents();
-
-            _agentCancelationTokenSource = new CancellationTokenSource();
-
-            _agentTask = Task.Run(() => StartSession(_agentCancelationTokenSource.Token));
+            Initialize(url, updateInterval, timeout);
         }
 
         #endregion
@@ -139,13 +114,27 @@ namespace EltraConnector.UserAgent
 
         #region Properties
 
-        private UserSessionControllerAdapter SessionAdapter { get; }
+        public string Uuid => _sessionAdapter.Uuid;
 
-        public string Uuid => SessionAdapter.Uuid;
+        public UserCloudAgentState State { get; set; } = UserCloudAgentState.Undefined;
 
         #endregion
 
         #region Methods
+
+        private void Initialize(string url, uint updateInterval, uint timeout)
+        {
+            _authentication = new Authentication(url);
+            _sessionUpdater = new SessionUpdater(_sessionAdapter, updateInterval, timeout);
+            _executeCommander = new ExecuteCommander(_sessionAdapter);
+            _parameterUpdateManager = new ParameterUpdateManager(_sessionAdapter);
+
+            RegisterEvents();
+
+            _agentCancelationTokenSource = new CancellationTokenSource();
+
+            _agentTask = Task.Run(() => Run(_agentCancelationTokenSource.Token));
+        }
 
         public void Release()
         {
@@ -165,44 +154,74 @@ namespace EltraConnector.UserAgent
             _parameterUpdateManager.ParameterChanged -= OnParameterChanged;
         }
         
-        private async Task StartSession(CancellationToken token)
+        private async Task<bool> RegisterSession(CancellationToken token)
         {
             const int minWaitTime = 100;
+            bool result = false;
 
             do
             {
-                if(await RegisterSession())
+                if (await RegisterSession())
                 {
+                    result = true;
                     break;
                 }
-                
+
                 await Task.Delay(minWaitTime);
 
             } while (!token.IsCancellationRequested);
 
+            return result;
+        }
+
+        private void StartSession()
+        {
             _sessionUpdater.Start();
             _executeCommander.Start();
             _parameterUpdateManager.Start();
-                
+
             RegisterParameterUpdateManagerEvents();
 
-            do
-            {
-                
-                await Task.Delay(minWaitTime);
+            State = UserCloudAgentState.Started;
+        }
 
-            } while (!token.IsCancellationRequested);
-
+        private async Task StopSession()
+        {
             _executeCommander.Stop();
             _parameterUpdateManager.Stop();
             _sessionUpdater.Stop();
-                
+
             await UnregisterSession();
 
             UnregisterParameterUpdateManagerEvents();
+        }
+        
+        private async Task Run(CancellationToken token)
+        {
+            State = UserCloudAgentState.Starting;
+
+            if(await RegisterSession(token))
+            {
+                StartSession();
+                
+                await SessionLoop(token);
+
+                await StopSession();
+            }
 
             MsgLogger.WriteLine($"Sync agent working thread finished successfully!");
             
+            State = UserCloudAgentState.Stopped;
+        }
+
+        private static async Task SessionLoop(CancellationToken token)
+        {
+            const int minWaitTime = 10;
+
+            do
+            {
+                await Task.Delay(minWaitTime);
+            } while (!token.IsCancellationRequested);
         }
 
         public void Dispose()
@@ -222,18 +241,18 @@ namespace EltraConnector.UserAgent
 
         private async Task<bool> UpdateSession()
         {
-            return await SessionAdapter.Update();
+            return await _sessionAdapter.Update();
         }
 
         private async Task<bool> RegisterSession()
         {
             bool result = false;
 
-            if (await Login(_authData))
+            if (await Register(_authData))
             {
                 if (await SignIn())
                 {
-                    result = await SessionAdapter.Update();
+                    result = await UpdateSession();
                 }
             }
 
@@ -242,59 +261,74 @@ namespace EltraConnector.UserAgent
 
         private async Task<bool> UnregisterSession()
         {
-            var result = await SessionAdapter.UnregisterSession();
+            var result = await _sessionAdapter.UnregisterSession();
 
             return result;
         }
 
         public async Task<List<Session>> GetSessions(string uuid, UserAuthData authData)
         {
-            var result = new List<Session>();
+            var result = await _sessionAdapter.GetSessions(uuid, authData);
 
-            if (!await SessionAdapter.IsSessionRegistered(uuid))
-            {
-                if(await SessionAdapter.RegisterSession())
-                {
-                    result = await SessionAdapter.GetSessions(uuid, authData);
-                }
-            }
-            else
-            {
-                result = await SessionAdapter.GetSessions(uuid, authData);
-            }
-            
             return result;
         }
 
         private void RegisterEvents()
         {
-            SessionAdapter.SessionRegistered += OnSessionRegistered;
+            _sessionAdapter.SessionRegistered += OnSessionRegistered;
 
             _executeCommander.CommandExecuted += OnCommandExecuted;
             _executeCommander.RemoteSessionStatusChanged += OnRemoteSessionStatusChanged;
         }
 
-        public async Task<List<EltraDevice>> GetSessionDevices(Session session, UserAuthData authData)
+        private async Task<List<EltraDevice>> GetSessionDevices(Session session, UserAuthData authData)
         {
-            return await SessionAdapter.GetSessionDevices(session, authData);
+            await EnsureAgentReady();
+
+            return await _sessionAdapter.GetSessionDevices(session, authData);
+        }
+
+        private async Task<bool> EnsureAgentReady()
+        {
+            bool result = false;
+
+            if (State == UserCloudAgentState.Starting)
+            {
+                do
+                {
+                    await Task.Delay(10);
+                } while (State != UserCloudAgentState.Started);
+
+                result = true;
+            }
+            else if(State == UserCloudAgentState.Started)
+            {
+                result = true;
+            }
+
+            return result;
         }
 
         public async Task<List<(Session, EltraDevice)>> GetDevices(UserAuthData authData)
         {
             var result = new List<(Session,EltraDevice)>();
-            var sessions = await GetSessions(SessionAdapter.Uuid, authData);
 
-            if (sessions != null)
+            if (await EnsureAgentReady())
             {
-                foreach (var session in sessions)
-                {
-                    var devices = await GetSessionDevices(session, authData);
+                var sessions = await GetSessions(_sessionAdapter.Uuid, authData);
 
-                    if (devices != null)
+                if (sessions != null)
+                {
+                    foreach (var session in sessions)
                     {
-                        foreach (var device in devices)
+                        var devices = await GetSessionDevices(session, authData);
+
+                        if (devices != null)
                         {
-                            result.Add((session, device));
+                            foreach (var device in devices)
+                            {
+                                result.Add((session, device));
+                            }
                         }
                     }
                 }
@@ -305,41 +339,55 @@ namespace EltraConnector.UserAgent
 
         public async Task<bool> CanLockDevice(EltraDevice device)
         {
-            return await SessionAdapter.CanLockDevice(device);
+            await EnsureAgentReady();
+
+            return await _sessionAdapter.CanLockDevice(device);
         }
 
         public async Task<bool> IsDeviceLocked(EltraDevice device)
         {
-            return await SessionAdapter.IsDeviceLocked(device);
+            await EnsureAgentReady();
+
+            return await _sessionAdapter.IsDeviceLocked(device);
         }
 
         public async Task<bool> LockDevice(EltraDevice device)
         {
-            return await SessionAdapter.LockDevice(device);
+            await EnsureAgentReady();
+
+            return await _sessionAdapter.LockDevice(device);
         }
 
         public async Task<bool> UnlockDevice(EltraDevice device)
         {
-            return await SessionAdapter.UnlockDevice(device);
+            await EnsureAgentReady();
+
+            return await _sessionAdapter.UnlockDevice(device);
         }
         
         public virtual async Task<DeviceCommand> GetDeviceCommand(EltraDevice device, string commandName)
         {
-            var result = await SessionAdapter.GetDeviceCommand(device, commandName);
+            await EnsureAgentReady();
+
+            var result = await _sessionAdapter.GetDeviceCommand(device, commandName);
             
             return result;
         }
 
         public async Task<List<DeviceCommand>> GetDeviceCommands(EltraDevice device)
         {
-            return await SessionAdapter.GetDeviceCommands(device);
+            await EnsureAgentReady();
+
+            return await _sessionAdapter.GetDeviceCommands(device);
         }
 
         public async Task<bool> PushCommand(DeviceCommand command, ExecCommandStatus status)
         {
+            await EnsureAgentReady();
+
             command.Uuid = Guid.NewGuid().ToString();
 
-            return await SessionAdapter.PushCommand(command, Uuid, status);
+            return await _sessionAdapter.PushCommand(command, Uuid, status);
         }
 
         private void AddCommandToExecuted(DeviceCommand command)
@@ -385,7 +433,9 @@ namespace EltraConnector.UserAgent
             const int minWaitTime = 10;
             const int maxWaitTime = 10000;
             DeviceCommand result = null;
-            
+
+            await EnsureAgentReady();
+
             if (await PushCommand(command, ExecCommandStatus.Waiting))
             {
                 _executeCommander.FollowCommand(command);
@@ -421,7 +471,9 @@ namespace EltraConnector.UserAgent
         public async Task<bool> ExecuteCommandAsync(DeviceCommand command)
         {
             bool result = false;
-            
+
+            await EnsureAgentReady();
+
             if (await PushCommand(command, ExecCommandStatus.Waiting))
             {
                 _executeCommander.FollowCommand(command);
@@ -434,22 +486,30 @@ namespace EltraConnector.UserAgent
 
         public async Task<Parameter> GetParameter(ulong serialNumber, ushort index, byte subIndex)
         {
-            return await SessionAdapter.GetParameter(serialNumber, index, subIndex);
+            await EnsureAgentReady();
+
+            return await _sessionAdapter.GetParameter(serialNumber, index, subIndex);
         }
 
         public async Task<ParameterValue> GetParameterValue(ulong serialNumber, ushort index, byte subIndex)
         {
-            return await SessionAdapter.GetParameterValue(serialNumber, index, subIndex);
+            await EnsureAgentReady();
+
+            return await _sessionAdapter.GetParameterValue(serialNumber, index, subIndex);
         }
 
         public async Task<List<ParameterValue>> GetParameterHistory(ulong serialNumber, string uniqueId, DateTime from, DateTime to)
         {
-            return await SessionAdapter.GetParameterHistory(serialNumber, uniqueId, from, to);
+            await EnsureAgentReady();
+
+            return await _sessionAdapter.GetParameterHistory(serialNumber, uniqueId, from, to);
         }
 
         public async Task<List<ParameterUniqueIdValuePair>> GetParameterHistoryPair(ulong serialNumber, string uniqueId1, string uniqueId2, DateTime from, DateTime to)
         {
-            return await SessionAdapter.GetParameterHistoryPair(serialNumber, uniqueId1, uniqueId2, from, to);
+            await EnsureAgentReady();
+
+            return await _sessionAdapter.GetParameterHistoryPair(serialNumber, uniqueId1, uniqueId2, from, to);
         }
 
         public async Task<bool> SignIn()
@@ -467,9 +527,9 @@ namespace EltraConnector.UserAgent
             return await _authentication.IsValid();
         }
 
-        public async Task<bool> Login(UserAuthData authData)
+        public async Task<bool> Register(UserAuthData authData)
         {
-            return await _authentication.Login(authData);
+            return await _authentication.Register(authData);
         }
 
         #endregion

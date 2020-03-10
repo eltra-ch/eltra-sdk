@@ -9,6 +9,7 @@ using EltraCloudContracts.Contracts.Sessions;
 using EltraCloudContracts.Contracts.Users;
 using EltraCloudContracts.ObjectDictionary.Common.DeviceDescription.Profiles.Application.Parameters;
 using EltraCloudContracts.Contracts.Parameters;
+using EltraConnector.Ws;
 
 namespace EltraConnector.Controllers
 {
@@ -17,7 +18,8 @@ namespace EltraConnector.Controllers
         #region Private fields
 
         private DeviceControllerAdapter _deviceControllerAdapter;
-        
+        private bool _useWebSockets;
+
         #endregion
 
         #region Constructors
@@ -39,6 +41,43 @@ namespace EltraConnector.Controllers
         public string Uuid => Session.Uuid;
 
         private DeviceControllerAdapter DeviceAdapter => _deviceControllerAdapter ?? (_deviceControllerAdapter = CreateDeviceController());
+
+        public bool UseWebSockets 
+        { 
+            get => _useWebSockets; 
+            set 
+            {
+                if (_useWebSockets != value)
+                {
+                    _useWebSockets = value;
+
+                    OnUseWebSocketsChanged();
+                }
+            } 
+        }
+
+        #endregion
+
+        #region Events handling
+
+        private async void OnUseWebSocketsChanged()
+        {
+            if (UseWebSockets)
+            {
+                var wsConnectionManager = new WsConnectionManager() { HostUrl = Url };
+
+                WsConnectionManager = wsConnectionManager;
+            }
+            else
+            {
+                if(WsConnectionManager!=null)
+                {
+                    await WsConnectionManager.DisconnectAll();
+                }
+
+                WsConnectionManager = null;
+            }
+        }
 
         #endregion
 
