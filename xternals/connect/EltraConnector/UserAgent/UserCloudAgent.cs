@@ -248,9 +248,13 @@ namespace EltraConnector.UserAgent
         {
             bool result = false;
 
-            if (await Register(_authData))
+            if (await SignIn(_authData))
             {
-                if (await SignIn())
+                result = await UpdateSession();
+            }
+            else if (await SignUp(_authData))
+            {
+                if (await SignIn(_authData))
                 {
                     result = await UpdateSession();
                 }
@@ -512,28 +516,21 @@ namespace EltraConnector.UserAgent
             return await _sessionAdapter.GetParameterHistoryPair(serialNumber, uniqueId1, uniqueId2, from, to);
         }
 
-        public async Task<bool> SignIn()
-        {
-            return await _authentication.SignIn();
-        }
-
         public async Task<bool> SignOut()
         {
             return await _authentication.SignOut();
         }
 
-        public async Task<bool> IsAuthValid()
+        public async Task<bool> SignUp(UserAuthData authData)
         {
-            return await _authentication.IsValid();
+            return await _authentication.SignUp(authData);
         }
 
-        public async Task<bool> Register(UserAuthData authData)
+        public async Task<bool> SignIn(UserAuthData authData)
         {
-            return await _authentication.Register(authData);
+            return await _authentication.SignIn(authData);
         }
 
         #endregion
-
-
     }
 }

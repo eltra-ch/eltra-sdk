@@ -69,6 +69,28 @@ namespace EltraMaster
 
         #region Methods
 
+        private async Task<bool> SignIn(SyncCloudAgent agent)
+        {
+            bool result = false;
+
+            if (!await agent.SignIn(AuthData) && agent.Good)
+            {
+                if (await agent.SignUp(AuthData) && agent.Good)
+                {
+                    if (await agent.SignIn(AuthData) && agent.Good)
+                    {
+                        result = true;
+                    }
+                }
+            }
+            else
+            {
+                result = true;
+            }
+
+            return result;
+        }
+
         public async Task Start(string host, UserAuthData authData, MasterDeviceManager deviceManager, uint updateInterval, uint timeout)
         {
             int reconnectDelay = (int)TimeSpan.FromSeconds(timeout).TotalMilliseconds;
@@ -84,67 +106,42 @@ namespace EltraMaster
 
                 do
                 {
-                    if (await agent.Login(AuthData) && agent.Good)
+                    MsgLogger.Print($"Sign in '{AuthData.Login}' ...");
+
+                    if (await SignIn(agent))
                     {
-                        if (await agent.IsAuthValid() && agent.Good)
+                        MsgLogger.Print($"'{AuthData.Login}' signed in successfully");
+
+                        deviceManager.CloudAgent = agent;
+
+                        MsgLogger.Print("scan devices...");
+
+                        await deviceManager.Run();
+
+                        Status = MasterStatus.Started;
+
+                        while (!_cancellationTokenSource.IsCancellationRequested)
                         {
-                            MsgLogger.Print($"Sign in '{AuthData.Login}' ...");
-
-                            if (await agent.SignIn() && agent.Good)
-                            {
-                                MsgLogger.Print($"'{AuthData.Login}' signed in successfully");
-
-                                deviceManager.CloudAgent = agent;
-
-                                MsgLogger.Print("scan devices...");
-
-                                await deviceManager.Run();
-
-                                Status = MasterStatus.Started;
-
-                                while (!_cancellationTokenSource.IsCancellationRequested)
-                                {
-                                    await Task.Delay(100);
-                                }
-
-                                MsgLogger.Print($"Sign out, login '{AuthData.Login}' ...");
-
-                                await agent.SignOut();
-                            }
-                            else if (!agent.Good)
-                            {
-                                repeat = true;
-
-                                MsgLogger.WriteError($"{GetType().Name} - Start", "Connection failed, repeat!");
-
-                                await Task.Delay(reconnectDelay);
-                            }
-                            else
-                            {
-                                MsgLogger.WriteError($"{GetType().Name} - Start", "Sign in failed!");
-                            }
+                            await Task.Delay(100);
                         }
-                        else if (!agent.Good)
-                        {
-                            repeat = true;
 
-                            MsgLogger.WriteError($"{GetType().Name} - Start", "Connection failed, repeat!");
+                        MsgLogger.Print($"Sign out, login '{AuthData.Login}' ...");
 
-                            await Task.Delay(reconnectDelay);
-                        }
-                        else
-                        {
-                            MsgLogger.WriteError($"{GetType().Name} - Start", "Authentication failed, wrong password!");
-                        }
+                        await agent.SignOut();
+
                     }
-                    else if(!agent.Good)
+                    else if (!agent.Good)
                     {
-                        MsgLogger.WriteError($"{GetType().Name} - Start", "Connection failed, repeat!");
-                        
-                        await Task.Delay(reconnectDelay);
-
                         repeat = true;
+
+                        MsgLogger.WriteError($"{GetType().Name} - Start", "Connection failed, repeat!");
+
+                        await Task.Delay(reconnectDelay);
                     }
+                    else
+                    {
+                        MsgLogger.WriteError($"{GetType().Name} - Start", "Authentication failed, wrong password!");
+                    }                    
                 }
                 while (repeat && !_cancellationTokenSource.IsCancellationRequested);
                 

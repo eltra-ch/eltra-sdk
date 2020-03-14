@@ -67,23 +67,6 @@ namespace EltraConnector.SyncAgent
 
         #region Methods
 
-        public async Task<bool> SignIn()
-        {
-            bool result = await SignIn(_authData);
-
-            return result;
-        }
-
-        public async Task<bool> SignOut()
-        {
-            return await SignOut(_authData.Login);
-        }
-
-        public async Task<bool> IsValid()
-        {
-            return await IsValid(_authData);
-        }
-
         public async Task<bool> SignIn(UserAuthData authData)
         {
             bool result = false;
@@ -101,13 +84,14 @@ namespace EltraConnector.SyncAgent
 
             return result;
         }
-        public async Task<bool> SignOut(string token)
+
+        public async Task<bool> SignOut()
         {
             bool result = false;
 
             try
             {
-                result = await _authControllerAdapter.SignOut(token);
+                result = await _authControllerAdapter.SignOut();
             }
             catch (Exception e)
             {
@@ -117,76 +101,22 @@ namespace EltraConnector.SyncAgent
             return result;
         }
 
-        private async Task<bool> SignUp(UserAuthData authData)
+        public async Task<bool> SignUp(UserAuthData authData)
         {
             bool result = false;
 
             try
             {
-                result = await _authControllerAdapter.Register(authData);
+                result = await _authControllerAdapter.SignUp(authData);
             }
             catch (Exception e)
             {
-                MsgLogger.Exception($"{GetType().Name} - Register", e);
+                MsgLogger.Exception($"{GetType().Name} - SignUp", e);
             }
 
             return result;
         }
-
-        public async Task<bool> IsValid(UserAuthData authData)
-        {
-            bool result = false;
-
-            try
-            {
-                result = await _authControllerAdapter.IsValid(authData.Login, authData.Password);
-            }
-            catch (Exception e)
-            {
-                MsgLogger.Exception($"{GetType().Name} - IsAuthValid", e);
-            }
-
-            return result;
-        }
-
-        public async Task<bool> LoginExists(string login)
-        {
-            bool result = false;
-
-            try
-            {
-                result = await _authControllerAdapter.LoginExists(login);
-            }
-            catch (Exception e)
-            {
-                MsgLogger.Exception($"{GetType().Name} - LoginExists", e);
-            }
-
-            return result;
-        }
-
-        public async Task<bool> Register(UserAuthData authData)
-        {
-            bool result = true;
-
-            _authData = authData;
-
-            if (!await LoginExists(authData.Login) && Good)
-            {
-                if (await SignUp(authData))
-                {
-                    MsgLogger.Print($"New login {authData.Login} registered successfully");
-                }
-                else
-                {
-                    MsgLogger.WriteError($"{GetType().Name} - Login", $"Auth data registration failed!");
-                    result = false;
-                }
-            }
-
-            return result;
-        }
-
+        
         public void Stop()
         {
             _authControllerAdapter?.Stop();

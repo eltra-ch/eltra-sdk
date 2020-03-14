@@ -234,20 +234,6 @@ namespace EltraConnector.SyncAgent
             return result;
         }
 
-        public async Task<bool> IsAuthValid(UserAuthData authData)
-        {
-            bool result = await _authentication.IsValid(authData);
-
-            return result;
-        }
-
-        public async Task<bool> LoginExists(string login)
-        {
-            bool result = await _authentication.LoginExists(login);
-
-            return result;
-        }
-
         public async Task<bool> SignIn(UserAuthData authData)
         {
             bool result = await _authentication.SignIn(authData);
@@ -255,16 +241,16 @@ namespace EltraConnector.SyncAgent
             return result;
         }
 
-        public async Task<bool> SignOut(string token)
+        public async Task<bool> SignOut()
         {
-            bool result = await _authentication.SignOut(token);
+            bool result = await _authentication.SignOut();
 
             return result;
         }
 
-        public async Task<bool> Register(UserAuthData authData)
+        public async Task<bool> SignUp(UserAuthData authData)
         {
-            bool result = await _authentication.Register(authData);
+            bool result = await _authentication.SignUp(authData);
 
             return result;
         }
@@ -290,26 +276,6 @@ namespace EltraConnector.SyncAgent
             MsgLogger.WriteDebug($"{GetType().Name} - Stop", "Auth controller stopped 4/4");
 
             return base.Stop();
-        }
-
-        public async Task<bool> SignIn()
-        {
-            return await _authentication.SignIn();
-        }
-
-        public async Task<bool> SignOut()
-        {
-            return await _authentication.SignOut();
-        }
-
-        public async Task<bool> IsAuthValid()
-        {
-            return await _authentication.IsValid();
-        }
-
-        public async Task<bool> Login(UserAuthData authData)
-        {
-            return await _authentication.Register(authData);
         }
 
         #endregion

@@ -8,6 +8,7 @@ using EltraCommon.Logger;
 using EltraCloudContracts.Contracts.Results;
 using EltraCloudContracts.Contracts.Users;
 using Newtonsoft.Json;
+using System.Threading;
 
 namespace EltraConnector.Controllers
 {
@@ -23,71 +24,6 @@ namespace EltraConnector.Controllers
 
         #region Methods
 
-        public async Task<bool> LoginExists(string login)
-        {
-            bool result = false;
-
-            try
-            {
-                var query = HttpUtility.ParseQueryString(string.Empty);
-
-                query["login"] = login;
-
-                var url = UrlHelper.BuildUrl(Url, "api/auth/login-exists", query);
-
-                var json = await Transporter.Get(url);
-
-                if (!string.IsNullOrEmpty(json))
-                {
-                    var requestResult = JsonConvert.DeserializeObject<RequestResult>(json);
-
-                    if (requestResult != null)
-                    {
-                        result = requestResult.Result;
-                    }
-                }
-            }
-            catch (Exception e)
-            {
-                MsgLogger.Exception($"{GetType().Name} - LoginExists", e);
-            }
-
-            return result;
-        }
-
-        public async Task<bool> IsValid(string login, string password)
-        {
-            bool result = false;
-
-            try
-            {
-                var query = HttpUtility.ParseQueryString(string.Empty);
-
-                query["login"] = login;
-                query["password"] = password;
-
-                var url = UrlHelper.BuildUrl(Url, "api/auth/login-is-valid", query);
-
-                var json = await Transporter.Get(url);
-
-                if (!string.IsNullOrEmpty(json))
-                {
-                    var requestResult = JsonConvert.DeserializeObject<RequestResult>(json);
-
-                    if (requestResult != null)
-                    {
-                        result = requestResult.Result;
-                    }
-                }
-            }
-            catch (Exception e)
-            {
-                MsgLogger.Exception($"{GetType().Name} - IsValid", e);
-            }
-
-            return result;
-        }
-        
         public async Task<bool> SignIn(UserAuthData authData)
         {
             bool result = false;
@@ -102,8 +38,6 @@ namespace EltraConnector.Controllers
 
                 if (response.StatusCode == HttpStatusCode.OK)
                 {
-                    var requestResult = JsonConvert.DeserializeObject<RequestResult>(response.Content);
-
                     result = true;
                 }
             }
@@ -115,7 +49,7 @@ namespace EltraConnector.Controllers
             return result;
         }
 
-        public async Task<bool> SignOut(string token)
+        public async Task<bool> SignOut()
         {
             bool result = false;
 
@@ -123,20 +57,14 @@ namespace EltraConnector.Controllers
             {
                 var query = HttpUtility.ParseQueryString(string.Empty);
 
-                query["token"] = token;
-
                 var url = UrlHelper.BuildUrl(Url, "api/auth/sign-out", query);
+                var cancellationTokenSource = new CancellationTokenSource();
 
-                var json = await Transporter.Get(url);
+                var statusCode = await Transporter.Get(url, cancellationTokenSource.Token);
 
-                if (!string.IsNullOrEmpty(json))
+                if (statusCode == HttpStatusCode.OK)
                 {
-                    var requestResult = JsonConvert.DeserializeObject<RequestResult>(json);
-
-                    if (requestResult != null)
-                    {
-                        result = requestResult.Result;
-                    }
+                    result = true;
                 }
             }
             catch (Exception e)
@@ -147,13 +75,13 @@ namespace EltraConnector.Controllers
             return result;
         }
 
-        public async Task<bool> Register(UserAuthData authData)
+        public async Task<bool> SignUp(UserAuthData authData)
         {
             bool result = false;
 
             try
             {
-                var path = "api/auth/register";
+                var path = "api/auth/sign-up";
 
                 var json = JsonConvert.SerializeObject(authData);
 
@@ -168,7 +96,7 @@ namespace EltraConnector.Controllers
             }
             catch (Exception e)
             {
-                MsgLogger.Exception($"{GetType().Name} - Register", e);
+                MsgLogger.Exception($"{GetType().Name} - SignUp", e);
             }
 
             return result;

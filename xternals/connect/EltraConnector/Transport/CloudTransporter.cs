@@ -4,6 +4,7 @@ using System.Net;
 using System.Net.Http;
 using System.Net.Sockets;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 using EltraCommon.Logger;
@@ -164,6 +165,31 @@ namespace EltraConnector.Transport
                 }
             } while (tryCount < MaxRetryCount);
             
+            return result;
+        }
+
+        public async Task<HttpStatusCode> Get(string url, CancellationToken cancelationToken)
+        {
+            HttpStatusCode result = HttpStatusCode.NotImplemented;
+
+            try
+            {
+                MsgLogger.WriteDebug($"{GetType().Name} - Get", $"get - url ='{url}'");
+
+                using (var response = await Client.GetAsync(url, cancelationToken))
+                {
+                    result = response.StatusCode;
+                }
+            }
+            catch (HttpRequestException e)
+            {
+                MsgLogger.Exception($"{GetType().Name} - ExceptionHandling", e);
+            }
+            catch (Exception e)
+            {
+                MsgLogger.Exception($"{GetType().Name} - ExceptionHandling", e);
+            }
+
             return result;
         }
 
