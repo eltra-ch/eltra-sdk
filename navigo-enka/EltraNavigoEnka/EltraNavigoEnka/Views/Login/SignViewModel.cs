@@ -94,6 +94,10 @@ namespace EltraNavigo.Views.Login
 
         protected string AutoLogonActiveName => $"{GetType().Name}_auto_logon_active";
 
+        protected string SignInPropertyUserName => $"{GetType().Name}_sign_in_user_name";
+
+        protected string SignInPropertyPassword => $"{GetType().Name}_sign_in_password";
+
         #endregion
 
         #region Command
@@ -155,9 +159,7 @@ namespace EltraNavigo.Views.Login
         {
             StoreLoginSettings();
 
-            var auth = new AuthControllerAdapter(Url);
-
-            if (await auth.SignIn(new UserAuthData() { Login = LoginName, Password = Password }))
+            if (await SignIn())
             {
                 OnChanged();
             }
@@ -172,6 +174,19 @@ namespace EltraNavigo.Views.Login
             IsLoginValid = true;
 
             IsValid = !string.IsNullOrEmpty(LoginName) && !string.IsNullOrEmpty(Password);
+        }
+
+        public async Task<bool> SignIn()
+        {
+            bool result = false;
+            var auth = new AuthControllerAdapter(Url);
+
+            if (await auth.SignIn(new UserAuthData() { Login = LoginName, Password = Password }))
+            {
+                result = true;
+            }
+
+            return result;
         }
 
         public override async Task Show()
@@ -205,11 +220,29 @@ namespace EltraNavigo.Views.Login
                     AutoLogOnActive = autoLogOn;
                 }
             }
+
+            if (Application.Current.Properties.ContainsKey(SignInPropertyUserName))
+            {
+                if (Application.Current.Properties[SignInPropertyUserName] is string val)
+                {
+                    LoginName = val;
+                }
+            }
+
+            if (Application.Current.Properties.ContainsKey(SignInPropertyPassword))
+            {
+                if (Application.Current.Properties[SignInPropertyPassword] is string val)
+                {
+                    Password = val;
+                }
+            }
         }
 
         private void StoreAutoLoginSettings()
         {
             Application.Current.Properties[AutoLogonActiveName] = AutoLogOnActive.ToString();
+            Application.Current.Properties[SignInPropertyUserName] = LoginName;
+            Application.Current.Properties[SignInPropertyPassword] = Password;
         }
 
         #endregion

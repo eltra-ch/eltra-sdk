@@ -323,11 +323,11 @@ namespace EltraNavigo.Views.Contact
                         Console.WriteLine(geocodeAddress);
                     }
                 }
-                catch (FeatureNotSupportedException fnsEx)
+                catch (FeatureNotSupportedException)
                 {
                     // Feature not supported on device
                 }
-                catch (Exception ex)
+                catch (Exception)
                 {
                     // Handle exception that may have occurred in geocoding
                 }

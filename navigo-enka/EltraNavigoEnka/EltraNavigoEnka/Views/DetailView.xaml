@@ -8,6 +8,7 @@
              xmlns:login="clr-namespace:EltraNavigo.Views.Login;assembly=EltraNavigoEnka"
              xmlns:views="clr-namespace:EltraNavigo.Views;assembly=EltraNavigoEnka"
              xmlns:contact="clr-namespace:EltraNavigo.Views.Contact"
+             xmlns:orders="clr-namespace:EltraNavigo.Views.Orders"
              mc:Ignorable="d"
              x:DataType="views:DetailViewModel"
              x:Class="EltraNavigo.Views.DetailView" Title="{Binding Title}">
@@ -26,6 +27,10 @@
             <contact:ContactView IsVisible="{Binding IsVisible}"/>
         </DataTemplate>
 
+        <DataTemplate x:Key="OrderView">
+            <orders:OrderView IsVisible="{Binding IsVisible}"/>
+        </DataTemplate>
+
         <DataTemplate x:Key="AboutView">
             <about:AboutView IsVisible="{Binding IsVisible}"/>
         </DataTemplate>
@@ -34,6 +39,7 @@
                                       SignInView="{StaticResource SignInView}"
                                       SignUpView="{StaticResource SignUpView}"
                                       ContactView="{StaticResource ContactView}"
+                                      OrderView="{StaticResource OrderView}"
                                       AboutView="{StaticResource AboutView}"/>
 
     </ContentPage.Resources>

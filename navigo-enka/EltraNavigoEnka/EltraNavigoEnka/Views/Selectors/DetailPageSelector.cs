@@ -1,6 +1,7 @@
 ﻿using EltraNavigo.Views.About;
 using EltraNavigo.Views.Contact;
 using EltraNavigo.Views.Login;
+using EltraNavigo.Views.Orders;
 using Xamarin.Forms;
 
 namespace EltraNavigo.Views.Selectors
@@ -12,6 +13,8 @@ namespace EltraNavigo.Views.Selectors
         public DataTemplate SignUpView { get; set; }
 
         public DataTemplate ContactView { get; set; }
+
+        public DataTemplate OrderView { get; set; }
 
         public DataTemplate AboutView { get; set; }
 
@@ -30,6 +33,10 @@ namespace EltraNavigo.Views.Selectors
             else if (item is ContactViewModel)
             {
                 result = ContactView;
+            }
+            else if (item is OrderViewModel)
+            {
+                result = OrderView;
             }
             else if (item is AboutViewModel)
             {

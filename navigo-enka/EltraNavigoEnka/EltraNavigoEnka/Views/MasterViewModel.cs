@@ -5,6 +5,7 @@ using EltraNavigo.Views.About;
 using EltraNavigo.Views.Login;
 using System.Threading.Tasks;
 using EltraNavigo.Views.Contact;
+using EltraNavigo.Views.Orders;
 
 namespace EltraNavigo.Views
 {
@@ -22,6 +23,7 @@ namespace EltraNavigo.Views
         private SignUpViewModel _signUpViewModel;
 
         private ContactViewModel _contactViewModel;
+        private OrderViewModel _orderViewModel;
 
         private AboutViewModel _aboutViewModel;
         
@@ -140,13 +142,15 @@ namespace EltraNavigo.Views
 
         public ContactViewModel ContactViewModel => _contactViewModel ?? (_contactViewModel = new ContactViewModel());
 
+        public OrderViewModel OrderViewModel => _orderViewModel ?? (_orderViewModel = new OrderViewModel());
+
         public AboutViewModel AboutViewModel => _aboutViewModel ?? (_aboutViewModel = new AboutViewModel());
 
         #endregion
 
         #region Methods
 
-        public void GotoFirstPage()
+        public async void GotoFirstPage()
         {
             if (!SignInViewModel.AutoLogOnActive)
             {
@@ -154,7 +158,19 @@ namespace EltraNavigo.Views
             }
             else
             {
-                ChangePage(SignInViewModel, true);
+                IsBusy = true;
+
+                if (SignInViewModel.IsValid)
+                {
+                    if(await SignInViewModel.SignIn())
+                    {
+                        ActivateTools(true);
+                    }
+                }
+
+                IsBusy = false;
+
+                GotoLastUsedPage();
             }
         }
 
@@ -222,7 +238,7 @@ namespace EltraNavigo.Views
             {
                 ActivateTools(true);
 
-                ChangePage(ContactViewModel, true);
+                ChangePage(OrderViewModel, true);
             };
 
             result.Canceled += (sender, args) =>
@@ -276,7 +292,8 @@ namespace EltraNavigo.Views
         {
             ToolViewModels = new List<ToolViewModel>
             {
-               ContactViewModel
+               ContactViewModel,
+               OrderViewModel
             };
 
             HeaderViewModels = new List<ToolViewModel>
