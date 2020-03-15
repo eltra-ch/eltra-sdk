@@ -3,17 +3,18 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:d="http://xamarin.com/schemas/2014/forms/design"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-             xmlns:behaviors="clr-namespace:EltraNavigo.Views.Login.Behaviors;assembly=EltraNavigo"
-             xmlns:views="clr-namespace:EltraNavigo.Views.Login;assembly=EltraNavigo"
+             xmlns:behaviors="clr-namespace:EltraNavigo.Views.Login.Behaviors;assembly=EltraNavigoEnka"
+             xmlns:views="clr-namespace:EltraNavigo.Views.Login;assembly=EltraNavigoEnka"
              mc:Ignorable="d"
-             x:DataType="views:LoginViewModel"             
+             x:DataType="views:SignUpViewModel"             
              xmlns:local="clr-namespace:EltraNavigo.Controls.Extensions;assembly=EltraNavigo"
-             x:Class="EltraNavigo.Views.Login.LoginView" VerticalOptions="CenterAndExpand">
+             x:Class="EltraNavigo.Views.Login.SignUpView" VerticalOptions="CenterAndExpand">
     <ContentView.Behaviors>
-        <behaviors:LoginViewBehavior/>
+        <behaviors:ToolViewBehavior/>
     </ContentView.Behaviors>
     <ContentView.Content>
-        <Grid VerticalOptions="FillAndExpand" HorizontalOptions="FillAndExpand">
+        <ScrollView>
+        <Grid VerticalOptions="StartAndExpand" HorizontalOptions="FillAndExpand">
             
             <Grid>
                 <Grid.Resources>
@@ -23,7 +24,7 @@
                 </Grid.Resources>
                 <Grid.RowDefinitions>
                     <RowDefinition></RowDefinition>
-                    <RowDefinition Height="Auto"></RowDefinition>
+                    <RowDefinition Height="420"></RowDefinition>
                     <RowDefinition></RowDefinition>
                 </Grid.RowDefinitions>
 
@@ -35,12 +36,8 @@
 
                 <Frame Grid.Row="1" Grid.Column="1" BorderColor="White" BackgroundColor="Transparent" 
                        HasShadow="False" CornerRadius="10" OutlineColor="{StaticResource NavigationPrimary}">
-                    <Grid>
-                        
-                        <!--<Image Source="{local:ImageResource EltraNavigo.Resources.clouds.png}" Aspect="Fill"/>-->
-                        
-                        <Grid VerticalOptions="CenterAndExpand" Padding="4,0,4,0">
-                            
+                    <Grid>                        
+                        <Grid VerticalOptions="CenterAndExpand" Padding="4,0,4,0">                            
                             <Grid.Resources>
                                 <ResourceDictionary>
                                     <Style TargetType="Frame">
@@ -58,13 +55,13 @@
                                 <RowDefinition Height="Auto"/>
                                 <RowDefinition Height="Auto"/>
                                 <RowDefinition Height="42"/>
-                                <RowDefinition Height="42"/>
+                                <RowDefinition Height="Auto"/>
                                 <RowDefinition Height="Auto"/>
                             </Grid.RowDefinitions>
 
                             <Frame Grid.Row="0" BackgroundColor="Transparent">
                                 <Label IsTabStop="False" 
-                                       Text="{Binding Title}" FontSize="Medium" TextColor="Black"
+                                       Text="NotKauf, please Sign Up" FontSize="Medium" TextColor="Black"
                                        BackgroundColor="Transparent"
                                        HorizontalOptions="CenterAndExpand"/>
                             </Frame>
@@ -78,6 +75,14 @@
                                     <Entry.Behaviors>
                                         <behaviors:LoginValidationBehavior/>
                                     </Entry.Behaviors>
+                                    <Entry.Triggers>
+                                        <DataTrigger TargetType="Entry" Binding="{Binding IsLoginValid}" Value="true">
+                                            <Setter Property="TextColor" Value="Black" />
+                                        </DataTrigger>
+                                        <DataTrigger TargetType="Entry" Binding="{Binding IsLoginValid}" Value="false">
+                                            <Setter Property="TextColor" Value="Red" />
+                                        </DataTrigger>
+                                    </Entry.Triggers>
                                 </Entry>
                             </Frame>
 
@@ -90,28 +95,37 @@
                                     <Entry.Behaviors>
                                         <behaviors:PasswordValidationBehavior/>
                                     </Entry.Behaviors>
+                                    <Entry.Triggers>
+                                        <DataTrigger TargetType="Entry" Binding="{Binding IsLoginValid}" Value="true">
+                                            <Setter Property="TextColor" Value="Black" />
+                                        </DataTrigger>
+                                        <DataTrigger TargetType="Entry" Binding="{Binding IsLoginValid}" Value="false">
+                                            <Setter Property="TextColor" Value="Red" />
+                                        </DataTrigger>
+                                    </Entry.Triggers>
                                 </Entry>
                             </Frame>
-
+                            
                             <Frame Grid.Row="6">
-                                <Button IsTabStop="True" TabIndex="3" Text="LOGIN" Command="{Binding LoginCommand}" IsEnabled="{Binding IsValid}"/>
+                                <Button IsTabStop="True" TabIndex="3" Text="SIGN UP" Command="{Binding RegisterCommand}" IsEnabled="{Binding IsValid}"/>
                             </Frame>
 
-                            <Frame Grid.Row="7">
-                                <Button IsTabStop="True" TabIndex="3" Text="REGISTER" Command="{Binding RegisterCommand}" IsEnabled="{Binding IsValid}"/>
-                            </Frame>
-
-                            <Frame Grid.Row="8" BackgroundColor="Transparent">
+                            <Frame Grid.Row="7" BackgroundColor="Transparent">
                                 <StackLayout Orientation="Horizontal">
                                     <CheckBox IsChecked="{Binding AutoLogOnActive}" WidthRequest="32"/>
                                     <Label Text="Automatically Log On" VerticalOptions="CenterAndExpand" HorizontalOptions="StartAndExpand" TextColor="Black" BackgroundColor="Transparent"/>
                                 </StackLayout>
                             </Frame>
 
+                            <Frame Grid.Row="8">
+                                <ActivityIndicator IsRunning="{Binding IsBusy}" VerticalOptions="Center" HorizontalOptions="Center" />
+                            </Frame>
+
                         </Grid>
                     </Grid>
-                </Frame>
+                </Frame>                
             </Grid>
         </Grid>
+        </ScrollView>
     </ContentView.Content>
 </ContentView>

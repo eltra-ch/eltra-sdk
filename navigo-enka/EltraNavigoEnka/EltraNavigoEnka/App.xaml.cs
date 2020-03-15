@@ -1,7 +1,5 @@
-﻿using System;
-using Xamarin.Forms;
+﻿using Xamarin.Forms;
 using EltraNavigo.Views;
-using EltraCommon.Logger;
 
 namespace EltraNavigo
 {
@@ -25,8 +23,9 @@ namespace EltraNavigo
 
             //string url = "https://eltra.ch";
             //string url = "http://localhost:60476/";
-            string url = "http://localhost:64911/";
-            
+            //string url = "http://localhost:64911/";
+            string url = "http://localhost:5001/";
+
             CreateIdentity();
 
             Current.Properties["url"] = url;
@@ -42,67 +41,15 @@ namespace EltraNavigo
 
         #region Properties
 
-        public string Uuid
-        {
-            get
-            {
-                string uuid = string.Empty;
-
-                if (Current.Properties.ContainsKey("uuid"))
-                {
-                    uuid = Current.Properties["uuid"] as string;
-                }
-
-                return uuid;
-            }
-            set
-            {
-                Current.Properties["uuid"] = value;
-            }
-        }
-
-        private int RandomNumber
-        {
-            get
-            {
-                const int maxValue = 999;
-                var randomSessionId = new Random();
-                
-                return randomSessionId.Next(0, maxValue);
-            }            
-        }
-
         #endregion
 
         #region Methods
-
-        private void GenerateRandomSessionUuid()
-        {
-            string uuid = Uuid;
-            int i = uuid.IndexOf('#');
-
-            if(i>0)
-            {
-                uuid = uuid.Substring(0, i);
-            }
-
-            if (string.IsNullOrEmpty(uuid))
-            {
-                Uuid = $"{Guid.NewGuid().ToString()}#{RandomNumber}";
-            }
-            else
-            {
-                Uuid = $"{uuid}#{RandomNumber}";
-            }
-        }
 
         private void CreateIdentity()
         {
             string name = string.Empty;
             string login = string.Empty;
             string password = string.Empty;
-
-            GenerateRandomSessionUuid();
 
             if (Current.Properties.ContainsKey("name"))
             { 

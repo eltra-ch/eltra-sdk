@@ -1,31 +1,33 @@
-﻿using System;
+﻿using EltraCloudContracts.Contracts.Users;
+using EltraConnector.Controllers;
+using EltraNavigo.Controls;
+using System;
+using System.ComponentModel;
 using System.Threading.Tasks;
 using System.Windows.Input;
-using EltraNavigo.Controls;
 using Xamarin.Forms;
-using System.ComponentModel;
 
 namespace EltraNavigo.Views.Login
 {
-    public class LoginViewModel : ToolViewModel
+    public class SignViewModel : ToolViewModel
     {
         #region Private fields
 
         private string _loginName;
         private string _password;
         private bool _isValid;
+        private bool _isLoginValid;
         private bool _autoLogOnActive;
 
         #endregion
 
         #region Constructors
 
-        public LoginViewModel()
+        public SignViewModel()
         {
-            Title = "Eltra Cloud, Please Sign-in";
-            Image = ImageSource.FromResource("EltraNavigo.Resources.profile-male_32px.png");
             IsMandatory = true;
-            
+            IsLoginValid = true;
+
             ReadAutoLoginSettings();
             ReadLoginSettings();
             UpdateValidFlag();
@@ -39,14 +41,30 @@ namespace EltraNavigo.Views.Login
 
         public event EventHandler Changed;
         public event EventHandler Canceled;
+        public event EventHandler Failure;
 
         #endregion
 
         #region Properties
 
+        public string Url
+        {
+            get
+            {
+                string result = string.Empty;
+
+                if (Application.Current.Properties.ContainsKey("url"))
+                {
+                    result = Application.Current.Properties["url"] as string;
+                }
+
+                return result;
+            }
+        }
+
         public string LoginName
         {
-            get => _loginName; 
+            get => _loginName;
             set => SetProperty(ref _loginName, value);
         }
 
@@ -56,10 +74,16 @@ namespace EltraNavigo.Views.Login
             set => SetProperty(ref _password, value);
         }
 
-        public bool IsValid 
-        { 
+        public bool IsValid
+        {
             get => _isValid;
             set => SetProperty(ref _isValid, value);
+        }
+
+        public bool IsLoginValid
+        {
+            get => _isLoginValid;
+            set => SetProperty(ref _isLoginValid, value);
         }
 
         public bool AutoLogOnActive
@@ -68,7 +92,7 @@ namespace EltraNavigo.Views.Login
             set => SetProperty(ref _autoLogOnActive, value);
         }
 
-        private string AutoLogonActiveName => $"{GetType().Name}_auto_logon_active";
+        protected string AutoLogonActiveName => $"{GetType().Name}_auto_logon_active";
 
         #endregion
 
@@ -78,14 +102,14 @@ namespace EltraNavigo.Views.Login
 
         public ICommand LoginCommand => new Command(OnLoginClicked);
 
-        public ICommand RegisterCommand => new Command(OnRegisterClicked);
-
         #endregion
 
         #region Events handling
 
         protected virtual void OnChanged()
         {
+            IsValid = true;
+
             Changed?.Invoke(this, EventArgs.Empty);
         }
 
@@ -94,9 +118,16 @@ namespace EltraNavigo.Views.Login
             Canceled?.Invoke(this, EventArgs.Empty);
         }
 
+        protected virtual void OnFailure()
+        {
+            IsLoginValid = false;
+
+            Failure?.Invoke(this, EventArgs.Empty);
+        }
+
         private void OnViewModelPropertyChanged(object sender, PropertyChangedEventArgs e)
         {
-            if(e.PropertyName== "AutoLogOnActive")
+            if (e.PropertyName == "AutoLogOnActive")
             {
                 StoreAutoLoginSettings();
             }
@@ -105,7 +136,7 @@ namespace EltraNavigo.Views.Login
         #endregion
 
         #region Methods
-
+        
         public void OnPasswordChanged(string newPassword)
         {
             Password = newPassword;
@@ -120,22 +151,26 @@ namespace EltraNavigo.Views.Login
             UpdateValidFlag();
         }
 
-        private void OnLoginClicked()
+        private async void OnLoginClicked()
         {
             StoreLoginSettings();
 
-            OnChanged();
-        }
+            var auth = new AuthControllerAdapter(Url);
 
-        private void OnRegisterClicked()
-        {
-            StoreLoginSettings();
-
-            OnChanged();
+            if (await auth.SignIn(new UserAuthData() { Login = LoginName, Password = Password }))
+            {
+                OnChanged();
+            }
+            else
+            {
+                OnFailure();
+            }
         }
 
         private void UpdateValidFlag()
         {
+            IsLoginValid = true;
+
             IsValid = !string.IsNullOrEmpty(LoginName) && !string.IsNullOrEmpty(Password);
         }
 
@@ -177,6 +212,7 @@ namespace EltraNavigo.Views.Login
             Application.Current.Properties[AutoLogonActiveName] = AutoLogOnActive.ToString();
         }
 
-        #endregion        
+        #endregion
+
     }
 }

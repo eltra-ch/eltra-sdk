@@ -1,0 +1,149 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentView xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:contact="clr-namespace:EltraNavigo.Views.Contact"
+             xmlns:behaviors="clr-namespace:EltraNavigo.Views.Login.Behaviors"
+             x:DataType="contact:ContactViewModel"
+             xmlns:maps="clr-namespace:Xamarin.Forms.Maps;assembly=Xamarin.Forms.Maps"
+             x:Class="EltraNavigo.Views.Contact.ContactView">
+
+    <ContentView.Resources>
+        <Color x:Key="NavigationPrimary">#2196F3</Color>
+        <Style x:Key="BorderLikeFrame" TargetType="Frame">
+            <Setter Property="BorderColor" Value="Transparent"/>
+            <Setter Property="Padding" Value="2"/>
+            <Setter Property="HasShadow" Value="{DynamicResource AppFrameShadowStyle}"/>
+        </Style>
+    </ContentView.Resources>
+
+    <ContentView.Behaviors>
+        <behaviors:ToolViewBehavior/>
+    </ContentView.Behaviors>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="8"></RowDefinition>
+            <RowDefinition Height="*"></RowDefinition>
+            <RowDefinition Height="Auto"></RowDefinition>
+            <RowDefinition Height="300"></RowDefinition>
+            <RowDefinition Height="8"></RowDefinition>
+        </Grid.RowDefinitions>
+
+        <Frame Grid.Row="1" BorderColor="{StaticResource NavigationPrimary}">
+            <Grid HorizontalOptions="StartAndExpand" VerticalOptions="CenterAndExpand">
+
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"></RowDefinition>
+                    <RowDefinition Height="Auto"></RowDefinition>
+                    <RowDefinition Height="Auto"></RowDefinition>
+                    <RowDefinition Height="Auto"></RowDefinition>
+                    <RowDefinition Height="Auto"></RowDefinition>
+                    <RowDefinition Height="Auto"></RowDefinition>
+                    <RowDefinition Height="Auto"></RowDefinition>
+                    <RowDefinition Height="Auto"></RowDefinition>
+                    <RowDefinition Height="Auto"></RowDefinition>
+                    <RowDefinition Height="Auto"></RowDefinition>
+                </Grid.RowDefinitions>
+                
+                <Frame Grid.Column="0" Grid.Row="0" Style="{StaticResource BorderLikeFrame}">
+                    <Label FontSize="Medium" TextColor="Black" Text="First Name:"/>
+                </Frame>
+                <Frame Grid.Column="0" Grid.Row="1" Style="{StaticResource BorderLikeFrame}">
+                    <Label FontSize="Medium" TextColor="Black" Text="Last Name:"/>
+                </Frame>
+                <Frame Grid.Column="0" Grid.Row="2" Style="{StaticResource BorderLikeFrame}">
+                    <Label FontSize="Medium" TextColor="Black" Text="Phone (stationary):"/>
+                </Frame>
+                <Frame Grid.Column="0" Grid.Row="3" Style="{StaticResource BorderLikeFrame}">
+                    <Label FontSize="Medium" TextColor="Black" Text="Phone (mobile):"/>
+                </Frame>
+                <Frame Grid.Column="0" Grid.Row="4" Style="{StaticResource BorderLikeFrame}">
+                    <Label FontSize="Medium" TextColor="Black" Text="Street:"/>
+                </Frame>
+                <Frame Grid.Column="0" Grid.Row="5" Style="{StaticResource BorderLikeFrame}">
+                    <Label FontSize="Medium" TextColor="Black" Text="Hause number:"/>
+                </Frame>
+                <Frame Grid.Column="0" Grid.Row="6" Style="{StaticResource BorderLikeFrame}">
+                    <Label FontSize="Medium" TextColor="Black" Text="Flat number:"/>
+                </Frame>
+                <Frame Grid.Column="0" Grid.Row="7" Style="{StaticResource BorderLikeFrame}">
+                    <Label FontSize="Medium" TextColor="Black" Text="City:"/>
+                </Frame>
+                <Frame Grid.Column="0" Grid.Row="8" Style="{StaticResource BorderLikeFrame}">
+                    <Label FontSize="Medium" TextColor="Black" Text="Postal Code:"/>
+                </Frame>
+                <Frame Grid.Column="0" Grid.Row="9" Style="{StaticResource BorderLikeFrame}">
+                    <Label FontSize="Medium" TextColor="Black" Text="Notice:"/>
+                </Frame>
+
+                <!-- Entry -->
+                <Frame Grid.Column="1" Grid.Row="0" Style="{StaticResource BorderLikeFrame}">
+                    <Entry Text="{Binding FirstName}"/>
+                </Frame>
+                <Frame Grid.Column="1" Grid.Row="1" Style="{StaticResource BorderLikeFrame}">
+                    <Entry Text="{Binding LastName}"/>
+                </Frame>
+                <Frame Grid.Column="1" Grid.Row="2" Style="{StaticResource BorderLikeFrame}">
+                    <Entry Text="{Binding PhoneStationary}"/>
+                </Frame>
+                <Frame Grid.Column="1" Grid.Row="3" Style="{StaticResource BorderLikeFrame}">
+                    <Entry Text="{Binding PhoneMobile}"/>
+                </Frame>
+                <Frame Grid.Column="1" Grid.Row="4" Style="{StaticResource BorderLikeFrame}">
+                    <Entry Text="{Binding Street}"/>
+                </Frame>
+                <Frame Grid.Column="1" Grid.Row="5" Style="{StaticResource BorderLikeFrame}">
+                    <Entry Text="{Binding HouseNumber}"/>
+                </Frame>
+                <Frame Grid.Column="1" Grid.Row="6" Style="{StaticResource BorderLikeFrame}">
+                    <Entry Text="{Binding FlatNumber}"/>
+                </Frame>
+                <Frame Grid.Column="1" Grid.Row="7" Style="{StaticResource BorderLikeFrame}">
+                    <Entry Text="{Binding City}"/>
+                </Frame>
+                <Frame Grid.Column="1" Grid.Row="8" Style="{StaticResource BorderLikeFrame}">
+                    <Entry Text="{Binding PostalCode}"/>
+                </Frame>
+                <Frame Grid.Column="1" Grid.Row="9" Style="{StaticResource BorderLikeFrame}">
+                    <Entry Text="{Binding Notice}"/>
+                </Frame>
+                
+            </Grid>
+        </Frame>
+
+        <Frame Grid.Row="2" BorderColor="{StaticResource NavigationPrimary}">
+
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition/>
+                    <ColumnDefinition/>
+                </Grid.ColumnDefinitions>
+            
+                <Frame Grid.Column="0" Style="{StaticResource BorderLikeFrame}">
+                    <Button Text="Save" Command="{Binding SaveCommand}" IsEnabled="{Binding IsValid}"/>
+                </Frame>
+
+                <Frame Grid.Column="1" Style="{StaticResource BorderLikeFrame}">
+                    <Button IsTabStop="True" TabIndex="3" Text="LOCATE" Command="{Binding LocateCommand}"/>
+                </Frame>
+
+            </Grid>
+
+        </Frame>
+
+        <Frame Grid.Row="3" BorderColor="{StaticResource NavigationPrimary}">
+
+            <maps:Map x:Name="Map" ItemsSource="{Binding Locations}">
+
+            </maps:Map>
+
+        </Frame>
+        
+    </Grid>
+
+</ContentView>

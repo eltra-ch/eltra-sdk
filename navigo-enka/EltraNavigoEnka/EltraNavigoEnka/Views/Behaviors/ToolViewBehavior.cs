@@ -4,11 +4,11 @@ using Xamarin.Forms;
 
 namespace EltraNavigo.Views.Login.Behaviors
 {
-    class LoginViewBehavior : Behavior<ContentView>
+    class ToolViewBehavior : Behavior<ContentView>
     {
         private ContentView _page;
         private ToolViewModel _toolViewModel;
-
+        
         protected override void OnAttachedTo(ContentView page)
         {
             _page = page;
