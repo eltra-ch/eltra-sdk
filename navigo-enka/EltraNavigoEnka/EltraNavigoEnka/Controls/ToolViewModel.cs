@@ -87,6 +87,10 @@ namespace EltraNavigo.Controls
             Init();
         }
 
+        public virtual void Clear()
+        {
+        }
+
         public void Init()
         {
             if (UpdateViewModels)

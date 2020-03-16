@@ -20,15 +20,12 @@ namespace EltraNavigo.Views.Contact
 
         private bool _isValid;
         private CloudTransporter _transporter;
-        private List<Location> _locations;
-
-        private string _firstName;
-        private string _lastName;
-        private string _phoneStationary;
-        private string _phoneMobile;
+        
+        private string _name;
+        private List<string> _regions;
+        private string _phone;
         private string _street;
-        private string _houseNumber;
-        private string _flatNumber;
+        private string _region;
         private string _city;
         private string _postalCode;
         private string _notice;
@@ -39,10 +36,12 @@ namespace EltraNavigo.Views.Contact
 
         public ContactViewModel()
         {
-            Title = "Contact";
+            Title = "Profile";
             Image = ImageSource.FromResource("EltraNavigo.Resources.lightbulb_32px.png");
             IsMandatory = true;
             Uuid = "791AFBD3-E61D-4A0B-B35B-874D5A038E35";
+            
+            AddRegions();
 
             _transporter = new CloudTransporter();
 
@@ -74,48 +73,30 @@ namespace EltraNavigo.Views.Contact
             }
         }
 
-        public string FirstName
+        public string Name
         {
-            get => _firstName;
-            set => SetProperty(ref _firstName, value);
+            get => _name;
+            set => SetProperty(ref _name, value);
         }
 
-        public string LastName
+        public string Region
         {
-            get => _lastName;
-            set => SetProperty(ref _lastName, value);
+            get => _region;
+            set => SetProperty(ref _region, value);
         }
 
-        public string PhoneStationary
+        public string Phone
         {
-            get => _phoneStationary;
-            set => SetProperty(ref _phoneStationary, value);
+            get => _phone;
+            set => SetProperty(ref _phone, value);
         }
-
-        public string PhoneMobile
-        {
-            get => _phoneMobile;
-            set => SetProperty(ref _phoneMobile, value);
-        }
-
+        
         public string Street
         {
             get => _street;
             set => SetProperty(ref _street, value);
         }
-
-        public string HouseNumber
-        {
-            get => _houseNumber;
-            set => SetProperty(ref _houseNumber, value);
-        }
-
-        public string FlatNumber
-        {
-            get => _flatNumber;
-            set => SetProperty(ref _flatNumber, value);
-        }
-
+        
         public string City
         {
             get => _city;
@@ -134,10 +115,10 @@ namespace EltraNavigo.Views.Contact
             set => SetProperty(ref _notice, value);
         }
 
-        public List<Location> Locations
+        public List<string> Regions
         {
-            get => _locations ?? (_locations = new List<Location>());
-            set => SetProperty(ref _locations, value);
+            get => _regions ?? (_regions = new List<string>());
+            set => SetProperty(ref _regions, value);
         }
 
         #endregion
@@ -151,6 +132,17 @@ namespace EltraNavigo.Views.Contact
 
         #region Methods
 
+        public override void Clear()
+        {
+            Name = string.Empty;
+            Region = string.Empty;
+            Phone = string.Empty;
+            Street = string.Empty;
+            City = string.Empty;
+            PostalCode = string.Empty;
+            Notice = string.Empty;
+        }
+
         private async void OnSaveCommandClicked(object obj)
         {
             await StoreContact();
@@ -158,7 +150,7 @@ namespace EltraNavigo.Views.Contact
 
         private void UpdateValidFlag()
         {
-            IsValid = !string.IsNullOrEmpty(FirstName) && !string.IsNullOrEmpty(LastName);
+            IsValid = !string.IsNullOrEmpty(Name) && !string.IsNullOrEmpty(Phone);
         }
 
         public override async Task Show()
@@ -170,19 +162,27 @@ namespace EltraNavigo.Views.Contact
             await base.Show();
         }
 
+        private void AddRegions()
+        {
+            var regions = new List<string>() { "Zürich", "Bern", "Luzern", "Uri", 
+                "Schwyz", "Obwalden", "Nidwalden", "Glarus", "Zug", "Freiburg", "Solothurn",
+                "Basel-Stadt", "Basel-Landschaft", "Schaffhausen", "Appenzel Ausserrhoden", "Appenzell Innerhoden",
+                "St. Gallen", "Graubünden", "Aargau", "Thurgau", "Waadt", "Wallis", "Neuenburg", "Genf", "Jura"};
+
+            Regions = regions;
+            Region = regions[5];
+        }
+
         private async Task ReadContact()
         {
             var contact = await GetContact();
 
             if (contact != null)
             {
-                FirstName = contact.FirstName;
-                LastName = contact.LastName;
-                PhoneStationary = contact.PhoneStationary;
-                PhoneMobile = contact.PhoneMobile;
+                Name = contact.Name;
+                Phone = contact.Phone;
                 Street = contact.Street;
-                HouseNumber = contact.HouseNumber;
-                FlatNumber = contact.FlatNumber;
+                Region = contact.Region;
                 City = contact.City;
                 PostalCode = contact.PostalCode;
                 Notice = contact.Notice;
@@ -193,13 +193,10 @@ namespace EltraNavigo.Views.Contact
         {
             var contact = new EltraCloudContracts.Enka.Contacts.Contact();
 
-            contact.FirstName = FirstName;
-            contact.LastName = LastName;
-            contact.PhoneStationary = PhoneStationary;
-            contact.PhoneMobile = PhoneMobile;
+            contact.Name = Name;
+            contact.Phone = Phone;
             contact.Street = Street;
-            contact.HouseNumber = HouseNumber;
-            contact.FlatNumber = FlatNumber;
+            contact.Region = Region;
             contact.City = City;
             contact.PostalCode = PostalCode;
             contact.Notice = Notice;
@@ -257,6 +254,13 @@ namespace EltraNavigo.Views.Contact
             return result;
         }
 
+        public override async Task Hide()
+        {
+            await StoreContact();
+
+            await base.Hide();
+        }
+
         private void OnLocateClicked()
         {
             Task.Run(async () => { await GetLocation(); });
@@ -275,8 +279,6 @@ namespace EltraNavigo.Views.Contact
                     Console.WriteLine($"Latitude: {location.Latitude}, Longitude: {location.Longitude}, Altitude: {location.Altitude}");
                 }
 
-                Locations = new List<Location>() { location };
-                
                 IsBusy = false;
             }
             catch (FeatureNotSupportedException)
@@ -296,13 +298,10 @@ namespace EltraNavigo.Views.Contact
                 // Unable to get location
             }
 
-            if (Locations.Count > 0)
+            /*if (Locations.Count > 0)
             {
                 try
                 {
-                    var lat = Locations[0].Latitude;
-                    var lon = Locations[0].Longitude;
-
                     var placemarks = await Geocoding.GetPlacemarksAsync(lat, lon);
 
                     var placemark = placemarks?.FirstOrDefault();
@@ -331,7 +330,7 @@ namespace EltraNavigo.Views.Contact
                 {
                     // Handle exception that may have occurred in geocoding
                 }
-            }
+            }*/
         }
 
         #endregion

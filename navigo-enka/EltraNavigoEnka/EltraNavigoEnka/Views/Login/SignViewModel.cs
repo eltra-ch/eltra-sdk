@@ -42,6 +42,7 @@ namespace EltraNavigo.Views.Login
         public event EventHandler Changed;
         public event EventHandler Canceled;
         public event EventHandler Failure;
+        public event EventHandler SignedOut;
 
         #endregion
 
@@ -110,6 +111,11 @@ namespace EltraNavigo.Views.Login
 
         #region Events handling
 
+        protected virtual void OnSignedOut()
+        {
+            SignedOut?.Invoke(this, EventArgs.Empty);
+        }
+
         protected virtual void OnChanged()
         {
             IsValid = true;
@@ -159,6 +165,8 @@ namespace EltraNavigo.Views.Login
         {
             StoreLoginSettings();
 
+            await SignOut();
+
             if (await SignIn())
             {
                 OnChanged();
@@ -183,6 +191,21 @@ namespace EltraNavigo.Views.Login
 
             if (await auth.SignIn(new UserAuthData() { Login = LoginName, Password = Password }))
             {
+                result = true;
+            }
+
+            return result;
+        }
+
+        public async Task<bool> SignOut()
+        {
+            bool result = false;
+            var auth = new AuthControllerAdapter(Url);
+
+            if (await auth.SignOut())
+            {
+                OnSignedOut();
+
                 result = true;
             }
 

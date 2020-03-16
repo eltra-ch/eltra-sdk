@@ -30,7 +30,7 @@
                     <RowDefinition Height="Auto"></RowDefinition>
                 </Grid.RowDefinitions>
 
-                <Label HorizontalOptions="CenterAndExpand" Grid.Row="0" Text="Eltra Navigo" FontSize="Medium" />
+                <Label HorizontalOptions="CenterAndExpand" Grid.Row="0" Text="Not Kauf" FontSize="Medium" />
                 
                 <Image HorizontalOptions="CenterAndExpand" Grid.Row="2" Source="{Binding PutImage}" HeightRequest="140"/>
                 <Label HorizontalOptions="CenterAndExpand" Grid.Row="4" Text="{Binding VersionName}" />

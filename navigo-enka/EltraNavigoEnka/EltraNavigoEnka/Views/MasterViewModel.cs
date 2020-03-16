@@ -241,9 +241,9 @@ namespace EltraNavigo.Views
                 ChangePage(OrderViewModel, true);
             };
 
-            result.Canceled += (sender, args) =>
+            result.SignedOut += (sender, args) =>
             {
-                //ChangePage(_previousViewModel ?? DeviceListViewModel, true);
+                ActivateTools(false);
             };
 
             return result;
@@ -260,9 +260,9 @@ namespace EltraNavigo.Views
                 ChangePage(ContactViewModel, true);
             };
 
-            result.Canceled += (sender, args) =>
+            result.SignedOut += (sender, args) =>
             {
-                ChangePage(_previousViewModel ?? SignInViewModel, true);
+                ActivateTools(false);
             };
 
             return result;
@@ -270,21 +270,39 @@ namespace EltraNavigo.Views
 
         private void ActivateTools(bool activate)
         {
-            var supportedViewModels = new List<ToolViewModel>();
-
-            supportedViewModels.AddRange(HeaderViewModels);
-
-            foreach (var toolViewModel in ToolViewModels)
+            if (activate)
             {
-                if (!supportedViewModels.Contains(toolViewModel))
+                var supportedViewModels = new List<ToolViewModel>();
+
+                supportedViewModels.AddRange(HeaderViewModels);
+
+                foreach (var toolViewModel in ToolViewModels)
                 {
-                    supportedViewModels.Add(toolViewModel);
+                    if (!supportedViewModels.Contains(toolViewModel))
+                    {
+                        supportedViewModels.Add(toolViewModel);
+                    }
                 }
+
+                supportedViewModels.AddRange(FooterViewModels);
+
+                SupportedViewModels = supportedViewModels;
             }
+            else
+            {
+                foreach(var toolViewModel in ToolViewModels)
+                {
+                    toolViewModel.Clear();
+                }
 
-            supportedViewModels.AddRange(FooterViewModels);
+                var supportedViewModels = new List<ToolViewModel>();
 
-            SupportedViewModels = supportedViewModels;
+                supportedViewModels.AddRange(HeaderViewModels);
+
+                supportedViewModels.AddRange(FooterViewModels);
+
+                SupportedViewModels = supportedViewModels;
+            }
         }
 
 
@@ -298,8 +316,7 @@ namespace EltraNavigo.Views
 
             HeaderViewModels = new List<ToolViewModel>
             {
-                SignInViewModel,
-                SignUpViewModel
+                SignInViewModel
             };
 
             FooterViewModels = new List<ToolViewModel>
@@ -312,6 +329,8 @@ namespace EltraNavigo.Views
             viewModels.AddRange(HeaderViewModels);
             viewModels.AddRange(ToolViewModels);
             viewModels.AddRange(FooterViewModels);
+
+            viewModels.Add(SignUpViewModel);
 
             ViewModels = viewModels;
 
