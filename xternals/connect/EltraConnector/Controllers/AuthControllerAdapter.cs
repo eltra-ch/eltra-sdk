@@ -5,7 +5,6 @@ using System.Web;
 using EltraConnector.Controllers.Base;
 using EltraCommon.Helpers;
 using EltraCommon.Logger;
-using EltraCloudContracts.Contracts.Results;
 using EltraCloudContracts.Contracts.Users;
 using Newtonsoft.Json;
 using System.Threading;
@@ -89,9 +88,7 @@ namespace EltraConnector.Controllers
 
                 if (response.StatusCode == HttpStatusCode.OK)
                 {
-                    var requestResult = JsonConvert.DeserializeObject<RequestResult>(response.Content);
-
-                    result = requestResult.Result;
+                    result = true;
                 }
             }
             catch (Exception e)
