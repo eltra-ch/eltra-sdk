@@ -23,6 +23,7 @@ namespace EltraNavigo.Controls
 
         public ToolViewBaseModel()
         {
+            _isEnabled = true;
         }
 
         public ToolViewBaseModel(ToolViewBaseModel parent)

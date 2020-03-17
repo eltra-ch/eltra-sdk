@@ -23,6 +23,10 @@
             <login:SignUpView IsVisible="{Binding IsVisible}"/>
         </DataTemplate>
 
+        <DataTemplate x:Key="SignOutView">
+            <login:SignOutView IsVisible="{Binding IsVisible}"/>
+        </DataTemplate>
+
         <DataTemplate x:Key="ContactView">
             <contact:ContactView IsVisible="{Binding IsVisible}"/>
         </DataTemplate>
@@ -38,6 +42,7 @@
         <selectors:DetailPageSelector x:Key="DetailPageSelector" 
                                       SignInView="{StaticResource SignInView}"
                                       SignUpView="{StaticResource SignUpView}"
+                                      SignOutView="{StaticResource SignOutView}"
                                       ContactView="{StaticResource ContactView}"
                                       OrderView="{StaticResource OrderView}"
                                       AboutView="{StaticResource AboutView}"/>

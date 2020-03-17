@@ -37,7 +37,7 @@ namespace EltraNavigo.Views.Contact
         public ContactViewModel()
         {
             Title = "Profile";
-            Image = ImageSource.FromResource("EltraNavigo.Resources.lightbulb_32px.png");
+            Image = ImageSource.FromResource("EltraNavigoEnka.Resources.adjustments_32px.png");
             IsMandatory = true;
             Uuid = "791AFBD3-E61D-4A0B-B35B-874D5A038E35";
             

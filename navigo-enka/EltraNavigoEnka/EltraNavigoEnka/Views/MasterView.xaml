@@ -9,7 +9,7 @@
              mc:Ignorable="d"
              Padding="0,40,0,0"
              IconImageSource="hamburger.png"
-             Title="Eltra Navigo"
+             Title="NotKauf"
              x:DataType="views:MasterViewModel"
              x:Class="EltraNavigo.Views.MasterView">
     <ContentPage.Content>
@@ -21,18 +21,20 @@
                 <DataTemplate x:DataType="controls:ToolViewModel">
                     <ViewCell>
                         <StackLayout>
-                            <Grid Padding="5, 10">
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="24"/>
-                                    <ColumnDefinition Width="*" />
-                                </Grid.ColumnDefinitions>
+                            <StackLayout IsVisible="{Binding IsEnabled}">
+                                <Grid Padding="5, 10">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="24"/>
+                                        <ColumnDefinition Width="*" />
+                                    </Grid.ColumnDefinitions>
 
-                                <Image Grid.Column="0" Source="{Binding Image}" Aspect="AspectFit"/>
+                                    <Image Grid.Column="0" Source="{Binding Image}" Aspect="AspectFit"/>
 
-                                <Frame Grid.Column="1" Padding="2,0,0,0">
-                                    <Label Text="{Binding Title}" VerticalOptions="Center" />
-                                </Frame>
-                            </Grid>
+                                    <Frame Grid.Column="1" Padding="2,0,0,0">
+                                        <Label Text="{Binding Title}" VerticalOptions="Center" />
+                                    </Frame>
+                                </Grid>
+                            </StackLayout>
                         </StackLayout>
                     </ViewCell>
                 </DataTemplate>

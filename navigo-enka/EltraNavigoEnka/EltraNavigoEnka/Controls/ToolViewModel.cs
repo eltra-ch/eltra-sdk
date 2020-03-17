@@ -30,6 +30,7 @@ namespace EltraNavigo.Controls
             UpdateInterval = defaultUpdateInterval;
 
             IsSupported = true;
+            Persistenced = true;
         }
 
         public ToolViewModel(ToolViewBaseModel parent)
@@ -44,6 +45,7 @@ namespace EltraNavigo.Controls
             UpdateInterval = defaultUpdateInterval;
 
             IsSupported = true;
+            Persistenced = true;
         }
 
         #endregion
@@ -57,6 +59,8 @@ namespace EltraNavigo.Controls
         public ImageSource Image { get; set; } 
 
         public string Uuid { get; set; }
+
+        public bool Persistenced { get; set; }
 
         #endregion
 

@@ -1,4 +1,4 @@
-﻿using System;
+﻿using EltraNavigoEnka.Views.Login;
 using System.Windows.Input;
 using Xamarin.Forms;
 
@@ -12,14 +12,8 @@ namespace EltraNavigo.Views.Login
         {
             Title = "Sign-in";
             Uuid = "1F81E5FD-2F7E-4D06-AB28-BCE50728CC91";
-            Image = ImageSource.FromResource("EltraNavigo.Resources.profile-male_32px.png");
+            Image = ImageSource.FromResource("EltraNavigoEnka.Resources.profile-male_32px.png");
         }
-
-        #endregion
-
-        #region Events
-
-        public event EventHandler SignUpRequested;
 
         #endregion
 
@@ -29,20 +23,11 @@ namespace EltraNavigo.Views.Login
 
         #endregion
 
-        #region Events handling
-
-        protected virtual void OnSignUpRequested()
-        {
-            SignUpRequested?.Invoke(this, EventArgs.Empty);
-        }
-
-        #endregion
-
         #region Methods
 
         private void OnRegisterClicked()
         {
-            OnSignUpRequested();
+            OnSignStatusChanged(SignStatus.SignUpRequested);
         }
 
         #endregion        

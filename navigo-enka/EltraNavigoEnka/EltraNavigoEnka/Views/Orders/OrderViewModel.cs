@@ -24,7 +24,7 @@ namespace EltraNavigo.Views.Orders
         public OrderViewModel()
         {
             Title = "Orders";
-            Image = ImageSource.FromResource("EltraNavigo.Resources.lightbulb_32px.png");
+            Image = ImageSource.FromResource("EltraNavigoEnka.Resources.book-open_32px.png");
             IsMandatory = true;
             Uuid = "37A00C5A-3A87-40F5-B954-5BE2161728F2";
 

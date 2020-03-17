@@ -2,8 +2,7 @@
 using Xamarin.Forms;
 using EltraConnector.Controllers;
 using EltraCloudContracts.Contracts.Users;
-using Xamarin.Essentials;
-using System.Collections.Generic;
+using EltraNavigoEnka.Views.Login;
 
 namespace EltraNavigo.Views.Login
 {
@@ -14,14 +13,10 @@ namespace EltraNavigo.Views.Login
         public SignUpViewModel()
         {
             Title = "Sign-up";
-            Image = ImageSource.FromResource("EltraNavigo.Resources.profile-male_32px.png");
+            Image = ImageSource.FromResource("EltraNavigoEnka.Resources.profile-male_32px.png");
             IsMandatory = false;
             Uuid = "D4D4DFEF-3EBE-4C74-8D98-A27D3122AC9F";
         }
-
-        #endregion
-
-        #region Properties
 
         #endregion
 
@@ -37,15 +32,22 @@ namespace EltraNavigo.Views.Login
         {
             StoreLoginSettings();
 
-            var auth = new AuthControllerAdapter(Url);
+            var authData = new UserAuthData() { Login = LoginName, Password = Password };
 
-            if(await auth.SignUp(new UserAuthData() { Login = LoginName, Password = Password } ))
+            if (await AuthControllerAdapter.SignUp(authData))
             {
-                OnChanged();
+                if (await AuthControllerAdapter.SignIn(authData))
+                {
+                    OnSignStatusChanged(SignStatus.SignedIn);
+                }
+                else
+                {
+                    OnSignStatusChanged(SignStatus.Failed);
+                }               
             }
             else
             {
-                OnFailure();
+                OnSignStatusChanged(SignStatus.Failed);
             }            
         }
 

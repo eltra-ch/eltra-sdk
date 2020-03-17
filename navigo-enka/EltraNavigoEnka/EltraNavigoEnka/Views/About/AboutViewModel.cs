@@ -9,9 +9,9 @@ namespace EltraNavigo.Views.About
         public AboutViewModel()
         {
             Title = "About";
-            Image = ImageSource.FromResource("EltraNavigo.Resources.lightbulb_32px.png");
+            Image = ImageSource.FromResource("EltraNavigoEnka.Resources.lightbulb_32px.png");
             IsMandatory = true;
-            PutImage = ImageSource.FromResource("EltraNavigo.Resources.put-logo.png");
+            PutImage = ImageSource.FromResource("EltraNavigoEnka.Resources.put-logo.png");
             Uuid = "0069D91E-6EB9-4C59-9BB8-65996A318740";
         }
         

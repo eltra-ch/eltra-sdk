@@ -1,4 +1,5 @@
 using Xamarin.Forms;
+using EltraNavigoEnka.Views.Login;
 
 namespace EltraNavigo.Views.Login.Behaviors 
 {    
@@ -30,7 +31,7 @@ namespace EltraNavigo.Views.Login.Behaviors
                 if (_loginViewModel != loginViewModel)
                 {
                     _loginViewModel = loginViewModel;
-                    _loginViewModel.Failure += (s, a) => { Shake(); };
+                    _loginViewModel.StatusChanged += (s, a) => { if(a.Status == SignStatus.Failed) Shake(); };
                 }
 
                 loginViewModel.OnPasswordChanged(args.NewTextValue);

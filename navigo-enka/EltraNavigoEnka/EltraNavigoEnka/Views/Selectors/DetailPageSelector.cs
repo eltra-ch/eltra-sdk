@@ -12,6 +12,8 @@ namespace EltraNavigo.Views.Selectors
 
         public DataTemplate SignUpView { get; set; }
 
+        public DataTemplate SignOutView { get; set; }
+
         public DataTemplate ContactView { get; set; }
 
         public DataTemplate OrderView { get; set; }
@@ -29,6 +31,10 @@ namespace EltraNavigo.Views.Selectors
             else if (item is SignUpViewModel)
             {
                 result = SignUpView;
+            }
+            else if (item is SignOutViewModel)
+            {
+                result = SignOutView;
             }
             else if (item is ContactViewModel)
             {

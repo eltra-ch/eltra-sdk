@@ -1,6 +1,8 @@
 ﻿using EltraCloudContracts.Contracts.Users;
 using EltraConnector.Controllers;
 using EltraNavigo.Controls;
+using EltraNavigoEnka.Views.Login;
+using EltraNavigoEnka.Views.Login.Events;
 using System;
 using System.ComponentModel;
 using System.Threading.Tasks;
@@ -18,6 +20,7 @@ namespace EltraNavigo.Views.Login
         private bool _isValid;
         private bool _isLoginValid;
         private bool _autoLogOnActive;
+        private AuthControllerAdapter _authControllerAdapter;
 
         #endregion
 
@@ -28,10 +31,6 @@ namespace EltraNavigo.Views.Login
             IsMandatory = true;
             IsLoginValid = true;
 
-            ReadAutoLoginSettings();
-            ReadLoginSettings();
-            UpdateValidFlag();
-
             PropertyChanged += OnViewModelPropertyChanged;
         }
 
@@ -39,10 +38,16 @@ namespace EltraNavigo.Views.Login
 
         #region Events
 
-        public event EventHandler Changed;
-        public event EventHandler Canceled;
-        public event EventHandler Failure;
-        public event EventHandler SignedOut;
+        public event EventHandler<SignStatusEventArgs> StatusChanged;
+
+        #endregion
+
+        #region Event handler
+
+        protected void OnSignStatusChanged(SignStatus status)
+        {
+            StatusChanged?.Invoke(this, new SignStatusEventArgs() { Status = status });
+        }
 
         #endregion
 
@@ -62,6 +67,8 @@ namespace EltraNavigo.Views.Login
                 return result;
             }
         }
+
+        protected AuthControllerAdapter AuthControllerAdapter => _authControllerAdapter ?? (_authControllerAdapter = new AuthControllerAdapter(Url));
 
         public string LoginName
         {
@@ -103,43 +110,17 @@ namespace EltraNavigo.Views.Login
 
         #region Command
 
-        public ICommand CancelCommand => new Command(OnCanceled);
-
         public ICommand LoginCommand => new Command(OnLoginClicked);
 
         #endregion
 
         #region Events handling
-
-        protected virtual void OnSignedOut()
-        {
-            SignedOut?.Invoke(this, EventArgs.Empty);
-        }
-
-        protected virtual void OnChanged()
-        {
-            IsValid = true;
-
-            Changed?.Invoke(this, EventArgs.Empty);
-        }
-
-        protected virtual void OnCanceled()
-        {
-            Canceled?.Invoke(this, EventArgs.Empty);
-        }
-
-        protected virtual void OnFailure()
-        {
-            IsLoginValid = false;
-
-            Failure?.Invoke(this, EventArgs.Empty);
-        }
-
+        
         private void OnViewModelPropertyChanged(object sender, PropertyChangedEventArgs e)
         {
             if (e.PropertyName == "AutoLogOnActive")
             {
-                StoreAutoLoginSettings();
+                StoreLoginSettings();
             }
         }
 
@@ -169,11 +150,15 @@ namespace EltraNavigo.Views.Login
 
             if (await SignIn())
             {
-                OnChanged();
+                IsValid = true;
+
+                OnSignStatusChanged(SignStatus.SignedIn);
             }
             else
             {
-                OnFailure();
+                IsLoginValid = false;
+
+                OnSignStatusChanged(SignStatus.Failed);
             }
         }
 
@@ -187,9 +172,8 @@ namespace EltraNavigo.Views.Login
         public async Task<bool> SignIn()
         {
             bool result = false;
-            var auth = new AuthControllerAdapter(Url);
-
-            if (await auth.SignIn(new UserAuthData() { Login = LoginName, Password = Password }))
+            
+            if (await AuthControllerAdapter.SignIn(new UserAuthData() { Login = LoginName, Password = Password }))
             {
                 result = true;
             }
@@ -200,11 +184,10 @@ namespace EltraNavigo.Views.Login
         public async Task<bool> SignOut()
         {
             bool result = false;
-            var auth = new AuthControllerAdapter(Url);
-
-            if (await auth.SignOut())
+            
+            if (await AuthControllerAdapter.SignOut())
             {
-                OnSignedOut();
+                OnSignStatusChanged(SignStatus.SignedOut);
 
                 result = true;
             }
@@ -216,7 +199,7 @@ namespace EltraNavigo.Views.Login
         {
             IsBusy = true;
 
-            ReadLoginSettings();
+            ReadStoredLoginData();
             UpdateValidFlag();
 
             await base.Show();
@@ -224,17 +207,7 @@ namespace EltraNavigo.Views.Login
             IsBusy = false;
         }
 
-        protected virtual void ReadLoginSettings()
-        {
-            ReadAutoLoginSettings();
-        }
-
-        protected virtual void StoreLoginSettings()
-        {
-            StoreAutoLoginSettings();
-        }
-
-        private void ReadAutoLoginSettings()
+        private void ReadStoredLoginData()
         {
             if (Application.Current.Properties.ContainsKey(AutoLogonActiveName))
             {
@@ -261,7 +234,7 @@ namespace EltraNavigo.Views.Login
             }
         }
 
-        private void StoreAutoLoginSettings()
+        protected void StoreLoginSettings()
         {
             Application.Current.Properties[AutoLogonActiveName] = AutoLogOnActive.ToString();
             Application.Current.Properties[SignInPropertyUserName] = LoginName;

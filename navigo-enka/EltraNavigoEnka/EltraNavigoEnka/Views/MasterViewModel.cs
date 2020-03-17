@@ -6,6 +6,7 @@ using EltraNavigo.Views.Login;
 using System.Threading.Tasks;
 using EltraNavigo.Views.Contact;
 using EltraNavigo.Views.Orders;
+using EltraNavigoEnka.Views.Login;
 
 namespace EltraNavigo.Views
 {
@@ -21,6 +22,7 @@ namespace EltraNavigo.Views
 
         private SignInViewModel _signInViewModel;
         private SignUpViewModel _signUpViewModel;
+        private SignOutViewModel _signOutViewModel;
 
         private ContactViewModel _contactViewModel;
         private OrderViewModel _orderViewModel;
@@ -140,6 +142,8 @@ namespace EltraNavigo.Views
 
         public SignUpViewModel SignUpViewModel => _signUpViewModel ?? (_signUpViewModel = CreateSignUpViewModel());
 
+        public SignOutViewModel SignOutViewModel => _signOutViewModel ?? (_signOutViewModel = CreateSignOutViewModel());
+
         public ContactViewModel ContactViewModel => _contactViewModel ?? (_contactViewModel = new ContactViewModel());
 
         public OrderViewModel OrderViewModel => _orderViewModel ?? (_orderViewModel = new OrderViewModel());
@@ -211,7 +215,7 @@ namespace EltraNavigo.Views
 
                 ActiveViewModel = viewModel;
 
-                if(!internalChange)
+                if(!internalChange && viewModel.Persistenced)
                 { 
                     LastUsedPageName = viewModel.Uuid;
                 }
@@ -221,29 +225,56 @@ namespace EltraNavigo.Views
                 OnPageChanged();
             }
         }
+
+        private SignOutViewModel CreateSignOutViewModel()
+        {
+            var result = new SignOutViewModel();
+
+            result.StatusChanged += (sender, args) =>
+            {
+                switch(args.Status)
+                {
+                    case SignStatus.SignedOut:
+                    {
+                        ActivateTools(false);
+                            
+                        ChangePage(SignInViewModel, true);
+                    } break;
+                }
+            };
+
+            return result;
+        }
         
         private SignInViewModel CreateSignInViewModel()
         {
             var result = new SignInViewModel();
 
-            result.SignUpRequested += (sender, args) =>
+            result.StatusChanged += (sender, args) =>
             {
-                ChangePage(SignUpViewModel, true);
+                switch (args.Status)
+                {
+                    case SignStatus.SignUpRequested:
+                        {
+                            ChangePage(SignUpViewModel, true);
 
-                SignUpViewModel.LoginName = SignInViewModel.LoginName;
-                SignUpViewModel.Password = SignInViewModel.Password;
-            };
+                            SignUpViewModel.LoginName = SignInViewModel.LoginName;
+                            SignUpViewModel.Password = SignInViewModel.Password;
+                        }
+                        break;
+                    case SignStatus.SignedIn:
+                        {
+                            ActivateTools(true);
 
-            result.Changed += (sender, args) =>
-            {
-                ActivateTools(true);
-
-                ChangePage(OrderViewModel, true);
-            };
-
-            result.SignedOut += (sender, args) =>
-            {
-                ActivateTools(false);
+                            ChangePage(OrderViewModel, true);
+                        }
+                        break;
+                    case SignStatus.SignedOut:
+                        {
+                            ActivateTools(false);
+                        }
+                        break;
+                }
             };
 
             return result;
@@ -253,16 +284,24 @@ namespace EltraNavigo.Views
         {
             var result = new SignUpViewModel();
 
-            result.Changed += (sender, args) =>
+            result.StatusChanged += (sender, args) =>
             {
-                ActivateTools(true);
+                switch(args.Status)
+                {
+                    case SignStatus.SignedIn:
+                        {
+                            ActivateTools(true);
 
-                ChangePage(ContactViewModel, true);
-            };
-
-            result.SignedOut += (sender, args) =>
-            {
-                ActivateTools(false);
+                            ChangePage(ContactViewModel, true);
+                        }
+                        break;
+                    case SignStatus.SignedOut:
+                        {
+                            ActivateTools(false);
+                        }
+                        break;
+                }
+                
             };
 
             return result;
@@ -287,6 +326,9 @@ namespace EltraNavigo.Views
                 supportedViewModels.AddRange(FooterViewModels);
 
                 SupportedViewModels = supportedViewModels;
+
+                SignInViewModel.IsEnabled = false;
+                SignOutViewModel.IsEnabled = true;
             }
             else
             {
@@ -302,6 +344,9 @@ namespace EltraNavigo.Views
                 supportedViewModels.AddRange(FooterViewModels);
 
                 SupportedViewModels = supportedViewModels;
+
+                SignInViewModel.IsEnabled = true;
+                SignOutViewModel.IsEnabled = false;
             }
         }
 
@@ -321,6 +366,7 @@ namespace EltraNavigo.Views
 
             FooterViewModels = new List<ToolViewModel>
             {
+                SignOutViewModel,
                 AboutViewModel
             };
 
