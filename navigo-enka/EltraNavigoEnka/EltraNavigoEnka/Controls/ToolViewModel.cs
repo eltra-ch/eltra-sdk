@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
@@ -132,7 +133,7 @@ namespace EltraNavigo.Controls
 
             _stopped.Set();
         }
-        
+
         private bool ShouldRun()
         {
             return !_stopRequestEvent.WaitOne(0);

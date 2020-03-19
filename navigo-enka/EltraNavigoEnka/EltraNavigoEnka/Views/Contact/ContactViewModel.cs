@@ -196,6 +196,100 @@ namespace EltraNavigo.Views.Contact
             }
         }
 
+        public async Task<List<string>> GetPostalCodes(string startsWith)
+        {
+            var result = new List<string>();
+
+            if (Region != null)
+            {
+                try
+                {
+                    var query = HttpUtility.ParseQueryString(string.Empty);
+
+                    query.Add("countryCode", _countryCode);
+                    query.Add("regionCode", Region.ShortName);
+
+                    var url = UrlHelper.BuildUrl(Url, "/api/Regional/postal-codes", query);
+
+                    var json = await _transporter.Get(url);
+
+                    if (!string.IsNullOrEmpty(json))
+                    {
+                        var postalCodes = JsonConvert.DeserializeObject<List<string>>(json);
+
+                        if (!string.IsNullOrEmpty(startsWith))
+                        {
+                            foreach (var city in postalCodes)
+                            {
+                                if (city.StartsWith(startsWith, StringComparison.InvariantCultureIgnoreCase))
+                                {
+                                    result.Add(city);
+                                }
+                            }
+                        }
+
+                        if (result.Count == 0)
+                        {
+                            result = postalCodes;
+                        }
+                    }
+                }
+                catch (Exception e)
+                {
+                    MsgLogger.Exception($"{GetType().Name} - GetCities", e);
+                }
+            }
+
+            return result;
+        }
+
+        public async Task<List<string>> GetCities(string text)
+        {
+            var result = new List<string>();
+
+            if (Region != null)
+            {
+                try
+                {
+                    var query = HttpUtility.ParseQueryString(string.Empty);
+
+                    query.Add("countryCode", _countryCode);
+                    query.Add("regionCode", Region.ShortName);
+
+                    var url = UrlHelper.BuildUrl(Url, "/api/Regional/cities", query);
+
+                    var json = await _transporter.Get(url);
+
+                    if (!string.IsNullOrEmpty(json))
+                    {
+                        var cities = JsonConvert.DeserializeObject<List<string>>(json);
+
+                        if (!string.IsNullOrEmpty(text))
+                        {
+                            foreach (var city in cities)
+                            {
+                                if (city.StartsWith(text, StringComparison.InvariantCultureIgnoreCase))
+                                {
+                                    result.Add(city);
+                                }
+                            }
+                        }
+
+                        if (result.Count == 0)
+                        {
+                            result = cities;
+                        }
+                    }
+                }
+                catch (Exception e)
+                {
+                    MsgLogger.Exception($"{GetType().Name} - GetCities", e);
+                }
+            }
+
+            return result;
+        }
+
         private async Task<List<Region>> ReadRegions()
         {   
             var result = new List<Region>();
