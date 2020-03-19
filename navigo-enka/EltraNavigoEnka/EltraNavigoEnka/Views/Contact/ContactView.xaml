@@ -84,7 +84,9 @@
                     <Entry Text="{Binding PostalCode}"/>
                 </Frame>
                 <Frame Grid.Column="1" Grid.Row="4" Style="{StaticResource BorderLikeFrame}">
-                    <Picker ItemsSource="{Binding Regions}" SelectedItem="{Binding Region}"/>
+                    <Picker ItemsSource="{Binding Regions}" SelectedItem="{Binding Region}" ItemDisplayBinding="{Binding Name}">
+                         
+                    </Picker>
                 </Frame>
                 <Frame Grid.Column="1" Grid.Row="5" Style="{StaticResource BorderLikeFrame}">
                     <Entry Text="{Binding Phone}"/>

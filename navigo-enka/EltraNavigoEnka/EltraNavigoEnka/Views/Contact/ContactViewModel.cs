@@ -10,7 +10,7 @@ using EltraCommon.Logger;
 using Newtonsoft.Json;
 using Xamarin.Essentials;
 using System.Collections.Generic;
-using System.Linq;
+using Region = EltraCloudContracts.Enka.Regional.Region;
 
 namespace EltraNavigo.Views.Contact
 {
@@ -22,13 +22,16 @@ namespace EltraNavigo.Views.Contact
         private CloudTransporter _transporter;
         
         private string _name;
-        private List<string> _regions;
+        private List<Region> _regions;
         private string _phone;
         private string _street;
-        private string _region;
+        private Region _region;
         private string _city;
         private string _postalCode;
         private string _notice;
+
+        private string _countryCode = "CH";
+        private string _langCode = "de";
 
         #endregion
 
@@ -41,8 +44,6 @@ namespace EltraNavigo.Views.Contact
             IsMandatory = true;
             Uuid = "791AFBD3-E61D-4A0B-B35B-874D5A038E35";
             
-            AddRegions();
-
             _transporter = new CloudTransporter();
 
             PropertyChanged += (sender, args) => { UpdateValidFlag(); }; 
@@ -79,7 +80,7 @@ namespace EltraNavigo.Views.Contact
             set => SetProperty(ref _name, value);
         }
 
-        public string Region
+        public Region Region
         {
             get => _region;
             set => SetProperty(ref _region, value);
@@ -115,9 +116,9 @@ namespace EltraNavigo.Views.Contact
             set => SetProperty(ref _notice, value);
         }
 
-        public List<string> Regions
+        public List<Region> Regions
         {
-            get => _regions ?? (_regions = new List<string>());
+            get => _regions ?? (_regions = new List<Region>());
             set => SetProperty(ref _regions, value);
         }
 
@@ -135,7 +136,6 @@ namespace EltraNavigo.Views.Contact
         public override void Clear()
         {
             Name = string.Empty;
-            Region = string.Empty;
             Phone = string.Empty;
             Street = string.Empty;
             City = string.Empty;
@@ -155,6 +155,8 @@ namespace EltraNavigo.Views.Contact
 
         public override async Task Show()
         {
+            Regions = await ReadRegions();
+
             await ReadContact();
 
             UpdateValidFlag();
@@ -162,17 +164,22 @@ namespace EltraNavigo.Views.Contact
             await base.Show();
         }
 
-        private void AddRegions()
+        private Region FindRegion(string name)
         {
-            var regions = new List<string>() { "Zürich", "Bern", "Luzern", "Uri", 
-                "Schwyz", "Obwalden", "Nidwalden", "Glarus", "Zug", "Freiburg", "Solothurn",
-                "Basel-Stadt", "Basel-Landschaft", "Schaffhausen", "Appenzel Ausserrhoden", "Appenzell Innerhoden",
-                "St. Gallen", "Graubünden", "Aargau", "Thurgau", "Waadt", "Wallis", "Neuenburg", "Genf", "Jura"};
+            Region result = null;
 
-            Regions = regions;
-            Region = regions[5];
+            foreach (var region in Regions)
+            {
+                if (region.Name == name)
+                {
+                    result = region;
+                    break;
+                }
+            }
+            
+            return result;
         }
-
+        
         private async Task ReadContact()
         {
             var contact = await GetContact();
@@ -182,11 +189,39 @@ namespace EltraNavigo.Views.Contact
                 Name = contact.Name;
                 Phone = contact.Phone;
                 Street = contact.Street;
-                Region = contact.Region;
+                Region = FindRegion(contact.Region);
                 City = contact.City;
                 PostalCode = contact.PostalCode;
                 Notice = contact.Notice;
             }
+        }
+
+        private async Task<List<Region>> ReadRegions()
+        {   
+            var result = new List<Region>();
+
+            try
+            {
+                var query = HttpUtility.ParseQueryString(string.Empty);
+
+                query.Add("countryCode", _countryCode);
+                query.Add("langCode", _langCode);
+
+                var url = UrlHelper.BuildUrl(Url, "api/regional/regions", query);
+
+                var json = await _transporter.Get(url);
+
+                if (!string.IsNullOrEmpty(json))
+                {
+                    result = JsonConvert.DeserializeObject<List<Region>>(json);
+                }
+            }
+            catch (Exception e)
+            {
+                MsgLogger.Exception($"{GetType().Name} - ReadRegions", e);
+            }
+
+            return result;            
         }
 
         private async Task<bool> StoreContact()
@@ -196,7 +231,12 @@ namespace EltraNavigo.Views.Contact
             contact.Name = Name;
             contact.Phone = Phone;
             contact.Street = Street;
-            contact.Region = Region;
+
+            if (Region != null)
+            {
+                contact.Region = Region.Name;
+            }
+
             contact.City = City;
             contact.PostalCode = PostalCode;
             contact.Notice = Notice;
