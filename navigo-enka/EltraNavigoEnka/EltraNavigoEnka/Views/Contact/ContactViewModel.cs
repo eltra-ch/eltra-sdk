@@ -12,6 +12,7 @@ using Xamarin.Essentials;
 using System.Collections.Generic;
 using Region = EltraCloudContracts.Enka.Regional.Region;
 using EltraCloudContracts.Enka.Regional;
+using EltraConnector.GeoAdmin;
 
 namespace EltraNavigo.Views.Contact
 {
@@ -21,7 +22,8 @@ namespace EltraNavigo.Views.Contact
 
         private bool _isValid;
         private CloudTransporter _transporter;
-        
+        private EltraCloudContracts.Enka.Contacts.Contact _contact;
+
         private string _name;
         private List<Region> _regions;
         private string _phone;
@@ -31,6 +33,7 @@ namespace EltraNavigo.Views.Contact
         private List<string> _citySuggestions;
         private string _postalCode;
         private List<string> _postalCodeSuggestions;
+        private List<string> _streetSuggestions;
         private string _notice;
 
         private string _countryCode = "CH";
@@ -63,6 +66,12 @@ namespace EltraNavigo.Views.Contact
         #endregion
 
         #region Properties
+
+        public EltraCloudContracts.Enka.Contacts.Contact Contact
+        {
+            get => _contact ?? (_contact = new EltraCloudContracts.Enka.Contacts.Contact());
+            set => _contact = value;
+        }
 
         public bool IsValid
         {
@@ -130,6 +139,12 @@ namespace EltraNavigo.Views.Contact
         {
             get => _postalCodeSuggestions;
             set => SetProperty(ref _postalCodeSuggestions, value);
+        }
+
+        public List<string> StreetSuggestions
+        {
+            get => _streetSuggestions;
+            set => SetProperty(ref _streetSuggestions, value);
         }
 
         public string Notice
@@ -204,17 +219,19 @@ namespace EltraNavigo.Views.Contact
         
         private async Task ReadContact()
         {
-            var contact = await GetContact();
+            Contact = await GetContact();
 
-            if (contact != null)
+            if (Contact != null)
             {
-                Name = contact.Name;
-                Phone = contact.Phone;
-                Street = contact.Street;
-                Region = FindRegion(contact.Region);
-                City = contact.City;
-                PostalCode = contact.PostalCode;
-                Notice = contact.Notice;
+                Name = Contact.Name;
+                Phone = Contact.Phone;
+                Street = Contact.Street;
+                
+                Region = FindRegion(Contact.Region);
+
+                City = Contact.City;
+                PostalCode = Contact.PostalCode;
+                Notice = Contact.Notice;
             }
         }
 
@@ -309,6 +326,12 @@ namespace EltraNavigo.Views.Contact
             CitySuggestions = suggestions;
         }
 
+        public async Task UpdateStreetSuggestions(string text)
+        {
+            var suggestions = await GetStreets(text);
+
+            StreetSuggestions = suggestions;
+        }
 
         public async Task<List<string>> GetCities(string text)
         {
@@ -357,6 +380,27 @@ namespace EltraNavigo.Views.Contact
             return result;
         }
 
+        public async Task<List<string>> GetStreets(string text)
+        {
+            var result = new List<string>();
+            var geoConnector = new GeoAdminConnector();
+
+            var streetInfos = await geoConnector.GetStreetsInfo(text);
+
+            if(streetInfos!=null)
+            {
+                foreach(var streetInfo in streetInfos)
+                {
+                    if(streetInfo.City == City || streetInfo.PostalCode == PostalCode)
+                    {
+                        result.Add(streetInfo.Street);
+                    }
+                }
+            }
+
+            return result;
+        }
+
         private async Task<List<Region>> ReadRegions()
         {   
             var result = new List<Region>();
@@ -387,22 +431,42 @@ namespace EltraNavigo.Views.Contact
 
         private async Task<bool> StoreContact()
         {
-            var contact = new EltraCloudContracts.Enka.Contacts.Contact();
-
-            contact.Name = Name;
-            contact.Phone = Phone;
-            contact.Street = Street;
+            Contact.Name = Name;
+            Contact.Phone = Phone;
+            Contact.Street = Street;
 
             if (Region != null)
             {
-                contact.Region = Region.Name;
+                Contact.Region = Region.Name;
             }
 
-            contact.City = City;
-            contact.PostalCode = PostalCode;
-            contact.Notice = Notice;
+            Contact.City = City;
+            Contact.PostalCode = PostalCode;
+            Contact.Notice = Notice;
 
-            return await StoreContact(contact);
+            await UpdateCoordinates();
+
+            return await SetContact();
+        }
+
+        private async Task UpdateCoordinates()
+        {
+            if (!string.IsNullOrEmpty(Contact.City) || !string.IsNullOrEmpty(Contact.PostalCode))
+            {
+                var connector = new GeoAdminConnector();
+
+                var coordinates = await connector.GetAddressCoordinates($"{Contact.PostalCode} {Contact.City} {Contact.Street}");
+
+                foreach (var coordinate in coordinates)
+                {
+                    if (coordinate.IsValid)
+                    {
+                        Contact.Latitude = coordinate.Latitude;
+                        Contact.Longitude = coordinate.Longitude;
+                        break;
+                    }
+                }
+            }
         }
 
         public async Task<EltraCloudContracts.Enka.Contacts.Contact> GetContact()
@@ -430,7 +494,7 @@ namespace EltraNavigo.Views.Contact
             return result;
         }
 
-        public async Task<bool> StoreContact(EltraCloudContracts.Enka.Contacts.Contact contact)
+        public async Task<bool> SetContact()
         {
             bool result = false;
 
@@ -438,7 +502,7 @@ namespace EltraNavigo.Views.Contact
             {
                 var query = HttpUtility.ParseQueryString(string.Empty);
 
-                var json = JsonConvert.SerializeObject(contact);
+                var json = JsonConvert.SerializeObject(Contact);
 
                 var response = await _transporter.Post(Url, "api/contacts/set", json);
 

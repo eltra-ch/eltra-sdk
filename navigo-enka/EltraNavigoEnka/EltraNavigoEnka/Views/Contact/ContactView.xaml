@@ -84,14 +84,14 @@
                             </Grid.ColumnDefinitions>
 
                             <Frame Grid.Column="0" Style="{StaticResource BorderLikeFrame}">
-                                <forms:AutoSuggestBox Text="{Binding PostalCode}" ItemsSource="{Binding PostalCodeSuggestions}" WidthRequest="64">
+                                <forms:AutoSuggestBox Text="{Binding PostalCode, Mode=TwoWay}" ItemsSource="{Binding PostalCodeSuggestions}" WidthRequest="64">
                                     <forms:AutoSuggestBox.Behaviors>
                                         <behaviors:PostalCodeAutoSuggestBoxBehavior/>
                                     </forms:AutoSuggestBox.Behaviors>
                                 </forms:AutoSuggestBox>
                             </Frame>
                             <Frame Grid.Column="1" Style="{StaticResource BorderLikeFrame}">
-                                <forms:AutoSuggestBox Text="{Binding City}" ItemsSource="{Binding CitySuggestions}">
+                                <forms:AutoSuggestBox Text="{Binding City, Mode=TwoWay}" ItemsSource="{Binding CitySuggestions}">
                                     <forms:AutoSuggestBox.Behaviors>
                                         <behaviors:CityAutoSuggestBoxBehavior/>
                                     </forms:AutoSuggestBox.Behaviors>
@@ -101,7 +101,11 @@
                     </Frame>
                     
                     <Frame Grid.Column="1" Grid.Row="4" Style="{StaticResource BorderLikeFrame}">
-                        <Entry Text="{Binding Street}"/>
+                        <forms:AutoSuggestBox Text="{Binding Street, Mode=TwoWay}" ItemsSource="{Binding StreetSuggestions}">
+                            <forms:AutoSuggestBox.Behaviors>
+                                <behaviors:StreetAutoSuggestBoxBehavior/>
+                            </forms:AutoSuggestBox.Behaviors>
+                        </forms:AutoSuggestBox>
                     </Frame>
                     <Frame Grid.Column="1" Grid.Row="5" Style="{StaticResource BorderLikeFrame}">
                         <Entry Text="{Binding Notice}"/>
