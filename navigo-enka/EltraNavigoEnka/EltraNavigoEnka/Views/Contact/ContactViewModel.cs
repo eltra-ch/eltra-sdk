@@ -478,18 +478,20 @@ namespace EltraNavigo.Views.Contact
                     if(!string.IsNullOrEmpty(info.Region.ShortName) && info.Region.ShortName != Region.ShortName)
                     {
                         Region = FindRegion(info.Region.Name);
+
+                        if (Region != null)
+                        {
+                            CitySuggestions = new List<string>();
+                            City = string.Empty;
+                        }
                     }
 
                     if(!string.IsNullOrEmpty(info.City) && info.City != City)
                     {
                         var citySuggestions = await GetCities(info.City);
 
-                        Device.BeginInvokeOnMainThread(()=> {
-
-                            CitySuggestions = citySuggestions;
-                            City = info.City;
-                        });
-
+                        CitySuggestions = citySuggestions;
+                        City = info.City;
                     }
                 }
             }

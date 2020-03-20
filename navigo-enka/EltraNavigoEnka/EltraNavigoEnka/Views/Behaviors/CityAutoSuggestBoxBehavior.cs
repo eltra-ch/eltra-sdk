@@ -1,8 +1,7 @@
 ﻿using dotMorten.Xamarin.Forms;
 using EltraNavigo.Views.Contact;
 using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
+using System.ComponentModel;
 using Xamarin.Forms;
 
 namespace EltraNavigo.Views.Login.Behaviors
@@ -82,6 +81,25 @@ namespace EltraNavigo.Views.Login.Behaviors
             if (_view.BindingContext is ContactViewModel model)
             {
                 _contactViewModel = model;
+
+                _contactViewModel.PropertyChanged += OnViewModelPropertyChanged;
+            }
+        }
+
+        private void OnViewModelPropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            if(e.PropertyName == "City")
+            {
+                _view.Text = _contactViewModel.City;
+            }
+            else if(e.PropertyName == "CitySuggestions")
+            {
+                _view.ItemsSource = _contactViewModel.CitySuggestions;
+            }
+            else if(e.PropertyName == "Region")
+            {
+                _view.Text = string.Empty;
+                _view.ItemsSource = null;
             }
         }
     }
