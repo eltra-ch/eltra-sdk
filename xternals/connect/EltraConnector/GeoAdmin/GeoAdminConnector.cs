@@ -1,92 +1,163 @@
-﻿using System.IO;
+﻿using EltraCloudContracts.GeoAdmin;
+using EltraCommon.Logger;
+using System;
+using System.Collections.Generic;
+using System.IO;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
 using System.Web;
 
-namespace ConsoleApp5
+namespace EltraConnector.GeoAdmin
 {
-    //{"results":
-    //  [{"featureId": 36264139,
-    //      "attributes": {"status": "g\u00fcltig",
-    //                      "plzo": "6074 Giswil",
-    //                      "gdename": "Giswil",
-    //                      "official": 0,
-    //                      "modified": "2019-09-12 01:37:58",
-    //                      "label": "Dreiw\u00e4sserweg",
-    //                      "gdenr": 1403,
-    //                      "esid": 10071297,
-    //                      "validated": 0,
-    //                      "type":
-    //                      "Strasse"},
-    //      "layerBodId": "ch.swisstopo.amtliches-strassenverzeichnis",
-    //      "layerName": "Official street index",
-    //      "id": 36264139}]}
-
-    class Rest
+    public class GeoAdminConnector
     {
         private readonly HttpClient _client = new HttpClient();
 
-        public async Task GetStreets(string streetPart)
+        public GeoAdminConnector()
         {
-            string url =
-                $"http://api3.geo.admin.ch/rest/services/api/MapServer/find?layer=ch.swisstopo.amtliches-strassenverzeichnis&searchText={HttpUtility.UrlEncode(streetPart)}&searchField=label&returnGeometry=false&contains=true";
-            
-            using (var response = await _client.GetAsync(url))
-            {
-                if (response.IsSuccessStatusCode)
-                {
-                    using (var stream = await response.Content.ReadAsStreamAsync())
-                    {
-                        using (var streamReader = new StreamReader(stream))
-                        {
-                            var json = await streamReader.ReadToEndAsync();
-
-                            if (!string.IsNullOrEmpty(json))
-                            {
-                                var obj = Newtonsoft.Json.JsonConvert.DeserializeObject<GeoStreetResults>(json);
-                            }
-                        }
-                    }
-                }
-                else if (response.StatusCode == HttpStatusCode.NotFound)
-                {
-                }
-                else if (response.StatusCode == HttpStatusCode.Unauthorized)
-                {
-                }
-            }
+            GeoAdminRestServicesUrl = "https://api3.geo.admin.ch/rest/services";
+            GeoAdminMapServerUrl = $"{GeoAdminRestServicesUrl}/api/MapServer";
+            GeoAdminSearchServerUrl = $"{GeoAdminRestServicesUrl}/ech/SearchServer";
         }
 
-        public async Task GetAddressCoordinates(string address)
+        public string GeoAdminRestServicesUrl { get; set; }
+        protected string GeoAdminMapServerUrl { get; set; }
+        protected string GeoAdminSearchServerUrl { get; set; }
+
+        public async Task<List<GeoStreetInfo>> GetStreetsInfo(string streetPart)
         {
+            var result = new List<GeoStreetInfo>();
             string url =
-                "https://api3.geo.admin.ch/rest/services/ech/SearchServer?lang=de&type=locations&limit=4&origins=address&searchText=" + HttpUtility.UrlEncode(address);
+                $"{GeoAdminMapServerUrl}/find?layer=ch.swisstopo.amtliches-strassenverzeichnis&searchText={HttpUtility.UrlEncode(streetPart)}&searchField=label&returnGeometry=false&contains=true";
 
-            using (var response = await _client.GetAsync(url))
+            try
             {
-                if (response.IsSuccessStatusCode)
+                using (var response = await _client.GetAsync(url))
                 {
-                    using (var stream = await response.Content.ReadAsStreamAsync())
+                    if (response.IsSuccessStatusCode)
                     {
-                        using (var streamReader = new StreamReader(stream))
+                        using (var stream = await response.Content.ReadAsStreamAsync())
                         {
-                            var json = await streamReader.ReadToEndAsync();
-
-                            if (!string.IsNullOrEmpty(json))
+                            using (var streamReader = new StreamReader(stream))
                             {
-                                var obj = Newtonsoft.Json.JsonConvert.DeserializeObject<GeoResults>(json);
+                                var json = await streamReader.ReadToEndAsync();
+
+                                if (!string.IsNullOrEmpty(json))
+                                {
+                                    var geoStreetResults = Newtonsoft.Json.JsonConvert.DeserializeObject<GeoStreetResults>(json);
+
+                                    if(geoStreetResults!=null)
+                                    {
+                                        foreach(var streetResult in geoStreetResults.Results)
+                                        {
+                                            var streetInfo = new GeoStreetInfo();
+
+                                            streetInfo.City = streetResult.Attrs.Municipality;
+                                            streetInfo.Street = streetResult.Attrs.Label;
+
+                                            streetInfo.PostalCode = ExtractSwissPostalCode(streetResult.Attrs.PostalCode);
+
+                                            result.Add(streetInfo);
+                                        }
+                                    }
+                                }
                             }
                         }
                     }
-                }
-                else if (response.StatusCode == HttpStatusCode.NotFound)
-                {
-                }
-                else if (response.StatusCode == HttpStatusCode.Unauthorized)
-                {
+                    else if (response.StatusCode == HttpStatusCode.NotFound)
+                    {
+                        MsgLogger.WriteError($"{GetType().Name} - GetStreets", $"Url not found '{url}'");
+                    }
+                    else if (response.StatusCode == HttpStatusCode.Unauthorized)
+                    {
+                        MsgLogger.WriteError($"{GetType().Name} - GetStreets", $"Unauthorized - url = '{url}'");
+                    }
                 }
             }
+            catch(Exception e)
+            {
+                MsgLogger.Exception($"{GetType().Name} - GetStreets", e);
+            }
+
+            return result;
+        }
+
+        private static string ExtractSwissPostalCode(string geoPostalCode)
+        {
+            const int ChPostalCodeLength = 4;
+            string result = string.Empty;
+
+            for (int i = 0; i < geoPostalCode.Length; i++)
+            {
+                if (char.IsDigit(geoPostalCode[i]))
+                {
+                    result += geoPostalCode[i];
+
+                    if (result.Length == ChPostalCodeLength)
+                    {
+                        break;
+                    }
+                }
+            }
+
+            return result;
+        }
+
+        public async Task<List<GeoCoordinates>> GetAddressCoordinates(string address)
+        {
+            string url =
+                $"{GeoAdminSearchServerUrl}?lang=de&type=locations&limit=4&origins=address&searchText=" + HttpUtility.UrlEncode(address);
+            var result = new List<GeoCoordinates>();
+
+            try
+            {
+                using (var response = await _client.GetAsync(url))
+                {
+                    if (response.IsSuccessStatusCode)
+                    {
+                        using (var stream = await response.Content.ReadAsStreamAsync())
+                        {
+                            using (var streamReader = new StreamReader(stream))
+                            {
+                                var json = await streamReader.ReadToEndAsync();
+
+                                if (!string.IsNullOrEmpty(json))
+                                {
+                                    var geoResults = Newtonsoft.Json.JsonConvert.DeserializeObject<GeoResults>(json);
+
+                                    if(geoResults!=null)
+                                    {
+                                        foreach(var geoResult in geoResults.Results)
+                                        {
+                                            var coordinates = new GeoCoordinates();
+
+                                            coordinates.Latitude = geoResult.Attrs.Latitude;
+                                            coordinates.Longitude = geoResult.Attrs.Longitude;
+
+                                            result.Add(coordinates);
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    else if (response.StatusCode == HttpStatusCode.NotFound)
+                    {
+                        MsgLogger.WriteError($"{GetType().Name} - GetAddressCoordinates", $"Url not found '{url}'");
+                    }
+                    else if (response.StatusCode == HttpStatusCode.Unauthorized)
+                    {
+                        MsgLogger.WriteError($"{GetType().Name} - GetAddressCoordinates", $"Unauthorized - url = '{url}'");
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                MsgLogger.Exception($"{GetType().Name} - GetAddressCoordinates", e);
+            }
+
+            return result;
         }
     }
 }
