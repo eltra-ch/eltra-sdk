@@ -11,6 +11,7 @@ using Newtonsoft.Json;
 using Xamarin.Essentials;
 using System.Collections.Generic;
 using Region = EltraCloudContracts.Enka.Regional.Region;
+using EltraCloudContracts.Enka.Regional;
 
 namespace EltraNavigo.Views.Contact
 {
@@ -27,7 +28,9 @@ namespace EltraNavigo.Views.Contact
         private string _street;
         private Region _region;
         private string _city;
+        private List<string> _citySuggestions;
         private string _postalCode;
+        private List<string> _postalCodeSuggestions;
         private string _notice;
 
         private string _countryCode = "CH";
@@ -46,7 +49,15 @@ namespace EltraNavigo.Views.Contact
             
             _transporter = new CloudTransporter();
 
-            PropertyChanged += (sender, args) => { UpdateValidFlag(); }; 
+            PropertyChanged += (sender, args) => 
+            { 
+                if(args.PropertyName == "PostalCode")
+                {
+                    OnPostalCodeChanged();
+                }
+
+                UpdateValidFlag(); 
+            }; 
         }
 
         #endregion
@@ -104,10 +115,21 @@ namespace EltraNavigo.Views.Contact
             set => SetProperty(ref _city, value);
         }
 
+        public List<string> CitySuggestions
+        {
+            get => _citySuggestions;
+            set => SetProperty(ref _citySuggestions, value);
+        }
+
         public string PostalCode
         {
             get => _postalCode;
             set => SetProperty(ref _postalCode, value);
+        }
+        public List<string> PostalCodeSuggestions
+        {
+            get => _postalCodeSuggestions;
+            set => SetProperty(ref _postalCodeSuggestions, value);
         }
 
         public string Notice
@@ -242,6 +264,51 @@ namespace EltraNavigo.Views.Contact
 
             return result;
         }
+
+        public async Task<PostalCodeInfo> GetPostalCodeInfo(string postalCode)
+        {
+            PostalCodeInfo result = null;
+
+            if (Region != null)
+            {
+                try
+                {
+                    var query = HttpUtility.ParseQueryString(string.Empty);
+
+                    query.Add("countryCode", _countryCode);
+                    query.Add("postalCode", postalCode);
+                    query.Add("langCode", _langCode);
+
+                    var url = UrlHelper.BuildUrl(Url, "/api/Regional/postal-code-info", query);
+
+                    var json = await _transporter.Get(url);
+
+                    if (!string.IsNullOrEmpty(json))
+                    {
+                        var postalCodeInfo = JsonConvert.DeserializeObject<PostalCodeInfo>(json);
+
+                        if (postalCodeInfo!=null)
+                        {
+                            result = postalCodeInfo;
+                        }
+                    }
+                }
+                catch (Exception e)
+                {
+                    MsgLogger.Exception($"{GetType().Name} - GetPostalCodeInfo", e);
+                }
+            }
+
+            return result;
+        }
+
+        public async Task UpdateCitySuggestions(string text)
+        {
+            var suggestions = await GetCities(text);
+
+            CitySuggestions = suggestions;
+        }
+
 
         public async Task<List<string>> GetCities(string text)
         {
@@ -398,6 +465,34 @@ namespace EltraNavigo.Views.Contact
         private void OnLocateClicked()
         {
             Task.Run(async () => { await GetLocation(); });
+        }
+
+        private async void OnPostalCodeChanged()
+        {
+            if(!string.IsNullOrEmpty(PostalCode))
+            {
+                var info = await GetPostalCodeInfo(PostalCode);
+
+                if(info!=null)
+                {
+                    if(!string.IsNullOrEmpty(info.Region.ShortName) && info.Region.ShortName != Region.ShortName)
+                    {
+                        Region = FindRegion(info.Region.Name);
+                    }
+
+                    if(!string.IsNullOrEmpty(info.City) && info.City != City)
+                    {
+                        var citySuggestions = await GetCities(info.City);
+
+                        Device.BeginInvokeOnMainThread(()=> {
+
+                            CitySuggestions = citySuggestions;
+                            City = info.City;
+                        });
+
+                    }
+                }
+            }
         }
 
         private async Task GetLocation()

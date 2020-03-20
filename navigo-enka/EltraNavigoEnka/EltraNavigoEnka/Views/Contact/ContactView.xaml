@@ -84,14 +84,14 @@
                             </Grid.ColumnDefinitions>
 
                             <Frame Grid.Column="0" Style="{StaticResource BorderLikeFrame}">
-                                <forms:AutoSuggestBox Text="{Binding PostalCode}" WidthRequest="64">
+                                <forms:AutoSuggestBox Text="{Binding PostalCode}" ItemsSource="{Binding PostalCodeSuggestions}" WidthRequest="64">
                                     <forms:AutoSuggestBox.Behaviors>
                                         <behaviors:PostalCodeAutoSuggestBoxBehavior/>
                                     </forms:AutoSuggestBox.Behaviors>
                                 </forms:AutoSuggestBox>
                             </Frame>
                             <Frame Grid.Column="1" Style="{StaticResource BorderLikeFrame}">
-                                <forms:AutoSuggestBox Text="{Binding City}">
+                                <forms:AutoSuggestBox Text="{Binding City}" ItemsSource="{Binding CitySuggestions}">
                                     <forms:AutoSuggestBox.Behaviors>
                                         <behaviors:CityAutoSuggestBoxBehavior/>
                                     </forms:AutoSuggestBox.Behaviors>

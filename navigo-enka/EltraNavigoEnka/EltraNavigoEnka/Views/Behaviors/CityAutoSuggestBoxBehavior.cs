@@ -69,23 +69,12 @@ namespace EltraNavigo.Views.Login.Behaviors
                 }
                 else
                 {
-                    var suggestions = await GetSuggestions(view.Text);
-
-                    view.ItemsSource = suggestions;
+                    if (_contactViewModel != null)
+                    {
+                        await _contactViewModel.UpdateCitySuggestions(view.Text);
+                    }                    
                 }
             }
-        }
-
-        private async Task<List<string>> GetSuggestions(string text)
-        {
-            var result = new List<string>();
-
-            if (_contactViewModel != null)
-            {
-                result = await _contactViewModel.GetCities(text);
-            }
-
-            return result;
         }
 
         private void OnPageBindingContextChanged(object sender, EventArgs e)
