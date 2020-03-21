@@ -172,6 +172,8 @@ namespace EltraConnector.Transport
         {
             HttpStatusCode result = HttpStatusCode.NotImplemented;
 
+            ResetSocketError();
+
             try
             {
                 MsgLogger.WriteDebug($"{GetType().Name} - Get", $"get - url ='{url}'");
