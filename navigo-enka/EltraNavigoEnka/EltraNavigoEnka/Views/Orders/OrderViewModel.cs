@@ -1,12 +1,16 @@
 ﻿using EltraNavigo.Controls;
 using System.Threading.Tasks;
-using System.Windows.Input;
 using Xamarin.Forms;
 using EltraConnector.Transport;
 using System;
 using EltraCommon.Logger;
 using Newtonsoft.Json;
 using EltraCloudContracts.Enka.Orders;
+using System.Collections.Generic;
+using EltraCommon.Helpers;
+using System.Web;
+using System.Timers;
+using EltraNavigoEnka.Controls.Button;
 
 namespace EltraNavigo.Views.Orders
 {
@@ -14,8 +18,16 @@ namespace EltraNavigo.Views.Orders
     {
         #region Private fields
 
+        private const double OrderUpdateInterval = 5000;
+
         private bool _isValid;
         private CloudTransporter _transporter;
+        private List<Order> _orderList;
+        
+        private ThreeStateButtonViewModel _otherButtonViewModel;
+        private ThreeStateButtonViewModel _shopButtonViewModel;
+        private ThreeStateButtonViewModel _drugStoreButtonViewModel;
+        private ThreeStateButtonViewModel _carButtonViewModel;
 
         #endregion
 
@@ -29,16 +41,51 @@ namespace EltraNavigo.Views.Orders
             Uuid = "37A00C5A-3A87-40F5-B954-5BE2161728F2";
 
             _transporter = new CloudTransporter();
+            
+            OtherButtonViewModel.Label = "ANDERE";
+            ShopButtonViewModel.Label = "LADEN";
+            CarButtonViewModel.Label = "AUTO";
+            DrugStoreButtonViewModel.Label = "APOTHEKE";
+
+            OtherButtonViewModel.ButtonStateChanged += OnButtonStateChanged;
+            ShopButtonViewModel.ButtonStateChanged += OnButtonStateChanged;
+            CarButtonViewModel.ButtonStateChanged += OnButtonStateChanged;
+            DrugStoreButtonViewModel.ButtonStateChanged += OnButtonStateChanged;
         }
 
         #endregion
 
         #region Properties
 
+        public ThreeStateButtonViewModel OtherButtonViewModel
+        {
+            get => _otherButtonViewModel ?? (_otherButtonViewModel = new ThreeStateButtonViewModel());
+        }
+
+        public ThreeStateButtonViewModel CarButtonViewModel
+        {
+            get => _carButtonViewModel ?? (_carButtonViewModel = new ThreeStateButtonViewModel());
+        }
+
+        public ThreeStateButtonViewModel ShopButtonViewModel
+        {
+            get => _shopButtonViewModel ?? (_shopButtonViewModel = new ThreeStateButtonViewModel());
+        }
+        public ThreeStateButtonViewModel DrugStoreButtonViewModel
+        {
+            get => _drugStoreButtonViewModel ?? (_drugStoreButtonViewModel = new ThreeStateButtonViewModel());
+        }
+
         public bool IsValid
         {
             get => _isValid;
             set => SetProperty(ref _isValid, value);
+        }
+
+        public List<Order> OrderList
+        {
+            get => _orderList;
+            set => SetProperty(ref _orderList, value);
         }
 
         public string Url
@@ -60,49 +107,98 @@ namespace EltraNavigo.Views.Orders
 
         #region Command
 
-        public ICommand HelpCommand => new Command(OnHelpCommandClicked);
-        public ICommand CoopCommand => new Command(OnCoopCommandClicked);
-        public ICommand MigrosCommand => new Command(OnMigrosCommandClicked);
-        public ICommand ApothekeCommand => new Command(OnApothekeCommandClicked);
+        #endregion
 
+        #region Events
+
+        private async void OnButtonStateChanged(object sender, EventArgs e)
+        {
+            string order = string.Empty;
+
+            OrderList = await GetOrders();
+
+            if (OtherButtonViewModel.ButtonState == ButtonState.Active)
+            {
+                order += "other;";
+            }
+
+            if (ShopButtonViewModel.ButtonState == ButtonState.Active)
+            {
+                order += "shop;";
+            }
+
+            if (CarButtonViewModel.ButtonState == ButtonState.Active)
+            {
+                order += "car;";
+            }
+
+            if (DrugStoreButtonViewModel.ButtonState == ButtonState.Active)
+            {
+                order += "drug_store;";
+            }
+
+            if(OrderList.Count > 0)
+            {
+                var orderEntry = OrderList[0];
+
+                orderEntry.Notice = order;
+
+                await ChangeOrder(orderEntry);
+            }
+            else
+            {
+                await AddOrder(new Order() { Notice = order });
+            }
+        }
+        
         #endregion
 
         #region Methods
 
-        private async void OnHelpCommandClicked(object obj)
+        public async Task<List<Order>> GetOrders()
         {
-            var order = new Order() { Notice = "Help" };
+            var result = new List<Order>();
 
-            await StoreOrder(order);
+            try
+            {
+                var query = HttpUtility.ParseQueryString(string.Empty);
+                var url = UrlHelper.BuildUrl(Url, "/api/orders/get", query);
+
+                var response = await _transporter.Get(url);
+
+                if(!string.IsNullOrEmpty(response))
+                {
+                    result = JsonConvert.DeserializeObject<List<Order>>(response);
+                }
+            }
+            catch (Exception e)
+            {
+                MsgLogger.Exception($"{GetType().Name} - GetOrders", e);
+            }
+
+            return result;
         }
 
-        private async void OnCoopCommandClicked(object obj)
+        public override async Task Show()
         {
-            var order = new Order() { Notice = "Coop" };
+            OrderList = await GetOrders();
 
-            await StoreOrder(order);
+            foreach(var order in OrderList)
+            {
+                order.Notice.Contains("");
+            }
+
+            await base.Show();
         }
 
-        private async void OnMigrosCommandClicked(object obj)
-        {
-            var order = new Order() { Notice = "Migros" };
-
-            await StoreOrder(order);
-        }
-
-        private async void OnApothekeCommandClicked(object obj)
-        {
-            var order = new Order() { Notice = "Apotheke" };
-
-            await StoreOrder(order);
-        }
-
-        public async Task<bool> StoreOrder(Order order)
+        public async Task<bool> AddOrder(Order order)
         {
             bool result = false;
 
             try
             {
+                order.Type = OrderType.Request;
+
                 var json = JsonConvert.SerializeObject(order);
 
                 var response = await _transporter.Post(Url, "api/orders/add", json);
@@ -115,6 +211,31 @@ namespace EltraNavigo.Views.Orders
             catch (Exception e)
             {
                 MsgLogger.Exception($"{GetType().Name} - StoreOrder", e);
+            }
+
+            return result;
+        }
+
+        public async Task<bool> ChangeOrder(Order order)
+        {
+            bool result = false;
+
+            try
+            {
+                order.Type = OrderType.Request;
+
+                var json = JsonConvert.SerializeObject(order);
+
+                var response = await _transporter.Post(Url, "api/orders/change", json);
+
+                if (response.StatusCode == System.Net.HttpStatusCode.OK)
+                {
+                    result = true;
+                }
+            }
+            catch (Exception e)
+            {
+                MsgLogger.Exception($"{GetType().Name} - ChangeOrder", e);
             }
 
             return result;
