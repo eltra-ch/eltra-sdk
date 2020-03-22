@@ -7,7 +7,6 @@
              xmlns:views="clr-namespace:EltraNavigo.Views.Login;assembly=EltraNavigoEnka"
              mc:Ignorable="d"
              x:DataType="views:SignInViewModel"             
-             xmlns:local="clr-namespace:EltraNavigo.Controls.Extensions;assembly=EltraNavigo"
              x:Class="EltraNavigo.Views.Login.SignInView" VerticalOptions="CenterAndExpand">
     <ContentView.Behaviors>
         <behaviors:ToolViewBehavior/>
@@ -62,13 +61,13 @@
 
                             <Frame Grid.Row="0" BackgroundColor="Transparent">
                                 <Label IsTabStop="False" 
-                                       Text="NotKauf, please Sign In" FontSize="Medium" TextColor="Black"
+                                       Text="NotKauf, Bitte einloggen" FontSize="Medium" TextColor="Black"
                                        BackgroundColor="Transparent"
                                        HorizontalOptions="CenterAndExpand"/>
                             </Frame>
 
                             <Frame Grid.Row="2" BackgroundColor="Transparent">
-                                <Label IsTabStop="False" Text="User name" FontSize="Small" TextColor="Black" BackgroundColor="Transparent"/>
+                                <Label IsTabStop="False" Text="Benutzername" FontSize="Small" TextColor="Black" BackgroundColor="Transparent"/>
                             </Frame>
 
                             <Frame Grid.Row="3">
@@ -88,7 +87,7 @@
                             </Frame>
 
                             <Frame Grid.Row="4" BackgroundColor="Transparent">
-                                <Label IsTabStop="False" Text="Password" FontSize="Small" TextColor="Black" BackgroundColor="Transparent"/>
+                                <Label IsTabStop="False" Text="Kennwort" FontSize="Small" TextColor="Black" BackgroundColor="Transparent"/>
                             </Frame>
 
                             <Frame Grid.Row="5">
@@ -108,17 +107,17 @@
                             </Frame>
 
                             <Frame Grid.Row="6">
-                                <Button IsTabStop="True" TabIndex="2" Text="SIGN IN" Command="{Binding LoginCommand}" IsEnabled="{Binding IsValid}"/>
+                                <Button IsTabStop="True" TabIndex="2" Text="EINLOGGEN" Command="{Binding LoginCommand}" IsEnabled="{Binding IsValid}"/>
                             </Frame>
 
                             <Frame Grid.Row="7">
-                                <Button IsTabStop="True" TabIndex="3" Text="SIGN UP" Command="{Binding RegisterCommand}"/>
+                                <Button IsTabStop="True" TabIndex="3" Text="AUSLOGGEN" Command="{Binding RegisterCommand}"/>
                             </Frame>
 
                             <Frame Grid.Row="8" BackgroundColor="Transparent">
                                 <StackLayout Orientation="Horizontal">
                                     <CheckBox IsTabStop="True" TabIndex="4" IsChecked="{Binding AutoLogOnActive}" WidthRequest="32"/>
-                                    <Label Text="Automatically Log On" VerticalOptions="CenterAndExpand" HorizontalOptions="StartAndExpand" TextColor="Black" BackgroundColor="Transparent"/>
+                                    <Label Text="Automatisch anmelden" VerticalOptions="CenterAndExpand" HorizontalOptions="StartAndExpand" TextColor="Black" BackgroundColor="Transparent"/>
                                 </StackLayout>
                             </Frame>
 
