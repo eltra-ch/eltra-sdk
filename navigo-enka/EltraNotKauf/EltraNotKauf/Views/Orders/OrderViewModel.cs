@@ -146,31 +146,34 @@ namespace EltraNotKauf.Views.Orders
 
         private async void OnButtonStateChanged(object sender, EventArgs e)
         {
-            string order = string.Empty;
+            string json = string.Empty;
+            var message = new JsonProtocolV1();
 
             ActiveOrder = await GetActiveOrder();
 
             if (OtherButtonViewModel.ButtonState == ButtonState.Active)
             {
-                order += OtherButtonViewModel.Id;
+                message.Other = true;
             }
 
             if (ShopButtonViewModel.ButtonState == ButtonState.Active)
             {
-                order += ShopButtonViewModel.Id;
+                message.Shop = true;
             }
 
             if (CarButtonViewModel.ButtonState == ButtonState.Active)
             {
-                order += CarButtonViewModel.Id;
+                message.Car = true;
             }
 
             if (DrugStoreButtonViewModel.ButtonState == ButtonState.Active)
             {
-                order += DrugStoreButtonViewModel.Id;
+                message.DrugStore = true;
             }
 
-            if (string.IsNullOrEmpty(order))
+            json = JsonConvert.SerializeObject(message);
+
+            if (string.IsNullOrEmpty(json))
             {
                 if (ActiveOrder != null)
                 {
@@ -197,7 +200,7 @@ namespace EltraNotKauf.Views.Orders
                 {
                     if (ActiveOrder.Status == OrderStatus.Closed)
                     {
-                        if (await AddOrder(new Order() { Notice = order }))
+                        if (await AddOrder(new Order() { Message = json }))
                         {
                             ActiveOrder = await GetActiveOrder();
 
@@ -215,7 +218,7 @@ namespace EltraNotKauf.Views.Orders
                             ActiveOrder.Status = OrderStatus.Open;
                         }
 
-                        ActiveOrder.Notice = order;
+                        ActiveOrder.Message = json;
 
                         if (await ChangeOrder(ActiveOrder))
                         {
@@ -231,7 +234,7 @@ namespace EltraNotKauf.Views.Orders
                 }
                 else
                 {
-                    if (await AddOrder(new Order() { Notice = order }))
+                    if (await AddOrder(new Order() { Message = json }))
                     {
                         ActiveOrder = await GetActiveOrder();
 
@@ -336,50 +339,27 @@ namespace EltraNotKauf.Views.Orders
 
         private void UpdateButtonsState()
         {
-            if (ActiveOrder != null && !string.IsNullOrEmpty(ActiveOrder.Notice))
+            try
             {
-                if (ActiveOrder.Notice.Contains(OtherButtonViewModel.Id))
+                if (ActiveOrder != null && !string.IsNullOrEmpty(ActiveOrder.Message))
                 {
-                    OtherButtonViewModel.ButtonState = ButtonState.Active;
-                }
-                else
-                {
-                    OtherButtonViewModel.ButtonState = ButtonState.Inactive;
-                }
+                    var jsonV1 = JsonConvert.DeserializeObject<JsonProtocolV1>(ActiveOrder.Message);
 
-                if (ActiveOrder.Notice.Contains(CarButtonViewModel.Id))
-                {
-                    CarButtonViewModel.ButtonState = ButtonState.Active;
-                }
-                else
-                {
-                    CarButtonViewModel.ButtonState = ButtonState.Inactive;
-                }
-
-                if (ActiveOrder.Notice.Contains(ShopButtonViewModel.Id))
-                {
-                    ShopButtonViewModel.ButtonState = ButtonState.Active;
-                }
-                else
-                {
-                    ShopButtonViewModel.ButtonState = ButtonState.Inactive;
-                }
-
-                if (ActiveOrder.Notice.Contains(DrugStoreButtonViewModel.Id))
-                {
-                    DrugStoreButtonViewModel.ButtonState = ButtonState.Active;
+                    OtherButtonViewModel.ButtonState = jsonV1.Other ? ButtonState.Active : ButtonState.Inactive;
+                    CarButtonViewModel.ButtonState = jsonV1.Car ? ButtonState.Active : ButtonState.Inactive;
+                    ShopButtonViewModel.ButtonState = jsonV1.Shop ? ButtonState.Active : ButtonState.Inactive;
+                    DrugStoreButtonViewModel.ButtonState = jsonV1.DrugStore ? ButtonState.Active : ButtonState.Inactive;
                 }
                 else
                 {
                     DrugStoreButtonViewModel.ButtonState = ButtonState.Inactive;
+                    OtherButtonViewModel.ButtonState = ButtonState.Inactive;
+                    ShopButtonViewModel.ButtonState = ButtonState.Inactive;
+                    CarButtonViewModel.ButtonState = ButtonState.Inactive;
                 }
             }
-            else
+            catch(Exception)
             {
-                DrugStoreButtonViewModel.ButtonState = ButtonState.Inactive;
-                OtherButtonViewModel.ButtonState = ButtonState.Inactive;
-                ShopButtonViewModel.ButtonState = ButtonState.Inactive;
-                CarButtonViewModel.ButtonState = ButtonState.Inactive;
             }
         }
 
@@ -396,8 +376,6 @@ namespace EltraNotKauf.Views.Orders
 
             try
             {
-                order.Type = OrderType.Request;
-
                 var json = JsonConvert.SerializeObject(order);
 
                 var response = await _transporter.Post(Url, "api/orders/add", json);
@@ -421,8 +399,6 @@ namespace EltraNotKauf.Views.Orders
 
             try
             {
-                order.Type = OrderType.Request;
-
                 var json = JsonConvert.SerializeObject(order);
 
                 var response = await _transporter.Post(Url, "api/orders/change", json);

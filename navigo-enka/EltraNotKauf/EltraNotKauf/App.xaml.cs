@@ -21,8 +21,8 @@ namespace EltraNotKauf
             MsgLogger.LogLevels = "";
 #endif
 
-            string url = "https://notkauf.ch";
-            //string url = "http://localhost:5001/";
+            //string url = "https://notkauf.ch";
+            string url = "http://localhost:5001/";
 
             CreateIdentity();
 
