@@ -9,10 +9,11 @@ namespace EltraNavigoEnka.Controls.Button
     {
         #region Private fields
 
-        private string _label;
+        private string _id;
         private ButtonState _buttonState;
         private bool _isEnabled;
-
+        private int _height;
+        
         #endregion
 
         #region Constructors
@@ -20,16 +21,17 @@ namespace EltraNavigoEnka.Controls.Button
         public ThreeStateButtonViewModel()
         {
             IsEnabled = true;
+            Height = 84;
         }
 
         #endregion
 
         #region Properties
 
-        public string Label
+        public string Id
         {
-            get => _label;
-            set => SetProperty(ref _label, value);
+            get => _id;
+            set => SetProperty(ref _id, value);
         }
 
         public bool IsEnabled
@@ -42,6 +44,12 @@ namespace EltraNavigoEnka.Controls.Button
         {
             get => _buttonState;
             set => SetProperty(ref _buttonState, value);
+        }
+
+        public int Height
+        {
+            get => _height;
+            set => SetProperty(ref _height, value);
         }
 
         #endregion
@@ -63,13 +71,13 @@ namespace EltraNavigoEnka.Controls.Button
 
         private void OnButtonPressedCommand(object obj)
         {
-            if (ButtonState == ButtonState.Unactive)
+            if (ButtonState == ButtonState.Inactive)
             {
                 ButtonState = ButtonState.Active;
             }
             else if (ButtonState == ButtonState.Active)
             {
-                ButtonState = ButtonState.Unactive;
+                ButtonState = ButtonState.Inactive;
             }
 
             OnButtonStateChanged();

@@ -22,7 +22,10 @@ namespace EltraNavigo.Views.Login.Behaviors
 
         private void OnPageAppearing(object sender, EventArgs e)
         {
-            _toolViewModel?.Show();
+            if (!_toolViewModel.IsVisible)
+            {
+                _toolViewModel?.Show();
+            }
         }
 
         private void OnPageBindingContextChanged(object sender, EventArgs e)

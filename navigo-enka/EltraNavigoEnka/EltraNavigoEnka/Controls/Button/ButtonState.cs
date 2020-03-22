@@ -2,7 +2,7 @@
 {
     public enum ButtonState
     {
-        Unactive,
+        Inactive,
         Active,
         Disabled
     }

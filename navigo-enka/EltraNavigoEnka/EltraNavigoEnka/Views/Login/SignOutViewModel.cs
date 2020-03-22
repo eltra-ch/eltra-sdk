@@ -20,7 +20,7 @@ namespace EltraNavigo.Views.Login
 
         public SignOutViewModel()
         {
-            Title = "Sign Out";
+            Title = "Ausloggen";
             Image = ImageSource.FromResource("EltraNavigoEnka.Resources.profile-male_32px.png");
             IsMandatory = true;
             IsEnabled = false;

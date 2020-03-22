@@ -8,7 +8,7 @@
              x:DataType="button:ThreeStateButtonViewModel"
              x:Class="EltraNavigoEnka.Controls.Button.ThreeStateButtonView">
   <ContentView.Content>
-        <Button Text="{Binding Label}" Command="{Binding ButtonPressedCommand}" HeightRequest="84" IsEnabled="{Binding IsEnabled}">
+        <Button Text="{Binding Title}" Command="{Binding ButtonPressedCommand}" HeightRequest="{Binding Height}" IsEnabled="{Binding IsEnabled}">
             <Button.Triggers>
                 <DataTrigger TargetType="Button" Binding="{Binding ButtonState}" Value="0">
                     <Setter Property="BackgroundColor" Value="LightGray" />

@@ -11,7 +11,7 @@
     <ContentView.Resources>
         <Color x:Key="NavigationPrimary">#2196F3</Color>
         <Style x:Key="BorderLikeFrame" TargetType="Frame">
-            <Setter Property="BorderColor" Value="Blue"/>
+            <Setter Property="BorderColor" Value="Transparent"/>
             <Setter Property="Padding" Value="2"/>
             <Setter Property="HasShadow" Value="{DynamicResource AppFrameShadowStyle}"/>
         </Style>
@@ -25,6 +25,7 @@
     <Grid HorizontalOptions="FillAndExpand" VerticalOptions="FillAndExpand" HeightRequest="400">
         <Grid.RowDefinitions>
             <RowDefinition Height="8"></RowDefinition>
+            <RowDefinition Height="Auto"></RowDefinition>
             <RowDefinition Height="Auto"></RowDefinition>
             <RowDefinition Height="8"></RowDefinition>
         </Grid.RowDefinitions>
@@ -60,7 +61,24 @@
 
             </Grid>
         </Frame>
-        
+        <Frame Grid.Row="2" BorderColor="{StaticResource NavigationPrimary}">
+            <Grid HorizontalOptions="FillAndExpand" >
+
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition/>
+                </Grid.ColumnDefinitions>
+
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+
+                <Frame Grid.Column="0" Grid.Row="0" Style="{StaticResource BorderLikeFrame}">
+                    <Label HorizontalOptions="CenterAndExpand" Text="{Binding ActiveOrderStatus}"></Label>
+                </Frame>
+
+            </Grid>
+        </Frame>
+
     </Grid>
 
 </ContentView>

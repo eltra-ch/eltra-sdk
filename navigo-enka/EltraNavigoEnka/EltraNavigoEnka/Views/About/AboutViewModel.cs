@@ -8,7 +8,7 @@ namespace EltraNavigo.Views.About
     {
         public AboutViewModel()
         {
-            Title = "About";
+            Title = "Über";
             Image = ImageSource.FromResource("EltraNavigoEnka.Resources.lightbulb_32px.png");
             IsMandatory = true;
             PutImage = ImageSource.FromResource("EltraNavigoEnka.Resources.put-logo.png");

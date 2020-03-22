@@ -12,7 +12,7 @@ namespace EltraNavigo.Views.Login
 
         public SignUpViewModel()
         {
-            Title = "Sign-up";
+            Title = "Anmelden";
             Image = ImageSource.FromResource("EltraNavigoEnka.Resources.profile-male_32px.png");
             IsMandatory = false;
             Uuid = "D4D4DFEF-3EBE-4C74-8D98-A27D3122AC9F";
