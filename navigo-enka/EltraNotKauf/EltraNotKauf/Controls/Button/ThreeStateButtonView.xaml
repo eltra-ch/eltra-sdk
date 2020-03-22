@@ -1,0 +1,28 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<ContentView xmlns="http://xamarin.com/schemas/2014/forms" 
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:d="http://xamarin.com/schemas/2014/forms/design"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d"
+             xmlns:button="clr-namespace:EltraNotKauf.Controls.Button"
+             x:DataType="button:ThreeStateButtonViewModel"
+             x:Class="EltraNotKauf.Controls.Button.ThreeStateButtonView">
+  <ContentView.Content>
+        <Button Text="{Binding Title}" Command="{Binding ButtonPressedCommand}" HeightRequest="{Binding Height}" IsEnabled="{Binding IsEnabled}">
+            <Button.Triggers>
+                <DataTrigger TargetType="Button" Binding="{Binding ButtonState}" Value="0">
+                    <Setter Property="BackgroundColor" Value="LightGray" />
+                    <Setter Property="TextColor" Value="Black"/>
+                </DataTrigger>
+                <DataTrigger TargetType="Button" Binding="{Binding ButtonState}" Value="1">
+                    <Setter Property="BackgroundColor" Value="LawnGreen" />
+                    <Setter Property="TextColor" Value="Red"/>
+                </DataTrigger>
+                <DataTrigger TargetType="Button" Binding="{Binding ButtonState}" Value="-1">
+                    <Setter Property="BackgroundColor" Value="DarkGray" />
+                    <Setter Property="TextColor" Value="LightGray"/>
+                </DataTrigger>
+            </Button.Triggers>
+        </Button>
+    </ContentView.Content>
+</ContentView>

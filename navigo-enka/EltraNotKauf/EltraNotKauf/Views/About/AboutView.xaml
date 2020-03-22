@@ -1,0 +1,43 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentView xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:about="clr-namespace:EltraNotKauf.Views.About"
+             x:DataType="about:AboutViewModel"
+             x:Class="EltraNotKauf.Views.About.AboutView">
+
+    <ContentView.Resources>
+        <Color x:Key="NavigationPrimary">#2196F3</Color>
+    </ContentView.Resources>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="8"></RowDefinition>
+            <RowDefinition Height="*"></RowDefinition>
+            <RowDefinition Height="8"></RowDefinition>
+        </Grid.RowDefinitions>
+
+        <Frame Grid.Row="1" BorderColor="{StaticResource NavigationPrimary}">
+            <Grid HorizontalOptions="Center" VerticalOptions="Center">
+                
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"></RowDefinition>
+                    <RowDefinition Height="20"></RowDefinition>
+                    <RowDefinition Height="Auto"></RowDefinition>
+                    <RowDefinition Height="20"></RowDefinition>
+                    <RowDefinition Height="Auto"></RowDefinition>
+                    <RowDefinition Height="Auto"></RowDefinition>
+                    <RowDefinition Height="Auto"></RowDefinition>
+                </Grid.RowDefinitions>
+
+                <Label HorizontalOptions="CenterAndExpand" Grid.Row="0" Text="Not Kauf" FontSize="Medium" />
+
+                <Image HorizontalOptions="CenterAndExpand" Grid.Row="2" Source="{Binding LogoImage}"/>
+                
+                <Label HorizontalOptions="CenterAndExpand" Grid.Row="4" Text="{Binding VersionName}" />
+                <Label HorizontalOptions="CenterAndExpand" Grid.Row="5" Text="Copyright (c) 2019-2020" />
+                <Label HorizontalOptions="CenterAndExpand" Grid.Row="6" Text="eltra.ch" />
+            </Grid>
+        </Frame>
+    </Grid>
+
+</ContentView>

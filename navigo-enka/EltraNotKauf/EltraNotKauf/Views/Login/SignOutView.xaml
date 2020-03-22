@@ -1,0 +1,17 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentView xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:about="clr-namespace:EltraNotKauf.Views.About"
+             xmlns:behaviors="clr-namespace:EltraNotKauf.Views.Login.Behaviors"
+             x:DataType="about:AboutViewModel"
+             x:Class="EltraNotKauf.Views.Login.SignOutView">
+
+    <ContentView.Behaviors>
+        <behaviors:ToolViewBehavior/>
+    </ContentView.Behaviors>
+    
+    <Grid>
+       
+    </Grid>
+
+</ContentView>

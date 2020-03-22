@@ -1,0 +1,123 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentView xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:contact="clr-namespace:EltraNotKauf.Views.Contact"
+             xmlns:behaviors="clr-namespace:EltraNotKauf.Views.Login.Behaviors"
+             x:DataType="contact:ContactViewModel"
+             xmlns:maps="clr-namespace:Xamarin.Forms.Maps;assembly=Xamarin.Forms.Maps"
+             xmlns:forms="clr-namespace:dotMorten.Xamarin.Forms;assembly=dotMorten.Xamarin.Forms.AutoSuggestBox"
+             x:Class="EltraNotKauf.Views.Contact.ContactView">
+
+    <ContentView.Resources>
+        <Color x:Key="NavigationPrimary">#2196F3</Color>
+        <Style x:Key="BorderLikeFrame" TargetType="Frame">
+            <Setter Property="BorderColor" Value="Transparent"/>
+            <Setter Property="Padding" Value="2"/>
+            <Setter Property="HasShadow" Value="{DynamicResource AppFrameShadowStyle}"/>
+        </Style>
+    </ContentView.Resources>
+
+    <ContentView.Behaviors>
+        <behaviors:ToolViewBehavior/>
+    </ContentView.Behaviors>
+
+    <ScrollView>
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="8"></RowDefinition>
+                <RowDefinition Height="*"></RowDefinition>
+                <RowDefinition Height="Auto"></RowDefinition>
+                <RowDefinition Height="8"></RowDefinition>
+            </Grid.RowDefinitions>
+
+            <Frame Grid.Row="1" BorderColor="{StaticResource NavigationPrimary}">
+                <Grid HorizontalOptions="FillAndExpand" VerticalOptions="FillAndExpand">
+
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+
+                    <Frame Grid.Column="0" Grid.Row="0" Style="{StaticResource BorderLikeFrame}">
+                        <Label FontSize="Small" TextColor="Black" Text="Name:"/>
+                    </Frame>
+                    <Frame Grid.Column="0" Grid.Row="1" Style="{StaticResource BorderLikeFrame}">
+                        <Label FontSize="Small" TextColor="Black" Text="Telefon:"/>
+                    </Frame>
+                    <Frame Grid.Column="0" Grid.Row="2" Style="{StaticResource BorderLikeFrame}">
+                        <Label FontSize="Small" TextColor="Black" Text="Kanton:"/>
+                    </Frame>
+                    <Frame Grid.Column="0" Grid.Row="3" Style="{StaticResource BorderLikeFrame}">
+                        <Label FontSize="Small" TextColor="Black" Text="PLZ/Ort:"/>
+                    </Frame>
+                    <Frame Grid.Column="0" Grid.Row="4" Style="{StaticResource BorderLikeFrame}">
+                        <Label FontSize="Small" TextColor="Black" Text="Strasse:"/>
+                    </Frame>
+                    <Frame Grid.Column="0" Grid.Row="5" Style="{StaticResource BorderLikeFrame}">
+                        <Label FontSize="Small" TextColor="Black" Text="Notiz:"/>
+                    </Frame>
+
+                    <!-- Edit -->
+                    <Frame Grid.Column="1" Grid.Row="0" Style="{StaticResource BorderLikeFrame}">
+                        <Entry Text="{Binding Name}"/>
+                    </Frame>
+                    <Frame Grid.Column="1" Grid.Row="1" Style="{StaticResource BorderLikeFrame}">
+                        <Entry Text="{Binding Phone}"/>
+                    </Frame>
+                    <Frame Grid.Column="1" Grid.Row="2" Style="{StaticResource BorderLikeFrame}">
+                        <Picker ItemsSource="{Binding Regions}" SelectedItem="{Binding Region}" ItemDisplayBinding="{Binding Name}"/>
+                    </Frame>
+                    <Frame Grid.Column="1" Grid.Row="3" Style="{StaticResource BorderLikeFrame}">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition/>
+                            </Grid.ColumnDefinitions>
+
+                            <Frame Grid.Column="0" Style="{StaticResource BorderLikeFrame}">
+                                <forms:AutoSuggestBox Text="{Binding PostalCode, Mode=TwoWay}" ItemsSource="{Binding PostalCodeSuggestions}" WidthRequest="64">
+                                    <forms:AutoSuggestBox.Behaviors>
+                                        <behaviors:PostalCodeAutoSuggestBoxBehavior/>
+                                    </forms:AutoSuggestBox.Behaviors>
+                                </forms:AutoSuggestBox>
+                            </Frame>
+                            <Frame Grid.Column="1" Style="{StaticResource BorderLikeFrame}">
+                                <forms:AutoSuggestBox Text="{Binding City, Mode=TwoWay}" ItemsSource="{Binding CitySuggestions}">
+                                    <forms:AutoSuggestBox.Behaviors>
+                                        <behaviors:CityAutoSuggestBoxBehavior/>
+                                    </forms:AutoSuggestBox.Behaviors>
+                                </forms:AutoSuggestBox>
+                            </Frame>
+                        </Grid>
+                    </Frame>
+                    
+                    <Frame Grid.Column="1" Grid.Row="4" Style="{StaticResource BorderLikeFrame}">
+                        <forms:AutoSuggestBox Text="{Binding Street, Mode=TwoWay}" ItemsSource="{Binding StreetSuggestions}">
+                            <forms:AutoSuggestBox.Behaviors>
+                                <behaviors:StreetAutoSuggestBoxBehavior/>
+                            </forms:AutoSuggestBox.Behaviors>
+                        </forms:AutoSuggestBox>
+                    </Frame>
+                    <Frame Grid.Column="1" Grid.Row="5" Style="{StaticResource BorderLikeFrame}">
+                        <Entry Text="{Binding Notice}"/>
+                    </Frame>
+
+                    <Frame Grid.Column="1" Grid.Row="6" Style="{StaticResource BorderLikeFrame}">
+                        <Button Text="Speichern" Command="{Binding SaveCommand}"/>
+                    </Frame>
+
+                </Grid>
+            </Frame>
+
+        </Grid>
+    </ScrollView>
+</ContentView>
