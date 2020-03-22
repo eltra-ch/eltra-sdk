@@ -21,7 +21,7 @@ namespace EltraNavigo.Views.Login
         public SignOutViewModel()
         {
             Title = "Ausloggen";
-            Image = ImageSource.FromResource("EltraNavigoEnka.Resources.profile-male_32px.png");
+            Image = ImageSource.FromResource("EltraNavigoEnka.Resources.user.png");
             IsMandatory = true;
             IsEnabled = false;
             Uuid = "10ED2154-B0B0-4EBA-B74B-6E05BD830802";

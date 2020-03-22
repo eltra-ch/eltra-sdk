@@ -27,6 +27,7 @@
             <RowDefinition Height="8"></RowDefinition>
             <RowDefinition Height="Auto"></RowDefinition>
             <RowDefinition Height="Auto"></RowDefinition>
+            <RowDefinition Height="Auto"></RowDefinition>
             <RowDefinition Height="8"></RowDefinition>
         </Grid.RowDefinitions>
 
@@ -61,7 +62,10 @@
 
             </Grid>
         </Frame>
-        <Frame Grid.Row="2" BorderColor="{StaticResource NavigationPrimary}">
+        <Frame Grid.Row="2" BackgroundColor="Transparent">
+            <Label HorizontalOptions="CenterAndExpand" FontSize="Medium" Text="{Binding ActiveOrderTitle}"/>
+        </Frame>
+        <Frame Grid.Row="3" BorderColor="{StaticResource NavigationPrimary}">
             <Grid HorizontalOptions="FillAndExpand" >
 
                 <Grid.ColumnDefinitions>

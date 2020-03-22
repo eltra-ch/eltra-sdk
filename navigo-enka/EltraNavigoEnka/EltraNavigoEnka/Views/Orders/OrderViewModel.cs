@@ -30,6 +30,7 @@ namespace EltraNavigo.Views.Orders
         private ThreeStateButtonViewModel _carButtonViewModel;
 
         private string _activeOrderStatus;
+        private string _activeOrderTitle;
         private Timer _timer;
 
         #endregion
@@ -39,7 +40,7 @@ namespace EltraNavigo.Views.Orders
         public OrderViewModel()
         {
             Title = "Anfragen";
-            Image = ImageSource.FromResource("EltraNavigoEnka.Resources.book-open_32px.png");
+            Image = ImageSource.FromResource("EltraNavigoEnka.Resources.urgent.png");
             IsMandatory = true;
             Uuid = "37A00C5A-3A87-40F5-B954-5BE2161728F2";
 
@@ -106,6 +107,12 @@ namespace EltraNavigo.Views.Orders
             set => SetProperty(ref _activeOrderStatus, value);
         }
 
+        public string ActiveOrderTitle
+        {
+            get => _activeOrderTitle;
+            set => SetProperty(ref _activeOrderTitle, value);
+        }
+
         public string Url
         {
             get
@@ -163,15 +170,78 @@ namespace EltraNavigo.Views.Orders
                 order += DrugStoreButtonViewModel.Id;
             }
 
-            if(ActiveOrder!=null)
+            if (string.IsNullOrEmpty(order))
             {
-                ActiveOrder.Notice = order;
+                if (ActiveOrder != null)
+                {
+                    if(ActiveOrder.Status == OrderStatus.Assigned || ActiveOrder.Status == OrderStatus.Open)
+                    {
+                        ActiveOrder.Status = OrderStatus.Closed;
 
-                await ChangeOrder(ActiveOrder);
+                        if (await ChangeOrder(ActiveOrder))
+                        {
+                            ActiveOrder = await GetActiveOrder();
+
+                            UpdateActiveOrderStatus();
+                        }
+                        else
+                        {
+                            ActiveOrderStatus = "Fehler :-(";
+                        }
+                    }
+                }
             }
             else
             {
-                await AddOrder(new Order() { Notice = order });
+                if (ActiveOrder != null)
+                {
+                    if (ActiveOrder.Status == OrderStatus.Closed)
+                    {
+                        if (await AddOrder(new Order() { Notice = order }))
+                        {
+                            ActiveOrder = await GetActiveOrder();
+
+                            UpdateActiveOrderStatus();
+                        }
+                        else
+                        {
+                            ActiveOrderStatus = "Fehler :-(";
+                        }
+                    }
+                    else
+                    {
+                        if (ActiveOrder.Status == OrderStatus.Rejected)
+                        {
+                            ActiveOrder.Status = OrderStatus.Open;
+                        }
+
+                        ActiveOrder.Notice = order;
+
+                        if (await ChangeOrder(ActiveOrder))
+                        {
+                            ActiveOrder = await GetActiveOrder();
+
+                            UpdateActiveOrderStatus();
+                        }
+                        else
+                        {
+                            ActiveOrderStatus = "Fehler :-(";
+                        }
+                    }
+                }
+                else
+                {
+                    if (await AddOrder(new Order() { Notice = order }))
+                    {
+                        ActiveOrder = await GetActiveOrder();
+
+                        UpdateActiveOrderStatus();
+                    }
+                    else
+                    {
+                        ActiveOrderStatus = "Fehler :-(";
+                    }
+                }
             }
         }
         
@@ -183,26 +253,29 @@ namespace EltraNavigo.Views.Orders
         {
             if (ActiveOrder != null)
             {
-                if (ActiveOrder.Status == OrderStatus.New)
+                if (ActiveOrder.Status == OrderStatus.Open)
                 {
                     ActiveOrderStatus = "Erstellt. Bitte warten.";
                 }
-                else if (ActiveOrder.Status == OrderStatus.Accepted)
-                {
-                    ActiveOrderStatus = "Akzeptiert";
-                }
-                else if (ActiveOrder.Status == OrderStatus.InProgress)
+                else if (ActiveOrder.Status == OrderStatus.Assigned)
                 {
                     ActiveOrderStatus = "in Bearbeitung";
+                }
+                else if (ActiveOrder.Status == OrderStatus.Closed)
+                {
+                    ActiveOrderStatus = "Erledigt";
                 }
                 else
                 {
                     ActiveOrderStatus = "";
                 }
+
+                ActiveOrderTitle = ActiveOrder.Uuid;
             }
             else
             {
                 ActiveOrderStatus = "noch keinen Auftrag platziert";
+                ActiveOrderTitle = "";
             }
         }
 
@@ -223,17 +296,17 @@ namespace EltraNavigo.Views.Orders
 
                     foreach(var order in orders)
                     {
-                        if(order.Status == OrderStatus.New)
+                        if(order.Status == OrderStatus.Open)
                         {
                             result = order;
                             break;
                         }
-                        else if(order.Status == OrderStatus.Accepted)
+                        else if(order.Status == OrderStatus.Assigned)
                         {
                             result = order;
                             break;
                         }
-                        else if(order.Status == OrderStatus.InProgress)
+                        else if(order.Status == OrderStatus.Closed)
                         {
                             result = order;
                             break;

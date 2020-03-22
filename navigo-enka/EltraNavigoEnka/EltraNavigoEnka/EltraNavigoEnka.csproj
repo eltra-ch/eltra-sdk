@@ -31,39 +31,34 @@
     <None Remove="Resources\book-open_32px.png" />
     <None Remove="Resources\cloud.png" />
     <None Remove="Resources\clouds.jpg" />
-    <None Remove="Resources\clouds.png" />
     <None Remove="Resources\download_32px.png" />
     <None Remove="Resources\hamburger.png" />
     <None Remove="Resources\hazardous_32px.png" />
-    <None Remove="Resources\led_active.png" />
-    <None Remove="Resources\led_inactive.png" />
-    <None Remove="Resources\led_undefined.png" />
-    <None Remove="Resources\led_warn.png" />
+    <None Remove="Resources\HiResAppIcon.png" />
+    <None Remove="Resources\HiResAppIcon2.png" />
+    <None Remove="Resources\home.png" />
+    <None Remove="Resources\info-circle.png" />
     <None Remove="Resources\lightbulb_32px.png" />
+    <None Remove="Resources\logo_nothilfe.png" />
     <None Remove="Resources\map_32px.png" />
     <None Remove="Resources\presentation_32px.png" />
     <None Remove="Resources\profile-male_32px.png" />
+    <None Remove="Resources\shopping-cart.png" />
+    <None Remove="Resources\urgent.png" />
+    <None Remove="Resources\user.png" />
     <None Remove="Resources\Velocity.png" />
   </ItemGroup>
 
   <ItemGroup>
-    <EmbeddedResource Include="Resources\adjustments_32px.png" />
-    <EmbeddedResource Include="Resources\anchor_32px.png" />
-    <EmbeddedResource Include="Resources\bike_32px.png" />
-    <EmbeddedResource Include="Resources\book-open_32px.png" />
-    <EmbeddedResource Include="Resources\cloud.png" />
-    <EmbeddedResource Include="Resources\clouds.png" />
-    <EmbeddedResource Include="Resources\download_32px.png" />
     <EmbeddedResource Include="Resources\hamburger.png" />
-    <EmbeddedResource Include="Resources\hazardous_32px.png" />
-    <EmbeddedResource Include="Resources\led_active.png" />
-    <EmbeddedResource Include="Resources\led_inactive.png" />
-    <EmbeddedResource Include="Resources\led_undefined.png" />
-    <EmbeddedResource Include="Resources\led_warn.png" />
-    <EmbeddedResource Include="Resources\lightbulb_32px.png" />
-    <EmbeddedResource Include="Resources\map_32px.png" />
-    <EmbeddedResource Include="Resources\presentation_32px.png" />
-    <EmbeddedResource Include="Resources\profile-male_32px.png" />
+    <EmbeddedResource Include="Resources\HiResAppIcon.png" />
+    <EmbeddedResource Include="Resources\HiResAppIcon2.png" />
+    <EmbeddedResource Include="Resources\home.png" />
+    <EmbeddedResource Include="Resources\info-circle.png" />
+    <EmbeddedResource Include="Resources\logo_nothilfe.png" />
+    <EmbeddedResource Include="Resources\shopping-cart.png" />
+    <EmbeddedResource Include="Resources\urgent.png" />
+    <EmbeddedResource Include="Resources\user.png" />
   </ItemGroup>
 
   <ItemGroup>

@@ -28,7 +28,7 @@
                                         <ColumnDefinition Width="*" />
                                     </Grid.ColumnDefinitions>
 
-                                    <Image Grid.Column="0" Source="{Binding Image}" Aspect="AspectFit"/>
+                                    <Image Grid.Column="0" Source="{Binding Image}" Aspect="AspectFit" />
 
                                     <Frame Grid.Column="1" Padding="2,0,0,0">
                                         <Label Text="{Binding Title}" VerticalOptions="Center" />

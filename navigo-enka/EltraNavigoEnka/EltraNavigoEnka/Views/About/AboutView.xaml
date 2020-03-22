@@ -27,16 +27,15 @@
                     <RowDefinition Height="Auto"></RowDefinition>
                     <RowDefinition Height="Auto"></RowDefinition>
                     <RowDefinition Height="Auto"></RowDefinition>
-                    <RowDefinition Height="Auto"></RowDefinition>
                 </Grid.RowDefinitions>
 
                 <Label HorizontalOptions="CenterAndExpand" Grid.Row="0" Text="Not Kauf" FontSize="Medium" />
+
+                <Image HorizontalOptions="CenterAndExpand" Grid.Row="2" Source="{Binding LogoImage}"/>
                 
-                <Image HorizontalOptions="CenterAndExpand" Grid.Row="2" Source="{Binding PutImage}" HeightRequest="140"/>
                 <Label HorizontalOptions="CenterAndExpand" Grid.Row="4" Text="{Binding VersionName}" />
                 <Label HorizontalOptions="CenterAndExpand" Grid.Row="5" Text="Copyright (c) 2019-2020" />
-                <Label HorizontalOptions="CenterAndExpand" Grid.Row="6" Text="eltra.ch - Dawid Sienkiewicz" />
-                <Label HorizontalOptions="CenterAndExpand" Grid.Row="7" Text="All rights reserved." />
+                <Label HorizontalOptions="CenterAndExpand" Grid.Row="6" Text="eltra.ch" />
             </Grid>
         </Frame>
     </Grid>

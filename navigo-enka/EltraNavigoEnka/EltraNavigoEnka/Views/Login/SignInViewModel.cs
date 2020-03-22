@@ -12,7 +12,7 @@ namespace EltraNavigo.Views.Login
         {
             Title = "Einloggen";
             Uuid = "1F81E5FD-2F7E-4D06-AB28-BCE50728CC91";
-            Image = ImageSource.FromResource("EltraNavigoEnka.Resources.profile-male_32px.png");
+            Image = ImageSource.FromResource("EltraNavigoEnka.Resources.user.png");
         }
 
         #endregion
