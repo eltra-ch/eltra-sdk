@@ -27,15 +27,19 @@
                     <RowDefinition Height="Auto"></RowDefinition>
                     <RowDefinition Height="Auto"></RowDefinition>
                     <RowDefinition Height="Auto"></RowDefinition>
+                    <RowDefinition Height="Auto"></RowDefinition>
+                    <RowDefinition Height="Auto"></RowDefinition>
                 </Grid.RowDefinitions>
 
-                <Label HorizontalOptions="CenterAndExpand" Grid.Row="0" Text="Not Kauf" FontSize="Medium" />
+                <Label HorizontalOptions="CenterAndExpand" Grid.Row="0" Text="NotKauf" FontSize="Medium" />
 
                 <Image HorizontalOptions="CenterAndExpand" Grid.Row="2" Source="{Binding LogoImage}"/>
                 
                 <Label HorizontalOptions="CenterAndExpand" Grid.Row="4" Text="{Binding VersionName}" />
-                <Label HorizontalOptions="CenterAndExpand" Grid.Row="5" Text="Copyright (c) 2019-2020" />
-                <Label HorizontalOptions="CenterAndExpand" Grid.Row="6" Text="eltra.ch" />
+                <Label HorizontalOptions="CenterAndExpand" Grid.Row="5" Text="Das Konzept: Jakub" />
+                <Label HorizontalOptions="CenterAndExpand" Grid.Row="6" Text="Bilder: Marta" />
+                <Label HorizontalOptions="CenterAndExpand" Grid.Row="7" Text="Copyright (c) 2019-2020" />
+                <Label HorizontalOptions="CenterAndExpand" Grid.Row="8" Text="eltra.ch" />
             </Grid>
         </Frame>
     </Grid>

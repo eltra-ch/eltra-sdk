@@ -23,7 +23,7 @@
 	<key>CFBundleDisplayName</key>
 	<string>Not Kauf</string>
 	<key>CFBundleIdentifier</key>
-	<string>com.eltra.notkauf</string>
+	<string>com.eltra.NotKauf</string>
 	<key>UILaunchStoryboardName</key>
 	<string>LaunchScreen</string>
 	<key>CFBundleName</key>
