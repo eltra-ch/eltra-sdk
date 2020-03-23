@@ -146,7 +146,6 @@ namespace EltraNotKauf.Views.Orders
 
         private async void OnButtonStateChanged(object sender, EventArgs e)
         {
-            string json = string.Empty;
             var message = new JsonProtocolV1();
 
             ActiveOrder = await GetActiveOrder();
@@ -171,9 +170,7 @@ namespace EltraNotKauf.Views.Orders
                 message.DrugStore = true;
             }
 
-            json = JsonConvert.SerializeObject(message);
-
-            if (string.IsNullOrEmpty(json))
+            if (message.Other == false && message.Shop == false && message.Car == false && message.DrugStore == false)
             {
                 if (ActiveOrder != null)
                 {
@@ -196,6 +193,8 @@ namespace EltraNotKauf.Views.Orders
             }
             else
             {
+                var json = JsonConvert.SerializeObject(message);
+
                 if (ActiveOrder != null)
                 {
                     if (ActiveOrder.Status == OrderStatus.Closed)

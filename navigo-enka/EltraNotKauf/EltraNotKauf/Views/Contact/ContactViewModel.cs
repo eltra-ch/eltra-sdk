@@ -39,6 +39,8 @@ namespace EltraNotKauf.Views.Contact
         private string _countryCode = "CH";
         private string _langCode = "de";
 
+        private bool _isPhoneValid;
+
         #endregion
 
         #region Constructors
@@ -49,7 +51,8 @@ namespace EltraNotKauf.Views.Contact
             Image = ImageSource.FromResource("EltraNotKauf.Resources.home.png");
             IsMandatory = true;
             Uuid = "791AFBD3-E61D-4A0B-B35B-874D5A038E35";
-            
+            IsPhoneValid = true;
+
             _transporter = new CloudTransporter();
 
             PropertyChanged += (sender, args) => 
@@ -57,6 +60,10 @@ namespace EltraNotKauf.Views.Contact
                 if(args.PropertyName == "PostalCode")
                 {
                     OnPostalCodeChanged();
+                }
+                if (args.PropertyName == "Phone")
+                {
+                    OnPhoneChanged();
                 }
 
                 UpdateValidFlag(); 
@@ -66,6 +73,12 @@ namespace EltraNotKauf.Views.Contact
         #endregion
 
         #region Properties
+
+        public bool IsPhoneValid
+        {
+            get => _isPhoneValid;
+            set => SetProperty(ref _isPhoneValid, value);
+        }
 
         public EltraCloudContracts.Enka.Contacts.Contact Contact
         {
@@ -187,7 +200,7 @@ namespace EltraNotKauf.Views.Contact
 
         private void UpdateValidFlag()
         {
-            IsValid = !string.IsNullOrEmpty(Name) && !string.IsNullOrEmpty(Phone);
+            IsValid = !string.IsNullOrEmpty(Name) && IsPhoneValid;            
         }
 
         public override async Task Show()
@@ -529,6 +542,11 @@ namespace EltraNotKauf.Views.Contact
         private void OnLocateClicked()
         {
             Task.Run(async () => { await GetLocation(); });
+        }
+
+        private void OnPhoneChanged()
+        {
+            IsPhoneValid = Phone.IsPhoneNumber();
         }
 
         private async void OnPostalCodeChanged()

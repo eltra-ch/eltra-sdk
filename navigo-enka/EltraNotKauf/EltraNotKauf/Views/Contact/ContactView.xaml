@@ -71,7 +71,16 @@
                         <Entry Text="{Binding Name}"/>
                     </Frame>
                     <Frame Grid.Column="1" Grid.Row="1" Style="{StaticResource BorderLikeFrame}">
-                        <Entry Text="{Binding Phone}"/>
+                        <Entry Text="{Binding Phone}">
+                            <Entry.Triggers>
+                                <DataTrigger TargetType="Entry" Binding="{Binding IsPhoneValid}" Value="true">
+                                    <Setter Property="TextColor" Value="Default"/>
+                                </DataTrigger>
+                                <DataTrigger TargetType="Entry" Binding="{Binding IsPhoneValid}" Value="false">
+                                    <Setter Property="TextColor" Value="Red"/>
+                                </DataTrigger>
+                            </Entry.Triggers>
+                        </Entry>
                     </Frame>
                     <Frame Grid.Column="1" Grid.Row="2" Style="{StaticResource BorderLikeFrame}">
                         <Picker ItemsSource="{Binding Regions}" SelectedItem="{Binding Region}" ItemDisplayBinding="{Binding Name}"/>
@@ -112,7 +121,7 @@
                     </Frame>
 
                     <Frame Grid.Column="1" Grid.Row="6" Style="{StaticResource BorderLikeFrame}">
-                        <Button Text="Speichern" Command="{Binding SaveCommand}"/>
+                        <Button Text="Speichern" Command="{Binding SaveCommand}" IsEnabled="{Binding IsValid}"/>
                     </Frame>
 
                 </Grid>
