@@ -14,6 +14,7 @@ namespace EltraNotKauf.Controls
         private bool _isVisible;
         private bool _isEnabled;
         private bool _isUpdating;
+        private bool _isConnected;
         private bool _isMandatory;
         private bool _isSupported;
 
@@ -58,9 +59,15 @@ namespace EltraNotKauf.Controls
         public bool IsUpdating
         {
             get => _isUpdating; 
-            private set => SetProperty(ref _isUpdating, value);
+            set => SetProperty(ref _isUpdating, value);
         }
-        
+
+        public bool IsConnected
+        {
+            get => _isConnected;
+            set => SetProperty(ref _isConnected, value);
+        }
+
         public bool IsVisible
         {
             get => _isVisible;
@@ -149,7 +156,7 @@ namespace EltraNotKauf.Controls
             return default;
         }
 
-        public virtual async Task Show()
+        public virtual void Show()
         {
             IsBusy = true;
 
@@ -157,30 +164,30 @@ namespace EltraNotKauf.Controls
             {
                 foreach (var child in SafeChildrenArray)
                 {
-                    await child.Show();
+                    child.Show();
                 }
 
                 IsVisible = true;
 
                 OnVisibilityChanged();
 
-                await StartUpdate();
+                Task.Run(async ()=> { await StartUpdate(); });
             }
 
             IsBusy = false;
         }
 
-        public virtual async Task Hide()
+        public virtual void Hide()
         {
             IsBusy = true;
 
             if (IsVisible)
             {
-                await StopUpdate();
+                Task.Run(async () => { await StopUpdate(); });
 
                 foreach (var child in SafeChildrenArray)
                 {
-                    await child.Hide();
+                    child.Hide();
                 }
 
                 IsVisible = false;
@@ -230,6 +237,56 @@ namespace EltraNotKauf.Controls
                 foreach (var child in SafeChildrenArray)
                 {
                     result = await child.StopUpdate();
+
+                    if (!result)
+                    {
+                        break;
+                    }
+                }
+            }
+
+            return result;
+        }
+
+        public virtual async Task<bool> StartCommunication()
+        {
+            bool result = true;
+
+            if (!IsConnected)
+            {
+                IsConnected = true;
+
+                foreach (var child in SafeChildrenArray)
+                {
+                    result = await child.StartCommunication();
+
+                    if (!result)
+                    {
+                        break;
+                    }
+                }
+            }
+            else
+            {
+                result = false;
+            }
+
+            return result;
+        }
+
+        public virtual async Task<bool> StopCommunication()
+        {
+            bool result = true;
+
+            if (IsConnected)
+            {
+                IsConnected = false;
+
+                result = true;
+
+                foreach (var child in SafeChildrenArray)
+                {
+                    result = await child.StopCommunication();
 
                     if (!result)
                     {

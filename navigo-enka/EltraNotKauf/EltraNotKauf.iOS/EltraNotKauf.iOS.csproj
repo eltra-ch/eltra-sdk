@@ -175,7 +175,7 @@
   </ItemGroup>
   <ProjectExtensions>
     <VisualStudio>
-      <UserProperties XamarinHotReloadMonoInterpreterErrorInfoBarNotKaufiOSHideInfoBar="True" />
+      <UserProperties XamarinHotReloadMonoInterpreterErrorInfoBarEltraNotKaufiOSHideInfoBar="True" XamarinHotReloadMonoInterpreterErrorInfoBarNotKaufiOSHideInfoBar="True" />
     </VisualStudio>
   </ProjectExtensions>
 </Project>

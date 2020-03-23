@@ -6,6 +6,7 @@
              x:DataType="contact:ContactViewModel"
              xmlns:maps="clr-namespace:Xamarin.Forms.Maps;assembly=Xamarin.Forms.Maps"
              xmlns:forms="clr-namespace:dotMorten.Xamarin.Forms;assembly=dotMorten.Xamarin.Forms.AutoSuggestBox"
+             xmlns:connectionstatus="clr-namespace:EltraNotKauf.Views.ConnectionStatus"
              x:Class="EltraNotKauf.Views.Contact.ContactView">
 
     <ContentView.Resources>
@@ -68,10 +69,10 @@
 
                     <!-- Edit -->
                     <Frame Grid.Column="1" Grid.Row="0" Style="{StaticResource BorderLikeFrame}">
-                        <Entry Text="{Binding Name}"/>
+                        <Entry Text="{Binding Name}" IsEnabled="{Binding IsConnected}"/>
                     </Frame>
                     <Frame Grid.Column="1" Grid.Row="1" Style="{StaticResource BorderLikeFrame}">
-                        <Entry Text="{Binding Phone}">
+                        <Entry Text="{Binding Phone}" IsEnabled="{Binding IsConnected}">
                             <Entry.Triggers>
                                 <DataTrigger TargetType="Entry" Binding="{Binding IsPhoneValid}" Value="true">
                                     <Setter Property="TextColor" Value="Default"/>
@@ -83,7 +84,7 @@
                         </Entry>
                     </Frame>
                     <Frame Grid.Column="1" Grid.Row="2" Style="{StaticResource BorderLikeFrame}">
-                        <Picker ItemsSource="{Binding Regions}" SelectedItem="{Binding Region}" ItemDisplayBinding="{Binding Name}"/>
+                        <Picker ItemsSource="{Binding Regions}" SelectedItem="{Binding Region}" ItemDisplayBinding="{Binding Name}" IsEnabled="{Binding IsConnected}"/>
                     </Frame>
                     <Frame Grid.Column="1" Grid.Row="3" Style="{StaticResource BorderLikeFrame}">
                         <Grid>
@@ -93,14 +94,14 @@
                             </Grid.ColumnDefinitions>
 
                             <Frame Grid.Column="0" Style="{StaticResource BorderLikeFrame}">
-                                <forms:AutoSuggestBox Text="{Binding PostalCode, Mode=TwoWay}" ItemsSource="{Binding PostalCodeSuggestions}" WidthRequest="64">
+                                <forms:AutoSuggestBox Text="{Binding PostalCode, Mode=TwoWay}" ItemsSource="{Binding PostalCodeSuggestions}" WidthRequest="64" IsEnabled="{Binding IsConnected}">
                                     <forms:AutoSuggestBox.Behaviors>
                                         <behaviors:PostalCodeAutoSuggestBoxBehavior/>
                                     </forms:AutoSuggestBox.Behaviors>
                                 </forms:AutoSuggestBox>
                             </Frame>
                             <Frame Grid.Column="1" Style="{StaticResource BorderLikeFrame}">
-                                <forms:AutoSuggestBox Text="{Binding City, Mode=TwoWay}" ItemsSource="{Binding CitySuggestions}">
+                                <forms:AutoSuggestBox Text="{Binding City, Mode=TwoWay}" ItemsSource="{Binding CitySuggestions}" IsEnabled="{Binding IsConnected}">
                                     <forms:AutoSuggestBox.Behaviors>
                                         <behaviors:CityAutoSuggestBoxBehavior/>
                                     </forms:AutoSuggestBox.Behaviors>
@@ -110,23 +111,27 @@
                     </Frame>
                     
                     <Frame Grid.Column="1" Grid.Row="4" Style="{StaticResource BorderLikeFrame}">
-                        <forms:AutoSuggestBox Text="{Binding Street, Mode=TwoWay}" ItemsSource="{Binding StreetSuggestions}">
+                        <forms:AutoSuggestBox Text="{Binding Street, Mode=TwoWay}" ItemsSource="{Binding StreetSuggestions}" IsEnabled="{Binding IsConnected}">
                             <forms:AutoSuggestBox.Behaviors>
                                 <behaviors:StreetAutoSuggestBoxBehavior/>
                             </forms:AutoSuggestBox.Behaviors>
                         </forms:AutoSuggestBox>
                     </Frame>
                     <Frame Grid.Column="1" Grid.Row="5" Style="{StaticResource BorderLikeFrame}">
-                        <Entry Text="{Binding Notice}"/>
+                        <Entry Text="{Binding Notice}" IsEnabled="{Binding IsConnected}"/>
                     </Frame>
 
-                    <Frame Grid.Column="1" Grid.Row="6" Style="{StaticResource BorderLikeFrame}">
+                    <Frame Grid.Column="1" Grid.Row="6" Style="{StaticResource BorderLikeFrame}" IsEnabled="{Binding IsConnected}">
                         <Button Text="Speichern" Command="{Binding SaveCommand}" IsEnabled="{Binding IsValid}"/>
                     </Frame>
 
                 </Grid>
             </Frame>
 
+            <Frame Grid.Row="2" Padding="0">
+                <connectionstatus:ConnectionStatusView/>
+            </Frame>
+            
         </Grid>
     </ScrollView>
 </ContentView>

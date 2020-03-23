@@ -5,6 +5,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:behaviors="clr-namespace:EltraNotKauf.Views.Login.Behaviors;assembly=EltraNotKauf"
              xmlns:views="clr-namespace:EltraNotKauf.Views.Login;assembly=EltraNotKauf"
+             xmlns:connectionstatus="clr-namespace:EltraNotKauf.Views.ConnectionStatus"
              mc:Ignorable="d"
              x:DataType="views:SignUpViewModel"
              x:Class="EltraNotKauf.Views.Login.SignUpView" VerticalOptions="CenterAndExpand">
@@ -13,7 +14,7 @@
     </ContentView.Behaviors>
     <ContentView.Content>
         <ScrollView>
-        <Grid VerticalOptions="StartAndExpand" HorizontalOptions="FillAndExpand">
+            <Grid VerticalOptions="StartAndExpand" HorizontalOptions="FillAndExpand" IsEnabled="{Binding IsConnected}">
             
             <Grid>
                 <Grid.Resources>
@@ -21,13 +22,14 @@
                         <Color x:Key="NavigationPrimary">#2196F3</Color>
                     </ResourceDictionary>
                 </Grid.Resources>
-                <Grid.RowDefinitions>
-                    <RowDefinition></RowDefinition>
-                    <RowDefinition Height="420"></RowDefinition>
-                    <RowDefinition></RowDefinition>
-                </Grid.RowDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition/>
+                        <RowDefinition Height="420"></RowDefinition>
+                        <RowDefinition/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
 
-                <Grid.ColumnDefinitions>
+                    <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="4"></ColumnDefinition>
                     <ColumnDefinition Width="*"></ColumnDefinition>
                     <ColumnDefinition Width="4"></ColumnDefinition>
@@ -122,8 +124,13 @@
 
                         </Grid>
                     </Grid>
-                </Frame>                
-            </Grid>
+                </Frame>
+
+                    <Frame Grid.Column="1" Grid.Row="3" Padding="0">
+                        <connectionstatus:ConnectionStatusView/>
+                    </Frame>
+
+                </Grid>
         </Grid>
         </ScrollView>
     </ContentView.Content>

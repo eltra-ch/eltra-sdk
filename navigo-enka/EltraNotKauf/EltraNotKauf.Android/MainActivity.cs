@@ -2,7 +2,6 @@
 using Android.Content.PM;
 using Android.Runtime;
 using Android.OS;
-using EltraNotKauf.Droid;
 
 namespace EltraNotKauf.Droid
 {

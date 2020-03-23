@@ -25,6 +25,13 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Remove="Resources\cloud-storm.png" />
+    <None Remove="Resources\cloud.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\cloud-storm.png" />
+    <EmbeddedResource Include="Resources\cloud.png" />
     <EmbeddedResource Include="Resources\hamburger.png" />
     <EmbeddedResource Include="Resources\HiResAppIcon.png" />
     <EmbeddedResource Include="Resources\HiResAppIcon2.png" />
@@ -77,6 +84,9 @@
     <EmbeddedResource Update="Resources\AppResources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>AppResources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Views\ConnectionStatus\ConnectionStatusView.xaml">
+      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
     </EmbeddedResource>
     <EmbeddedResource Update="Views\Control\ControlView.xaml">
       <Generator>MSBuild:UpdateDesignTimeXaml</Generator>

@@ -5,6 +5,7 @@
              xmlns:behaviors="clr-namespace:EltraNotKauf.Views.Login.Behaviors"
              xmlns:converters="clr-namespace:EltraNotKauf.Controls.Converters"
              xmlns:buttons="clr-namespace:EltraNotKauf.Controls.Button"
+             xmlns:connectionstatus="clr-namespace:EltraNotKauf.Views.ConnectionStatus"
              x:DataType="orders:OrderViewModel"            
              x:Class="EltraNotKauf.Views.Orders.OrderView">
 
@@ -22,9 +23,10 @@
         <behaviors:ToolViewBehavior/>
     </ContentView.Behaviors>
 
-    <Grid HorizontalOptions="FillAndExpand" VerticalOptions="FillAndExpand" HeightRequest="400">
+    <Grid HorizontalOptions="FillAndExpand" VerticalOptions="FillAndExpand" HeightRequest="400" IsEnabled="{Binding IsConnected}">
         <Grid.RowDefinitions>
             <RowDefinition Height="8"></RowDefinition>
+            <RowDefinition Height="Auto"></RowDefinition>
             <RowDefinition Height="Auto"></RowDefinition>
             <RowDefinition Height="Auto"></RowDefinition>
             <RowDefinition Height="Auto"></RowDefinition>
@@ -83,6 +85,10 @@
             </Grid>
         </Frame>
 
+        <Frame Grid.Row="4" Padding="0">
+            <connectionstatus:ConnectionStatusView/>
+        </Frame>
+        
     </Grid>
 
 </ContentView>

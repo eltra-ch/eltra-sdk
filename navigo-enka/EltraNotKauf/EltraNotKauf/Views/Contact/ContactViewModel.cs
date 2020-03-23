@@ -203,7 +203,7 @@ namespace EltraNotKauf.Views.Contact
             IsValid = !string.IsNullOrEmpty(Name) && IsPhoneValid;            
         }
 
-        public override async Task Show()
+        public override async void Show()
         {
             Regions = await ReadRegions();
 
@@ -211,7 +211,7 @@ namespace EltraNotKauf.Views.Contact
 
             UpdateValidFlag();
 
-            await base.Show();
+            base.Show();
         }
 
         private Region FindRegion(string name)
@@ -532,11 +532,11 @@ namespace EltraNotKauf.Views.Contact
             return result;
         }
 
-        public override async Task Hide()
+        public override async void Hide()
         {
             await StoreContact();
 
-            await base.Hide();
+            base.Hide();
         }
 
         private void OnLocateClicked()

@@ -33,7 +33,7 @@ namespace EltraNotKauf.Views.Behaviors
 
             if (_pageChangedEventPending)
             {
-                _viewModel?.GotoFirstPage();
+                
 
                 _pageChangedEventPending = false;
             }

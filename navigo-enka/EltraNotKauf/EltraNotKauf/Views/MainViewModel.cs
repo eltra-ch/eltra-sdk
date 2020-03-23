@@ -116,14 +116,29 @@ namespace EltraNotKauf.Views
             });
         }
         
-        public async void StartCommunication()
+        public async void StartUpdate()
         {
             await MasterViewModel.StartUpdate();
         }
 
-        public async void StopCommunication()
+        public async void StopUpdate()
         {
             await MasterViewModel.StopUpdate();
+        }
+
+        public async void StartCommunication()
+        {
+            await MasterViewModel.StartCommunication();
+        }
+
+        public async void StopCommunication()
+        {
+            await MasterViewModel.StopCommunication();
+        }
+
+        public void OnStart()
+        {
+            MasterViewModel.GotoFirstPage();
         }
 
         #endregion

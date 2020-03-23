@@ -153,7 +153,7 @@ namespace EltraNotKauf.Views
 
         #region Methods
 
-        public async void GotoFirstPage()
+        public void GotoFirstPage()
         {
             if (!SignInViewModel.AutoLogOnActive)
             {
@@ -163,13 +163,15 @@ namespace EltraNotKauf.Views
             {
                 IsBusy = true;
 
-                if (SignInViewModel.IsValid)
-                {
-                    if(await SignInViewModel.SignIn())
+                Task.Run(async () => { 
+                    if (SignInViewModel.IsValid)
                     {
-                        ActivateTools(true);
+                        if(await SignInViewModel.SignIn())
+                        {
+                            ActivateTools(true);
+                        }
                     }
-                }
+                });
 
                 IsBusy = false;
 
@@ -185,7 +187,7 @@ namespace EltraNotKauf.Views
             }
         }
 
-        public async void ChangePage(ToolViewModel viewModel, bool internalChange = false)
+        public void ChangePage(ToolViewModel viewModel, bool internalChange = false)
         {
             if (viewModel != null && _activeViewModel != viewModel)
             {
@@ -193,24 +195,10 @@ namespace EltraNotKauf.Views
 
                 if (_previousViewModel != null)
                 {
-                    try
-                    {
-                        await _previousViewModel.Hide();
-                    }
-                    catch(Exception e)
-                    {
-                        Console.WriteLine(e.Message);
-                    }
+                    _previousViewModel.Hide();
                 }
 
-                try
-                {
-                    await viewModel.Show();
-                }
-                catch (Exception e)
-                {
-                    Console.WriteLine(e.Message);
-                }
+                viewModel?.Show();
 
                 ActiveViewModel = viewModel;
 
@@ -348,8 +336,7 @@ namespace EltraNotKauf.Views
                 SignOutViewModel.IsEnabled = false;
             }
         }
-
-
+        
         private void AddModels()
         {
             ToolViewModels = new List<ToolViewModel>
@@ -385,8 +372,6 @@ namespace EltraNotKauf.Views
             supportedViewModels.AddRange(FooterViewModels);
 
             SupportedViewModels = supportedViewModels;
-
-            GotoFirstPage();
         }
         
         public async Task StopUpdate()
@@ -402,6 +387,22 @@ namespace EltraNotKauf.Views
             foreach (var viewModel in SupportedViewModels)
             {
                 await viewModel.StartUpdate();
+            }
+        }
+
+        public async Task StopCommunication()
+        {
+            foreach (var viewModel in ViewModels)
+            {
+                await viewModel.StopCommunication();
+            }
+        }
+
+        public async Task StartCommunication()
+        {
+            foreach (var viewModel in ViewModels)
+            {
+                await viewModel.StartCommunication();
             }
         }
 

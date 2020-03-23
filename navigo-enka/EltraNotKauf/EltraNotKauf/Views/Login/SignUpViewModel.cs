@@ -2,7 +2,6 @@
 using Xamarin.Forms;
 using EltraConnector.Controllers;
 using EltraCloudContracts.Contracts.Users;
-using EltraNotKauf.Views.Login;
 
 namespace EltraNotKauf.Views.Login
 {

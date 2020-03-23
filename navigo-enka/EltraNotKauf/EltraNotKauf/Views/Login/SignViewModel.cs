@@ -1,7 +1,6 @@
 ﻿using EltraCloudContracts.Contracts.Users;
 using EltraConnector.Controllers;
 using EltraNotKauf.Controls;
-using EltraNotKauf.Views.Login;
 using EltraNotKauf.Views.Login.Events;
 using System;
 using System.ComponentModel;
@@ -30,6 +29,8 @@ namespace EltraNotKauf.Views.Login
         {
             IsMandatory = true;
             IsLoginValid = true;
+
+            ReadStoredLoginData();
 
             PropertyChanged += OnViewModelPropertyChanged;
         }
@@ -172,10 +173,13 @@ namespace EltraNotKauf.Views.Login
         public async Task<bool> SignIn()
         {
             bool result = false;
-            
-            if (await AuthControllerAdapter.SignIn(new UserAuthData() { Login = LoginName, Password = Password }))
+
+            if (IsConnected)
             {
-                result = true;
+                if (await AuthControllerAdapter.SignIn(new UserAuthData() { Login = LoginName, Password = Password }))
+                {
+                    result = true;
+                }
             }
 
             return result;
@@ -184,25 +188,29 @@ namespace EltraNotKauf.Views.Login
         public async Task<bool> SignOut()
         {
             bool result = false;
-            
-            if (await AuthControllerAdapter.SignOut())
-            {
-                OnSignStatusChanged(SignStatus.SignedOut);
 
-                result = true;
+            if (IsConnected)
+            {
+                if (await AuthControllerAdapter.SignOut())
+                {
+                    OnSignStatusChanged(SignStatus.SignedOut);
+
+                    result = true;
+                }
             }
 
             return result;
         }
 
-        public override async Task Show()
+        public override void Show()
         {
             IsBusy = true;
 
             ReadStoredLoginData();
+
             UpdateValidFlag();
 
-            await base.Show();
+            base.Show();
 
             IsBusy = false;
         }

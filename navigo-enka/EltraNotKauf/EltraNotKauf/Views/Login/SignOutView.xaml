@@ -9,8 +9,8 @@
     <ContentView.Behaviors>
         <behaviors:ToolViewBehavior/>
     </ContentView.Behaviors>
-    
-    <Grid>
+
+    <Grid IsEnabled="{Binding IsConnected}">
        
     </Grid>
 

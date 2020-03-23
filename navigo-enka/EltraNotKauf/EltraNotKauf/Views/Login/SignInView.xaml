@@ -5,6 +5,8 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:behaviors="clr-namespace:EltraNotKauf.Views.Login.Behaviors;assembly=EltraNotKauf"
              xmlns:views="clr-namespace:EltraNotKauf.Views.Login;assembly=EltraNotKauf"
+             xmlns:helpers="clr-namespace:EltraNotKauf.Controls.Helpers;assembly=EltraNotKauf"
+             xmlns:connectionstatus="clr-namespace:EltraNotKauf.Views.ConnectionStatus"
              mc:Ignorable="d"
              x:DataType="views:SignInViewModel"             
              x:Class="EltraNotKauf.Views.Login.SignInView" VerticalOptions="CenterAndExpand">
@@ -12,7 +14,7 @@
         <behaviors:ToolViewBehavior/>
     </ContentView.Behaviors>
     <ContentView.Content>
-        <Grid VerticalOptions="FillAndExpand" HorizontalOptions="FillAndExpand">
+        <Grid VerticalOptions="FillAndExpand" HorizontalOptions="FillAndExpand" IsEnabled="{Binding IsConnected}">
             
             <Grid>
                 <Grid.Resources>
@@ -21,15 +23,16 @@
                     </ResourceDictionary>
                 </Grid.Resources>
                 <Grid.RowDefinitions>
-                    <RowDefinition></RowDefinition>
-                    <RowDefinition Height="Auto"></RowDefinition>
-                    <RowDefinition></RowDefinition>
+                    <RowDefinition/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition/>
+                    <RowDefinition Height="Auto"/>
                 </Grid.RowDefinitions>
 
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="4"></ColumnDefinition>
-                    <ColumnDefinition Width="*"></ColumnDefinition>
-                    <ColumnDefinition Width="4"></ColumnDefinition>
+                    <ColumnDefinition Width="4"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="4"/>
                 </Grid.ColumnDefinitions>
 
                 <Frame Grid.Row="1" Grid.Column="1" BorderColor="White" BackgroundColor="Transparent" 
@@ -71,7 +74,7 @@
                             </Frame>
 
                             <Frame Grid.Row="3">
-                                <Entry IsTabStop="True" TabIndex="0" Text="{Binding LoginName, Mode=OneWay}">
+                                <Entry IsTabStop="True" TabIndex="0" Text="{Binding LoginName, Mode=OneWay}" IsEnabled="{Binding IsConnected}">
                                     <Entry.Behaviors>
                                         <behaviors:LoginValidationBehavior/>
                                     </Entry.Behaviors>
@@ -91,7 +94,7 @@
                             </Frame>
 
                             <Frame Grid.Row="5">
-                                <Entry IsTabStop="True" TabIndex="1" Text="{Binding Password, Mode=OneWay}" IsPassword="True">
+                                <Entry IsTabStop="True" TabIndex="1" Text="{Binding Password, Mode=OneWay}" IsPassword="True" IsEnabled="{Binding IsConnected}">
                                     <Entry.Behaviors>
                                         <behaviors:PasswordValidationBehavior/>
                                     </Entry.Behaviors>
@@ -111,7 +114,7 @@
                             </Frame>
 
                             <Frame Grid.Row="7">
-                                <Button IsTabStop="True" TabIndex="3" Text="AUSLOGGEN" Command="{Binding RegisterCommand}"/>
+                                <Button IsTabStop="True" TabIndex="3" Text="AUSLOGGEN" Command="{Binding RegisterCommand}" IsEnabled="{Binding IsConnected}"/>
                             </Frame>
 
                             <Frame Grid.Row="8" BackgroundColor="Transparent">
@@ -124,6 +127,11 @@
                         </Grid>
                     </Grid>
                 </Frame>
+
+                <Frame Grid.Column="1" Grid.Row="3" Padding="0">
+                    <connectionstatus:ConnectionStatusView/>
+                </Frame>
+            
             </Grid>
         </Grid>
     </ContentView.Content>

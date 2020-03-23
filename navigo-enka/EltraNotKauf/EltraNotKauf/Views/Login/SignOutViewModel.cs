@@ -1,6 +1,5 @@
 ﻿using EltraConnector.Controllers;
 using EltraNotKauf.Controls;
-using EltraNotKauf.Views.Login;
 using EltraNotKauf.Views.Login.Events;
 using System;
 using System.Threading.Tasks;
@@ -68,11 +67,11 @@ namespace EltraNotKauf.Views.Login
 
         #region Methods
 
-        public override async Task Show()
+        public override async void Show()
         {
             await Task.Delay(200).ContinueWith(DelayedStatusChange());
 
-            await base.Show();
+            base.Show();
         }
 
         private Func<Task, Task> DelayedStatusChange()

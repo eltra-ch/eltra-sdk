@@ -324,7 +324,7 @@ namespace EltraNotKauf.Views.Orders
             return result;
         }
 
-        public override async Task Show()
+        public override async void Show()
         {
             _timer.Start();
 
@@ -333,7 +333,7 @@ namespace EltraNotKauf.Views.Orders
             UpdateActiveOrderStatus();
             UpdateButtonsState();
 
-            await base.Show();
+            base.Show();
         }
 
         private void UpdateButtonsState()
@@ -362,11 +362,11 @@ namespace EltraNotKauf.Views.Orders
             }
         }
 
-        public override Task Hide()
+        public override void Hide()
         {
             _timer.Stop();
 
-            return base.Hide();
+            base.Hide();
         }
 
         public async Task<bool> AddOrder(Order order)

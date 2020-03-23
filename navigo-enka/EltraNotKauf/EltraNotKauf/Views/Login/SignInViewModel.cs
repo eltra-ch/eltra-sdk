@@ -1,5 +1,4 @@
-﻿using EltraNotKauf.Views.Login;
-using System.Windows.Input;
+﻿using System.Windows.Input;
 using Xamarin.Forms;
 
 namespace EltraNotKauf.Views.Login
