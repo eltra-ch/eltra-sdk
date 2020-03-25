@@ -31,6 +31,7 @@ namespace EltraNotKauf.Views.Orders
 
         private string _activeOrderStatus;
         private string _activeOrderTitle;
+        private string _notice;
         private Timer _timer;
 
         #endregion
@@ -113,6 +114,12 @@ namespace EltraNotKauf.Views.Orders
             set => SetProperty(ref _activeOrderTitle, value);
         }
 
+        public string Notice
+        {
+            get => _notice;
+            set => SetProperty(ref _notice, value);
+        }
+
         public string Url
         {
             get
@@ -138,15 +145,22 @@ namespace EltraNotKauf.Views.Orders
 
         private async void OnUpdateIntervalElapsed(object sender, ElapsedEventArgs e)
         {
-            ActiveOrder = await GetActiveOrder();
+            var activeOrder = await GetActiveOrder();
 
-            UpdateActiveOrderStatus();
-            UpdateButtonsState();
+            if (IsActiveOrderChanged(activeOrder))
+            {
+                ActiveOrder = activeOrder;
+
+                UpdateActiveOrderStatus();
+                UpdateControlsState();
+            }
         }
 
         private async void OnButtonStateChanged(object sender, EventArgs e)
         {
             var message = new JsonProtocolV1();
+
+            _timer.Enabled = false;
 
             ActiveOrder = await GetActiveOrder();
 
@@ -169,6 +183,8 @@ namespace EltraNotKauf.Views.Orders
             {
                 message.DrugStore = true;
             }
+
+            message.Notice = Notice;
 
             if (message.Other == false && message.Shop == false && message.Car == false && message.DrugStore == false)
             {
@@ -245,11 +261,26 @@ namespace EltraNotKauf.Views.Orders
                     }
                 }
             }
+
+            _timer.Enabled = true;
         }
         
         #endregion
 
         #region Methods
+
+        private bool IsActiveOrderChanged(Order activeOrder)
+        {
+            bool result = false;
+
+            if (activeOrder != null && (activeOrder.Uuid != ActiveOrder.Uuid ||
+                activeOrder.Modified != ActiveOrder.Modified))
+            {
+                result = true;
+            }
+
+            return result;
+        }
 
         private void UpdateActiveOrderStatus()
         {
@@ -331,12 +362,13 @@ namespace EltraNotKauf.Views.Orders
             ActiveOrder = await GetActiveOrder();
 
             UpdateActiveOrderStatus();
-            UpdateButtonsState();
+
+            UpdateControlsState();
 
             base.Show();
         }
 
-        private void UpdateButtonsState()
+        private void UpdateControlsState()
         {
             try
             {
@@ -348,6 +380,8 @@ namespace EltraNotKauf.Views.Orders
                     CarButtonViewModel.ButtonState = jsonV1.Car ? ButtonState.Active : ButtonState.Inactive;
                     ShopButtonViewModel.ButtonState = jsonV1.Shop ? ButtonState.Active : ButtonState.Inactive;
                     DrugStoreButtonViewModel.ButtonState = jsonV1.DrugStore ? ButtonState.Active : ButtonState.Inactive;
+
+                    Notice = jsonV1.Notice;
                 }
                 else
                 {
@@ -355,6 +389,8 @@ namespace EltraNotKauf.Views.Orders
                     OtherButtonViewModel.ButtonState = ButtonState.Inactive;
                     ShopButtonViewModel.ButtonState = ButtonState.Inactive;
                     CarButtonViewModel.ButtonState = ButtonState.Inactive;
+
+                    Notice = string.Empty;
                 }
             }
             catch(Exception)

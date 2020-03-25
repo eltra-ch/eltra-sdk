@@ -2,6 +2,7 @@
 using EltraNotKauf.Views;
 using Xamarin.Essentials;
 using System;
+using EltraCommon.Logger;
 
 namespace EltraNotKauf
 {

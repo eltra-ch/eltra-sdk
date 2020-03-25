@@ -23,10 +23,10 @@
         <behaviors:ToolViewBehavior/>
     </ContentView.Behaviors>
 
-    <Grid HorizontalOptions="FillAndExpand" VerticalOptions="FillAndExpand" HeightRequest="400" IsEnabled="{Binding IsConnected}">
+    <Grid HorizontalOptions="FillAndExpand" VerticalOptions="FillAndExpand" IsEnabled="{Binding IsConnected}">
         <Grid.RowDefinitions>
             <RowDefinition Height="8"></RowDefinition>
-            <RowDefinition Height="Auto"></RowDefinition>
+            <RowDefinition Height="320"></RowDefinition>
             <RowDefinition Height="Auto"></RowDefinition>
             <RowDefinition Height="Auto"></RowDefinition>
             <RowDefinition Height="Auto"></RowDefinition>
@@ -34,34 +34,46 @@
         </Grid.RowDefinitions>
 
         <Frame Grid.Row="1" BorderColor="{StaticResource NavigationPrimary}">
-            <Grid HorizontalOptions="FillAndExpand" >
-
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition/>
-                    <ColumnDefinition/>
-                </Grid.ColumnDefinitions>
-                
+            <Grid HorizontalOptions="FillAndExpand" VerticalOptions="FillAndExpand">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="Auto"/>
                 </Grid.RowDefinitions>
-                
-                <Frame Grid.Column="0" Grid.Row="0" Style="{StaticResource BorderLikeFrame}">
-                    <buttons:ThreeStateButtonView BindingContext="{Binding ShopButtonViewModel}"/>
-                </Frame>
-                
-                <Frame Grid.Column="0" Grid.Row="1" Style="{StaticResource BorderLikeFrame}">
-                    <buttons:ThreeStateButtonView BindingContext="{Binding DrugStoreButtonViewModel}"/>                    
-                </Frame>
+                <Grid Grid.Row="0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition/>
+                        <ColumnDefinition/>
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
 
-                <Frame Grid.Column="1" Grid.Row="0" Style="{StaticResource BorderLikeFrame}">
-                    <buttons:ThreeStateButtonView BindingContext="{Binding CarButtonViewModel}"/>                    
-                </Frame>
-                
-                <Frame Grid.Column="1" Grid.Row="1" Style="{StaticResource BorderLikeFrame}">
-                    <buttons:ThreeStateButtonView BindingContext="{Binding OtherButtonViewModel}"/>                   
-                </Frame>
+                    <Frame Grid.Column="0" Grid.Row="0" Style="{StaticResource BorderLikeFrame}">
+                        <buttons:ThreeStateButtonView BindingContext="{Binding ShopButtonViewModel}"/>
+                    </Frame>
 
+                    <Frame Grid.Column="0" Grid.Row="1" Style="{StaticResource BorderLikeFrame}">
+                        <buttons:ThreeStateButtonView BindingContext="{Binding DrugStoreButtonViewModel}"/>
+                    </Frame>
+
+                    <Frame Grid.Column="1" Grid.Row="0" Style="{StaticResource BorderLikeFrame}">
+                        <buttons:ThreeStateButtonView BindingContext="{Binding CarButtonViewModel}"/>
+                    </Frame>
+
+                    <Frame Grid.Column="1" Grid.Row="1" Style="{StaticResource BorderLikeFrame}">
+                        <buttons:ThreeStateButtonView BindingContext="{Binding OtherButtonViewModel}"/>
+                    </Frame>
+                </Grid>
+                <Frame Grid.Row="1" BackgroundColor="Transparent">
+                    <StackLayout Orientation="Horizontal">
+                        <Label Text="Bemerkung:" VerticalOptions="CenterAndExpand"/>
+                        <Frame Padding="4" BackgroundColor="Transparent"/>
+                        <Editor Text="{Binding Notice}" VerticalOptions="FillAndExpand" HeightRequest="50" HorizontalOptions="FillAndExpand">
+                            
+                        </Editor>
+                    </StackLayout>
+                </Frame>
             </Grid>
         </Frame>
         <Frame Grid.Row="2" BackgroundColor="Transparent">
