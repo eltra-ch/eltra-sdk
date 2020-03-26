@@ -9,6 +9,7 @@
              xmlns:views="clr-namespace:EltraNotKauf.Views;assembly=EltraNotKauf"
              xmlns:contact="clr-namespace:EltraNotKauf.Views.Contact"
              xmlns:orders="clr-namespace:EltraNotKauf.Views.Orders"
+             xmlns:requests="clr-namespace:EltraNotKauf.Views.Requests"
              mc:Ignorable="d"
              x:DataType="views:DetailViewModel"
              x:Class="EltraNotKauf.Views.DetailView" Title="{Binding Title}">
@@ -35,6 +36,10 @@
             <orders:OrderView IsVisible="{Binding IsVisible}"/>
         </DataTemplate>
 
+        <DataTemplate x:Key="RequestsView">
+            <requests:RequestsView IsVisible="{Binding IsVisible}"/>
+        </DataTemplate>
+
         <DataTemplate x:Key="AboutView">
             <about:AboutView IsVisible="{Binding IsVisible}"/>
         </DataTemplate>
@@ -45,6 +50,7 @@
                                       SignOutView="{StaticResource SignOutView}"
                                       ContactView="{StaticResource ContactView}"
                                       OrderView="{StaticResource OrderView}"
+                                      RequestsView="{StaticResource RequestsView}"
                                       AboutView="{StaticResource AboutView}"/>
 
     </ContentPage.Resources>

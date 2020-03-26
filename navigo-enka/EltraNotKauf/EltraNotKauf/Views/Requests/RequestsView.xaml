@@ -1,13 +1,14 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <ContentView xmlns="http://xamarin.com/schemas/2014/forms"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             xmlns:contact="clr-namespace:EltraNotKauf.Views.Contact"
-             xmlns:behaviors="clr-namespace:EltraNotKauf.Views.Contact.Behaviors"
+             xmlns:contact="clr-namespace:EltraNotKauf.Views.Requests"
+             xmlns:behaviors="clr-namespace:EltraNotKauf.Views.Requests.Behaviors"
              xmlns:behaviors2="clr-namespace:EltraNotKauf.Views.Behaviors"
-             x:DataType="contact:ContactViewModel"
+             xmlns:request="clr-namespace:EltraNotKauf.Views.Requests"
+             x:DataType="contact:RequestsViewModel"
              xmlns:forms="clr-namespace:dotMorten.Xamarin.Forms;assembly=dotMorten.Xamarin.Forms.AutoSuggestBox"
              xmlns:connectionstatus="clr-namespace:EltraNotKauf.Views.ConnectionStatus"
-             x:Class="EltraNotKauf.Views.Contact.ContactView">
+             x:Class="EltraNotKauf.Views.Requests.RequestsView">
 
     <ContentView.Resources>
         <Color x:Key="NavigationPrimary">#2196F3</Color>
@@ -26,6 +27,7 @@
         <Grid>
             <Grid.RowDefinitions>
                 <RowDefinition Height="8"></RowDefinition>
+                <RowDefinition Height="Auto"></RowDefinition>
                 <RowDefinition Height="*"></RowDefinition>
                 <RowDefinition Height="Auto"></RowDefinition>
                 <RowDefinition Height="8"></RowDefinition>
@@ -43,30 +45,13 @@
                         <RowDefinition Height="Auto"/>
                         <RowDefinition Height="Auto"/>
                         <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="Auto"/>
                     </Grid.RowDefinitions>
-
+                    
                     <!-- Edit -->
-                    <Frame Grid.Column="0" Grid.Row="0" Style="{StaticResource BorderLikeFrame}">
-                        <Entry Placeholder="Vorname, Name" Text="{Binding Name}" IsEnabled="{Binding IsConnected}"/>
-                    </Frame>
                     <Frame Grid.Column="0" Grid.Row="1" Style="{StaticResource BorderLikeFrame}">
-                        <Entry Placeholder="Telefonnummer" Text="{Binding Phone}" IsEnabled="{Binding IsConnected}">
-                            <Entry.Triggers>
-                                <DataTrigger TargetType="Entry" Binding="{Binding IsPhoneValid}" Value="true">
-                                    <Setter Property="TextColor" Value="Default"/>
-                                </DataTrigger>
-                                <DataTrigger TargetType="Entry" Binding="{Binding IsPhoneValid}" Value="false">
-                                    <Setter Property="TextColor" Value="Red"/>
-                                </DataTrigger>
-                            </Entry.Triggers>
-                        </Entry>
-                    </Frame>
-                    <Frame Grid.Column="0" Grid.Row="2" Style="{StaticResource BorderLikeFrame}">
                         <Picker ItemsSource="{Binding Regions}" SelectedItem="{Binding Region}" ItemDisplayBinding="{Binding Name}" IsEnabled="{Binding IsConnected}"/>
                     </Frame>
-                    <Frame Grid.Column="0" Grid.Row="3" Style="{StaticResource BorderLikeFrame}">
+                    <Frame Grid.Column="0" Grid.Row="2" Style="{StaticResource BorderLikeFrame}">
                         <Grid>
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="Auto"/>
@@ -90,25 +75,50 @@
                         </Grid>
                     </Frame>
                     
-                    <Frame Grid.Column="0" Grid.Row="4" Style="{StaticResource BorderLikeFrame}">
+                    <Frame Grid.Column="0" Grid.Row="3" Style="{StaticResource BorderLikeFrame}">
                         <forms:AutoSuggestBox PlaceholderText="Strasse" Text="{Binding Street, Mode=TwoWay}" ItemsSource="{Binding StreetSuggestions}" IsEnabled="{Binding IsConnected}">
                             <forms:AutoSuggestBox.Behaviors>
                                 <behaviors:StreetAutoSuggestBoxBehavior/>
                             </forms:AutoSuggestBox.Behaviors>
                         </forms:AutoSuggestBox>
                     </Frame>
-                    <Frame Grid.Column="0" Grid.Row="5" Style="{StaticResource BorderLikeFrame}">
-                        <Entry Placeholder="Bemerkung" Text="{Binding Notice}" IsEnabled="{Binding IsConnected}"/>
-                    </Frame>
-
-                    <Frame Grid.Column="0" Grid.Row="6" Style="{StaticResource BorderLikeFrame}" IsEnabled="{Binding IsConnected}">
-                        <Button Text="Speichern" Command="{Binding SaveCommand}" IsEnabled="{Binding IsValid}"/>
+                   
+                    <Frame Grid.Column="0" Grid.Row="4" Style="{StaticResource BorderLikeFrame}" IsEnabled="{Binding IsConnected}" Padding="0">
+                        <Button Text="Suchen" Command="{Binding SearchCommand}"/>
                     </Frame>
 
                 </Grid>
             </Frame>
 
-            <Frame Grid.Row="2" Padding="0">
+            <Frame Grid.Row="2" BorderColor="{StaticResource NavigationPrimary}">
+                <ScrollView>
+                    <StackLayout BindableLayout.ItemsSource="{Binding RequestList}">
+                        <BindableLayout.ItemTemplate>
+                            <DataTemplate>
+                                <Grid x:DataType="request:RequestViewModel">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="68"/>
+                                        <ColumnDefinition Width="140"/>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                    </Grid.ColumnDefinitions>
+
+                                    <CheckBox Grid.Column="0"/>
+
+                                    <Label Grid.Column="1" Text="{Binding OrderUuid}" VerticalOptions="Center" FontSize="Micro"/>
+                                    <Label Grid.Column="2" Text="{Binding OrderStatus.Label}" VerticalOptions="Center" FontSize="Micro"/>
+                                    <Label Grid.Column="3" Text="{Binding CreatedBy}" VerticalOptions="Center" FontSize="Micro"/>
+                                    <Label Grid.Column="4" Text="{Binding OrderModifiedTime}" VerticalOptions="Center" FontSize="Micro"/>
+                                </Grid>
+                            </DataTemplate>
+                        </BindableLayout.ItemTemplate>
+
+                    </StackLayout>
+                </ScrollView>
+            </Frame>
+            
+            <Frame Grid.Row="3" Padding="0">
                 <connectionstatus:ConnectionStatusView/>
             </Frame>
             

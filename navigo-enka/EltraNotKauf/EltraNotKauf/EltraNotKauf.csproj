@@ -27,16 +27,20 @@
   <ItemGroup>
     <None Remove="Resources\cloud-storm.png" />
     <None Remove="Resources\cloud.png" />
+    <None Remove="Resources\heart.png" />
+    <None Remove="Resources\lifebuoy.png" />
   </ItemGroup>
 
   <ItemGroup>
     <EmbeddedResource Include="Resources\cloud-storm.png" />
     <EmbeddedResource Include="Resources\cloud.png" />
     <EmbeddedResource Include="Resources\hamburger.png" />
+    <EmbeddedResource Include="Resources\heart.png" />
     <EmbeddedResource Include="Resources\HiResAppIcon.png" />
     <EmbeddedResource Include="Resources\HiResAppIcon2.png" />
     <EmbeddedResource Include="Resources\home.png" />
     <EmbeddedResource Include="Resources\info-circle.png" />
+    <EmbeddedResource Include="Resources\lifebuoy.png" />
     <EmbeddedResource Include="Resources\logo_nothilfe.png" />
     <EmbeddedResource Include="Resources\shopping-cart.png" />
     <EmbeddedResource Include="Resources\urgent.png" />

@@ -2,7 +2,7 @@
 using System;
 using Xamarin.Forms;
 
-namespace EltraNotKauf.Views.Login.Behaviors
+namespace EltraNotKauf.Views.Behaviors
 {
     class ToolViewBehavior : Behavior<ContentView>
     {

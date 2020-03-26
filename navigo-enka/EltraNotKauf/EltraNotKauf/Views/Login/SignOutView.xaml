@@ -2,7 +2,7 @@
 <ContentView xmlns="http://xamarin.com/schemas/2014/forms"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:about="clr-namespace:EltraNotKauf.Views.About"
-             xmlns:behaviors="clr-namespace:EltraNotKauf.Views.Login.Behaviors"
+             xmlns:behaviors="clr-namespace:EltraNotKauf.Views.Behaviors"
              x:DataType="about:AboutViewModel"
              x:Class="EltraNotKauf.Views.Login.SignOutView">
 

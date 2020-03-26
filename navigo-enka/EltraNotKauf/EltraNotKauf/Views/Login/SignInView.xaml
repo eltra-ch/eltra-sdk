@@ -4,14 +4,14 @@
              xmlns:d="http://xamarin.com/schemas/2014/forms/design"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:behaviors="clr-namespace:EltraNotKauf.Views.Login.Behaviors;assembly=EltraNotKauf"
+             xmlns:behaviors2="clr-namespace:EltraNotKauf.Views.Behaviors;assembly=EltraNotKauf"
              xmlns:views="clr-namespace:EltraNotKauf.Views.Login;assembly=EltraNotKauf"
-             xmlns:helpers="clr-namespace:EltraNotKauf.Controls.Helpers;assembly=EltraNotKauf"
              xmlns:connectionstatus="clr-namespace:EltraNotKauf.Views.ConnectionStatus"
              mc:Ignorable="d"
              x:DataType="views:SignInViewModel"             
              x:Class="EltraNotKauf.Views.Login.SignInView" VerticalOptions="CenterAndExpand">
     <ContentView.Behaviors>
-        <behaviors:ToolViewBehavior/>
+        <behaviors2:ToolViewBehavior/>
     </ContentView.Behaviors>
     <ContentView.Content>
         <Grid VerticalOptions="FillAndExpand" HorizontalOptions="FillAndExpand" IsEnabled="{Binding IsConnected}">

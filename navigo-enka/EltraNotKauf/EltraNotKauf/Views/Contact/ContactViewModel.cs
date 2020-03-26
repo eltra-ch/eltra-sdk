@@ -11,8 +11,8 @@ using Newtonsoft.Json;
 using Xamarin.Essentials;
 using System.Collections.Generic;
 using Region = EltraCloudContracts.Enka.Regional.Region;
-using EltraCloudContracts.Enka.Regional;
 using EltraConnector.GeoAdmin;
+using EltraNotKauf.Endpoints;
 
 namespace EltraNotKauf.Views.Contact
 {
@@ -21,6 +21,7 @@ namespace EltraNotKauf.Views.Contact
         #region Private fields
 
         private bool _isValid;
+        private RegionEndpoint _regionEndpoint;
         private CloudTransporter _transporter;
         private EltraCloudContracts.Enka.Contacts.Contact _contact;
 
@@ -36,9 +37,6 @@ namespace EltraNotKauf.Views.Contact
         private List<string> _streetSuggestions;
         private string _notice;
 
-        private string _countryCode = "CH";
-        private string _langCode = "de";
-
         private bool _isPhoneValid;
 
         #endregion
@@ -53,6 +51,7 @@ namespace EltraNotKauf.Views.Contact
             Uuid = "791AFBD3-E61D-4A0B-B35B-874D5A038E35";
             IsPhoneValid = true;
 
+            _regionEndpoint = new RegionEndpoint();
             _transporter = new CloudTransporter();
 
             PropertyChanged += (sender, args) => 
@@ -90,6 +89,18 @@ namespace EltraNotKauf.Views.Contact
         {
             get => _isValid;
             set => SetProperty(ref _isValid, value);
+        }
+
+        internal async Task<List<string>> GetPostalCodes(string text)
+        {
+            var result = new List<string>();
+
+            if (Region != null)
+            {
+                result = await _regionEndpoint.GetPostalCodes(Region.ShortName, text);
+            }
+
+            return result;
         }
 
         public string Url
@@ -205,7 +216,7 @@ namespace EltraNotKauf.Views.Contact
 
         public override async void Show()
         {
-            Regions = await ReadRegions();
+            Regions = await _regionEndpoint.ReadRegions();
 
             await ReadContact();
 
@@ -248,200 +259,23 @@ namespace EltraNotKauf.Views.Contact
             }
         }
 
-        public async Task<List<string>> GetPostalCodes(string startsWith)
-        {
-            var result = new List<string>();
-
-            if (Region != null)
-            {
-                try
-                {
-                    var query = HttpUtility.ParseQueryString(string.Empty);
-
-                    query.Add("countryCode", _countryCode);
-                    query.Add("regionCode", Region.ShortName);
-
-                    var url = UrlHelper.BuildUrl(Url, "/api/Regional/postal-codes", query);
-
-                    var json = await _transporter.Get(url);
-
-                    if (!string.IsNullOrEmpty(json))
-                    {
-                        var postalCodes = JsonConvert.DeserializeObject<List<string>>(json);
-
-                        if (!string.IsNullOrEmpty(startsWith))
-                        {
-                            foreach (var city in postalCodes)
-                            {
-                                if (city.StartsWith(startsWith, StringComparison.InvariantCultureIgnoreCase))
-                                {
-                                    result.Add(city);
-                                }
-                            }
-                        }
-
-                        if (result.Count == 0)
-                        {
-                            result = postalCodes;
-                        }
-                    }
-                }
-                catch (Exception e)
-                {
-                    MsgLogger.Exception($"{GetType().Name} - GetCities", e);
-                }
-            }
-
-            return result;
-        }
-
-        public async Task<PostalCodeInfo> GetPostalCodeInfo(string postalCode)
-        {
-            PostalCodeInfo result = null;
-
-            if (Region != null)
-            {
-                try
-                {
-                    var query = HttpUtility.ParseQueryString(string.Empty);
-
-                    query.Add("countryCode", _countryCode);
-                    query.Add("postalCode", postalCode);
-                    query.Add("langCode", _langCode);
-
-                    var url = UrlHelper.BuildUrl(Url, "/api/Regional/postal-code-info", query);
-
-                    var json = await _transporter.Get(url);
-
-                    if (!string.IsNullOrEmpty(json))
-                    {
-                        var postalCodeInfo = JsonConvert.DeserializeObject<PostalCodeInfo>(json);
-
-                        if (postalCodeInfo!=null)
-                        {
-                            result = postalCodeInfo;
-                        }
-                    }
-                }
-                catch (Exception e)
-                {
-                    MsgLogger.Exception($"{GetType().Name} - GetPostalCodeInfo", e);
-                }
-            }
-
-            return result;
-        }
-
         public async Task UpdateCitySuggestions(string text)
         {
-            var suggestions = await GetCities(text);
+            if (Region != null)
+            {
+                var suggestions = await _regionEndpoint.GetCities(Region.ShortName, text);
 
-            CitySuggestions = suggestions;
+                CitySuggestions = suggestions;
+            }
         }
 
         public async Task UpdateStreetSuggestions(string text)
         {
-            var suggestions = await GetStreets(text);
+            var suggestions = await _regionEndpoint.GetStreets(City, PostalCode, text);
 
             StreetSuggestions = suggestions;
         }
-
-        public async Task<List<string>> GetCities(string text)
-        {
-            var result = new List<string>();
-
-            if (Region != null)
-            {
-                try
-                {
-                    var query = HttpUtility.ParseQueryString(string.Empty);
-
-                    query.Add("countryCode", _countryCode);
-                    query.Add("regionCode", Region.ShortName);
-
-                    var url = UrlHelper.BuildUrl(Url, "/api/Regional/cities", query);
-
-                    var json = await _transporter.Get(url);
-
-                    if (!string.IsNullOrEmpty(json))
-                    {
-                        var cities = JsonConvert.DeserializeObject<List<string>>(json);
-
-                        if (!string.IsNullOrEmpty(text))
-                        {
-                            foreach (var city in cities)
-                            {
-                                if (city.StartsWith(text, StringComparison.InvariantCultureIgnoreCase))
-                                {
-                                    result.Add(city);
-                                }
-                            }
-                        }
-
-                        if (result.Count == 0)
-                        {
-                            result = cities;
-                        }
-                    }
-                }
-                catch (Exception e)
-                {
-                    MsgLogger.Exception($"{GetType().Name} - GetCities", e);
-                }
-            }
-
-            return result;
-        }
-
-        public async Task<List<string>> GetStreets(string text)
-        {
-            var result = new List<string>();
-            var geoConnector = new GeoAdminConnector();
-
-            var streetInfos = await geoConnector.GetStreetsInfo(text);
-
-            if(streetInfos!=null)
-            {
-                foreach(var streetInfo in streetInfos)
-                {
-                    if(streetInfo.City == City || streetInfo.PostalCode == PostalCode)
-                    {
-                        result.Add(streetInfo.Street);
-                    }
-                }
-            }
-
-            return result;
-        }
-
-        private async Task<List<Region>> ReadRegions()
-        {   
-            var result = new List<Region>();
-
-            try
-            {
-                var query = HttpUtility.ParseQueryString(string.Empty);
-
-                query.Add("countryCode", _countryCode);
-                query.Add("langCode", _langCode);
-
-                var url = UrlHelper.BuildUrl(Url, "api/regional/regions", query);
-
-                var json = await _transporter.Get(url);
-
-                if (!string.IsNullOrEmpty(json))
-                {
-                    result = JsonConvert.DeserializeObject<List<Region>>(json);
-                }
-            }
-            catch (Exception e)
-            {
-                MsgLogger.Exception($"{GetType().Name} - ReadRegions", e);
-            }
-
-            return result;            
-        }
-
+        
         private async Task<bool> StoreContact()
         {
             Contact.Name = Name;
@@ -553,7 +387,7 @@ namespace EltraNotKauf.Views.Contact
         {
             if(!string.IsNullOrEmpty(PostalCode))
             {
-                var info = await GetPostalCodeInfo(PostalCode);
+                var info = await _regionEndpoint.GetPostalCodeInfo(PostalCode);
 
                 if(info!=null)
                 {
@@ -570,7 +404,7 @@ namespace EltraNotKauf.Views.Contact
 
                     if(!string.IsNullOrEmpty(info.City) && info.City != City)
                     {
-                        var citySuggestions = await GetCities(info.City);
+                        var citySuggestions = await _regionEndpoint.GetCities(info.Region.ShortName, info.City);
 
                         CitySuggestions = citySuggestions;
                         City = info.City;

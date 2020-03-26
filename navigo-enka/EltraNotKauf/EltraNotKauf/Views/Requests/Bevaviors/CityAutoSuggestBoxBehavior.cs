@@ -4,12 +4,12 @@ using System;
 using System.ComponentModel;
 using Xamarin.Forms;
 
-namespace EltraNotKauf.Views.Login.Behaviors
+namespace EltraNotKauf.Views.Requests.Behaviors
 {
-    class StreetAutoSuggestBoxBehavior : Behavior<AutoSuggestBox>
+    class CityAutoSuggestBoxBehavior : Behavior<AutoSuggestBox>
     {
         private AutoSuggestBox _view;
-        private ContactViewModel _contactViewModel;
+        private RequestsViewModel _viewModel;
         
         protected override void OnAttachedTo(AutoSuggestBox view)
         {
@@ -35,15 +35,15 @@ namespace EltraNotKauf.Views.Login.Behaviors
 
         private void OnQuerySubmitted(object sender, AutoSuggestBoxQuerySubmittedEventArgs e)
         {
-            if (_contactViewModel != null)
+            if (_viewModel != null)
             {
                 if (e.ChosenSuggestion != null)
                 {
-                    _contactViewModel.Street = e.ChosenSuggestion.ToString();
+                    _viewModel.City = e.ChosenSuggestion.ToString();
                 }
                 else
                 {
-                    _contactViewModel.Street = e.QueryText;
+                    _viewModel.City = e.QueryText;
                 }
             }
 
@@ -68,9 +68,9 @@ namespace EltraNotKauf.Views.Login.Behaviors
                 }
                 else
                 {
-                    if (_contactViewModel != null)
+                    if (_viewModel != null)
                     {
-                        await _contactViewModel.UpdateStreetSuggestions(view.Text);
+                        await _viewModel.UpdateCitySuggestions(view.Text);
                     }                    
                 }
             }
@@ -78,38 +78,26 @@ namespace EltraNotKauf.Views.Login.Behaviors
 
         private void OnPageBindingContextChanged(object sender, EventArgs e)
         {
-            if (_view.BindingContext is ContactViewModel model)
+            if (_view.BindingContext is RequestsViewModel model)
             {
-                _contactViewModel = model;
+                _viewModel = model;
 
-                _contactViewModel.PropertyChanged += OnViewModelPropertyChanged;
+                _viewModel.PropertyChanged += OnViewModelPropertyChanged;
             }
         }
 
         private void OnViewModelPropertyChanged(object sender, PropertyChangedEventArgs e)
         {
-            if(e.PropertyName == "Street")
+            if(e.PropertyName == "City")
             {
-                _view.Text = _contactViewModel.Street;
+                _view.Text = _viewModel.City;
             }
-            else if(e.PropertyName == "StreetSuggestions")
+            else if(e.PropertyName == "CitySuggestions")
             {
-                _view.ItemsSource = _contactViewModel.StreetSuggestions;
+                _view.ItemsSource = _viewModel.CitySuggestions;
             }
             else if(e.PropertyName == "Region")
             {
-                /*if (_contactViewModel.IsVisible)
-                {
-                    _view.Text = string.Empty;
-                }*/
-                _view.ItemsSource = null;
-            }
-            else if (e.PropertyName == "PostalCode")
-            {
-                /*if (_contactViewModel.IsVisible)
-                {
-                    _view.Text = string.Empty;
-                }*/
                 _view.ItemsSource = null;
             }
         }

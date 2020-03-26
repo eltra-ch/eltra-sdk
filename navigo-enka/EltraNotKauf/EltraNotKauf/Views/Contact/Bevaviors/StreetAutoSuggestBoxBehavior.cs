@@ -4,9 +4,9 @@ using System;
 using System.ComponentModel;
 using Xamarin.Forms;
 
-namespace EltraNotKauf.Views.Login.Behaviors
+namespace EltraNotKauf.Views.Contact.Behaviors
 {
-    class CityAutoSuggestBoxBehavior : Behavior<AutoSuggestBox>
+    class StreetAutoSuggestBoxBehavior : Behavior<AutoSuggestBox>
     {
         private AutoSuggestBox _view;
         private ContactViewModel _contactViewModel;
@@ -39,11 +39,11 @@ namespace EltraNotKauf.Views.Login.Behaviors
             {
                 if (e.ChosenSuggestion != null)
                 {
-                    _contactViewModel.City = e.ChosenSuggestion.ToString();
+                    _contactViewModel.Street = e.ChosenSuggestion.ToString();
                 }
                 else
                 {
-                    _contactViewModel.City = e.QueryText;
+                    _contactViewModel.Street = e.QueryText;
                 }
             }
 
@@ -70,7 +70,7 @@ namespace EltraNotKauf.Views.Login.Behaviors
                 {
                     if (_contactViewModel != null)
                     {
-                        await _contactViewModel.UpdateCitySuggestions(view.Text);
+                        await _contactViewModel.UpdateStreetSuggestions(view.Text);
                     }                    
                 }
             }
@@ -88,13 +88,13 @@ namespace EltraNotKauf.Views.Login.Behaviors
 
         private void OnViewModelPropertyChanged(object sender, PropertyChangedEventArgs e)
         {
-            if(e.PropertyName == "City")
+            if(e.PropertyName == "Street")
             {
-                _view.Text = _contactViewModel.City;
+                _view.Text = _contactViewModel.Street;
             }
-            else if(e.PropertyName == "CitySuggestions")
+            else if(e.PropertyName == "StreetSuggestions")
             {
-                _view.ItemsSource = _contactViewModel.CitySuggestions;
+                _view.ItemsSource = _contactViewModel.StreetSuggestions;
             }
             else if(e.PropertyName == "Region")
             {
@@ -102,7 +102,14 @@ namespace EltraNotKauf.Views.Login.Behaviors
                 {
                     _view.Text = string.Empty;
                 }*/
-
+                _view.ItemsSource = null;
+            }
+            else if (e.PropertyName == "PostalCode")
+            {
+                /*if (_contactViewModel.IsVisible)
+                {
+                    _view.Text = string.Empty;
+                }*/
                 _view.ItemsSource = null;
             }
         }

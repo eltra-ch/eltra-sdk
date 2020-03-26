@@ -2,7 +2,7 @@
 <ContentView xmlns="http://xamarin.com/schemas/2014/forms"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:orders="clr-namespace:EltraNotKauf.Views.Orders"
-             xmlns:behaviors="clr-namespace:EltraNotKauf.Views.Login.Behaviors"
+             xmlns:behaviors="clr-namespace:EltraNotKauf.Views.Behaviors"
              xmlns:converters="clr-namespace:EltraNotKauf.Controls.Converters"
              xmlns:buttons="clr-namespace:EltraNotKauf.Controls.Button"
              xmlns:connectionstatus="clr-namespace:EltraNotKauf.Views.ConnectionStatus"
@@ -29,7 +29,7 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="8"></RowDefinition>
             <RowDefinition Height="72"></RowDefinition>
-            <RowDefinition Height="304"></RowDefinition>
+            <RowDefinition Height="278"></RowDefinition>
             <RowDefinition Height="Auto"></RowDefinition>
             <RowDefinition Height="Auto"></RowDefinition>
             <RowDefinition Height="Auto"></RowDefinition>
@@ -72,13 +72,9 @@
                         <buttons:ThreeStateButtonView BindingContext="{Binding OtherButtonViewModel}"/>
                     </Frame>
                 </Grid>
-                <Frame Grid.Row="1" BorderColor="Transparent">
-                    <StackLayout Orientation="Horizontal">
-                        <Label Text="Bemerkung:" VerticalOptions="CenterAndExpand"/>
-                        <Frame Padding="4" BackgroundColor="Transparent"/>
-                        <StackLayout Padding="1" BackgroundColor="Black" HeightRequest="50" VerticalOptions="FillAndExpand" HorizontalOptions="FillAndExpand">
-                            <Editor Text="{Binding Notice}" HeightRequest="50" VerticalOptions="FillAndExpand" HorizontalOptions="FillAndExpand"/>
-                        </StackLayout>
+                <Frame Grid.Row="1" BorderColor="Transparent" Padding="0">
+                    <StackLayout Padding="1" BackgroundColor="LightGray" HeightRequest="50" VerticalOptions="FillAndExpand" HorizontalOptions="FillAndExpand">
+                        <Editor Placeholder="Bemerkung" Text="{Binding Notice}" HeightRequest="50" VerticalOptions="FillAndExpand" HorizontalOptions="FillAndExpand"/>
                     </StackLayout>
                 </Frame>
             </Grid>
@@ -112,8 +108,6 @@
         <Frame Grid.Row="5" Padding="0">
             <connectionstatus:ConnectionStatusView/>
         </Frame>
-
-        
         
     </Grid>
 

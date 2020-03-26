@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Xamarin.Forms;
 
-namespace EltraNotKauf.Views.Login.Behaviors
+namespace EltraNotKauf.Views.Contact.Behaviors
 {
     class PostalCodeAutoSuggestBoxBehavior : Behavior<AutoSuggestBox>
     {

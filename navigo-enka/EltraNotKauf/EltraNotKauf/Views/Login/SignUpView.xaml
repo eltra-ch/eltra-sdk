@@ -3,7 +3,8 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:d="http://xamarin.com/schemas/2014/forms/design"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-             xmlns:behaviors="clr-namespace:EltraNotKauf.Views.Login.Behaviors;assembly=EltraNotKauf"
+             xmlns:behaviors="clr-namespace:EltraNotKauf.Views.Behaviors;assembly=EltraNotKauf"
+             xmlns:behaviors2="clr-namespace:EltraNotKauf.Views.Login.Behaviors;assembly=EltraNotKauf"
              xmlns:views="clr-namespace:EltraNotKauf.Views.Login;assembly=EltraNotKauf"
              xmlns:connectionstatus="clr-namespace:EltraNotKauf.Views.ConnectionStatus"
              mc:Ignorable="d"
@@ -74,7 +75,7 @@
                             <Frame Grid.Row="3">
                                 <Entry IsTabStop="True" TabIndex="0" Text="{Binding LoginName, Mode=OneWay}">
                                     <Entry.Behaviors>
-                                        <behaviors:LoginValidationBehavior/>
+                                        <behaviors2:LoginValidationBehavior/>
                                     </Entry.Behaviors>
                                     <Entry.Triggers>
                                         <DataTrigger TargetType="Entry" Binding="{Binding IsLoginValid}" Value="true">
@@ -94,7 +95,7 @@
                             <Frame Grid.Row="5">
                                 <Entry IsTabStop="True" TabIndex="1" Text="{Binding Password, Mode=OneWay}" IsPassword="True">
                                     <Entry.Behaviors>
-                                        <behaviors:PasswordValidationBehavior/>
+                                        <behaviors2:PasswordValidationBehavior/>
                                     </Entry.Behaviors>
                                     <Entry.Triggers>
                                         <DataTrigger TargetType="Entry" Binding="{Binding IsLoginValid}" Value="true">
