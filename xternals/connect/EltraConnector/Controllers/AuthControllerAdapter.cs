@@ -59,12 +59,7 @@ namespace EltraConnector.Controllers
                 var url = UrlHelper.BuildUrl(Url, "api/auth/sign-out", query);
                 var cancellationTokenSource = new CancellationTokenSource();
 
-                var statusCode = await Transporter.Get(url, cancellationTokenSource.Token);
-
-                if (statusCode == HttpStatusCode.OK)
-                {
-                    result = true;
-                }
+                result = await Transporter.Get(url, cancellationTokenSource.Token);
             }
             catch (Exception e)
             {

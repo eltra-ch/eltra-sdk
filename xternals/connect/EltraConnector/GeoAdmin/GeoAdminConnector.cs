@@ -1,5 +1,6 @@
 ﻿using EltraCloudContracts.GeoAdmin;
 using EltraCommon.Logger;
+using EltraConnector.Transport;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -12,7 +13,7 @@ namespace EltraConnector.GeoAdmin
 {
     public class GeoAdminConnector
     {
-        private readonly HttpClient _client = new HttpClient();
+        private readonly CloudTransporter _transporter = new CloudTransporter();
 
         public GeoAdminConnector()
         {
@@ -33,45 +34,26 @@ namespace EltraConnector.GeoAdmin
 
             try
             {
-                using (var response = await _client.GetAsync(url))
+
+                var json = await _transporter.Get(url);
+
+                if (!string.IsNullOrEmpty(json))
                 {
-                    if (response.IsSuccessStatusCode)
+                    var geoStreetResults = Newtonsoft.Json.JsonConvert.DeserializeObject<GeoStreetResults>(json);
+
+                    if(geoStreetResults!=null)
                     {
-                        using (var stream = await response.Content.ReadAsStreamAsync())
+                        foreach(var streetResult in geoStreetResults.Results)
                         {
-                            using (var streamReader = new StreamReader(stream))
-                            {
-                                var json = await streamReader.ReadToEndAsync();
+                            var streetInfo = new GeoStreetInfo();
 
-                                if (!string.IsNullOrEmpty(json))
-                                {
-                                    var geoStreetResults = Newtonsoft.Json.JsonConvert.DeserializeObject<GeoStreetResults>(json);
+                            streetInfo.City = streetResult.Attrs.Municipality;
+                            streetInfo.Street = streetResult.Attrs.Label;
 
-                                    if(geoStreetResults!=null)
-                                    {
-                                        foreach(var streetResult in geoStreetResults.Results)
-                                        {
-                                            var streetInfo = new GeoStreetInfo();
+                            streetInfo.PostalCode = ExtractSwissPostalCode(streetResult.Attrs.PostalCode);
 
-                                            streetInfo.City = streetResult.Attrs.Municipality;
-                                            streetInfo.Street = streetResult.Attrs.Label;
-
-                                            streetInfo.PostalCode = ExtractSwissPostalCode(streetResult.Attrs.PostalCode);
-
-                                            result.Add(streetInfo);
-                                        }
-                                    }
-                                }
-                            }
+                            result.Add(streetInfo);
                         }
-                    }
-                    else if (response.StatusCode == HttpStatusCode.NotFound)
-                    {
-                        MsgLogger.WriteError($"{GetType().Name} - GetStreets", $"Url not found '{url}'");
-                    }
-                    else if (response.StatusCode == HttpStatusCode.Unauthorized)
-                    {
-                        MsgLogger.WriteError($"{GetType().Name} - GetStreets", $"Unauthorized - url = '{url}'");
                     }
                 }
             }
@@ -104,6 +86,11 @@ namespace EltraConnector.GeoAdmin
             return result;
         }
 
+        /// <summary>
+        /// GetAddressCoordinates
+        /// </summary>
+        /// <param name="address"></param>
+        /// <returns></returns>
         public async Task<List<GeoCoordinates>> GetAddressCoordinates(string address)
         {
             string url =
@@ -112,43 +99,23 @@ namespace EltraConnector.GeoAdmin
 
             try
             {
-                using (var response = await _client.GetAsync(url))
+                var json = await _transporter.Get(url);
+
+                if (!string.IsNullOrEmpty(json))
                 {
-                    if (response.IsSuccessStatusCode)
+                    var geoResults = Newtonsoft.Json.JsonConvert.DeserializeObject<GeoResults>(json);
+
+                    if (geoResults != null)
                     {
-                        using (var stream = await response.Content.ReadAsStreamAsync())
+                        foreach (var geoResult in geoResults.Results)
                         {
-                            using (var streamReader = new StreamReader(stream))
-                            {
-                                var json = await streamReader.ReadToEndAsync();
+                            var coordinates = new GeoCoordinates();
 
-                                if (!string.IsNullOrEmpty(json))
-                                {
-                                    var geoResults = Newtonsoft.Json.JsonConvert.DeserializeObject<GeoResults>(json);
+                            coordinates.Latitude = geoResult.Attrs.Latitude;
+                            coordinates.Longitude = geoResult.Attrs.Longitude;
 
-                                    if(geoResults!=null)
-                                    {
-                                        foreach(var geoResult in geoResults.Results)
-                                        {
-                                            var coordinates = new GeoCoordinates();
-
-                                            coordinates.Latitude = geoResult.Attrs.Latitude;
-                                            coordinates.Longitude = geoResult.Attrs.Longitude;
-
-                                            result.Add(coordinates);
-                                        }
-                                    }
-                                }
-                            }
+                            result.Add(coordinates);
                         }
-                    }
-                    else if (response.StatusCode == HttpStatusCode.NotFound)
-                    {
-                        MsgLogger.WriteError($"{GetType().Name} - GetAddressCoordinates", $"Url not found '{url}'");
-                    }
-                    else if (response.StatusCode == HttpStatusCode.Unauthorized)
-                    {
-                        MsgLogger.WriteError($"{GetType().Name} - GetAddressCoordinates", $"Unauthorized - url = '{url}'");
                     }
                 }
             }

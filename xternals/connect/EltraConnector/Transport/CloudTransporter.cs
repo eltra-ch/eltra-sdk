@@ -142,6 +142,11 @@ namespace EltraConnector.Transport
                         result.Content = await postResult.Content.ReadAsStringAsync();
                         tryCount = MaxRetryCount;
                     }
+                    else if(postResult.StatusCode == HttpStatusCode.Redirect)
+                    {
+                        MsgLogger.WriteDebug($"{GetType().Name} - Post", $"get - url ='{url}' 302 - redirect!");
+                        tryCount = 0;
+                    }
                     else if(postResult.StatusCode == HttpStatusCode.Unauthorized)
                     {
                         MsgLogger.WriteDebug($"{GetType().Name} - Post", $"get - url ='{url}' 401 - unautorized!");
@@ -168,20 +173,33 @@ namespace EltraConnector.Transport
             return result;
         }
 
-        public async Task<HttpStatusCode> Get(string url, CancellationToken cancelationToken)
+        public async Task<bool> Get(string url, CancellationToken cancelationToken)
         {
-            HttpStatusCode result = HttpStatusCode.NotImplemented;
+            bool result = false;
 
             ResetSocketError();
 
             try
             {
                 MsgLogger.WriteDebug($"{GetType().Name} - Get", $"get - url ='{url}'");
+                int tryCount = 0;
 
-                using (var response = await Client.GetAsync(url, cancelationToken))
+                do
                 {
-                    result = response.StatusCode;
-                }
+                    using (var response = await Client.GetAsync(url, cancelationToken))
+                    {
+                        if (response.StatusCode == HttpStatusCode.Redirect)
+                        {
+                            tryCount = 0;
+                            MsgLogger.WriteDebug($"{GetType().Name} - Get", $"get - url ='{url}' redirection!");
+                        }
+                        else if(response.StatusCode == HttpStatusCode.OK)
+                        {
+                            tryCount = MaxRetryCount;
+                            result = true;
+                        }
+                    }
+                } while (tryCount < MaxRetryCount);
             }
             catch (HttpRequestException e)
             {
@@ -222,6 +240,11 @@ namespace EltraConnector.Transport
                                     tryCount = MaxRetryCount;
                                 }
                             }
+                        }
+                        else if(response.StatusCode == HttpStatusCode.Redirect)
+                        {
+                            tryCount = 0;
+                            MsgLogger.WriteDebug($"{GetType().Name} - Get", $"get - url ='{url}' redirection!");
                         }
                         else if(response.StatusCode == HttpStatusCode.NotFound)
                         {
@@ -275,6 +298,11 @@ namespace EltraConnector.Transport
                         result = await deleteResult.Content.ReadAsStringAsync();
                         tryCount = MaxRetryCount;
                     }
+                    else if(deleteResult.StatusCode == HttpStatusCode.Redirect)
+                    {
+                        MsgLogger.WriteDebug($"{GetType().Name} - Get", $"get - url ='{url}' redirection!");
+                        tryCount = 0;
+                    }
                     else
                     {
                         MsgLogger.WriteError($"{GetType().Name} - Delete", $"delete - url ='{url}' failed! response = {deleteResult.IsSuccessStatusCode}");
@@ -317,6 +345,11 @@ namespace EltraConnector.Transport
                     {
                         result.Content = await postResult.Content.ReadAsStringAsync();
                         tryCount = MaxRetryCount;
+                    }
+                    else if (postResult.StatusCode == HttpStatusCode.Redirect)
+                    {
+                        MsgLogger.WriteDebug($"{GetType().Name} - Get", $"get - url ='{url}' redirection!");
+                        tryCount = 0;
                     }
                     else if(postResult.StatusCode == HttpStatusCode.Unauthorized)
                     {
