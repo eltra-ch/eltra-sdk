@@ -12,6 +12,8 @@ using System.Web;
 using System.Timers;
 using EltraNotKauf.Controls.Button;
 using System.ComponentModel;
+using System.Windows.Input;
+using EltraNotKauf.Extensions;
 
 namespace EltraNotKauf.Views.Orders
 {
@@ -142,9 +144,48 @@ namespace EltraNotKauf.Views.Orders
 
         #region Command
 
+        public ICommand ButtonClosePressedCommand => new Command(OnButtonClosePressedCommand);
+        public ICommand ButtonCreatePressedCommand => new Command(OnButtonCreatePressedCommand);
+
         #endregion
 
         #region Events
+
+        private async void OnButtonClosePressedCommand(object obj)
+        {
+            if (ActiveOrder != null)
+            {
+                if (ActiveOrder.Status == OrderStatus.Assigned || ActiveOrder.Status == OrderStatus.Open)
+                {
+                    ActiveOrder.Status = OrderStatus.Closed;
+
+                    if (await ChangeOrder(ActiveOrder))
+                    {
+                        ActiveOrder = await GetActiveOrder();
+
+                        UpdateActiveOrderStatus();
+                    }
+                    else
+                    {
+                        ActiveOrderStatus = "Fehler :-(";
+                    }
+                }
+            }
+        }
+
+        private async void OnButtonCreatePressedCommand(object obj)
+        {
+            if (await AddOrder(new Order() { Message = CreateMessage().ToJson() }))
+            {
+                ActiveOrder = await GetActiveOrder();
+
+                UpdateActiveOrderStatus();
+            }
+            else
+            {
+                ActiveOrderStatus = "Fehler :-(";
+            }
+        }
 
         private async void OnViewPropertyChanged(object sender, PropertyChangedEventArgs args)
         {
@@ -172,100 +213,68 @@ namespace EltraNotKauf.Views.Orders
             await OnMessageChanged();
         }
 
+        private JsonProtocolV1 CreateMessage()
+        {
+            var result = new JsonProtocolV1();
+
+            if (OtherButtonViewModel.ButtonState == ButtonState.Active)
+            {
+                result.Other = true;
+            }
+
+            if (ShopButtonViewModel.ButtonState == ButtonState.Active)
+            {
+                result.Shop = true;
+            }
+
+            if (CarButtonViewModel.ButtonState == ButtonState.Active)
+            {
+                result.Car = true;
+            }
+
+            if (DrugStoreButtonViewModel.ButtonState == ButtonState.Active)
+            {
+                result.DrugStore = true;
+            }
+
+            result.Notice = Notice;
+
+            return result;
+        }
+
         private async Task OnMessageChanged()
         {
-            var message = new JsonProtocolV1();
+            var message = CreateMessage();
 
             _timer.Enabled = false;
 
             ActiveOrder = await GetActiveOrder();
 
-            if (OtherButtonViewModel.ButtonState == ButtonState.Active)
+            if (ActiveOrder != null)
             {
-                message.Other = true;
-            }
-
-            if (ShopButtonViewModel.ButtonState == ButtonState.Active)
-            {
-                message.Shop = true;
-            }
-
-            if (CarButtonViewModel.ButtonState == ButtonState.Active)
-            {
-                message.Car = true;
-            }
-
-            if (DrugStoreButtonViewModel.ButtonState == ButtonState.Active)
-            {
-                message.DrugStore = true;
-            }
-
-            message.Notice = Notice;
-
-            if (message.Other == false && message.Shop == false && message.Car == false && message.DrugStore == false)
-            {
-                if (ActiveOrder != null)
+                if (ActiveOrder.Status == OrderStatus.Closed)
                 {
-                    if (ActiveOrder.Status == OrderStatus.Assigned || ActiveOrder.Status == OrderStatus.Open)
+                    if (await AddOrder(new Order() { Message = message.ToJson() }))
                     {
-                        ActiveOrder.Status = OrderStatus.Closed;
+                        ActiveOrder = await GetActiveOrder();
 
-                        if (await ChangeOrder(ActiveOrder))
-                        {
-                            ActiveOrder = await GetActiveOrder();
-
-                            UpdateActiveOrderStatus();
-                        }
-                        else
-                        {
-                            ActiveOrderStatus = "Fehler :-(";
-                        }
-                    }
-                }
-            }
-            else
-            {
-                var json = JsonConvert.SerializeObject(message);
-
-                if (ActiveOrder != null)
-                {
-                    if (ActiveOrder.Status == OrderStatus.Closed)
-                    {
-                        if (await AddOrder(new Order() { Message = json }))
-                        {
-                            ActiveOrder = await GetActiveOrder();
-
-                            UpdateActiveOrderStatus();
-                        }
-                        else
-                        {
-                            ActiveOrderStatus = "Fehler :-(";
-                        }
+                        UpdateActiveOrderStatus();
                     }
                     else
                     {
-                        if (ActiveOrder.Status == OrderStatus.Rejected)
-                        {
-                            ActiveOrder.Status = OrderStatus.Open;
-                        }
-
-                        ActiveOrder.Message = json;
-
-                        if (await ChangeOrder(ActiveOrder))
-                        {
-                            ActiveOrder = await GetActiveOrder();
-
-                            UpdateActiveOrderStatus();
-                        }
-                        else
-                        {
-                            ActiveOrderStatus = "Fehler :-(";
-                        }
+                        ActiveOrderStatus = "Fehler :-(";
                     }
                 }
                 else
                 {
-                    if (await AddOrder(new Order() { Message = json }))
+                    if (ActiveOrder.Status == OrderStatus.Rejected)
+                    {
+                        ActiveOrder.Status = OrderStatus.Open;
+                    }
+
+                    ActiveOrder.Message = message.ToJson();
+
+                    if (await ChangeOrder(ActiveOrder))
                     {
                         ActiveOrder = await GetActiveOrder();
 
@@ -373,7 +382,7 @@ namespace EltraNotKauf.Views.Orders
 
         public override async void Show()
         {
-            //_timer.Start();
+            _timer.Start();
 
             ActiveOrder = await GetActiveOrder();
 

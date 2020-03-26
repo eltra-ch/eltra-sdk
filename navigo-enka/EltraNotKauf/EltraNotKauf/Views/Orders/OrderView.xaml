@@ -17,6 +17,8 @@
             <Setter Property="HasShadow" Value="{DynamicResource AppFrameShadowStyle}"/>
         </Style>
         <converters:NegateBooleanConverter x:Key="NegateBooleanConverter"/>
+        <converters:NullToBooleanConverter x:Key="NullToBooleanConverter"/>
+        <converters:NegateNullToBooleanConverter x:Key="NegateNullToBooleanConverter"/>
     </ContentView.Resources>
 
     <ContentView.Behaviors>
@@ -26,6 +28,7 @@
     <Grid HorizontalOptions="FillAndExpand" VerticalOptions="FillAndExpand" IsEnabled="{Binding IsConnected}">
         <Grid.RowDefinitions>
             <RowDefinition Height="8"></RowDefinition>
+            <RowDefinition Height="72"></RowDefinition>
             <RowDefinition Height="320"></RowDefinition>
             <RowDefinition Height="Auto"></RowDefinition>
             <RowDefinition Height="Auto"></RowDefinition>
@@ -33,7 +36,11 @@
             <RowDefinition Height="8"></RowDefinition>
         </Grid.RowDefinitions>
 
-        <Frame Grid.Row="1" BorderColor="{StaticResource NavigationPrimary}">
+        <Frame Grid.Row="1" BackgroundColor="Transparent">
+            <Label HorizontalOptions="CenterAndExpand" FontSize="Medium" Text="{Binding ActiveOrderTitle}"/>
+        </Frame>
+        
+        <Frame Grid.Row="2" BorderColor="{StaticResource NavigationPrimary}">
             <Grid HorizontalOptions="FillAndExpand" VerticalOptions="FillAndExpand">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto"/>
@@ -65,19 +72,26 @@
                         <buttons:ThreeStateButtonView BindingContext="{Binding OtherButtonViewModel}"/>
                     </Frame>
                 </Grid>
-                <Frame Grid.Row="1" BorderColor="{StaticResource NavigationPrimary}">
+                <Frame Grid.Row="1" BorderColor="Transparent">
                     <StackLayout Orientation="Horizontal">
                         <Label Text="Bemerkung:" VerticalOptions="CenterAndExpand"/>
                         <Frame Padding="4" BackgroundColor="Transparent"/>
-                        <Editor Text="{Binding Notice}" VerticalOptions="FillAndExpand" HeightRequest="50" HorizontalOptions="FillAndExpand"/>
+                        <StackLayout Padding="1" BackgroundColor="Black" HeightRequest="50" VerticalOptions="FillAndExpand" HorizontalOptions="FillAndExpand">
+                            <Editor Text="{Binding Notice}" HeightRequest="50" VerticalOptions="FillAndExpand" HorizontalOptions="FillAndExpand"/>
+                        </StackLayout>
                     </StackLayout>
                 </Frame>
             </Grid>
         </Frame>
-        <Frame Grid.Row="2" BackgroundColor="Transparent">
-            <Label HorizontalOptions="CenterAndExpand" FontSize="Medium" Text="{Binding ActiveOrderTitle}"/>
-        </Frame>
+
         <Frame Grid.Row="3" BorderColor="{StaticResource NavigationPrimary}">
+            <StackLayout>
+                <Button Text="Erstellen" HeightRequest="84" Command="{Binding ButtonCreatePressedCommand}" IsVisible="{Binding ActiveOrder, Converter={StaticResource NegateNullToBooleanConverter}}"/>
+                <Button Text="Beenden"  HeightRequest="84" Command="{Binding ButtonClosePressedCommand}" IsVisible="{Binding ActiveOrder, Converter={StaticResource NullToBooleanConverter}}"/>
+            </StackLayout>
+        </Frame>
+        
+        <Frame Grid.Row="4" BorderColor="{StaticResource NavigationPrimary}">
             <Grid HorizontalOptions="FillAndExpand" >
 
                 <Grid.ColumnDefinitions>
@@ -95,9 +109,11 @@
             </Grid>
         </Frame>
 
-        <Frame Grid.Row="4" Padding="0">
+        <Frame Grid.Row="5" Padding="0">
             <connectionstatus:ConnectionStatusView/>
         </Frame>
+
+        
         
     </Grid>
 
