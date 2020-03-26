@@ -1,4 +1,5 @@
-﻿using System;
+﻿using EltraNotKauf.Helpers;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
@@ -60,7 +61,7 @@ namespace EltraNotKauf.Controls
             {
                 backingStore = value;
 
-                Xamarin.Forms.Device.BeginInvokeOnMainThread(() => {
+                ThreadHelper.RunOnMainThread(() => {
 
                     onChanged?.Invoke();
 

@@ -3,6 +3,7 @@ using EltraNotKauf.Views;
 using Xamarin.Essentials;
 using System;
 using EltraCommon.Logger;
+using EltraNotKauf.Helpers;
 
 namespace EltraNotKauf
 {
@@ -30,7 +31,9 @@ namespace EltraNotKauf
             Connectivity.ConnectivityChanged += OnConnectivityChanged;
 
             Current.Properties["url"] = url;
-            
+
+            ThreadHelper.Initialize(Environment.CurrentManagedThreadId);
+
             MainPage = new MainView();
             
             _viewModel = new MainViewModel();

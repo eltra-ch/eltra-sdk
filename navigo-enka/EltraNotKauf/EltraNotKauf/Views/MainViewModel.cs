@@ -1,4 +1,5 @@
 ﻿using EltraNotKauf.Controls;
+using EltraNotKauf.Helpers;
 using Xamarin.Forms;
 
 namespace EltraNotKauf.Views
@@ -108,12 +109,9 @@ namespace EltraNotKauf.Views
 
         private void HideMasterView()
         {
-            Xamarin.Forms.Device.BeginInvokeOnMainThread(() =>
-            {
-                IsMasterPageVisible = false;
+            IsMasterPageVisible = false;
 
-                OnPropertyChanged("IsMasterPageVisible");
-            });
+            OnPropertyChanged("IsMasterPageVisible");
         }
         
         public async void StartUpdate()
