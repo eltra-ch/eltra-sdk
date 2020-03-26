@@ -65,13 +65,11 @@
                         <buttons:ThreeStateButtonView BindingContext="{Binding OtherButtonViewModel}"/>
                     </Frame>
                 </Grid>
-                <Frame Grid.Row="1" BackgroundColor="Transparent">
+                <Frame Grid.Row="1" BorderColor="{StaticResource NavigationPrimary}">
                     <StackLayout Orientation="Horizontal">
                         <Label Text="Bemerkung:" VerticalOptions="CenterAndExpand"/>
                         <Frame Padding="4" BackgroundColor="Transparent"/>
-                        <Editor Text="{Binding Notice}" VerticalOptions="FillAndExpand" HeightRequest="50" HorizontalOptions="FillAndExpand">
-                            
-                        </Editor>
+                        <Editor Text="{Binding Notice}" VerticalOptions="FillAndExpand" HeightRequest="50" HorizontalOptions="FillAndExpand"/>
                     </StackLayout>
                 </Frame>
             </Grid>

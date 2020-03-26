@@ -50,7 +50,7 @@
     <WarningLevel>4</WarningLevel>
     <ConsolePause>false</ConsolePause>
     <MtouchArch>ARM64</MtouchArch>
-    <CodesignKey>iPhone Developer: dsienkiewicz@outlook.com (H8X5HWB4P6)</CodesignKey>
+    <CodesignKey>iPhone Developer: Dawid Sienkiewicz (2NZ3UN6W7R)</CodesignKey>
     <MtouchDebug>true</MtouchDebug>
     <CodesignEntitlements>
     </CodesignEntitlements>
@@ -175,7 +175,7 @@
   </ItemGroup>
   <ProjectExtensions>
     <VisualStudio>
-      <UserProperties XamarinHotReloadMonoInterpreterErrorInfoBarEltraNotKaufiOSHideInfoBar="True" XamarinHotReloadMonoInterpreterErrorInfoBarNotKaufiOSHideInfoBar="True" />
+      <UserProperties XamarinHotReloadMonoInterpreterErrorInfoBarNotKaufiOSHideInfoBar="True" XamarinHotReloadMonoInterpreterErrorInfoBarEltraNotKaufiOSHideInfoBar="True" />
     </VisualStudio>
   </ProjectExtensions>
 </Project>

@@ -11,6 +11,7 @@ using EltraCommon.Helpers;
 using System.Web;
 using System.Timers;
 using EltraNotKauf.Controls.Button;
+using System.ComponentModel;
 
 namespace EltraNotKauf.Views.Orders
 {
@@ -53,7 +54,7 @@ namespace EltraNotKauf.Views.Orders
             OtherButtonViewModel.Title = "ANDERE";
 
             ShopButtonViewModel.Id = "shop;";
-            ShopButtonViewModel.Title = "LADEN";
+            ShopButtonViewModel.Title = "LEBENSMITTEL";
 
             CarButtonViewModel.Id = "car;";
             CarButtonViewModel.Title = "AUTO";
@@ -65,6 +66,8 @@ namespace EltraNotKauf.Views.Orders
             ShopButtonViewModel.ButtonStateChanged += OnButtonStateChanged;
             CarButtonViewModel.ButtonStateChanged += OnButtonStateChanged;
             DrugStoreButtonViewModel.ButtonStateChanged += OnButtonStateChanged;
+
+            PropertyChanged += OnViewPropertyChanged;
         }
 
         #endregion
@@ -143,6 +146,14 @@ namespace EltraNotKauf.Views.Orders
 
         #region Events
 
+        private async void OnViewPropertyChanged(object sender, PropertyChangedEventArgs args)
+        {
+            if(args.PropertyName == "Notice")
+            {
+                await OnMessageChanged();
+            }
+        }
+
         private async void OnUpdateIntervalElapsed(object sender, ElapsedEventArgs e)
         {
             var activeOrder = await GetActiveOrder();
@@ -157,6 +168,11 @@ namespace EltraNotKauf.Views.Orders
         }
 
         private async void OnButtonStateChanged(object sender, EventArgs e)
+        {
+            await OnMessageChanged();
+        }
+
+        private async Task OnMessageChanged()
         {
             var message = new JsonProtocolV1();
 
@@ -190,7 +206,7 @@ namespace EltraNotKauf.Views.Orders
             {
                 if (ActiveOrder != null)
                 {
-                    if(ActiveOrder.Status == OrderStatus.Assigned || ActiveOrder.Status == OrderStatus.Open)
+                    if (ActiveOrder.Status == OrderStatus.Assigned || ActiveOrder.Status == OrderStatus.Open)
                     {
                         ActiveOrder.Status = OrderStatus.Closed;
 
@@ -264,7 +280,7 @@ namespace EltraNotKauf.Views.Orders
 
             _timer.Enabled = true;
         }
-        
+
         #endregion
 
         #region Methods
@@ -273,8 +289,8 @@ namespace EltraNotKauf.Views.Orders
         {
             bool result = false;
 
-            if (activeOrder != null && (activeOrder.Uuid != ActiveOrder.Uuid ||
-                activeOrder.Modified != ActiveOrder.Modified))
+            if ((ActiveOrder == null) || (activeOrder != null && (activeOrder.Uuid != ActiveOrder.Uuid ||
+                activeOrder.Modified != ActiveOrder.Modified)))
             {
                 result = true;
             }
@@ -357,7 +373,7 @@ namespace EltraNotKauf.Views.Orders
 
         public override async void Show()
         {
-            _timer.Start();
+            //_timer.Start();
 
             ActiveOrder = await GetActiveOrder();
 
