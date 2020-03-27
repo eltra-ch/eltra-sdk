@@ -218,7 +218,7 @@ namespace EltraNotKauf.Views.Contact
         {
             Regions = await _regionEndpoint.ReadRegions();
 
-            await ReadContact();
+            ReadContact();
 
             UpdateValidFlag();
 
@@ -241,12 +241,14 @@ namespace EltraNotKauf.Views.Contact
             return result;
         }
         
-        private async Task ReadContact()
+        private async void ReadContact()
         {
-            Contact = await GetContact();
+            var contact = await GetContact();
 
-            if (Contact != null)
+            if (contact != null)
             {
+                Contact = contact;
+
                 Name = Contact.Name;
                 Phone = Contact.Phone;
                 Street = Contact.Street;

@@ -7,12 +7,18 @@ namespace EltraNotKauf.Views.Requests
 {
     public class RequestViewModel : BaseViewModel
     {
+        #region Private fields
+
         private string _orderUuid;
         private OrderStatus _orderStatus;
         private List<OrderStatus> _orderStatusList;
         private string _orderModifiedTime;
         private string _createdBy;
         private bool _requestChecked;
+
+        #endregion
+
+        #region Constructors
 
         public RequestViewModel(OrderInfo orderInfo)
         {
@@ -60,6 +66,10 @@ namespace EltraNotKauf.Views.Requests
             CreatedBy = contact.Name;
         }
 
+        #endregion
+
+        #region Properties
+
         public string OrderUuid 
         { 
             get => _orderUuid; 
@@ -94,5 +104,7 @@ namespace EltraNotKauf.Views.Requests
             get => _requestChecked;
             set => SetProperty(ref _requestChecked, value);
         }
+
+        #endregion
     }
 }

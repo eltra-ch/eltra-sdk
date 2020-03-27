@@ -33,6 +33,7 @@
             <RowDefinition Height="Auto"></RowDefinition>
             <RowDefinition Height="Auto"></RowDefinition>
             <RowDefinition Height="Auto"></RowDefinition>
+            <RowDefinition Height="Auto"></RowDefinition>
             <RowDefinition Height="8"></RowDefinition>
         </Grid.RowDefinitions>
 
@@ -107,6 +108,10 @@
 
         <Frame Grid.Row="5" Padding="0">
             <connectionstatus:ConnectionStatusView/>
+        </Frame>
+
+        <Frame Grid.Row="6" Padding="0">
+            <ActivityIndicator IsRunning="{Binding IsBusy}" VerticalOptions="Center" HorizontalOptions="Center" />
         </Frame>
         
     </Grid>

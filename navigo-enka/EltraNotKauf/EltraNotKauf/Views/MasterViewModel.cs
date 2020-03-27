@@ -30,8 +30,7 @@ namespace EltraNotKauf.Views
         private AboutViewModel _aboutViewModel;
         
         private ToolViewModel _activeViewModel;
-        private ToolViewModel _previousViewModel;
-
+        
         #endregion
 
         #region Constructors
@@ -164,21 +163,25 @@ namespace EltraNotKauf.Views
             }
             else
             {
-                IsBusy = true;
-
                 Task.Run(async () => { 
                     if (SignInViewModel.IsValid)
                     {
-                        if(await SignInViewModel.SignIn())
+                        IsBusy = true;
+
+                        if (await SignInViewModel.SignIn())
                         {
                             ActivateTools(true);
+
+                            GotoLastUsedPage();
                         }
+
+                        IsBusy = false;
                     }
-                });
-
-                IsBusy = false;
-
-                GotoLastUsedPage();
+                    else
+                    {
+                        ChangePage(SignInViewModel, true);
+                    }
+                });             
             }
         }
 
@@ -194,26 +197,32 @@ namespace EltraNotKauf.Views
         {
             if (viewModel != null && _activeViewModel != viewModel)
             {
-                _previousViewModel = _activeViewModel;
-
-                if (_previousViewModel != null)
+                foreach(var page in ViewModels)
                 {
-                    _previousViewModel.Hide();
+                    if(page.IsVisible)
+                    {
+                        page.Hide();
+                    }
                 }
 
-                viewModel?.Show();
-
-                ActiveViewModel = viewModel;
-
-                if(!internalChange && viewModel.Persistenced)
-                { 
-                    LastUsedPageName = viewModel.Uuid;
-                }
-
-                Title = ActiveViewModel.Title;
-
-                OnPageChanged();
+                ShowPage(viewModel, internalChange);
             }
+        }
+
+        private void ShowPage(ToolViewModel viewModel, bool internalChange)
+        {
+            viewModel?.Show();
+
+            ActiveViewModel = viewModel;
+
+            if (!internalChange && viewModel.Persistenced)
+            {
+                LastUsedPageName = viewModel.Uuid;
+            }
+
+            Title = ActiveViewModel.Title;
+
+            OnPageChanged();
         }
 
         private SignOutViewModel CreateSignOutViewModel()
@@ -248,8 +257,7 @@ namespace EltraNotKauf.Views
                         {
                             ChangePage(SignUpViewModel, true);
 
-                            SignUpViewModel.LoginName = SignInViewModel.LoginName;
-                            SignUpViewModel.Password = SignInViewModel.Password;
+                            SignUpViewModel.Reset();                            
                         }
                         break;
                     case SignStatus.SignedIn:

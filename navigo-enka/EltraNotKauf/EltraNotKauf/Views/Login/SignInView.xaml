@@ -69,12 +69,8 @@
                                        HorizontalOptions="CenterAndExpand"/>
                             </Frame>
 
-                            <Frame Grid.Row="2" BackgroundColor="Transparent">
-                                <Label IsTabStop="False" Text="Benutzername" FontSize="Small" TextColor="Black" BackgroundColor="Transparent"/>
-                            </Frame>
-
                             <Frame Grid.Row="3">
-                                <Entry IsTabStop="True" TabIndex="0" Text="{Binding LoginName, Mode=OneWay}" IsEnabled="{Binding IsConnected}">
+                                <Entry Placeholder="Benutzername" IsTabStop="True" TabIndex="0" Text="{Binding LoginName, Mode=OneWay}" IsEnabled="{Binding IsConnected}">
                                     <Entry.Behaviors>
                                         <behaviors:LoginValidationBehavior/>
                                     </Entry.Behaviors>
@@ -89,12 +85,8 @@
                                 </Entry>
                             </Frame>
 
-                            <Frame Grid.Row="4" BackgroundColor="Transparent">
-                                <Label IsTabStop="False" Text="Kennwort" FontSize="Small" TextColor="Black" BackgroundColor="Transparent"/>
-                            </Frame>
-
                             <Frame Grid.Row="5">
-                                <Entry IsTabStop="True" TabIndex="1" Text="{Binding Password, Mode=OneWay}" IsPassword="True" IsEnabled="{Binding IsConnected}">
+                                <Entry Placeholder="Kennwort" IsTabStop="True" TabIndex="1" Text="{Binding Password, Mode=OneWay}" IsPassword="True" IsEnabled="{Binding IsConnected}">
                                     <Entry.Behaviors>
                                         <behaviors:PasswordValidationBehavior/>
                                     </Entry.Behaviors>

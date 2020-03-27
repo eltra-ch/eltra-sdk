@@ -43,7 +43,7 @@ namespace EltraNotKauf.Views.Orders
 
         public OrderViewModel()
         {
-            Title = "Anfragen";
+            Title = "Hilfe";
             Image = ImageSource.FromResource("EltraNotKauf.Resources.urgent.png");
             IsMandatory = true;
             Uuid = "37A00C5A-3A87-40F5-B954-5BE2161728F2";
@@ -380,16 +380,23 @@ namespace EltraNotKauf.Views.Orders
             return result;
         }
 
-        public override async void Show()
+        public override void Show()
         {
-            _timer.Start();
+            Task.Run(async () => {
 
-            ActiveOrder = await GetActiveOrder();
+                IsBusy = true;
 
-            UpdateActiveOrderStatus();
+                ActiveOrder = await GetActiveOrder();
 
-            UpdateControlsState();
+                UpdateActiveOrderStatus();
 
+                UpdateControlsState();
+
+                _timer.Start();
+
+                IsBusy = false;
+            });
+            
             base.Show();
         }
 

@@ -12,6 +12,7 @@ using Newtonsoft.Json;
 using EltraCommon.Logger;
 using EltraConnector.Transport;
 using EltraCloudContracts.Enka.Orders;
+using System.Linq;
 
 namespace EltraNotKauf.Views.Requests
 {
@@ -180,22 +181,37 @@ namespace EltraNotKauf.Views.Requests
             RequestList = requestList;
         }
 
-        public override async void Show()
+        public override void Show()
         {
-            Regions = await _regionEndpoint.ReadRegions();
+            Task.Run(async () =>
+            {
+                IsBusy = true;
 
-            await ReadContact();
+                Regions = await _regionEndpoint.ReadRegions();
+
+                ReadContact();
+
+                IsBusy = false;
+            });
 
             base.Show();
         }
 
-        private async Task ReadContact()
+        private async void ReadContact()
         {
-            Contact = await GetContact();
+            var contact = await GetContact();
 
-            if (Contact != null)
+            if (contact != null)
             {
+                Contact = contact;
+
                 Region = FindRegion(Contact.Region);
+            }
+            else
+            {
+                Contact = null;
+
+                Region = Regions.FirstOrDefault();
             }
         }
 

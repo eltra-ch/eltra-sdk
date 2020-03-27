@@ -2,6 +2,7 @@
 using Xamarin.Forms;
 using EltraConnector.Controllers;
 using EltraCloudContracts.Contracts.Users;
+using System;
 
 namespace EltraNotKauf.Views.Login
 {
@@ -50,6 +51,14 @@ namespace EltraNotKauf.Views.Login
             }            
         }
 
-        #endregion        
+        internal void Reset()
+        {
+            IsLoginValid = true;
+            IsValid = true;
+            LoginName = string.Empty;
+            Password = string.Empty;
+        }
+
+        #endregion
     }
 }
