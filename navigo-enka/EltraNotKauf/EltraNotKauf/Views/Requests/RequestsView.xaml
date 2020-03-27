@@ -99,12 +99,12 @@
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="Auto"/>
                                         <ColumnDefinition Width="68"/>
-                                        <ColumnDefinition Width="140"/>
+                                        <ColumnDefinition Width="100"/>
                                         <ColumnDefinition Width="*"/>
                                         <ColumnDefinition Width="Auto"/>
                                     </Grid.ColumnDefinitions>
 
-                                    <CheckBox Grid.Column="0"/>
+                                    <CheckBox Grid.Column="0" IsChecked="{Binding RequestChecked}"/>
 
                                     <Label Grid.Column="1" Text="{Binding OrderUuid}" VerticalOptions="Center" FontSize="Micro"/>
                                     <Label Grid.Column="2" Text="{Binding OrderStatus.Label}" VerticalOptions="Center" FontSize="Micro"/>

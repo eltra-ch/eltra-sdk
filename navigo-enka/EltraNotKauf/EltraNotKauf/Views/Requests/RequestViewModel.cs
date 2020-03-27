@@ -12,6 +12,7 @@ namespace EltraNotKauf.Views.Requests
         private List<OrderStatus> _orderStatusList;
         private string _orderModifiedTime;
         private string _createdBy;
+        private bool _requestChecked;
 
         public RequestViewModel(OrderInfo orderInfo)
         {
@@ -86,6 +87,12 @@ namespace EltraNotKauf.Views.Requests
         { 
             get => _createdBy; 
             set => SetProperty(ref _createdBy, value); 
+        }
+
+        public bool RequestChecked
+        {
+            get => _requestChecked;
+            set => SetProperty(ref _requestChecked, value);
         }
     }
 }
