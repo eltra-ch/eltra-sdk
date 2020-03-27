@@ -1,0 +1,28 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<ContentView xmlns="http://xamarin.com/schemas/2014/forms" 
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:d="http://xamarin.com/schemas/2014/forms/design"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d"
+             xmlns:request="clr-namespace:EltraNotKauf.Views.Requests"
+             x:DataType="request:RequestViewModel"
+             x:Class="EltraNotKauf.Views.Requests.RequestView">
+  <ContentView.Content>
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="68"/>
+                <ColumnDefinition Width="100"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+
+            <CheckBox Grid.Column="0" IsChecked="{Binding RequestChecked}"/>
+            
+            <Label Grid.Column="1" Text="{Binding OrderUuid}" VerticalOptions="Center" FontSize="Micro"/>
+            <Label Grid.Column="2" Text="{Binding OrderStatus.Label}" VerticalOptions="Center" FontSize="Micro"/>
+            <Label Grid.Column="3" Text="{Binding CreatedBy}" VerticalOptions="Center" FontSize="Micro"/>
+            <Label Grid.Column="4" Text="{Binding OrderModifiedTime}" VerticalOptions="Center" FontSize="Micro"/>
+        </Grid>
+    </ContentView.Content>
+</ContentView>

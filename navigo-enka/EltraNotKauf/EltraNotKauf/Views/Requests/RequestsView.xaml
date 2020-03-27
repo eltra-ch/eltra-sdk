@@ -4,7 +4,6 @@
              xmlns:contact="clr-namespace:EltraNotKauf.Views.Requests"
              xmlns:behaviors="clr-namespace:EltraNotKauf.Views.Requests.Behaviors"
              xmlns:behaviors2="clr-namespace:EltraNotKauf.Views.Behaviors"
-             xmlns:request="clr-namespace:EltraNotKauf.Views.Requests"
              x:DataType="contact:RequestsViewModel"
              xmlns:forms="clr-namespace:dotMorten.Xamarin.Forms;assembly=dotMorten.Xamarin.Forms.AutoSuggestBox"
              xmlns:connectionstatus="clr-namespace:EltraNotKauf.Views.ConnectionStatus"
@@ -96,22 +95,7 @@
                     <StackLayout BindableLayout.ItemsSource="{Binding RequestList}">
                         <BindableLayout.ItemTemplate>
                             <DataTemplate>
-                                <Grid x:DataType="request:RequestViewModel">
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="Auto"/>
-                                        <ColumnDefinition Width="68"/>
-                                        <ColumnDefinition Width="100"/>
-                                        <ColumnDefinition Width="*"/>
-                                        <ColumnDefinition Width="Auto"/>
-                                    </Grid.ColumnDefinitions>
-
-                                    <CheckBox Grid.Column="0" IsChecked="{Binding RequestChecked}"/>
-
-                                    <Label Grid.Column="1" Text="{Binding OrderUuid}" VerticalOptions="Center" FontSize="Micro"/>
-                                    <Label Grid.Column="2" Text="{Binding OrderStatus.Label}" VerticalOptions="Center" FontSize="Micro"/>
-                                    <Label Grid.Column="3" Text="{Binding CreatedBy}" VerticalOptions="Center" FontSize="Micro"/>
-                                    <Label Grid.Column="4" Text="{Binding OrderModifiedTime}" VerticalOptions="Center" FontSize="Micro"/>
-                                </Grid>
+                                <contact:RequestView/>
                             </DataTemplate>
                         </BindableLayout.ItemTemplate>
 
