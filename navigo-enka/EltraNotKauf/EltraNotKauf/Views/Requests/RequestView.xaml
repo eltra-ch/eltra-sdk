@@ -7,6 +7,7 @@
              xmlns:request="clr-namespace:EltraNotKauf.Views.Requests"
              xmlns:labels="clr-namespace:EltraNotKauf.Controls.Labels"
              xmlns:button="clr-namespace:EltraNotKauf.Controls.Button"
+             xmlns:common="clr-namespace:EltraNotKauf.Views.Common"
              x:DataType="request:RequestViewModel"
              x:Class="EltraNotKauf.Views.Requests.RequestView">
 
@@ -111,7 +112,13 @@
                         <StackLayout BindableLayout.ItemsSource="{Binding AssignedTo}">
                             <BindableLayout.ItemTemplate>
                                 <DataTemplate>
-                                    <Label Text="{Binding}"/>
+                                    <StackLayout x:DataType="common:AssignedToViewModel">
+                                        <StackLayout Orientation="Horizontal">
+                                            <Label Text="{Binding Name}"/>
+                                            <Label Text="{Binding City}"/>
+                                            <Label Text="{Binding Phone}"/>
+                                        </StackLayout>
+                                    </StackLayout>
                                 </DataTemplate>
                             </BindableLayout.ItemTemplate>
                         </StackLayout>

@@ -5,6 +5,7 @@
              xmlns:behaviors="clr-namespace:EltraNotKauf.Views.Behaviors"
              xmlns:converters="clr-namespace:EltraNotKauf.Controls.Converters"
              xmlns:buttons="clr-namespace:EltraNotKauf.Controls.Button"
+             xmlns:common="clr-namespace:EltraNotKauf.Views.Common"
              xmlns:connectionstatus="clr-namespace:EltraNotKauf.Views.ConnectionStatus"
              x:DataType="orders:OrderViewModel"            
              x:Class="EltraNotKauf.Views.Orders.OrderView">
@@ -97,11 +98,28 @@
 
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
                 </Grid.RowDefinitions>
 
                 <Frame Grid.Column="0" Grid.Row="0" Style="{StaticResource BorderLikeFrame}">
-                    <Label HorizontalOptions="CenterAndExpand" Text="{Binding ActiveOrderStatus}"></Label>
+                    <Label HorizontalOptions="CenterAndExpand" Text="{Binding ActiveOrderStatus}"/>
                 </Frame>
+
+                <Grid Grid.Row="1">
+                    <StackLayout BindableLayout.ItemsSource="{Binding AssignedTo}" HeightRequest="100">
+                        <BindableLayout.ItemTemplate>
+                            <DataTemplate>
+                                <StackLayout x:DataType="common:AssignedToViewModel">
+                                    <StackLayout Orientation="Horizontal">
+                                        <Label Text="{Binding Name}"/>
+                                        <Label Text="{Binding City}"/>
+                                        <Label Text="{Binding Phone}"/>
+                                    </StackLayout>
+                                </StackLayout>
+                            </DataTemplate>
+                        </BindableLayout.ItemTemplate>
+                    </StackLayout>
+                </Grid>
 
             </Grid>
         </Frame>

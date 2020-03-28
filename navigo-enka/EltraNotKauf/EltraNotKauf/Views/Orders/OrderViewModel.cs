@@ -1,7 +1,6 @@
 ﻿using EltraNotKauf.Controls;
 using System.Threading.Tasks;
 using Xamarin.Forms;
-using EltraConnector.Transport;
 using System;
 using Newtonsoft.Json;
 using EltraCloudContracts.Enka.Orders;
@@ -11,6 +10,8 @@ using System.ComponentModel;
 using System.Windows.Input;
 using EltraNotKauf.Extensions;
 using EltraNotKauf.Endpoints;
+using System.Collections.Generic;
+using EltraNotKauf.Views.Common;
 
 namespace EltraNotKauf.Views.Orders
 {
@@ -23,7 +24,9 @@ namespace EltraNotKauf.Views.Orders
         private bool _isValid;
         private OrdersEndpoint _ordersEndpoint;
         private Order _activeOrder;
-        
+        private EltraCloudContracts.Enka.Contacts.Contact _contact;
+        private List<AssignedToViewModel> _assignedTo;
+
         private ThreeStateButtonViewModel _otherButtonViewModel;
         private ThreeStateButtonViewModel _shopButtonViewModel;
         private ThreeStateButtonViewModel _drugStoreButtonViewModel;
@@ -32,7 +35,8 @@ namespace EltraNotKauf.Views.Orders
         private string _activeOrderStatus;
         private string _activeOrderTitle;
         private string _notice;
-        private Timer _timer;
+        private Timer _orderUpdateTimer;
+        private ContactEndpoint _contactEndpoint;
 
         #endregion
 
@@ -45,9 +49,10 @@ namespace EltraNotKauf.Views.Orders
             IsMandatory = true;
             Uuid = "37A00C5A-3A87-40F5-B954-5BE2161728F2";
 
+            _contactEndpoint = new ContactEndpoint();
             _ordersEndpoint = new OrdersEndpoint();
-            _timer = new Timer(OrderUpdateInterval);
-            _timer.Elapsed += OnUpdateIntervalElapsed;
+            _orderUpdateTimer = new Timer(OrderUpdateInterval);
+            _orderUpdateTimer.Elapsed += OnUpdateOrderIntervalElapsed;
 
             OtherButtonViewModel.Id = "other;";
             OtherButtonViewModel.Title = "ANDERE";
@@ -137,6 +142,12 @@ namespace EltraNotKauf.Views.Orders
             }
         }
 
+        public List<AssignedToViewModel> AssignedTo
+        {
+            get => _assignedTo ?? (_assignedTo = new List<AssignedToViewModel>());
+            set => SetProperty(ref _assignedTo, value);
+        }
+
         #endregion
 
         #region Command
@@ -192,7 +203,7 @@ namespace EltraNotKauf.Views.Orders
             }
         }
 
-        private async void OnUpdateIntervalElapsed(object sender, ElapsedEventArgs e)
+        private async void OnUpdateOrderIntervalElapsed(object sender, ElapsedEventArgs e)
         {
             var activeOrder = await _ordersEndpoint.GetActiveOrder();
 
@@ -202,6 +213,8 @@ namespace EltraNotKauf.Views.Orders
 
                 UpdateActiveOrderStatus();
                 UpdateControlsState();
+                
+                UpdateContactInfo();
             }
         }
 
@@ -243,7 +256,7 @@ namespace EltraNotKauf.Views.Orders
         {
             var message = CreateMessage();
 
-            _timer.Enabled = false;
+            _orderUpdateTimer.Enabled = false;
 
             ActiveOrder = await _ordersEndpoint.GetActiveOrder();
 
@@ -284,12 +297,37 @@ namespace EltraNotKauf.Views.Orders
                 }
             }
 
-            _timer.Enabled = true;
+            _orderUpdateTimer.Enabled = true;
         }
 
         #endregion
 
         #region Methods
+
+        private async Task UpdateAssignedInfo()
+        {
+            if (ActiveOrder != null)
+            {
+                var orderInfo = await _ordersEndpoint.GetOrderInfo(ActiveOrder.Uuid);
+                
+                var assignedTo = orderInfo?.AssignedTo;
+
+                if (assignedTo != null && _contact != null)
+                {
+                    var assignedToList = new List<AssignedToViewModel>();
+
+                    foreach (var contact in assignedTo)
+                    {
+                        if (contact.Uuid != _contact.Uuid)
+                        {
+                            assignedToList.Add(new AssignedToViewModel() { Name = contact.Name, City = contact.City, Phone = contact.Phone });
+                        }                        
+                    }
+
+                    AssignedTo = assignedToList;
+                }
+            }
+        }
 
         private bool IsActiveOrderChanged(Order activeOrder)
         {
@@ -342,13 +380,15 @@ namespace EltraNotKauf.Views.Orders
 
                 IsBusy = true;
 
+                UpdateContactInfo();
+
                 ActiveOrder = await _ordersEndpoint.GetActiveOrder();
 
                 UpdateActiveOrderStatus();
 
                 UpdateControlsState();
 
-                _timer.Start();
+                _orderUpdateTimer.Start();
 
                 IsBusy = false;
             });
@@ -388,9 +428,19 @@ namespace EltraNotKauf.Views.Orders
 
         public override void Hide()
         {
-            _timer.Stop();
+            _orderUpdateTimer.Stop();
 
             base.Hide();
+        }
+
+        private void UpdateContactInfo()
+        {
+            var task = Task.Run(async () =>
+            {
+                _contact = await _contactEndpoint.GetContact();
+            });
+
+            task.ContinueWith(async (t) => { await UpdateAssignedInfo(); });
         }
 
         #endregion

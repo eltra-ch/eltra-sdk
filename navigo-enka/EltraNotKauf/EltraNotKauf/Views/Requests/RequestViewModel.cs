@@ -3,6 +3,8 @@ using EltraNotKauf.Controls;
 using EltraNotKauf.Controls.Button;
 using EltraNotKauf.Controls.Toast;
 using EltraNotKauf.Endpoints;
+using EltraNotKauf.Helpers;
+using EltraNotKauf.Views.Common;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -31,7 +33,7 @@ namespace EltraNotKauf.Views.Requests
         private string _orderPhone;
         private string _description;
         private bool _requestChecked;
-        private List<string> _assignedTo;
+        private List<AssignedToViewModel> _assignedTo;
 
         private Timer _remainingTimer;
         private Timer _orderStatusTimer;
@@ -117,7 +119,7 @@ namespace EltraNotKauf.Views.Requests
             set => SetProperty(ref _description, value);
         }
 
-        public List<string> AssignedTo
+        public List<AssignedToViewModel> AssignedTo
         {
             get => _assignedTo;
             set => SetProperty(ref _assignedTo, value);
@@ -286,11 +288,18 @@ namespace EltraNotKauf.Views.Requests
 
                     if (await _ordersEndpoint.ChangeOrder(_orderInfo.Order))
                     {
-                        ToastMessage.ShortAlert($"Bravo! Aufgabe {_orderInfo.Order.Uuid} aufgenommen!");
+                        ThreadHelper.RunOnMainThread(()=> 
+                        {
+                            ToastMessage.ShortAlert($"Bravo! Aufgabe {_orderInfo.Order.Uuid} aufgenommen!");
+                        });
+                        
                     }
                     else
                     {
-                        ToastMessage.ShortAlert($"Aufgabe {_orderInfo.Order.Uuid} leider nicht aufgenommen!");
+                        ThreadHelper.RunOnMainThread(() =>
+                        {
+                            ToastMessage.ShortAlert($"Aufgabe {_orderInfo.Order.Uuid} leider nicht aufgenommen!");
+                        });
                     }
                 }
 
@@ -379,13 +388,13 @@ namespace EltraNotKauf.Views.Requests
 
             if (assignedTo != null && _contact != null)
             {
-                var assignedToList = new List<string>();
+                var assignedToList = new List<AssignedToViewModel>();
 
                 foreach (var contact in assignedTo)
                 {
                     if (contact.Uuid != _contact.Uuid)
                     {
-                        assignedToList.Add(contact.Name);
+                        assignedToList.Add(new AssignedToViewModel() { Name = contact.Name, City = contact.City, Phone = contact.Phone });
                     }
                     else
                     {
@@ -423,7 +432,9 @@ namespace EltraNotKauf.Views.Requests
 
                 if(_message!=null)
                 {
-                    if(_message.Car)
+                    Description = string.Empty;
+
+                    if (_message.Car)
                     {
                         Description += "AUTO";
                         Description += ", ";
