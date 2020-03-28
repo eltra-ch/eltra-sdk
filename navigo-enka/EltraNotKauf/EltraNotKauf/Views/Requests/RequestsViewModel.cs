@@ -50,6 +50,13 @@ namespace EltraNotKauf.Views.Requests
                 {
                     OnPostalCodeChanged();
                 }
+                if(args.PropertyName == "Region")
+                {
+                    if (Region != null && !string.IsNullOrEmpty(Region.ShortName))
+                    {
+                        SelectedRegionCode = Region.ShortName;
+                    }
+                }
             }; 
         }
 
@@ -124,18 +131,22 @@ namespace EltraNotKauf.Views.Requests
             set => _contact = value;
         }
 
-        public string Url
+        public string SelectedRegionCode
         {
             get
             {
                 string result = string.Empty;
 
-                if (Application.Current.Properties.ContainsKey("url"))
+                if (Application.Current.Properties.ContainsKey("selectedRegionCode"))
                 {
-                    result = Application.Current.Properties["url"] as string;
+                    result = Application.Current.Properties["selectedRegionCode"] as string;
                 }
 
                 return result;
+            }
+            set
+            {
+                Application.Current.Properties["selectedRegionCode"] = value;
             }
         }
 
@@ -171,7 +182,14 @@ namespace EltraNotKauf.Views.Requests
         {
             if (Region != null)
             {
-                var orderInfoList = await _ordersEndpoint.GetOrderInfoList(Region.Name, City);
+                string region = Region.Name;
+
+                if (Region.ShortName == "--")
+                {
+                    region = string.Empty;
+                }
+
+                var orderInfoList = await _ordersEndpoint.GetOrderInfoList(region, City);
                 var requestList = new List<RequestViewModel>();
 
                 foreach (var orderInfo in orderInfoList)
@@ -200,7 +218,11 @@ namespace EltraNotKauf.Views.Requests
 
                 Regions = await _regionEndpoint.ReadRegions();
 
+                Regions.Insert(0, new Region() { Name = "Alle", ShortName = "--" });
+
                 ReadContact();
+                
+                UpdateRegion();
 
                 await UpdateRequests();
 
@@ -210,6 +232,24 @@ namespace EltraNotKauf.Views.Requests
             base.Show();
         }
 
+        private void UpdateRegion()
+        {
+            if (!string.IsNullOrEmpty(SelectedRegionCode))
+            {
+                Region = FindRegionByCode(SelectedRegionCode);
+            }
+
+            if (Region == null)
+            {
+                Region = FindRegionByName(Contact.Region);
+
+                if (Region == null)
+                {
+                    Region = Regions.FirstOrDefault();
+                }
+            }
+        }
+
         private async void ReadContact()
         {
             var contact = await _contactEndpoint.GetContact();
@@ -217,18 +257,14 @@ namespace EltraNotKauf.Views.Requests
             if (contact != null)
             {
                 Contact = contact;
-
-                Region = FindRegion(Contact.Region);
             }
             else
             {
                 Contact = null;
-
-                Region = Regions.FirstOrDefault();
             }
         }
 
-        private Region FindRegion(string name)
+        private Region FindRegionByName(string name)
         {
             Region result = null;
 
@@ -243,7 +279,23 @@ namespace EltraNotKauf.Views.Requests
             
             return result;
         }
-        
+
+        private Region FindRegionByCode(string code)
+        {
+            Region result = null;
+
+            foreach (var region in Regions)
+            {
+                if (region.ShortName == code)
+                {
+                    result = region;
+                    break;
+                }
+            }
+
+            return result;
+        }
+
         public async Task UpdateCitySuggestions(string text)
         {
             if (Region != null)
@@ -271,7 +323,7 @@ namespace EltraNotKauf.Views.Requests
                 {
                     if(!string.IsNullOrEmpty(info.Region.ShortName) && info.Region.ShortName != Region.ShortName)
                     {
-                        Region = FindRegion(info.Region.Name);
+                        Region = FindRegionByName(info.Region.Name);
 
                         if (Region != null)
                         {

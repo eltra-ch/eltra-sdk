@@ -84,8 +84,16 @@
 
         <Frame Grid.Row="3" BorderColor="{StaticResource NavigationPrimary}">
             <StackLayout>
-                <Button Text="Erstellen" HeightRequest="84" Command="{Binding ButtonCreatePressedCommand}" IsVisible="{Binding ActiveOrder, Converter={StaticResource NegateNullToBooleanConverter}}"/>
+                <Frame CornerRadius="5" Padding="0">
+                    <StackLayout>
+                        <Button Text="Erstellen" HeightRequest="84" Command="{Binding ButtonCreatePressedCommand}" IsVisible="{Binding ActiveOrder, Converter={StaticResource NegateNullToBooleanConverter}}"/>
+                    </StackLayout>
+                </Frame>
+                <Frame CornerRadius="5" Padding="0">
+                    <StackLayout>
                 <Button Text="Beenden"  HeightRequest="84" Command="{Binding ButtonClosePressedCommand}" IsVisible="{Binding ActiveOrder, Converter={StaticResource NullToBooleanConverter}}"/>
+                    </StackLayout>
+                </Frame>
             </StackLayout>
         </Frame>
         

@@ -12,21 +12,21 @@
             <StackLayout>
       
         <Button Text="{Binding Title}" Command="{Binding ButtonPressedCommand}" HeightRequest="{Binding Height}" IsEnabled="{Binding IsEnabled}">
-            <Button.Triggers>
-                <DataTrigger TargetType="Button" Binding="{Binding ButtonState}" Value="0">
-                    <Setter Property="BackgroundColor" Value="LightGray" />
-                    <Setter Property="TextColor" Value="Black"/>
-                </DataTrigger>
-                <DataTrigger TargetType="Button" Binding="{Binding ButtonState}" Value="1">
-                    <Setter Property="BackgroundColor" Value="LawnGreen" />
-                    <Setter Property="TextColor" Value="Red"/>
-                </DataTrigger>
-                <DataTrigger TargetType="Button" Binding="{Binding ButtonState}" Value="-1">
-                    <Setter Property="BackgroundColor" Value="DarkGray" />
-                    <Setter Property="TextColor" Value="LightGray"/>
-                </DataTrigger>
-            </Button.Triggers>
-        </Button>
+                    <Button.Triggers>
+                        <DataTrigger TargetType="Button" Binding="{Binding ButtonState}" Value="0">
+                            <Setter Property="BackgroundColor" Value="#BDBDBD" />
+                            <Setter Property="TextColor" Value="#FFFFFF"/>
+                        </DataTrigger>
+                        <DataTrigger TargetType="Button" Binding="{Binding ButtonState}" Value="1">
+                            <Setter Property="BackgroundColor" Value="#03A9F4" />
+                            <Setter Property="TextColor" Value="#FFFFFF"/>
+                        </DataTrigger>
+                        <DataTrigger TargetType="Button" Binding="{Binding ButtonState}" Value="-1">
+                            <Setter Property="BackgroundColor" Value="#757575" />
+                            <Setter Property="TextColor" Value="#FFFFFF"/>
+                        </DataTrigger>
+                    </Button.Triggers>
+                </Button>
 
             </StackLayout>
         </Frame>

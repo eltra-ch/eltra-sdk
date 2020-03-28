@@ -292,7 +292,7 @@ namespace EltraNotKauf.Views.Orders
                     }
                     else
                     {
-                        ActiveOrderStatus = "Fehler :-(";
+                       ActiveOrderStatus = "Fehler :-(";
                     }
                 }
             }
@@ -306,6 +306,8 @@ namespace EltraNotKauf.Views.Orders
 
         private async Task UpdateAssignedInfo()
         {
+            var assignedToList = new List<AssignedToViewModel>();
+
             if (ActiveOrder != null)
             {
                 var orderInfo = await _ordersEndpoint.GetOrderInfo(ActiveOrder.Uuid);
@@ -314,8 +316,6 @@ namespace EltraNotKauf.Views.Orders
 
                 if (assignedTo != null && _contact != null)
                 {
-                    var assignedToList = new List<AssignedToViewModel>();
-
                     foreach (var contact in assignedTo)
                     {
                         if (contact.Uuid != _contact.Uuid)
@@ -323,10 +323,10 @@ namespace EltraNotKauf.Views.Orders
                             assignedToList.Add(new AssignedToViewModel() { Name = contact.Name, City = contact.City, Phone = contact.Phone });
                         }                        
                     }
-
-                    AssignedTo = assignedToList;
                 }
             }
+
+            AssignedTo = assignedToList;
         }
 
         private bool IsActiveOrderChanged(Order activeOrder)
