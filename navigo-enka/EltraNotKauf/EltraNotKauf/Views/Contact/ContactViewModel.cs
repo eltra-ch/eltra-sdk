@@ -22,7 +22,7 @@ namespace EltraNotKauf.Views.Contact
 
         private bool _isValid;
         private RegionEndpoint _regionEndpoint;
-        private CloudTransporter _transporter;
+        private ContactEndpoint _contactEndpoint;
         private EltraCloudContracts.Enka.Contacts.Contact _contact;
 
         private string _name;
@@ -52,7 +52,7 @@ namespace EltraNotKauf.Views.Contact
             IsPhoneValid = true;
 
             _regionEndpoint = new RegionEndpoint();
-            _transporter = new CloudTransporter();
+            _contactEndpoint = new ContactEndpoint();
 
             PropertyChanged += (sender, args) => 
             { 
@@ -188,8 +188,7 @@ namespace EltraNotKauf.Views.Contact
         #region Command
 
         public ICommand SaveCommand => new Command(OnSaveCommandClicked);
-        public ICommand LocateCommand => new Command(OnLocateClicked);
-
+        
         #endregion
 
         #region Methods
@@ -243,7 +242,7 @@ namespace EltraNotKauf.Views.Contact
         
         private async void ReadContact()
         {
-            var contact = await GetContact();
+            var contact = await _contactEndpoint.GetContact();
 
             if (contact != null)
             {
@@ -295,7 +294,7 @@ namespace EltraNotKauf.Views.Contact
 
             await UpdateCoordinates();
 
-            return await SetContact();
+            return await _contactEndpoint.SetContact(Contact);
         }
 
         private async Task UpdateCoordinates()
@@ -317,67 +316,12 @@ namespace EltraNotKauf.Views.Contact
                 }
             }
         }
-
-        public async Task<EltraCloudContracts.Enka.Contacts.Contact> GetContact()
-        {
-            EltraCloudContracts.Enka.Contacts.Contact result = null;
-
-            try
-            {
-                var query = HttpUtility.ParseQueryString(string.Empty);
-
-                var url = UrlHelper.BuildUrl(Url, "api/contacts/get", query);
-                
-                var json = await _transporter.Get(url);
-
-                if (!string.IsNullOrEmpty(json))
-                {
-                    result = JsonConvert.DeserializeObject<EltraCloudContracts.Enka.Contacts.Contact>(json);
-                }
-            }
-            catch (Exception e)
-            {
-                MsgLogger.Exception($"{GetType().Name} - SignOut", e);
-            }
-
-            return result;
-        }
-
-        public async Task<bool> SetContact()
-        {
-            bool result = false;
-
-            try
-            {
-                var query = HttpUtility.ParseQueryString(string.Empty);
-
-                var json = JsonConvert.SerializeObject(Contact);
-
-                var response = await _transporter.Post(Url, "api/contacts/set", json);
-
-                if (response.StatusCode == System.Net.HttpStatusCode.OK)
-                {
-                    result = true;
-                }
-            }
-            catch (Exception e)
-            {
-                MsgLogger.Exception($"{GetType().Name} - SignOut", e);
-            }
-
-            return result;
-        }
-
+        
         public override async void Hide()
         {
             await StoreContact();
 
             base.Hide();
-        }
-
-        private void OnLocateClicked()
-        {
-            Task.Run(async () => { await GetLocation(); });
         }
 
         private void OnPhoneChanged()
@@ -413,73 +357,6 @@ namespace EltraNotKauf.Views.Contact
                     }
                 }
             }
-        }
-
-        private async Task GetLocation()
-        {
-            try
-            {
-                IsBusy = true;
-
-                var location = await Geolocation.GetLastKnownLocationAsync();
-
-                if (location != null)
-                {
-                    Console.WriteLine($"Latitude: {location.Latitude}, Longitude: {location.Longitude}, Altitude: {location.Altitude}");
-                }
-
-                IsBusy = false;
-            }
-            catch (FeatureNotSupportedException)
-            {
-                // Handle not supported on device exception
-            }
-            catch (FeatureNotEnabledException)
-            {
-                // Handle not enabled on device exception
-            }
-            catch (PermissionException)
-            {
-                // Handle permission exception
-            }
-            catch (Exception)
-            {
-                // Unable to get location
-            }
-
-            /*if (Locations.Count > 0)
-            {
-                try
-                {
-                    var placemarks = await Geocoding.GetPlacemarksAsync(lat, lon);
-
-                    var placemark = placemarks?.FirstOrDefault();
-                    if (placemark != null)
-                    {
-                        var geocodeAddress =
-                            $"AdminArea:       {placemark.AdminArea}\n" +
-                            $"CountryCode:     {placemark.CountryCode}\n" +
-                            $"CountryName:     {placemark.CountryName}\n" +
-                            $"FeatureName:     {placemark.FeatureName}\n" +
-                            $"Locality:        {placemark.Locality}\n" +
-                            $"PostalCode:      {placemark.PostalCode}\n" +
-                            $"SubAdminArea:    {placemark.SubAdminArea}\n" +
-                            $"SubLocality:     {placemark.SubLocality}\n" +
-                            $"SubThoroughfare: {placemark.SubThoroughfare}\n" +
-                            $"Thoroughfare:    {placemark.Thoroughfare}\n";
-
-                        Console.WriteLine(geocodeAddress);
-                    }
-                }
-                catch (FeatureNotSupportedException)
-                {
-                    // Feature not supported on device
-                }
-                catch (Exception)
-                {
-                    // Handle exception that may have occurred in geocoding
-                }
-            }*/
         }
 
         #endregion

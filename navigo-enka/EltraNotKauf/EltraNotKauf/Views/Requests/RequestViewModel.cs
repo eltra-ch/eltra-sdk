@@ -1,16 +1,19 @@
 ﻿using EltraCloudContracts.Enka.Orders;
 using EltraNotKauf.Controls;
 using EltraNotKauf.Controls.Button;
+using EltraNotKauf.Controls.Toast;
+using EltraNotKauf.Endpoints;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
+using System.Threading.Tasks;
 using System.Timers;
+using Xamarin.Forms;
 using EnkaOrders = EltraCloudContracts.Enka.Orders;
 
 namespace EltraNotKauf.Views.Requests
 {
-    public class RequestViewModel : BaseViewModel
+    public class RequestViewModel : ToolViewBaseModel
     {
         #region Private fields
 
@@ -30,41 +33,78 @@ namespace EltraNotKauf.Views.Requests
         private bool _requestChecked;
         private List<string> _assignedTo;
 
-        private Timer _remainingTime;
+        private Timer _remainingTimer;
+        private Timer _orderStatusTimer;
 
         private OrderInfo _orderInfo;
         private ThreeStateButtonViewModel _helpButtonViewModel;
+        private OrdersEndpoint _ordersEndpoint;
+        private ContactEndpoint _contactEndpoint;
+        private EltraCloudContracts.Enka.Contacts.Contact _contact;
 
         #endregion
 
         #region Constructors
 
-        public RequestViewModel(OrderInfo orderInfo)
+        public RequestViewModel(ToolViewBaseModel parent, OrdersEndpoint ordersEndpoint, OrderInfo orderInfo)
+            : base(parent)
         {
+            _contactEndpoint = new ContactEndpoint();
+            _ordersEndpoint = ordersEndpoint;
             _orderInfo = orderInfo;
             
             CreateOrderStatusList();
 
             if (_orderInfo != null)
             {
-                _remainingTime = new Timer();
+                _remainingTimer = new Timer();
+                _orderStatusTimer = new Timer();
 
-                UpdateOrderInfo();
+                UpdateOrderInfo(_orderInfo.Order);
+
+                UpdateOrderContactInfo();
 
                 UpdateContactInfo();
 
-                UpdateAssignedInfo();
-
                 UpdateRemainingTime();
 
-                _remainingTime.Interval = 1000;
-                _remainingTime.Elapsed += OnRemainingTimeElapsed;
-                _remainingTime.Start();
-
+                _remainingTimer.Interval = 1000;
+                _remainingTimer.Elapsed += OnRemainingTimeElapsed;
+                
+                _orderStatusTimer.Interval = 5000;
+                _orderStatusTimer.Elapsed += OnOrderStatusElapsed;
+              
                 HelpButtonViewModel.Height = 34;
                 HelpButtonViewModel.Id = "help;";
                 HelpButtonViewModel.Title = "Ich will helfen!";
+                HelpButtonViewModel.ButtonStateChanged += OnHelpButtonStateChanged;
             }
+        }
+
+        private void OnOrderStatusElapsed(object sender, ElapsedEventArgs e)
+        {
+            Task.Run(async () =>
+            {
+                var orderInfo = await _ordersEndpoint.GetOrderInfo(_orderInfo.Order.Uuid);
+
+                var newOrder = orderInfo?.Order;
+                var oldOrder = _orderInfo?.Order;
+
+                if(newOrder != null && oldOrder != null)
+                {
+                    if(newOrder.Modified != oldOrder.Modified)
+                    {
+                        _orderInfo.Order.Modified = newOrder.Modified;
+                        _orderInfo.Order.Status = newOrder.Status;
+                        _orderInfo.Order.Message = newOrder.Message;
+                        _orderInfo.Order.Protocol = newOrder.Protocol;
+
+                        UpdateOrderInfo(_orderInfo.Order);
+
+                        UpdateAssignedInfo();
+                    }
+                }
+            });
         }
 
         #endregion
@@ -160,6 +200,21 @@ namespace EltraNotKauf.Views.Requests
             get => _helpButtonViewModel ?? (_helpButtonViewModel = new ThreeStateButtonViewModel());
         }
 
+        public string Url
+        {
+            get
+            {
+                string result = string.Empty;
+
+                if (Application.Current.Properties.ContainsKey("url"))
+                {
+                    result = Application.Current.Properties["url"] as string;
+                }
+
+                return result;
+            }
+        }
+
         #endregion
 
         #region Events
@@ -169,9 +224,79 @@ namespace EltraNotKauf.Views.Requests
             UpdateRemainingTime();
         }
 
+        private void OnHelpButtonStateChanged(object sender, EventArgs e)
+        {
+            if(HelpButtonViewModel.ButtonState == ButtonState.Active)
+            {
+                HelpButtonViewModel.Title = "Ich helfe!";
+
+                ChangeOrderStatus(EnkaOrders.OrderStatus.Assigned);
+
+            }
+            else if (HelpButtonViewModel.ButtonState == ButtonState.Inactive)
+            {
+                HelpButtonViewModel.Title = "Ich will helfen!";
+
+                ChangeOrderStatus(EnkaOrders.OrderStatus.Rejected);
+            }
+        }
+
         #endregion
 
         #region Methods
+
+        private void UpdateContactInfo()
+        {
+            var task = Task.Run(async () =>
+            {
+                _contact = await _contactEndpoint.GetContact();
+            });
+
+            task.ContinueWith((t) => { UpdateAssignedInfo(); });
+            
+        }
+
+        public override void Show()
+        {
+            UpdateContactInfo();
+
+            _orderStatusTimer.Start();
+            _remainingTimer.Start();
+
+            base.Show();
+        }
+
+        public override void Hide()
+        {
+            _orderStatusTimer.Stop();
+            _remainingTimer.Stop();
+
+            base.Hide();
+        }
+
+        private void ChangeOrderStatus(EnkaOrders.OrderStatus orderStatus)
+        {
+            Task.Run(async () =>
+            {
+                IsBusy = true;
+
+                if (_orderInfo != null)
+                {
+                    _orderInfo.Order.Status = orderStatus;
+
+                    if (await _ordersEndpoint.ChangeOrder(_orderInfo.Order))
+                    {
+                        ToastMessage.ShortAlert($"Bravo! Aufgabe {_orderInfo.Order.Uuid} aufgenommen!");
+                    }
+                    else
+                    {
+                        ToastMessage.ShortAlert($"Aufgabe {_orderInfo.Order.Uuid} leider nicht aufgenommen!");
+                    }
+                }
+
+                IsBusy = false;
+            });
+        }
 
         private void UpdateRemainingTime()
         {
@@ -235,10 +360,8 @@ namespace EltraNotKauf.Views.Requests
             }
         }
 
-        private void UpdateOrderInfo()
+        private void UpdateOrderInfo(Order order)
         {
-            var order = _orderInfo.Order;
-
             if (order != null)
             {
                 OrderUuid = order.Uuid;
@@ -246,7 +369,7 @@ namespace EltraNotKauf.Views.Requests
 
                 UpdateMessage(order);
 
-                UpdateOrderStatus(order);
+                UpdateOrderStatus(order);                
             }
         }
 
@@ -254,20 +377,28 @@ namespace EltraNotKauf.Views.Requests
         {
             var assignedTo = _orderInfo.AssignedTo;
 
-            if (assignedTo != null)
+            if (assignedTo != null && _contact != null)
             {
                 var assignedToList = new List<string>();
 
                 foreach (var contact in assignedTo)
                 {
-                    assignedToList.Add(contact.Name);
+                    if (contact.Uuid != _contact.Uuid)
+                    {
+                        assignedToList.Add(contact.Name);
+                    }
+                    else
+                    {
+                        HelpButtonViewModel.ButtonState = ButtonState.Active;
+                        HelpButtonViewModel.Title = "Ich helfe!";
+                    }
                 }
 
                 AssignedTo = assignedToList;
             }
         }
 
-        private void UpdateContactInfo()
+        private void UpdateOrderContactInfo()
         {
             var contact = _orderInfo.CreatedBy;
 

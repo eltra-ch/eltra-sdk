@@ -12,7 +12,7 @@ using Xamarin.Forms;
 
 namespace EltraNotKauf.Endpoints
 {
-    internal class RegionEndpoint
+    public class RegionEndpoint
     {
         private readonly CloudTransporter _transporter;
 

@@ -98,7 +98,6 @@
                                 <contact:RequestView/>
                             </DataTemplate>
                         </BindableLayout.ItemTemplate>
-
                     </StackLayout>
                 </ScrollView>
             </Frame>

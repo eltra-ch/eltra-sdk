@@ -3,17 +3,14 @@ using System.Threading.Tasks;
 using Xamarin.Forms;
 using EltraConnector.Transport;
 using System;
-using EltraCommon.Logger;
 using Newtonsoft.Json;
 using EltraCloudContracts.Enka.Orders;
-using System.Collections.Generic;
-using EltraCommon.Helpers;
-using System.Web;
 using System.Timers;
 using EltraNotKauf.Controls.Button;
 using System.ComponentModel;
 using System.Windows.Input;
 using EltraNotKauf.Extensions;
+using EltraNotKauf.Endpoints;
 
 namespace EltraNotKauf.Views.Orders
 {
@@ -24,7 +21,7 @@ namespace EltraNotKauf.Views.Orders
         private const double OrderUpdateInterval = 5000;
 
         private bool _isValid;
-        private CloudTransporter _transporter;
+        private OrdersEndpoint _ordersEndpoint;
         private Order _activeOrder;
         
         private ThreeStateButtonViewModel _otherButtonViewModel;
@@ -48,7 +45,7 @@ namespace EltraNotKauf.Views.Orders
             IsMandatory = true;
             Uuid = "37A00C5A-3A87-40F5-B954-5BE2161728F2";
 
-            _transporter = new CloudTransporter();
+            _ordersEndpoint = new OrdersEndpoint();
             _timer = new Timer(OrderUpdateInterval);
             _timer.Elapsed += OnUpdateIntervalElapsed;
 
@@ -159,9 +156,9 @@ namespace EltraNotKauf.Views.Orders
                 {
                     ActiveOrder.Status = OrderStatus.Closed;
 
-                    if (await ChangeOrder(ActiveOrder))
+                    if (await _ordersEndpoint.ChangeOrder(ActiveOrder))
                     {
-                        ActiveOrder = await GetActiveOrder();
+                        ActiveOrder = await _ordersEndpoint.GetActiveOrder();
 
                         UpdateActiveOrderStatus();
                     }
@@ -175,9 +172,9 @@ namespace EltraNotKauf.Views.Orders
 
         private async void OnButtonCreatePressedCommand(object obj)
         {
-            if (await AddOrder(new Order() { Message = CreateMessage().ToJson() }))
+            if (await _ordersEndpoint.AddOrder(new Order() { Message = CreateMessage().ToJson() }))
             {
-                ActiveOrder = await GetActiveOrder();
+                ActiveOrder = await _ordersEndpoint.GetActiveOrder();
 
                 UpdateActiveOrderStatus();
             }
@@ -197,7 +194,7 @@ namespace EltraNotKauf.Views.Orders
 
         private async void OnUpdateIntervalElapsed(object sender, ElapsedEventArgs e)
         {
-            var activeOrder = await GetActiveOrder();
+            var activeOrder = await _ordersEndpoint.GetActiveOrder();
 
             if (IsActiveOrderChanged(activeOrder))
             {
@@ -248,15 +245,15 @@ namespace EltraNotKauf.Views.Orders
 
             _timer.Enabled = false;
 
-            ActiveOrder = await GetActiveOrder();
+            ActiveOrder = await _ordersEndpoint.GetActiveOrder();
 
             if (ActiveOrder != null)
             {
                 if (ActiveOrder.Status == OrderStatus.Closed)
                 {
-                    if (await AddOrder(new Order() { Message = message.ToJson() }))
+                    if (await _ordersEndpoint.AddOrder(new Order() { Message = message.ToJson() }))
                     {
-                        ActiveOrder = await GetActiveOrder();
+                        ActiveOrder = await _ordersEndpoint.GetActiveOrder();
 
                         UpdateActiveOrderStatus();
                     }
@@ -274,9 +271,9 @@ namespace EltraNotKauf.Views.Orders
 
                     ActiveOrder.Message = message.ToJson();
 
-                    if (await ChangeOrder(ActiveOrder))
+                    if (await _ordersEndpoint.ChangeOrder(ActiveOrder))
                     {
-                        ActiveOrder = await GetActiveOrder();
+                        ActiveOrder = await _ordersEndpoint.GetActiveOrder();
 
                         UpdateActiveOrderStatus();
                     }
@@ -337,48 +334,7 @@ namespace EltraNotKauf.Views.Orders
             }
         }
 
-        public async Task<Order> GetActiveOrder()
-        {
-            Order result = null;
-
-            try
-            {
-                var query = HttpUtility.ParseQueryString(string.Empty);
-                var url = UrlHelper.BuildUrl(Url, "/api/orders/get", query);
-
-                var response = await _transporter.Get(url);
-
-                if(!string.IsNullOrEmpty(response))
-                {
-                    var orders = JsonConvert.DeserializeObject<List<Order>>(response);
-
-                    foreach(var order in orders)
-                    {
-                        if(order.Status == OrderStatus.Open)
-                        {
-                            result = order;
-                            break;
-                        }
-                        else if(order.Status == OrderStatus.Assigned)
-                        {
-                            result = order;
-                            break;
-                        }
-                        else if(order.Status == OrderStatus.Closed)
-                        {
-                            result = order;
-                            break;
-                        }                        
-                    }
-                }
-            }
-            catch (Exception e)
-            {
-                MsgLogger.Exception($"{GetType().Name} - GetOrders", e);
-            }
-
-            return result;
-        }
+        
 
         public override void Show()
         {
@@ -386,7 +342,7 @@ namespace EltraNotKauf.Views.Orders
 
                 IsBusy = true;
 
-                ActiveOrder = await GetActiveOrder();
+                ActiveOrder = await _ordersEndpoint.GetActiveOrder();
 
                 UpdateActiveOrderStatus();
 
@@ -435,52 +391,6 @@ namespace EltraNotKauf.Views.Orders
             _timer.Stop();
 
             base.Hide();
-        }
-
-        public async Task<bool> AddOrder(Order order)
-        {
-            bool result = false;
-
-            try
-            {
-                var json = JsonConvert.SerializeObject(order);
-
-                var response = await _transporter.Post(Url, "api/orders/add", json);
-
-                if (response.StatusCode == System.Net.HttpStatusCode.OK)
-                {
-                    result = true;
-                }
-            }
-            catch (Exception e)
-            {
-                MsgLogger.Exception($"{GetType().Name} - StoreOrder", e);
-            }
-
-            return result;
-        }
-
-        public async Task<bool> ChangeOrder(Order order)
-        {
-            bool result = false;
-
-            try
-            {
-                var json = JsonConvert.SerializeObject(order);
-
-                var response = await _transporter.Post(Url, "api/orders/change", json);
-
-                if (response.StatusCode == System.Net.HttpStatusCode.OK)
-                {
-                    result = true;
-                }
-            }
-            catch (Exception e)
-            {
-                MsgLogger.Exception($"{GetType().Name} - ChangeOrder", e);
-            }
-
-            return result;
         }
 
         #endregion

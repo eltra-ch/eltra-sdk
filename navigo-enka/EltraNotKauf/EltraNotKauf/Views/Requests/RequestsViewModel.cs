@@ -5,13 +5,7 @@ using Xamarin.Forms;
 using System.Collections.Generic;
 using Region = EltraCloudContracts.Enka.Regional.Region;
 using EltraNotKauf.Endpoints;
-using System;
-using System.Web;
-using EltraCommon.Helpers;
-using Newtonsoft.Json;
-using EltraCommon.Logger;
 using EltraConnector.Transport;
-using EltraCloudContracts.Enka.Orders;
 using System.Linq;
 
 namespace EltraNotKauf.Views.Requests
@@ -21,7 +15,8 @@ namespace EltraNotKauf.Views.Requests
         #region Private fields
 
         private RegionEndpoint _regionEndpoint;
-        private CloudTransporter _transporter;
+        private OrdersEndpoint _ordersEndpoint;
+        private ContactEndpoint _contactEndpoint;
 
         private List<Region> _regions;
         private string _street;
@@ -46,7 +41,8 @@ namespace EltraNotKauf.Views.Requests
             Uuid = "B35E33E8-351D-44B9-B169-134AD4566F48";
             
             _regionEndpoint = new RegionEndpoint();
-            _transporter = new CloudTransporter();
+            _ordersEndpoint = new OrdersEndpoint();
+            _contactEndpoint = new ContactEndpoint();
 
             PropertyChanged += (sender, args) => 
             { 
@@ -173,17 +169,27 @@ namespace EltraNotKauf.Views.Requests
 
         private async Task UpdateRequests()
         {
-            var orderInfoList = await GetOrderInfoList();
-            var requestList = new List<RequestViewModel>();
-
-            foreach (var orderInfo in orderInfoList)
+            if (Region != null)
             {
-                var requestViewModel = new RequestViewModel(orderInfo);
+                var orderInfoList = await _ordersEndpoint.GetOrderInfoList(Region.Name, City);
+                var requestList = new List<RequestViewModel>();
 
-                requestList.Add(requestViewModel);
+                foreach (var orderInfo in orderInfoList)
+                {
+                    var requestViewModel = new RequestViewModel(this, _ordersEndpoint, orderInfo);
+
+                    requestViewModel.Show();
+
+                    requestList.Add(requestViewModel);
+                }
+
+                foreach (var request in RequestList)
+                {
+                    request.Hide();
+                }
+
+                RequestList = requestList;
             }
-
-            RequestList = requestList;
         }
 
         public override void Show()
@@ -206,7 +212,7 @@ namespace EltraNotKauf.Views.Requests
 
         private async void ReadContact()
         {
-            var contact = await GetContact();
+            var contact = await _contactEndpoint.GetContact();
 
             if (contact != null)
             {
@@ -220,68 +226,6 @@ namespace EltraNotKauf.Views.Requests
 
                 Region = Regions.FirstOrDefault();
             }
-        }
-
-        public async Task<EltraCloudContracts.Enka.Contacts.Contact> GetContact()
-        {
-            EltraCloudContracts.Enka.Contacts.Contact result = null;
-
-            try
-            {
-                var query = HttpUtility.ParseQueryString(string.Empty);
-
-                var url = UrlHelper.BuildUrl(Url, "api/contacts/get", query);
-
-                var json = await _transporter.Get(url);
-
-                if (!string.IsNullOrEmpty(json))
-                {
-                    result = JsonConvert.DeserializeObject<EltraCloudContracts.Enka.Contacts.Contact>(json);
-                }
-            }
-            catch (Exception e)
-            {
-                MsgLogger.Exception($"{GetType().Name} - GetContact", e);
-            }
-
-            return result;
-        }
-
-        public async Task<List<OrderInfo>> GetOrderInfoList()
-        {
-            var result = new List<OrderInfo>(); 
-
-            try
-            {
-                var query = HttpUtility.ParseQueryString(string.Empty);
-
-                query.Add("country", CountryCode);
-
-                if (Region != null && !string.IsNullOrEmpty(Region.Name))
-                {
-                    query.Add("region", Region.Name);
-                }
-                
-                if (!string.IsNullOrEmpty(City))
-                {
-                    query.Add("city", City);
-                }
-
-                var url = UrlHelper.BuildUrl(Url, "api/Orders/get-all-region", query);
-
-                var json = await _transporter.Get(url);
-
-                if (!string.IsNullOrEmpty(json))
-                {
-                    result = JsonConvert.DeserializeObject<List<OrderInfo>>(json);
-                }
-            }
-            catch (Exception e)
-            {
-                MsgLogger.Exception($"{GetType().Name} - GetOrders", e);
-            }
-
-            return result;
         }
 
         private Region FindRegion(string name)
