@@ -168,6 +168,11 @@ namespace EltraNotKauf.Views.Requests
 
         private async void OnSearchCommandClicked(object obj)
         {
+            await UpdateRequests();
+        }
+
+        private async Task UpdateRequests()
+        {
             var orderInfoList = await GetOrderInfoList();
             var requestList = new List<RequestViewModel>();
 
@@ -190,6 +195,8 @@ namespace EltraNotKauf.Views.Requests
                 Regions = await _regionEndpoint.ReadRegions();
 
                 ReadContact();
+
+                await UpdateRequests();
 
                 IsBusy = false;
             });

@@ -1,8 +1,11 @@
 ﻿using EltraCloudContracts.Enka.Orders;
 using EltraNotKauf.Controls;
+using EltraNotKauf.Controls.Button;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.Timers;
 using EnkaOrders = EltraCloudContracts.Enka.Orders;
 
 namespace EltraNotKauf.Views.Requests
@@ -16,6 +19,7 @@ namespace EltraNotKauf.Views.Requests
         private List<OrderStatus> _orderStatusList;
         private JsonProtocolV1 _message;
         private string _orderModifiedTime;
+        private string _orderRemainingTime;
         private string _createdBy;
         private string _orderCity;
         private string _orderPostalCode;
@@ -26,19 +30,41 @@ namespace EltraNotKauf.Views.Requests
         private bool _requestChecked;
         private List<string> _assignedTo;
 
+        private Timer _remainingTime;
+
+        private OrderInfo _orderInfo;
+        private ThreeStateButtonViewModel _helpButtonViewModel;
+
         #endregion
 
         #region Constructors
 
         public RequestViewModel(OrderInfo orderInfo)
         {
-            CreateOrderStatusList();
+            _orderInfo = orderInfo;
             
-            UpdateOrderInfo(orderInfo);
+            CreateOrderStatusList();
 
-            UpdateContactInfo(orderInfo);
+            if (_orderInfo != null)
+            {
+                _remainingTime = new Timer();
 
-            UpdateAssignedInfo(orderInfo);
+                UpdateOrderInfo();
+
+                UpdateContactInfo();
+
+                UpdateAssignedInfo();
+
+                UpdateRemainingTime();
+
+                _remainingTime.Interval = 1000;
+                _remainingTime.Elapsed += OnRemainingTimeElapsed;
+                _remainingTime.Start();
+
+                HelpButtonViewModel.Height = 34;
+                HelpButtonViewModel.Id = "help;";
+                HelpButtonViewModel.Title = "Ich will helfen!";
+            }
         }
 
         #endregion
@@ -111,6 +137,12 @@ namespace EltraNotKauf.Views.Requests
             set => SetProperty(ref _orderModifiedTime, value); 
         }
 
+        public string OrderRemainingTime
+        {
+            get => _orderRemainingTime;
+            set => SetProperty(ref _orderRemainingTime, value);
+        }
+
         public string CreatedBy 
         { 
             get => _createdBy; 
@@ -123,25 +155,104 @@ namespace EltraNotKauf.Views.Requests
             set => SetProperty(ref _requestChecked, value);
         }
 
+        public ThreeStateButtonViewModel HelpButtonViewModel
+        {
+            get => _helpButtonViewModel ?? (_helpButtonViewModel = new ThreeStateButtonViewModel());
+        }
+
+        #endregion
+
+        #region Events
+
+        private void OnRemainingTimeElapsed(object sender, ElapsedEventArgs e)
+        {
+            UpdateRemainingTime();
+        }
+
         #endregion
 
         #region Methods
 
-        private void UpdateOrderInfo(OrderInfo orderInfo)
+        private void UpdateRemainingTime()
         {
-            var order = orderInfo.Order;
+            if (_orderInfo != null)
+            {
+                var durationInSec = (int)(DateTime.Now - _orderInfo.Order.Modified).TotalSeconds;
+                var timeout = _orderInfo.Order.Timeout;
+                var remainingSec = timeout - durationInSec;
 
-            OrderUuid = order.Uuid;
-            OrderModifiedTime = order.Modified.ToShortTimeString();
+                TimeSpan remains = new TimeSpan(remainingSec * TimeSpan.TicksPerSecond);
 
-            UpdateMessage(order);
-
-            UpdateOrderStatus(order);
+                var totalDays = (int)Math.Round(remains.TotalDays);
+                var totalHours = (int)Math.Round(remains.TotalHours);
+                var totalMinutes = (int)Math.Round(remains.TotalMinutes); 
+                var totalSeconds = (int)Math.Round(remains.TotalSeconds);
+                
+                if (totalDays > 0)
+                {
+                    if (totalDays == 1)
+                    {
+                        OrderRemainingTime = $"{totalDays} Tag";
+                    }
+                    else
+                    {
+                        OrderRemainingTime = $"{totalDays} Tage";
+                    }
+                }
+                else if (totalHours > 0)
+                {
+                    if (totalHours == 1)
+                    {
+                        OrderRemainingTime = $"{totalHours} Stunde";
+                    }
+                    else
+                    {
+                        OrderRemainingTime = $"{totalHours} Stunden";
+                    }
+                }
+                else if (totalMinutes > 0)
+                {
+                    if (totalMinutes == 1)
+                    {
+                        OrderRemainingTime = $"{totalMinutes} Minute";
+                    }
+                    else
+                    {
+                        OrderRemainingTime = $"{totalMinutes} Minuten";
+                    }
+                }
+                else if (totalSeconds > 0)
+                {
+                    if (totalSeconds == 1)
+                    {
+                        OrderRemainingTime = $"{totalSeconds} Sekunde";
+                    }
+                    else
+                    {
+                        OrderRemainingTime = $"{totalSeconds} Sekunden";
+                    }
+                }
+            }
         }
 
-        private void UpdateAssignedInfo(OrderInfo orderInfo)
+        private void UpdateOrderInfo()
         {
-            var assignedTo = orderInfo.AssignedTo;
+            var order = _orderInfo.Order;
+
+            if (order != null)
+            {
+                OrderUuid = order.Uuid;
+                OrderModifiedTime = order.Modified.ToShortTimeString();
+
+                UpdateMessage(order);
+
+                UpdateOrderStatus(order);
+            }
+        }
+
+        private void UpdateAssignedInfo()
+        {
+            var assignedTo = _orderInfo.AssignedTo;
 
             if (assignedTo != null)
             {
@@ -156,9 +267,9 @@ namespace EltraNotKauf.Views.Requests
             }
         }
 
-        private void UpdateContactInfo(OrderInfo orderInfo)
+        private void UpdateContactInfo()
         {
-            var contact = orderInfo.CreatedBy;
+            var contact = _orderInfo.CreatedBy;
 
             if (contact != null)
             {
@@ -184,25 +295,25 @@ namespace EltraNotKauf.Views.Requests
                     if(_message.Car)
                     {
                         Description += "AUTO";
-                        Description += ",";
+                        Description += ", ";
                     }
 
                     if (_message.DrugStore)
                     {
                         Description += "APOTHEKE";
-                        Description += ",";
+                        Description += ", ";
                     }
 
                     if (_message.Shop)
                     {
                         Description += "LADEN";
-                        Description += ",";
+                        Description += ", ";
                     }
 
                     if (_message.Other)
                     {
                         Description += "ANDERE";
-                        Description += ",";
+                        Description += ", ";
                     }
 
                     if (!string.IsNullOrEmpty(_message.Notice))
@@ -210,7 +321,9 @@ namespace EltraNotKauf.Views.Requests
                         Description += _message.Notice;
                     }
 
-                    if(Description.EndsWith(","))
+                    Description = Description.TrimEnd();
+
+                    if (Description.EndsWith(","))
                     {
                         Description = Description.Substring(0, Description.Length - 1);
                     }

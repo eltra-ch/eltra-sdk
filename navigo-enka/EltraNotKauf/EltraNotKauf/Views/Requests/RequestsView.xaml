@@ -90,7 +90,7 @@
                 </Grid>
             </Frame>
 
-            <Frame Grid.Row="2" BorderColor="{StaticResource NavigationPrimary}">
+            <Frame Grid.Row="2" BorderColor="{StaticResource NavigationPrimary}" Padding="8,0,8,0">
                 <ScrollView>
                     <StackLayout BindableLayout.ItemsSource="{Binding RequestList}">
                         <BindableLayout.ItemTemplate>

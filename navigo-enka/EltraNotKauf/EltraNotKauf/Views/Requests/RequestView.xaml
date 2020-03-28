@@ -5,24 +5,131 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              mc:Ignorable="d"
              xmlns:request="clr-namespace:EltraNotKauf.Views.Requests"
+             xmlns:labels="clr-namespace:EltraNotKauf.Controls.Labels"
+             xmlns:button="clr-namespace:EltraNotKauf.Controls.Button"
              x:DataType="request:RequestViewModel"
              x:Class="EltraNotKauf.Views.Requests.RequestView">
-  <ContentView.Content>
-        <Grid>
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="Auto"/>
-                <ColumnDefinition Width="68"/>
-                <ColumnDefinition Width="100"/>
-                <ColumnDefinition Width="*"/>
-                <ColumnDefinition Width="Auto"/>
-            </Grid.ColumnDefinitions>
 
-            <CheckBox Grid.Column="0" IsChecked="{Binding RequestChecked}"/>
-            
-            <Label Grid.Column="1" Text="{Binding OrderUuid}" VerticalOptions="Center" FontSize="Micro"/>
-            <Label Grid.Column="2" Text="{Binding OrderStatus.Label}" VerticalOptions="Center" FontSize="Micro"/>
-            <Label Grid.Column="3" Text="{Binding CreatedBy}" VerticalOptions="Center" FontSize="Micro"/>
-            <Label Grid.Column="4" Text="{Binding OrderModifiedTime}" VerticalOptions="Center" FontSize="Micro"/>
+    <ContentView.Resources>
+        <Style TargetType="Grid">
+            <Setter Property="RowSpacing" Value="1"/>
+        </Style>
+    </ContentView.Resources>
+    
+  <ContentView.Content>
+      
+        <Grid>
+            <Grid.Resources>
+                <Style TargetType="Label">
+                    <Setter Property="VerticalOptions" Value="Center"/>
+                </Style>
+            </Grid.Resources>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+            <Grid Grid.Row="0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+
+                <Label Grid.Column="0" Text="{Binding OrderUuid}" FontSize="Subtitle"/>
+                <Label Grid.Column="1" Text="{Binding OrderStatus.Label}" FontAttributes="Bold" VerticalTextAlignment="Start"/>
+
+                <Frame Grid.Column="2" BorderColor="Transparent" Padding="0"/>
+
+                <Frame Grid.Column="3" BorderColor="Transparent" Padding="0">
+                    <StackLayout Orientation="Horizontal">
+                        <Label Text="{Binding OrderModifiedTime}"/>
+                    </StackLayout>
+                </Frame>
+                
+                <Frame Grid.Column="4" BorderColor="Transparent" Padding="0">
+                    <StackLayout Orientation="Horizontal">
+                        <Label Text="Noch:"/>
+                        <Label Text="{Binding OrderRemainingTime}"/>
+                    </StackLayout>
+                </Frame>
+                
+            </Grid>
+
+            <Grid Grid.Row="1">
+
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition/>
+                    <ColumnDefinition/>
+                    <ColumnDefinition Width="8"/>
+                </Grid.ColumnDefinitions>
+
+                <Grid Grid.Column="0">
+
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+
+                    <Grid Grid.Row="0">
+                        <Label Text="{Binding CreatedBy}"/>
+                    </Grid>
+
+                    <Grid Grid.Row="1">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+
+                        <Label Grid.Column="0" Text="{Binding OrderPostalCode}"/>
+                        <Label Grid.Column="1" Text=""/>
+                        <Label Grid.Column="2" Text="{Binding OrderCity}"/>
+                        <Label Grid.Column="3" Text=""/>
+                        <Label Grid.Column="4" Text="{Binding OrderStreet}"/>
+                    </Grid>
+
+                    <Grid Grid.Row="2">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+
+                        <labels:LabelLink Grid.Column="0" Phone="{Binding OrderPhone}" />
+                    </Grid>
+
+                    <Grid Grid.Row="3">
+                        <Label Text="{Binding Description}"></Label>
+                    </Grid>
+
+                    <Grid Grid.Row="4">
+                        <StackLayout BindableLayout.ItemsSource="{Binding AssignedTo}">
+                            <BindableLayout.ItemTemplate>
+                                <DataTemplate>
+                                    <Label Text="{Binding}"/>
+                                </DataTemplate>
+                            </BindableLayout.ItemTemplate>
+                        </StackLayout>
+                    </Grid>
+
+                </Grid>
+
+                <Grid Grid.Column="1">
+
+                    <button:ThreeStateButtonView VerticalOptions="Center" HorizontalOptions="End" WidthRequest="160" BindingContext="{Binding HelpButtonViewModel}"/>
+                    
+                </Grid>
+
+                <Grid Grid.Column="2">
+                    
+                </Grid>
+
+            </Grid>
         </Grid>
     </ContentView.Content>
 </ContentView>

@@ -8,6 +8,9 @@
              x:DataType="button:ThreeStateButtonViewModel"
              x:Class="EltraNotKauf.Controls.Button.ThreeStateButtonView">
   <ContentView.Content>
+        <Frame CornerRadius="5" Padding="0">
+            <StackLayout>
+      
         <Button Text="{Binding Title}" Command="{Binding ButtonPressedCommand}" HeightRequest="{Binding Height}" IsEnabled="{Binding IsEnabled}">
             <Button.Triggers>
                 <DataTrigger TargetType="Button" Binding="{Binding ButtonState}" Value="0">
@@ -24,5 +27,9 @@
                 </DataTrigger>
             </Button.Triggers>
         </Button>
+
+            </StackLayout>
+        </Frame>
+      
     </ContentView.Content>
 </ContentView>
