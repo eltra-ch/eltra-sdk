@@ -44,8 +44,8 @@ namespace EltraNotKauf.Views.Orders
 
         public OrderViewModel()
         {
-            Title = "Hilfe";
-            Image = ImageSource.FromResource("EltraNotKauf.Resources.urgent.png");
+            Title = "Brauche Hilfe";
+            Image = ImageSource.FromResource("EltraNotKauf.Resources.lifebuoy.png");
             IsMandatory = true;
             Uuid = "37A00C5A-3A87-40F5-B954-5BE2161728F2";
 

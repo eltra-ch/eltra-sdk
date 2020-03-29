@@ -36,7 +36,7 @@ namespace EltraNotKauf.Views.Requests
         public RequestsViewModel()
         {
             Title = "Anfragen";
-            Image = ImageSource.FromResource("EltraNotKauf.Resources.lifebuoy.png");
+            Image = ImageSource.FromResource("EltraNotKauf.Resources.urgent.png");
             IsMandatory = true;
             Uuid = "B35E33E8-351D-44B9-B169-134AD4566F48";
             
@@ -155,11 +155,12 @@ namespace EltraNotKauf.Views.Requests
             get => _requestList ?? (_requestList = new List<RequestViewModel>());
             set => SetProperty(ref _requestList, value);
         }
-        
+
         #endregion
 
         #region Command
 
+        public ICommand RefreshCommand => new Command(OnRefreshCommand);
         public ICommand SearchCommand => new Command(OnSearchCommandClicked);
         
         #endregion
@@ -173,9 +174,22 @@ namespace EltraNotKauf.Views.Requests
             PostalCode = string.Empty;
         }
 
+        private async void OnRefreshCommand()
+        {
+            IsRefreshing = true;
+
+            await UpdateRequests();
+
+            IsRefreshing = false;
+        }
+
         private async void OnSearchCommandClicked(object obj)
         {
+            IsRefreshing = true;
+
             await UpdateRequests();
+
+            IsRefreshing = false;
         }
 
         private async Task UpdateRequests()

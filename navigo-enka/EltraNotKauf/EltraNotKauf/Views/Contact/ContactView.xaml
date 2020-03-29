@@ -98,7 +98,7 @@
                         </forms:AutoSuggestBox>
                     </Frame>
                     <Frame Grid.Column="0" Grid.Row="5" Style="{StaticResource BorderLikeFrame}">
-                        <Entry Placeholder="Bemerkung" Text="{Binding Notice}" IsEnabled="{Binding IsConnected}"/>
+                        <Entry Placeholder="Über mich" Text="{Binding Notice}" IsEnabled="{Binding IsConnected}"/>
                     </Frame>
 
                     <Frame Grid.Column="0" Grid.Row="6" Style="{StaticResource BorderLikeFrame}" IsEnabled="{Binding IsConnected}">

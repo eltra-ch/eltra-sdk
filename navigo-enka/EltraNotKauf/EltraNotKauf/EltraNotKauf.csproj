@@ -27,15 +27,18 @@
   <ItemGroup>
     <None Remove="Resources\cloud-storm.png" />
     <None Remove="Resources\cloud.png" />
+    <None Remove="Resources\friends.png" />
     <None Remove="Resources\heart.png" />
     <None Remove="Resources\lifebuoy.png" />
     <None Remove="Resources\link.png" />
+    <None Remove="Resources\thumb-up.png" />
     <None Remove="Resources\unlink.png" />
   </ItemGroup>
 
   <ItemGroup>
     <EmbeddedResource Include="Resources\cloud-storm.png" />
     <EmbeddedResource Include="Resources\cloud.png" />
+    <EmbeddedResource Include="Resources\friends.png" />
     <EmbeddedResource Include="Resources\hamburger.png" />
     <EmbeddedResource Include="Resources\heart.png" />
     <EmbeddedResource Include="Resources\HiResAppIcon.png" />
@@ -46,6 +49,7 @@
     <EmbeddedResource Include="Resources\link.png" />
     <EmbeddedResource Include="Resources\logo_nothilfe.png" />
     <EmbeddedResource Include="Resources\shopping-cart.png" />
+    <EmbeddedResource Include="Resources\thumb-up.png" />
     <EmbeddedResource Include="Resources\unlink.png" />
     <EmbeddedResource Include="Resources\urgent.png" />
     <EmbeddedResource Include="Resources\user.png" />

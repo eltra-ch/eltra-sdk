@@ -1,8 +1,8 @@
 ﻿    namespace EltraNotKauf.Views.Requests
 {
-    public class OrderStatus
+    public class OrderStatusLabel
     {
-        public OrderStatus(string label)
+        public OrderStatusLabel(string label)
         {
             Label = label;
         }

@@ -8,6 +8,7 @@
              xmlns:labels="clr-namespace:EltraNotKauf.Controls.Labels"
              xmlns:button="clr-namespace:EltraNotKauf.Controls.Button"
              xmlns:common="clr-namespace:EltraNotKauf.Views.Common"
+             xmlns:helpers="clr-namespace:EltraNotKauf.Controls.Helpers;assembly=EltraNotKauf"
              x:DataType="request:RequestViewModel"
              x:Class="EltraNotKauf.Views.Requests.RequestView">
 
@@ -18,7 +19,7 @@
     </ContentView.Resources>
     
   <ContentView.Content>
-      
+        
         <Grid>
             <Grid.Resources>
                 <Style TargetType="Label">
@@ -28,8 +29,14 @@
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
-            <Grid Grid.Row="0">
+
+            <BoxView Grid.Row="0" BackgroundColor="LightGray" HeightRequest="1"/>
+
+            <Grid Grid.Row="1">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto"/>
                     <ColumnDefinition Width="Auto"/>
@@ -39,9 +46,22 @@
                 </Grid.ColumnDefinitions>
 
                 <Label Grid.Column="0" Text="{Binding OrderUuid}" FontSize="Subtitle"/>
-                <Label Grid.Column="1" Text="{Binding OrderStatus.Label}" FontAttributes="Bold" VerticalTextAlignment="Start"/>
 
-                <Frame Grid.Column="2" BorderColor="Transparent" Padding="0"/>
+                <Image Grid.Column="1" HeightRequest="16" WidthRequest="16" Aspect="AspectFit">
+                    <Image.Triggers>
+                        <DataTrigger TargetType="Image" Binding="{Binding ActiveOrderStatus}" Value="1">
+                            <Setter Property="Source" Value="{helpers:ImageResource EltraNotKauf.Resources.lifebuoy.png}"/>
+                        </DataTrigger>
+                        <DataTrigger TargetType="Image" Binding="{Binding ActiveOrderStatus}" Value="2">
+                            <Setter Property="Source" Value="{helpers:ImageResource EltraNotKauf.Resources.friends.png}"/>
+                        </DataTrigger>
+                        <DataTrigger TargetType="Image" Binding="{Binding ActiveOrderStatus}" Value="3">
+                            <Setter Property="Source" Value="{helpers:ImageResource EltraNotKauf.Resources.thumb-up.png}"/>
+                        </DataTrigger>
+                    </Image.Triggers>
+                </Image>
+
+                <Frame Grid.Column="2" BorderColor="Transparent" Padding="0" HorizontalOptions="FillAndExpand"/>
 
                 <Frame Grid.Column="3" BorderColor="Transparent" Padding="0">
                     <StackLayout Orientation="Horizontal">
@@ -58,10 +78,10 @@
                 
             </Grid>
 
-            <Grid Grid.Row="1">
+            <Grid Grid.Row="2">
 
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition/>
+                    <ColumnDefinition Width="*"/>
                     <ColumnDefinition Width="Auto"/>
                     <ColumnDefinition Width="8"/>
                 </Grid.ColumnDefinitions>
@@ -74,11 +94,10 @@
                         <RowDefinition Height="Auto"/>
                         <RowDefinition Height="Auto"/>
                         <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="Auto"/>
                     </Grid.RowDefinitions>
 
                     <Grid Grid.Row="0">
-                        <Label Text="{Binding CreatedBy}"/>
+                        <Label Text="{Binding CreatedBy}" FontAttributes="Bold"/>
                     </Grid>
 
                     <Grid Grid.Row="1">
@@ -94,7 +113,7 @@
                     </Grid>
 
                     <Grid Grid.Row="2">
-                        <labels:LabelLink Phone="{Binding OrderStreet}" />
+                        <Label Text="{Binding OrderStreet}" />
                     </Grid>
                     
                     <Grid Grid.Row="3">
@@ -105,33 +124,33 @@
                         <Label Text="{Binding Description}"></Label>
                     </Grid>
 
-                    <Grid Grid.Row="5">
-                        <StackLayout BindableLayout.ItemsSource="{Binding AssignedTo}">
-                            <BindableLayout.ItemTemplate>
-                                <DataTemplate>
-                                    <StackLayout x:DataType="common:AssignedToViewModel">
-                                        <StackLayout Orientation="Horizontal">
-                                            <Label Text="{Binding Name}"/>
-                                            <Label Text="{Binding City}"/>
-                                            <Label Text="{Binding Phone}"/>
-                                        </StackLayout>
-                                    </StackLayout>
-                                </DataTemplate>
-                            </BindableLayout.ItemTemplate>
-                        </StackLayout>
-                    </Grid>
-
                 </Grid>
 
                 <Grid Grid.Column="1">
                     <button:ThreeStateButtonView VerticalOptions="Center" WidthRequest="140" BindingContext="{Binding HelpButtonViewModel}"/>                    
                 </Grid>
 
-                <Grid Grid.Column="2">
-                    
-                </Grid>
-
             </Grid>
+
+            <Grid Grid.Row="3">
+                <StackLayout BindableLayout.ItemsSource="{Binding AssignedTo}">
+                    <BindableLayout.ItemTemplate>
+                        <DataTemplate>
+                            <StackLayout x:DataType="common:AssignedToViewModel">
+                                <StackLayout Orientation="Horizontal">
+                                    <Label Text="{Binding Name}"/>
+                                    <Label Text="{Binding City}"/>
+                                    <Label Text="{Binding Phone}"/>
+                                </StackLayout>
+                            </StackLayout>
+                        </DataTemplate>
+                    </BindableLayout.ItemTemplate>
+                </StackLayout>
+            </Grid>
+
+            <BoxView Grid.Row="4" BackgroundColor="LightGray" HeightRequest="1"/>
+
         </Grid>
+        
     </ContentView.Content>
 </ContentView>

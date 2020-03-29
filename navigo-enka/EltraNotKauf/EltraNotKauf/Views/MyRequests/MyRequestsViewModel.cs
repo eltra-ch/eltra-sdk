@@ -16,6 +16,7 @@ namespace EltraNotKauf.Views.MyRequests
         private ContactEndpoint _contactEndpoint;
         private EltraCloudContracts.Enka.Contacts.Contact _contact;
         private List<RequestViewModel> _requestList;
+        private bool _areRequestsVisible;
 
         #endregion
 
@@ -23,7 +24,7 @@ namespace EltraNotKauf.Views.MyRequests
 
         public MyRequestsViewModel()
         {
-            Title = "Ich helfe mit";
+            Title = "Ich bin dabei";
             Image = ImageSource.FromResource("EltraNotKauf.Resources.link.png");
             IsMandatory = true;
             Uuid = "C0A27DF7-94F8-4DF9-B2D0-E40FE7490EF2";
@@ -36,7 +37,11 @@ namespace EltraNotKauf.Views.MyRequests
 
         #region Properties
 
-        public string CountryCode => "CH";
+        public bool AreRequestsVisible
+        {
+            get => _areRequestsVisible;
+            set => SetProperty(ref _areRequestsVisible, value);
+        }
 
         public EltraCloudContracts.Enka.Contacts.Contact Contact
         {
@@ -85,6 +90,7 @@ namespace EltraNotKauf.Views.MyRequests
                 }
 
                 RequestList = requestList;
+                AreRequestsVisible = requestList.Count > 0;
             }
         }
 

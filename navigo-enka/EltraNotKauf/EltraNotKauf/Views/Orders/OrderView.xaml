@@ -1,145 +1,127 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
-<ContentView xmlns="http://xamarin.com/schemas/2014/forms"
-             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             xmlns:orders="clr-namespace:EltraNotKauf.Views.Orders"
-             xmlns:behaviors="clr-namespace:EltraNotKauf.Views.Behaviors"
-             xmlns:converters="clr-namespace:EltraNotKauf.Controls.Converters"
-             xmlns:buttons="clr-namespace:EltraNotKauf.Controls.Button"
-             xmlns:common="clr-namespace:EltraNotKauf.Views.Common"
-             xmlns:connectionstatus="clr-namespace:EltraNotKauf.Views.ConnectionStatus"
-             x:DataType="orders:OrderViewModel"            
+<ContentView xmlns="http://xamarin.com/schemas/2014/forms" 
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml" 
+             xmlns:orders="clr-namespace:EltraNotKauf.Views.Orders" 
+             xmlns:behaviors="clr-namespace:EltraNotKauf.Views.Behaviors" 
+             xmlns:converters="clr-namespace:EltraNotKauf.Controls.Converters" 
+             xmlns:buttons="clr-namespace:EltraNotKauf.Controls.Button" 
+             xmlns:common="clr-namespace:EltraNotKauf.Views.Common" 
+             xmlns:connectionstatus="clr-namespace:EltraNotKauf.Views.ConnectionStatus" 
              x:Class="EltraNotKauf.Views.Orders.OrderView">
-
-    <ContentView.Resources>
-        <Color x:Key="NavigationPrimary">#2196F3</Color>
-        <Style x:Key="BorderLikeFrame" TargetType="Frame">
-            <Setter Property="BorderColor" Value="Transparent"/>
-            <Setter Property="Padding" Value="2"/>
-            <Setter Property="HasShadow" Value="{DynamicResource AppFrameShadowStyle}"/>
-        </Style>
-        <converters:NegateBooleanConverter x:Key="NegateBooleanConverter"/>
-        <converters:NullToBooleanConverter x:Key="NullToBooleanConverter"/>
-        <converters:NegateNullToBooleanConverter x:Key="NegateNullToBooleanConverter"/>
-    </ContentView.Resources>
-
-    <ContentView.Behaviors>
-        <behaviors:ToolViewBehavior/>
-    </ContentView.Behaviors>
-
-    <Grid HorizontalOptions="FillAndExpand" VerticalOptions="FillAndExpand" IsEnabled="{Binding IsConnected}">
-        <Grid.RowDefinitions>
-            <RowDefinition Height="8"></RowDefinition>
-            <RowDefinition Height="72"></RowDefinition>
-            <RowDefinition Height="278"></RowDefinition>
-            <RowDefinition Height="Auto"></RowDefinition>
-            <RowDefinition Height="Auto"></RowDefinition>
-            <RowDefinition Height="Auto"></RowDefinition>
-            <RowDefinition Height="Auto"></RowDefinition>
-            <RowDefinition Height="8"></RowDefinition>
-        </Grid.RowDefinitions>
-
-        <Frame Grid.Row="1" BackgroundColor="Transparent">
-            <Label HorizontalOptions="CenterAndExpand" FontSize="Medium" Text="{Binding ActiveOrderTitle}"/>
-        </Frame>
-        
-        <Frame Grid.Row="2" BorderColor="{StaticResource NavigationPrimary}">
-            <Grid HorizontalOptions="FillAndExpand" VerticalOptions="FillAndExpand">
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="Auto"/>
-                </Grid.RowDefinitions>
-                <Grid Grid.Row="0">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition/>
-                        <ColumnDefinition/>
-                    </Grid.ColumnDefinitions>
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="Auto"/>
-                    </Grid.RowDefinitions>
-
-                    <Frame Grid.Column="0" Grid.Row="0" Style="{StaticResource BorderLikeFrame}">
-                        <buttons:ThreeStateButtonView BindingContext="{Binding ShopButtonViewModel}"/>
+	<ContentView.Resources>
+		<Color x:Key="NavigationPrimary">#2196F3</Color>
+		<Style x:Key="BorderLikeFrame" TargetType="Frame">
+			<Setter Property="BorderColor" Value="Transparent"/>
+			<Setter Property="Padding" Value="2"/>
+			<Setter Property="HasShadow" Value="{DynamicResource AppFrameShadowStyle}"/>
+		</Style>
+		<converters:NegateBooleanConverter x:Key="NegateBooleanConverter"/>
+		<converters:NullToBooleanConverter x:Key="NullToBooleanConverter"/>
+		<converters:NegateNullToBooleanConverter x:Key="NegateNullToBooleanConverter"/>
+	</ContentView.Resources>
+	<ContentView.Behaviors>
+		<behaviors:ToolViewBehavior/>
+	</ContentView.Behaviors>
+	<ScrollView>
+		<Grid HorizontalOptions="FillAndExpand" VerticalOptions="FillAndExpand" IsEnabled="{Binding IsConnected}">
+			<Grid.RowDefinitions>
+				<RowDefinition Height="8"/>
+				<RowDefinition Height="68"/>
+				<RowDefinition Height="Auto"/>
+				<RowDefinition Height="Auto"/>
+				<RowDefinition Height="Auto"/>
+				<RowDefinition Height="Auto"/>
+				<RowDefinition Height="Auto"/>
+				<RowDefinition Height="8"/>
+			</Grid.RowDefinitions>
+			<Frame Grid.Row="1" BackgroundColor="Transparent">
+				<Label HorizontalOptions="CenterAndExpand" FontSize="Medium" Text="{Binding ActiveOrderTitle}"/>
+			</Frame>
+			<Frame Grid.Row="2" BorderColor="{StaticResource NavigationPrimary}">
+				<Grid HorizontalOptions="FillAndExpand" VerticalOptions="FillAndExpand">
+					<Grid.RowDefinitions>
+						<RowDefinition Height="Auto"/>
+						<RowDefinition Height="Auto"/>
+					</Grid.RowDefinitions>
+					<Grid Grid.Row="0">
+						<Grid.ColumnDefinitions>
+							<ColumnDefinition/>
+							<ColumnDefinition/>
+						</Grid.ColumnDefinitions>
+						<Grid.RowDefinitions>
+							<RowDefinition Height="Auto"/>
+							<RowDefinition Height="Auto"/>
+						</Grid.RowDefinitions>
+						<Frame Grid.Column="0" Grid.Row="0" Style="{StaticResource BorderLikeFrame}">
+							<buttons:ThreeStateButtonView BindingContext="{Binding ShopButtonViewModel}"/>
+						</Frame>
+						<Frame Grid.Column="0" Grid.Row="1" Style="{StaticResource BorderLikeFrame}">
+							<buttons:ThreeStateButtonView BindingContext="{Binding DrugStoreButtonViewModel}"/>
+						</Frame>
+						<Frame Grid.Column="1" Grid.Row="0" Style="{StaticResource BorderLikeFrame}">
+							<buttons:ThreeStateButtonView BindingContext="{Binding CarButtonViewModel}"/>
+						</Frame>
+						<Frame Grid.Column="1" Grid.Row="1" Style="{StaticResource BorderLikeFrame}">
+							<buttons:ThreeStateButtonView BindingContext="{Binding OtherButtonViewModel}"/>
+						</Frame>
+					</Grid>
+					<Frame Grid.Row="1" BorderColor="Transparent" Padding="0">
+						<StackLayout Padding="1" BackgroundColor="LightGray" HeightRequest="50" VerticalOptions="FillAndExpand" HorizontalOptions="FillAndExpand">
+							<Editor Placeholder="Bemerkung" Text="{Binding Notice}" HeightRequest="50" VerticalOptions="FillAndExpand" HorizontalOptions="FillAndExpand"/>
+						</StackLayout>
+					</Frame>
+				</Grid>
+			</Frame>
+			<Frame Grid.Row="3" BorderColor="{StaticResource NavigationPrimary}">
+				<StackLayout>
+					<Frame CornerRadius="5" Padding="0">
+						<StackLayout>
+							<Button Text="Bitte um Hilfe!" HeightRequest="64" Command="{Binding ButtonCreatePressedCommand}" IsVisible="{Binding ActiveOrder, Converter={StaticResource NegateNullToBooleanConverter}}"/>
+						</StackLayout>
+					</Frame>
+					<Frame CornerRadius="5" Padding="0">
+						<StackLayout>
+							<Button Text="Erledigt"  HeightRequest="64" Command="{Binding ButtonClosePressedCommand}" IsVisible="{Binding ActiveOrder, Converter={StaticResource NullToBooleanConverter}}"/>
+						</StackLayout>
+					</Frame>
+				</StackLayout>
+			</Frame>
+			<Frame Grid.Row="4" BorderColor="{StaticResource NavigationPrimary}">
+				<Grid HorizontalOptions="FillAndExpand" >
+					<Grid.ColumnDefinitions>
+						<ColumnDefinition/>
+					</Grid.ColumnDefinitions>
+					<Grid.RowDefinitions>
+						<RowDefinition Height="Auto"/>
+						<RowDefinition Height="8"/>
+						<RowDefinition Height="Auto"/>
+					</Grid.RowDefinitions>
+					<Frame Grid.Column="0" Grid.Row="0" Style="{StaticResource BorderLikeFrame}">
+                        <Label HorizontalOptions="CenterAndExpand" Text="{Binding ActiveOrderStatus}"/>
                     </Frame>
-
-                    <Frame Grid.Column="0" Grid.Row="1" Style="{StaticResource BorderLikeFrame}">
-                        <buttons:ThreeStateButtonView BindingContext="{Binding DrugStoreButtonViewModel}"/>
-                    </Frame>
-
-                    <Frame Grid.Column="1" Grid.Row="0" Style="{StaticResource BorderLikeFrame}">
-                        <buttons:ThreeStateButtonView BindingContext="{Binding CarButtonViewModel}"/>
-                    </Frame>
-
-                    <Frame Grid.Column="1" Grid.Row="1" Style="{StaticResource BorderLikeFrame}">
-                        <buttons:ThreeStateButtonView BindingContext="{Binding OtherButtonViewModel}"/>
-                    </Frame>
-                </Grid>
-                <Frame Grid.Row="1" BorderColor="Transparent" Padding="0">
-                    <StackLayout Padding="1" BackgroundColor="LightGray" HeightRequest="50" VerticalOptions="FillAndExpand" HorizontalOptions="FillAndExpand">
-                        <Editor Placeholder="Bemerkung" Text="{Binding Notice}" HeightRequest="50" VerticalOptions="FillAndExpand" HorizontalOptions="FillAndExpand"/>
-                    </StackLayout>
-                </Frame>
-            </Grid>
-        </Frame>
-
-        <Frame Grid.Row="3" BorderColor="{StaticResource NavigationPrimary}">
-            <StackLayout>
-                <Frame CornerRadius="5" Padding="0">
-                    <StackLayout>
-                        <Button Text="Erstellen" HeightRequest="84" Command="{Binding ButtonCreatePressedCommand}" IsVisible="{Binding ActiveOrder, Converter={StaticResource NegateNullToBooleanConverter}}"/>
-                    </StackLayout>
-                </Frame>
-                <Frame CornerRadius="5" Padding="0">
-                    <StackLayout>
-                <Button Text="Beenden"  HeightRequest="84" Command="{Binding ButtonClosePressedCommand}" IsVisible="{Binding ActiveOrder, Converter={StaticResource NullToBooleanConverter}}"/>
-                    </StackLayout>
-                </Frame>
-            </StackLayout>
-        </Frame>
-        
-        <Frame Grid.Row="4" BorderColor="{StaticResource NavigationPrimary}">
-            <Grid HorizontalOptions="FillAndExpand" >
-
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition/>
-                </Grid.ColumnDefinitions>
-
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="Auto"/>
-                </Grid.RowDefinitions>
-
-                <Frame Grid.Column="0" Grid.Row="0" Style="{StaticResource BorderLikeFrame}">
-                    <Label HorizontalOptions="CenterAndExpand" Text="{Binding ActiveOrderStatus}"/>
-                </Frame>
-
-                <Grid Grid.Row="1">
-                    <StackLayout BindableLayout.ItemsSource="{Binding AssignedTo}" HeightRequest="100">
-                        <BindableLayout.ItemTemplate>
-                            <DataTemplate>
-                                <StackLayout x:DataType="common:AssignedToViewModel">
-                                    <StackLayout Orientation="Horizontal">
-                                        <Label Text="{Binding Name}"/>
-                                        <Label Text="{Binding City}"/>
-                                        <Label Text="{Binding Phone}"/>
-                                    </StackLayout>
-                                </StackLayout>
-                            </DataTemplate>
-                        </BindableLayout.ItemTemplate>
-                    </StackLayout>
-                </Grid>
-
-            </Grid>
-        </Frame>
-
-        <Frame Grid.Row="5" Padding="0">
-            <connectionstatus:ConnectionStatusView/>
-        </Frame>
-
-        <Frame Grid.Row="6" Padding="0">
-            <ActivityIndicator IsRunning="{Binding IsBusy}" VerticalOptions="Center" HorizontalOptions="Center" />
-        </Frame>
-        
-    </Grid>
-
+					<Grid Grid.Row="2">
+						<FlexLayout BindableLayout.ItemsSource="{Binding AssignedTo}" Direction="Column">
+							<BindableLayout.ItemTemplate>
+								<DataTemplate>
+									<StackLayout x:DataType="common:AssignedToViewModel">
+										<StackLayout Orientation="Horizontal">
+											<Label Text="{Binding Name}"/>
+											<Label Text="{Binding City}"/>
+											<Label Text="{Binding Phone}"/>
+										</StackLayout>
+									</StackLayout>
+								</DataTemplate>
+							</BindableLayout.ItemTemplate>
+						</FlexLayout>
+					</Grid>
+				</Grid>
+			</Frame>
+			<Frame Grid.Row="5" Padding="0">
+				<connectionstatus:ConnectionStatusView/>
+			</Frame>
+			<Frame Grid.Row="6" Padding="0">
+				<ActivityIndicator IsRunning="{Binding IsBusy}" VerticalOptions="Center" HorizontalOptions="Center" />
+			</Frame>
+		</Grid>
+	</ScrollView>
 </ContentView>

@@ -26,7 +26,23 @@ namespace EltraNotKauf.Controls.Labels
                 var href = e.Href;
                 var uri = new Uri(e.Href);
 
-                Launcher.OpenAsync(uri);
+                try
+                {
+                    string prefix = "tel:";
+                    if (e.Href.StartsWith(prefix))
+                    {
+                        PhoneDialer.Open(e.Href.Substring(prefix.Length));
+                    }
+                }
+                catch (ArgumentNullException)
+                {   
+                }
+                catch (FeatureNotSupportedException)
+                {
+                }
+                catch (Exception)
+                {
+                }
             };
 
             Content = new StackLayout

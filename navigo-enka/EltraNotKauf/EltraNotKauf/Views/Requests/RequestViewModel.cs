@@ -20,8 +20,7 @@ namespace EltraNotKauf.Views.Requests
         #region Private fields
 
         private string _orderUuid;
-        private OrderStatus _orderStatus;
-        private List<OrderStatus> _orderStatusList;
+        private OrderStatusLabel _orderStatusLabel;
         private JsonProtocolV1 _message;
         private string _orderModifiedTime;
         private string _orderRemainingTime;
@@ -43,6 +42,8 @@ namespace EltraNotKauf.Views.Requests
         private OrdersEndpoint _ordersEndpoint;
         private ContactEndpoint _contactEndpoint;
         private EltraCloudContracts.Enka.Contacts.Contact _contact;
+        private Order _activeOrder;
+        private OrderStatus _activeOrderStatus;
 
         #endregion
 
@@ -55,20 +56,22 @@ namespace EltraNotKauf.Views.Requests
             _ordersEndpoint = ordersEndpoint;
             _orderInfo = orderInfo;
             
-            CreateOrderStatusList();
-
             if (_orderInfo != null)
             {
                 _remainingTimer = new Timer();
                 _orderStatusTimer = new Timer();
 
-                UpdateOrderInfo(_orderInfo.Order);
+                ActiveOrder = _orderInfo.Order;
+
+                UpdateOrderInfo();
 
                 UpdateOrderContactInfo();
 
                 UpdateContactInfo();
 
                 UpdateRemainingTime();
+
+                UpdateOrderStatus();
 
                 _remainingTimer.Interval = 1000;
                 _remainingTimer.Elapsed += OnRemainingTimeElapsed;
@@ -87,23 +90,25 @@ namespace EltraNotKauf.Views.Requests
         {
             Task.Run(async () =>
             {
-                var orderInfo = await _ordersEndpoint.GetOrderInfo(_orderInfo.Order.Uuid);
-
-                var newOrder = orderInfo?.Order;
-                var oldOrder = _orderInfo?.Order;
-
-                if(newOrder != null && oldOrder != null)
+                if (ActiveOrder != null)
                 {
-                    if(newOrder.Modified != oldOrder.Modified)
+                    var orderInfo = await _ordersEndpoint.GetOrderInfo(ActiveOrder.Uuid);
+
+                    var newOrder = orderInfo?.Order;
+                    var oldOrder = ActiveOrder;
+
+                    if (newOrder != null && oldOrder != null)
                     {
-                        _orderInfo.Order.Modified = newOrder.Modified;
-                        _orderInfo.Order.Status = newOrder.Status;
-                        _orderInfo.Order.Message = newOrder.Message;
-                        _orderInfo.Order.Protocol = newOrder.Protocol;
+                        if (newOrder.Modified != oldOrder.Modified)
+                        {
+                            _orderInfo = orderInfo;
 
-                        UpdateOrderInfo(_orderInfo.Order);
+                            ActiveOrder = newOrder;
 
-                        UpdateAssignedInfo();
+                            UpdateOrderInfo();
+
+                            UpdateAssignedInfo();
+                        }
                     }
                 }
             });
@@ -112,6 +117,18 @@ namespace EltraNotKauf.Views.Requests
         #endregion
 
         #region Properties
+
+        public Order ActiveOrder
+        {
+            get => _activeOrder;
+            set => SetProperty(ref _activeOrder, value);
+        }
+
+        public OrderStatus ActiveOrderStatus
+        {
+            get => _activeOrderStatus;
+            set => SetProperty(ref _activeOrderStatus, value);
+        }
 
         public string Description
         {
@@ -161,16 +178,10 @@ namespace EltraNotKauf.Views.Requests
             set => SetProperty(ref _orderUuid, value); 
         }
 
-        public OrderStatus OrderStatus 
+        public OrderStatusLabel OrderStatusLabel 
         { 
-            get => _orderStatus; 
-            set => SetProperty(ref _orderStatus, value);
-        }
-
-        public List<OrderStatus> OrderStatusList 
-        { 
-            get => _orderStatusList; 
-            set => SetProperty(ref _orderStatusList, value);
+            get => _orderStatusLabel; 
+            set => SetProperty(ref _orderStatusLabel, value);
         }
 
         public string OrderModifiedTime 
@@ -230,7 +241,7 @@ namespace EltraNotKauf.Views.Requests
         {
             if(HelpButtonViewModel.ButtonState == ButtonState.Active)
             {
-                HelpButtonViewModel.Title = "Ich helfe!";
+                HelpButtonViewModel.Title = "Ich bin dabei!";
 
                 ChangeOrderStatus(EnkaOrders.OrderStatus.Assigned);
 
@@ -282,15 +293,15 @@ namespace EltraNotKauf.Views.Requests
             {
                 IsBusy = true;
 
-                if (_orderInfo != null)
+                if (ActiveOrder != null)
                 {
-                    _orderInfo.Order.Status = orderStatus;
+                    ActiveOrder.Status = orderStatus;
 
-                    if (await _ordersEndpoint.ChangeOrder(_orderInfo.Order))
+                    if (await _ordersEndpoint.ChangeOrder(ActiveOrder))
                     {
                         ThreadHelper.RunOnMainThread(()=> 
                         {
-                            ToastMessage.ShortAlert($"Bravo! Aufgabe {_orderInfo.Order.Uuid} aufgenommen!");
+                            ToastMessage.ShortAlert($"Bravo! Aufgabe {ActiveOrder.Uuid} aufgenommen!");
                         });
                         
                     }
@@ -298,7 +309,7 @@ namespace EltraNotKauf.Views.Requests
                     {
                         ThreadHelper.RunOnMainThread(() =>
                         {
-                            ToastMessage.ShortAlert($"Aufgabe {_orderInfo.Order.Uuid} leider nicht aufgenommen!");
+                            ToastMessage.ShortAlert($"Aufgabe {ActiveOrder.Uuid} leider nicht aufgenommen!");
                         });
                     }
                 }
@@ -309,10 +320,10 @@ namespace EltraNotKauf.Views.Requests
 
         private void UpdateRemainingTime()
         {
-            if (_orderInfo != null)
+            if (ActiveOrder != null)
             {
-                var durationInSec = (int)(DateTime.Now - _orderInfo.Order.Modified).TotalSeconds;
-                var timeout = _orderInfo.Order.Timeout;
+                var durationInSec = (int)(DateTime.Now - ActiveOrder.Modified).TotalSeconds;
+                var timeout = ActiveOrder.Timeout;
                 var remainingSec = timeout - durationInSec;
 
                 TimeSpan remains = new TimeSpan(remainingSec * TimeSpan.TicksPerSecond);
@@ -369,16 +380,16 @@ namespace EltraNotKauf.Views.Requests
             }
         }
 
-        private void UpdateOrderInfo(Order order)
+        private void UpdateOrderInfo()
         {
-            if (order != null)
+            if (ActiveOrder != null)
             {
-                OrderUuid = order.Uuid;
-                OrderModifiedTime = order.Modified.ToShortTimeString();
+                OrderUuid = ActiveOrder.Uuid;
+                OrderModifiedTime = ActiveOrder.Modified.ToShortTimeString();
 
-                UpdateMessage(order);
+                UpdateMessage();
 
-                UpdateOrderStatus(order);                
+                UpdateOrderStatus();                
             }
         }
 
@@ -399,7 +410,7 @@ namespace EltraNotKauf.Views.Requests
                     else
                     {
                         HelpButtonViewModel.ButtonState = ButtonState.Active;
-                        HelpButtonViewModel.Title = "Ich helfe!";
+                        HelpButtonViewModel.Title = "Ich bin dabei!";
                     }
                 }
 
@@ -424,11 +435,11 @@ namespace EltraNotKauf.Views.Requests
             }
         }
 
-        private void UpdateMessage(Order order)
+        private void UpdateMessage()
         {
-            if (order.Protocol == "json_v1")
+            if (ActiveOrder!= null && ActiveOrder.Protocol == "json_v1")
             {
-                _message = JsonConvert.DeserializeObject<JsonProtocolV1>(order.Message);
+                _message = JsonConvert.DeserializeObject<JsonProtocolV1>(ActiveOrder.Message);
 
                 if(_message!=null)
                 {
@@ -473,43 +484,12 @@ namespace EltraNotKauf.Views.Requests
             }
         }
 
-        private void UpdateOrderStatus(Order order)
+        private void UpdateOrderStatus()
         {
-            switch (order.Status)
+            if (ActiveOrder != null)
             {
-                case EnkaOrders.OrderStatus.Assigned:
-                    OrderStatus = OrderStatusList[2];
-                    break;
-                case EnkaOrders.OrderStatus.Open:
-                    OrderStatus = OrderStatusList[1];
-                    break;
-                case EnkaOrders.OrderStatus.Expired:
-                    OrderStatus = OrderStatusList[5];
-                    break;
-                case EnkaOrders.OrderStatus.Rejected:
-                    OrderStatus = OrderStatusList[4];
-                    break;
-                case EnkaOrders.OrderStatus.Closed:
-                    OrderStatus = OrderStatusList[3];
-                    break;
-                case EnkaOrders.OrderStatus.Undefined:
-                    OrderStatus = OrderStatusList[0];
-                    break;
+                ActiveOrderStatus = ActiveOrder.Status;
             }
-        }
-
-        private void CreateOrderStatusList()
-        {
-            var orderStatusList = new List<OrderStatus>();
-
-            orderStatusList.Add(new OrderStatus("Nicht definiert"));
-            orderStatusList.Add(new OrderStatus("offen"));
-            orderStatusList.Add(new OrderStatus("zugewiesen"));
-            orderStatusList.Add(new OrderStatus("geschlossen"));
-            orderStatusList.Add(new OrderStatus("abgelehnt"));
-            orderStatusList.Add(new OrderStatus("abgelaufen"));
-
-            OrderStatusList = orderStatusList;
         }
 
         #endregion
