@@ -22,6 +22,8 @@ namespace EltraNotKauf.iOS
             
             Xamarin.FormsMaps.Init();
 
+            Forms9Patch.iOS.Settings.Initialize(this);
+
             LoadApplication(new App());
 
             return base.FinishedLaunching(app, options);

@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using EltraNotKauf.Views.Contact;
 using EltraNotKauf.Views.Orders;
 using EltraNotKauf.Views.Requests;
+using EltraNotKauf.Views.MyRequests;
 
 namespace EltraNotKauf.Views
 {
@@ -27,6 +28,7 @@ namespace EltraNotKauf.Views
         private ContactViewModel _contactViewModel;
         private OrderViewModel _orderViewModel;
         private RequestsViewModel _requestsViewModel;
+        private MyRequestsViewModel _myRequestsViewModel;
         private AboutViewModel _aboutViewModel;
         
         private ToolViewModel _activeViewModel;
@@ -148,6 +150,8 @@ namespace EltraNotKauf.Views
         public OrderViewModel OrderViewModel => _orderViewModel ?? (_orderViewModel = new OrderViewModel());
 
         public RequestsViewModel RequestsViewModel => _requestsViewModel ?? (_requestsViewModel = new RequestsViewModel());
+
+        public MyRequestsViewModel MyRequestsViewModel => _myRequestsViewModel ?? (_myRequestsViewModel = new MyRequestsViewModel());
 
         public AboutViewModel AboutViewModel => _aboutViewModel ?? (_aboutViewModel = new AboutViewModel());
 
@@ -354,7 +358,8 @@ namespace EltraNotKauf.Views
             {
                ContactViewModel,
                OrderViewModel,
-               RequestsViewModel
+               RequestsViewModel,
+               MyRequestsViewModel
             };
 
             HeaderViewModels = new List<ToolViewModel>

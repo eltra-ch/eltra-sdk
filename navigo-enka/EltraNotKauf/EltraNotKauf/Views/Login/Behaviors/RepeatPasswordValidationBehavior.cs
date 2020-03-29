@@ -2,10 +2,10 @@ using Xamarin.Forms;
 
 namespace EltraNotKauf.Views.Login.Behaviors
 {
-    public class PasswordValidationBehavior : Behavior<Entry> {
+    public class RepeatPasswordValidationBehavior : Behavior<Entry> {
 
         private Entry _entry;
-        private SignViewModel _loginViewModel;
+        private SignUpViewModel _signUpViewModel;
         
         protected override void OnAttachedTo(Entry entry) 
         {
@@ -25,15 +25,15 @@ namespace EltraNotKauf.Views.Login.Behaviors
 
         private void OnEntryTextChanged(object sender, TextChangedEventArgs args) 
         {
-            if (((Entry)sender).BindingContext is SignViewModel loginViewModel)
+            if (((Entry)sender).BindingContext is SignUpViewModel signUpViewModel)
             {
-                if (_loginViewModel != loginViewModel)
+                if (_signUpViewModel != signUpViewModel)
                 {
-                    _loginViewModel = loginViewModel;
-                    _loginViewModel.StatusChanged += (s, a) => { if(a.Status == SignStatus.Failed) Shake(); };
+                    _signUpViewModel = signUpViewModel;
+                    _signUpViewModel.StatusChanged += (s, a) => { if(a.Status == SignStatus.Failed) Shake(); };
                 }
 
-                loginViewModel.OnPasswordChanged(args.NewTextValue);
+                signUpViewModel.OnRepeatPasswordChanged(args.NewTextValue);
             }
         }
 

@@ -18,7 +18,9 @@ namespace EltraNotKauf.Droid
             Xamarin.Essentials.Platform.Init(this, savedInstanceState);
 
             Xamarin.Forms.Forms.Init(this, savedInstanceState);
-            
+
+            Forms9Patch.Droid.Settings.Initialize(this);
+
             Xamarin.FormsMaps.Init(this, savedInstanceState);
 
             LoadApplication(new App());

@@ -163,7 +163,7 @@ namespace EltraNotKauf.Views.Login
             }
         }
 
-        private void UpdateValidFlag()
+        protected virtual void UpdateValidFlag()
         {
             IsLoginValid = true;
 

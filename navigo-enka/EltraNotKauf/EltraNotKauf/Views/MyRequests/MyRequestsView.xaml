@@ -1,0 +1,58 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentView xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:requests="clr-namespace:EltraNotKauf.Views.Requests"
+             xmlns:myrequests="clr-namespace:EltraNotKauf.Views.MyRequests"
+             xmlns:behaviors="clr-namespace:EltraNotKauf.Views.Behaviors"
+             x:DataType="myrequests:MyRequestsViewModel"
+             xmlns:connectionstatus="clr-namespace:EltraNotKauf.Views.ConnectionStatus"
+             x:Class="EltraNotKauf.Views.MyRequests.MyRequestsView">
+
+    <ContentView.Resources>
+        <Color x:Key="NavigationPrimary">#2196F3</Color>
+        <Style x:Key="BorderLikeFrame" TargetType="Frame">
+            <Setter Property="BorderColor" Value="Transparent"/>
+            <Setter Property="Padding" Value="2"/>
+            <Setter Property="HasShadow" Value="{DynamicResource AppFrameShadowStyle}"/>
+        </Style>
+    </ContentView.Resources>
+
+    <ContentView.Behaviors>
+        <behaviors:ToolViewBehavior/>
+    </ContentView.Behaviors>
+
+    <RefreshView IsRefreshing="{Binding IsRefreshing}" Command="{Binding RefreshCommand}">
+        <ScrollView>
+            <Grid VerticalOptions="FillAndExpand" HorizontalOptions="FillAndExpand">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="8"></RowDefinition>
+                    <RowDefinition Height="*"></RowDefinition>
+                    <RowDefinition Height="Auto"></RowDefinition>
+                    <RowDefinition Height="Auto"></RowDefinition>
+                    <RowDefinition Height="8"></RowDefinition>
+                </Grid.RowDefinitions>
+
+                <Frame Grid.Row="1" BorderColor="{StaticResource NavigationPrimary}" Padding="8,0,8,0">
+                    <ScrollView>
+                        <StackLayout BindableLayout.ItemsSource="{Binding RequestList}">
+                            <BindableLayout.ItemTemplate>
+                                <DataTemplate>
+                                    <requests:RequestView/>
+                                </DataTemplate>
+                            </BindableLayout.ItemTemplate>
+                        </StackLayout>
+                    </ScrollView>
+                </Frame>
+
+                <Frame Grid.Row="2" Padding="0">
+                    <connectionstatus:ConnectionStatusView/>
+                </Frame>
+
+                <Frame Grid.Row="3" Padding="0">
+                    <ActivityIndicator IsRunning="{Binding IsBusy}" VerticalOptions="Center" HorizontalOptions="Center" />
+                </Frame>
+
+            </Grid>
+        </ScrollView>
+    </RefreshView>
+</ContentView>

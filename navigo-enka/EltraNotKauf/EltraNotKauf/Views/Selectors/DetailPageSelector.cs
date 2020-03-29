@@ -1,6 +1,7 @@
 ﻿using EltraNotKauf.Views.About;
 using EltraNotKauf.Views.Contact;
 using EltraNotKauf.Views.Login;
+using EltraNotKauf.Views.MyRequests;
 using EltraNotKauf.Views.Orders;
 using EltraNotKauf.Views.Requests;
 using Xamarin.Forms;
@@ -20,6 +21,8 @@ namespace EltraNotKauf.Views.Selectors
         public DataTemplate OrderView { get; set; }
 
         public DataTemplate RequestsView { get; set; }
+
+        public DataTemplate MyRequestsView { get; set; }
 
         public DataTemplate AboutView { get; set; }
 
@@ -50,6 +53,10 @@ namespace EltraNotKauf.Views.Selectors
             else if (item is RequestsViewModel)
             {
                 result = RequestsView;
+            }
+            else if (item is MyRequestsViewModel)
+            {
+                result = MyRequestsView;
             }
             else if (item is AboutViewModel)
             {

@@ -14,6 +14,7 @@ namespace EltraNotKauf.Controls
         private bool _isVisible;
         private bool _isEnabled;
         private bool _isUpdating;
+        private bool _isRefreshing;
         private bool _isConnected;
         private bool _isMandatory;
         private bool _isSupported;
@@ -60,6 +61,12 @@ namespace EltraNotKauf.Controls
         {
             get => _isUpdating; 
             set => SetProperty(ref _isUpdating, value);
+        }
+
+        public bool IsRefreshing
+        {
+            get => _isRefreshing;
+            set => SetProperty(ref _isRefreshing, value);
         }
 
         public bool IsConnected

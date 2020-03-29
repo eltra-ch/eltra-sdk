@@ -59,6 +59,7 @@
                                 <RowDefinition Height="42"/>
                                 <RowDefinition Height="Auto"/>
                                 <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
                             </Grid.RowDefinitions>
 
                             <Frame Grid.Row="0" BackgroundColor="Transparent">
@@ -99,19 +100,35 @@
                                     </Entry.Triggers>
                                 </Entry>
                             </Frame>
-                            
-                            <Frame Grid.Row="6">
-                                    <Button IsTabStop="True" TabIndex="3" Text="ANMELDEN" Command="{Binding RegisterCommand}" IsEnabled="{Binding IsValid}"/>
+
+                                <Frame Grid.Row="6">
+                                    <Entry Placeholder="Kennwort wiederholen" IsTabStop="True" TabIndex="2" Text="{Binding RepeatPassword, Mode=OneWay}" IsPassword="True">
+                                        <Entry.Behaviors>
+                                            <behaviors2:RepeatPasswordValidationBehavior/>
+                                        </Entry.Behaviors>
+                                        <Entry.Triggers>
+                                            <DataTrigger TargetType="Entry" Binding="{Binding IsLoginValid}" Value="true">
+                                                <Setter Property="TextColor" Value="Black" />
+                                            </DataTrigger>
+                                            <DataTrigger TargetType="Entry" Binding="{Binding IsLoginValid}" Value="false">
+                                                <Setter Property="TextColor" Value="Red" />
+                                            </DataTrigger>
+                                        </Entry.Triggers>
+                                    </Entry>
+                                </Frame>
+
+                            <Frame Grid.Row="7">
+                                <Button IsTabStop="True" TabIndex="3" Text="ANMELDEN" Command="{Binding RegisterCommand}" IsEnabled="{Binding IsValid}"/>
                             </Frame>
 
-                            <Frame Grid.Row="7" BackgroundColor="Transparent">
+                            <Frame Grid.Row="8" BackgroundColor="Transparent">
                                 <StackLayout Orientation="Horizontal">
-                                    <CheckBox IsChecked="{Binding AutoLogOnActive}" WidthRequest="32"/>
+                                        <CheckBox IsChecked="{Binding AutoLogOnActive}" WidthRequest="32" TabIndex="4" />
                                         <Label Text="Automatisch anmelden" VerticalOptions="CenterAndExpand" HorizontalOptions="StartAndExpand" TextColor="Black" BackgroundColor="Transparent"/>
                                 </StackLayout>
                             </Frame>
 
-                            <Frame Grid.Row="8">
+                            <Frame Grid.Row="9">
                                 <ActivityIndicator IsRunning="{Binding IsBusy}" VerticalOptions="Center" HorizontalOptions="Center" />
                             </Frame>
 

@@ -62,13 +62,14 @@
 
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition/>
-                    <ColumnDefinition/>
+                    <ColumnDefinition Width="Auto"/>
                     <ColumnDefinition Width="8"/>
                 </Grid.ColumnDefinitions>
 
                 <Grid Grid.Column="0">
 
                     <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
                         <RowDefinition Height="Auto"/>
                         <RowDefinition Height="Auto"/>
                         <RowDefinition Height="Auto"/>
@@ -85,30 +86,26 @@
                             <ColumnDefinition Width="Auto"/>
                             <ColumnDefinition Width="Auto"/>
                             <ColumnDefinition Width="Auto"/>
-                            <ColumnDefinition Width="Auto"/>
-                            <ColumnDefinition Width="Auto"/>
                         </Grid.ColumnDefinitions>
 
                         <Label Grid.Column="0" Text="{Binding OrderPostalCode}"/>
                         <Label Grid.Column="1" Text=""/>
-                        <Label Grid.Column="2" Text="{Binding OrderCity}"/>
-                        <Label Grid.Column="3" Text=""/>
-                        <Label Grid.Column="4" Text="{Binding OrderStreet}"/>
+                        <Label Grid.Column="2" Text="{Binding OrderCity}"/>                        
                     </Grid>
 
                     <Grid Grid.Row="2">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="Auto"/>
-                        </Grid.ColumnDefinitions>
-
-                        <labels:LabelLink Grid.Column="0" Phone="{Binding OrderPhone}" />
+                        <labels:LabelLink Phone="{Binding OrderStreet}" />
                     </Grid>
-
+                    
                     <Grid Grid.Row="3">
-                        <Label Text="{Binding Description}"></Label>
+                        <labels:LabelLink Phone="{Binding OrderPhone}" />
                     </Grid>
 
                     <Grid Grid.Row="4">
+                        <Label Text="{Binding Description}"></Label>
+                    </Grid>
+
+                    <Grid Grid.Row="5">
                         <StackLayout BindableLayout.ItemsSource="{Binding AssignedTo}">
                             <BindableLayout.ItemTemplate>
                                 <DataTemplate>
@@ -127,9 +124,7 @@
                 </Grid>
 
                 <Grid Grid.Column="1">
-
-                    <button:ThreeStateButtonView VerticalOptions="Center" HorizontalOptions="End" WidthRequest="160" BindingContext="{Binding HelpButtonViewModel}"/>
-                    
+                    <button:ThreeStateButtonView VerticalOptions="Center" WidthRequest="140" BindingContext="{Binding HelpButtonViewModel}"/>                    
                 </Grid>
 
                 <Grid Grid.Column="2">

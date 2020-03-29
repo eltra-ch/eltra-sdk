@@ -3,11 +3,14 @@ using Xamarin.Forms;
 using EltraConnector.Controllers;
 using EltraCloudContracts.Contracts.Users;
 using System;
+using EltraNotKauf.Controls.Toast;
 
 namespace EltraNotKauf.Views.Login
 {
     public class SignUpViewModel : SignViewModel
     {
+        private string _repeatPassword;
+
         #region Constructors
 
         public SignUpViewModel()
@@ -20,6 +23,16 @@ namespace EltraNotKauf.Views.Login
 
         #endregion
 
+        #region Properties
+
+        public string RepeatPassword
+        {
+            get => _repeatPassword;
+            set => SetProperty(ref _repeatPassword, value);
+        }
+
+        #endregion
+
         #region Command
 
         public ICommand RegisterCommand => new Command(OnRegisterClicked);
@@ -28,27 +41,52 @@ namespace EltraNotKauf.Views.Login
 
         #region Methods
 
+        public void OnRepeatPasswordChanged(string newPassword)
+        {
+            RepeatPassword = newPassword;
+
+            UpdateValidFlag();
+        }
+
         private async void OnRegisterClicked()
         {
-            StoreLoginSettings();
-
-            var authData = new UserAuthData() { Login = LoginName, Password = Password };
-
-            if (await AuthControllerAdapter.SignUp(authData))
+            if (Password != RepeatPassword)
             {
-                if (await AuthControllerAdapter.SignIn(authData))
-                {
-                    OnSignStatusChanged(SignStatus.SignedIn);
-                }
-                else
-                {
-                    OnSignStatusChanged(SignStatus.Failed);
-                }               
+                ToastMessage.ShortAlert("Die angegebenen Passwörter stimmen nicht überein");
             }
             else
             {
-                OnSignStatusChanged(SignStatus.Failed);
-            }            
+                StoreLoginSettings();
+
+                var authData = new UserAuthData() { Login = LoginName, Password = Password };
+
+                if (await AuthControllerAdapter.SignUp(authData))
+                {
+                    if (await AuthControllerAdapter.SignIn(authData))
+                    {
+                        OnSignStatusChanged(SignStatus.SignedIn);
+                    }
+                    else
+                    {
+                        ToastMessage.ShortAlert("Einloggen ist fehlgeschlagen");
+
+                        OnSignStatusChanged(SignStatus.Failed);
+                    }
+                }
+                else
+                {
+                    ToastMessage.ShortAlert("Anmeldung ist fehlgeschlagen");
+
+                    OnSignStatusChanged(SignStatus.Failed);
+                }
+            }
+        }
+
+        protected override void UpdateValidFlag()
+        {
+            IsLoginValid = true;
+
+            IsValid = !string.IsNullOrEmpty(LoginName) && !string.IsNullOrEmpty(Password) && !string.IsNullOrEmpty(RepeatPassword);
         }
 
         internal void Reset()
@@ -57,6 +95,7 @@ namespace EltraNotKauf.Views.Login
             IsValid = true;
             LoginName = string.Empty;
             Password = string.Empty;
+            RepeatPassword = string.Empty;
         }
 
         #endregion

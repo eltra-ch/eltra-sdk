@@ -29,6 +29,8 @@
     <None Remove="Resources\cloud.png" />
     <None Remove="Resources\heart.png" />
     <None Remove="Resources\lifebuoy.png" />
+    <None Remove="Resources\link.png" />
+    <None Remove="Resources\unlink.png" />
   </ItemGroup>
 
   <ItemGroup>
@@ -41,8 +43,10 @@
     <EmbeddedResource Include="Resources\home.png" />
     <EmbeddedResource Include="Resources\info-circle.png" />
     <EmbeddedResource Include="Resources\lifebuoy.png" />
+    <EmbeddedResource Include="Resources\link.png" />
     <EmbeddedResource Include="Resources\logo_nothilfe.png" />
     <EmbeddedResource Include="Resources\shopping-cart.png" />
+    <EmbeddedResource Include="Resources\unlink.png" />
     <EmbeddedResource Include="Resources\urgent.png" />
     <EmbeddedResource Include="Resources\user.png" />
   </ItemGroup>

@@ -143,6 +143,33 @@ namespace EltraNotKauf.Endpoints
             return result;
         }
 
+        public async Task<List<OrderInfo>> GetAssignedToMeOrderInfoList()
+        {
+            var result = new List<OrderInfo>();
+
+            try
+            {
+                var query = HttpUtility.ParseQueryString(string.Empty);
+
+                query.Add("langCode", LanguageCode);
+
+                var url = UrlHelper.BuildUrl(Url, "api/Orders/get-assigned", query);
+
+                var json = await _transporter.Get(url);
+
+                if (!string.IsNullOrEmpty(json))
+                {
+                    result = JsonConvert.DeserializeObject<List<OrderInfo>>(json);
+                }
+            }
+            catch (Exception e)
+            {
+                MsgLogger.Exception($"{GetType().Name} - GetOrders", e);
+            }
+
+            return result;
+        }
+
         public async Task<Order> GetActiveOrder()
         {
             Order result = null;
