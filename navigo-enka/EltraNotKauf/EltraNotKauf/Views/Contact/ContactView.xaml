@@ -25,10 +25,11 @@
     <ScrollView>
         <Grid>
             <Grid.RowDefinitions>
-                <RowDefinition Height="8"></RowDefinition>
-                <RowDefinition Height="*"></RowDefinition>
-                <RowDefinition Height="Auto"></RowDefinition>
-                <RowDefinition Height="8"></RowDefinition>
+                <RowDefinition Height="8"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="8"/>
             </Grid.RowDefinitions>
 
             <Frame Grid.Row="1" BorderColor="{StaticResource NavigationPrimary}">
@@ -111,7 +112,11 @@
             <Frame Grid.Row="2" Padding="0">
                 <connectionstatus:ConnectionStatusView/>
             </Frame>
-            
+
+            <Frame Grid.Row="3" Padding="0">
+                <ActivityIndicator IsRunning="{Binding IsBusy}" VerticalOptions="Center" HorizontalOptions="Center"/>
+            </Frame>
+
         </Grid>
     </ScrollView>
 </ContentView>

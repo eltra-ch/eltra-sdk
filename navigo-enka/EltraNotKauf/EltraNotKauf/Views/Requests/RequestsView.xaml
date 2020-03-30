@@ -26,19 +26,18 @@
         <ScrollView>
             <Grid>
                 <Grid.RowDefinitions>
-                    <RowDefinition Height="8"></RowDefinition>
-                    <RowDefinition Height="Auto"></RowDefinition>
-                    <RowDefinition Height="Auto"></RowDefinition>
-                    <RowDefinition Height="Auto"></RowDefinition>
-                    <RowDefinition Height="Auto"></RowDefinition>
-                    <RowDefinition Height="8"></RowDefinition>
+                    <RowDefinition Height="8"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="8"/>
                 </Grid.RowDefinitions>
 
                 <Frame Grid.Row="1" BorderColor="{StaticResource NavigationPrimary}">
                     <Grid HorizontalOptions="FillAndExpand" VerticalOptions="FillAndExpand">
 
                         <Grid.RowDefinitions>
-                            <RowDefinition Height="Auto"/>
                             <RowDefinition Height="Auto"/>
                             <RowDefinition Height="Auto"/>
                             <RowDefinition Height="Auto"/>
@@ -72,15 +71,7 @@
                             </Grid>
                         </Frame>
 
-                        <Frame Grid.Column="0" Grid.Row="2" Style="{StaticResource BorderLikeFrame}">
-                            <forms:AutoSuggestBox PlaceholderText="Strasse" Text="{Binding Street, Mode=TwoWay}" ItemsSource="{Binding StreetSuggestions}" IsEnabled="{Binding IsConnected}">
-                                <forms:AutoSuggestBox.Behaviors>
-                                    <behaviors:StreetAutoSuggestBoxBehavior/>
-                                </forms:AutoSuggestBox.Behaviors>
-                            </forms:AutoSuggestBox>
-                        </Frame>
-
-                        <Frame Grid.Column="0" Grid.Row="3" Style="{StaticResource BorderLikeFrame}" IsEnabled="{Binding IsConnected}" Padding="0">
+                        <Frame Grid.Column="0" Grid.Row="2" Style="{StaticResource BorderLikeFrame}" IsEnabled="{Binding IsConnected}" Padding="0">
                             <Button Text="Suchen" Command="{Binding SearchCommand}"/>
                         </Frame>
 

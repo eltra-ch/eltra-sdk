@@ -13,6 +13,7 @@ using System.Collections.Generic;
 using Region = EltraCloudContracts.Enka.Regional.Region;
 using EltraConnector.GeoAdmin;
 using EltraNotKauf.Endpoints;
+using EltraNotKauf.Controls.Toast;
 
 namespace EltraNotKauf.Views.Contact
 {
@@ -205,7 +206,18 @@ namespace EltraNotKauf.Views.Contact
 
         private async void OnSaveCommandClicked(object obj)
         {
-            await StoreContact();
+            IsBusy = true;
+
+            if(await StoreContact())
+            {
+                ToastMessage.ShortAlert("Gespeichert");
+            }
+            else
+            {
+                ToastMessage.ShortAlert("Fehlgeschlagen!");
+            }
+
+            IsBusy = false;
         }
 
         private void UpdateValidFlag()
