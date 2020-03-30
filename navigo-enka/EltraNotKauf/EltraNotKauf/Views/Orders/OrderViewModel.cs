@@ -12,6 +12,7 @@ using EltraNotKauf.Extensions;
 using EltraNotKauf.Endpoints;
 using System.Collections.Generic;
 using EltraNotKauf.Views.Common;
+using System.Reflection;
 
 namespace EltraNotKauf.Views.Orders
 {
@@ -45,7 +46,7 @@ namespace EltraNotKauf.Views.Orders
         public OrderViewModel()
         {
             Title = "Brauche Hilfe";
-            Image = ImageSource.FromResource("EltraNotKauf.Resources.lifebuoy.png");
+            Image = ImageSource.FromResource("EltraNotKauf.Resources.lifebuoy.png", Assembly.GetExecutingAssembly());
             IsMandatory = true;
             Uuid = "37A00C5A-3A87-40F5-B954-5BE2161728F2";
 

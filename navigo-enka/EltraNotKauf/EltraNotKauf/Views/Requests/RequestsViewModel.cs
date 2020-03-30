@@ -7,6 +7,7 @@ using Region = EltraCloudContracts.Enka.Regional.Region;
 using EltraNotKauf.Endpoints;
 using EltraConnector.Transport;
 using System.Linq;
+using System.Reflection;
 
 namespace EltraNotKauf.Views.Requests
 {
@@ -36,7 +37,7 @@ namespace EltraNotKauf.Views.Requests
         public RequestsViewModel()
         {
             Title = "Anfragen";
-            Image = ImageSource.FromResource("EltraNotKauf.Resources.urgent.png");
+            Image = ImageSource.FromResource("EltraNotKauf.Resources.urgent.png", Assembly.GetExecutingAssembly());
             IsMandatory = true;
             Uuid = "B35E33E8-351D-44B9-B169-134AD4566F48";
             

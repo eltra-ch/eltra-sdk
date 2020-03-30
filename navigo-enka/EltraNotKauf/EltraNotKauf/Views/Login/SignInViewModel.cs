@@ -1,4 +1,5 @@
-﻿using System.Windows.Input;
+﻿using System.Reflection;
+using System.Windows.Input;
 using Xamarin.Forms;
 
 namespace EltraNotKauf.Views.Login
@@ -11,7 +12,7 @@ namespace EltraNotKauf.Views.Login
         {
             Title = "Einloggen";
             Uuid = "1F81E5FD-2F7E-4D06-AB28-BCE50728CC91";
-            Image = ImageSource.FromResource("EltraNotKauf.Resources.user.png");
+            Image = ImageSource.FromResource("EltraNotKauf.Resources.user.png", Assembly.GetExecutingAssembly());
         }
 
         #endregion

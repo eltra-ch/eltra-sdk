@@ -1,5 +1,6 @@
 ﻿using EltraCommon.Helpers;
 using EltraNotKauf.Controls;
+using System.Reflection;
 using Xamarin.Forms;
 
 namespace EltraNotKauf.Views.About
@@ -9,9 +10,9 @@ namespace EltraNotKauf.Views.About
         public AboutViewModel()
         {
             Title = "Über";
-            Image = ImageSource.FromResource("EltraNotKauf.Resources.info-circle.png");
+            Image = ImageSource.FromResource("EltraNotKauf.Resources.info-circle.png",Assembly.GetExecutingAssembly());
             IsMandatory = true;
-            LogoImage = ImageSource.FromResource("EltraNotKauf.Resources.logo_nothilfe.png");
+            LogoImage = ImageSource.FromResource("EltraNotKauf.Resources.logo_nothilfe.png", Assembly.GetExecutingAssembly());
             Uuid = "0069D91E-6EB9-4C59-9BB8-65996A318740";
         }
         

@@ -1,4 +1,5 @@
 using System;
+using System.Reflection;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
 
@@ -15,7 +16,7 @@ namespace EltraNotKauf.Controls.Helpers
                 return null;
 
             // Do your translation lookup here, using whatever method you require
-            var imageSource = ImageSource.FromResource(Source);
+            var imageSource = ImageSource.FromResource(Source, Assembly.GetExecutingAssembly());
 
             return imageSource;
         }

@@ -4,6 +4,7 @@ using EltraConnector.Controllers;
 using EltraCloudContracts.Contracts.Users;
 using System;
 using EltraNotKauf.Controls.Toast;
+using System.Reflection;
 
 namespace EltraNotKauf.Views.Login
 {
@@ -16,7 +17,7 @@ namespace EltraNotKauf.Views.Login
         public SignUpViewModel()
         {
             Title = "Anmelden";
-            Image = ImageSource.FromResource("EltraNotKauf.Resources.user.png");
+            Image = ImageSource.FromResource("EltraNotKauf.Resources.user.png", Assembly.GetExecutingAssembly());
             IsMandatory = false;
             Uuid = "D4D4DFEF-3EBE-4C74-8D98-A27D3122AC9F";
         }

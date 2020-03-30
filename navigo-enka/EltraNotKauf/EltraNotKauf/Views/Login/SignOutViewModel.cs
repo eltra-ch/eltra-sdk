@@ -2,6 +2,7 @@
 using EltraNotKauf.Controls;
 using EltraNotKauf.Views.Login.Events;
 using System;
+using System.Reflection;
 using System.Threading.Tasks;
 using Xamarin.Forms;
 
@@ -20,7 +21,7 @@ namespace EltraNotKauf.Views.Login
         public SignOutViewModel()
         {
             Title = "Ausloggen";
-            Image = ImageSource.FromResource("EltraNotKauf.Resources.user.png");
+            Image = ImageSource.FromResource("EltraNotKauf.Resources.user.png", Assembly.GetExecutingAssembly());
             IsMandatory = true;
             IsEnabled = false;
             Uuid = "10ED2154-B0B0-4EBA-B74B-6E05BD830802";

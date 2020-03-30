@@ -2,18 +2,13 @@
 using System.Threading.Tasks;
 using System.Windows.Input;
 using Xamarin.Forms;
-using System.Web;
 using EltraCommon.Helpers;
-using EltraConnector.Transport;
-using System;
-using EltraCommon.Logger;
-using Newtonsoft.Json;
-using Xamarin.Essentials;
 using System.Collections.Generic;
 using Region = EltraCloudContracts.Enka.Regional.Region;
 using EltraConnector.GeoAdmin;
 using EltraNotKauf.Endpoints;
 using EltraNotKauf.Controls.Toast;
+using System.Reflection;
 
 namespace EltraNotKauf.Views.Contact
 {
@@ -47,7 +42,9 @@ namespace EltraNotKauf.Views.Contact
         public ContactViewModel()
         {
             Title = "Addresse";
-            Image = ImageSource.FromResource("EltraNotKauf.Resources.home.png");
+            
+            
+            Image = ImageSource.FromResource("EltraNotKauf.Resources.home.png", Assembly.GetExecutingAssembly());
             IsMandatory = true;
             Uuid = "791AFBD3-E61D-4A0B-B35B-874D5A038E35";
             IsPhoneValid = true;

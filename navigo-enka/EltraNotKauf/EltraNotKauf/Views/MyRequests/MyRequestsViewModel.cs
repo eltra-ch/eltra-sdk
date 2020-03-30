@@ -5,6 +5,7 @@ using Xamarin.Forms;
 using System.Collections.Generic;
 using EltraNotKauf.Endpoints;
 using EltraNotKauf.Views.Requests;
+using System.Reflection;
 
 namespace EltraNotKauf.Views.MyRequests
 {
@@ -25,7 +26,7 @@ namespace EltraNotKauf.Views.MyRequests
         public MyRequestsViewModel()
         {
             Title = "Ich bin dabei";
-            Image = ImageSource.FromResource("EltraNotKauf.Resources.link.png");
+            Image = ImageSource.FromResource("EltraNotKauf.Resources.link.png", Assembly.GetExecutingAssembly());
             IsMandatory = true;
             Uuid = "C0A27DF7-94F8-4DF9-B2D0-E40FE7490EF2";
             

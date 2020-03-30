@@ -1,4 +1,5 @@
-﻿using System.Reflection;
+﻿using System.Resources;
+using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
@@ -27,3 +28,4 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyVersion("1.0.5.5")]
 [assembly: AssemblyFileVersion("1.0.5.5")]
 [assembly: ComVisible(false)]
+[assembly: NeutralResourcesLanguage("de-CH")]

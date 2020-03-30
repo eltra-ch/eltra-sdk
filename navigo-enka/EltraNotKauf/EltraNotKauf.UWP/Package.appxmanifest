@@ -7,15 +7,15 @@
   IgnorableNamespaces="uap mp">
 
   <Identity
-    Name="47409302-4875-4790-bf6f-3be507aa2248"
-    Publisher="CN=Dawid Sienkiewicz"
-    Version="1.0.1.0" />
+    Name="56594Eltra.Notkauf"
+    Publisher="CN=8A52A58C-B182-4AA7-A140-F67842C4077A"
+    Version="1.0.7.0" />
 
-  <mp:PhoneIdentity PhoneProductId="ec0cc741-fd3e-485c-81be-68815c480690" PhonePublisherId="00000000-0000-0000-0000-000000000000"/>
+  <mp:PhoneIdentity PhoneProductId="10830d53-15e8-4548-8b77-d6664c5beee6" PhonePublisherId="00000000-0000-0000-0000-000000000000"/>
 
   <Properties>
-    <DisplayName>EltraNotKauf.UWP</DisplayName>
-    <PublisherDisplayName>a2f6a692-0c79-40b2-a0b3-47123c322a03</PublisherDisplayName>
+    <DisplayName>Notkauf</DisplayName>
+    <PublisherDisplayName>Eltra</PublisherDisplayName>
     <Logo>Assets\StoreLogo.png</Logo>
   </Properties>
 
@@ -32,7 +32,7 @@
       Executable="$targetnametoken$.exe"
       EntryPoint="EltraNotKauf.UWP.App">
       <uap:VisualElements
-        DisplayName="EltraNotKauf.UWP"
+        DisplayName="Notkauf"
         Square150x150Logo="Assets\Square150x150Logo.png"
         Square44x44Logo="Assets\Square44x44Logo.png"
         Description="EltraNotKauf.UWP"
