@@ -6,7 +6,7 @@
              xmlns:behaviors="clr-namespace:EltraNotKauf.Views.Behaviors;assembly=EltraNotKauf"
              xmlns:behaviors2="clr-namespace:EltraNotKauf.Views.Login.Behaviors;assembly=EltraNotKauf"
              xmlns:views="clr-namespace:EltraNotKauf.Views.Login;assembly=EltraNotKauf"
-             xmlns:connectionstatus="clr-namespace:EltraNotKauf.Views.ConnectionStatus"
+             xmlns:connectionstatus="clr-namespace:EltraNotKauf.Views.ConnectionStatus" xmlns:labels="clr-namespace:EltraNotKauf.Controls.Labels"
              mc:Ignorable="d"
              x:DataType="views:SignUpViewModel"
              x:Class="EltraNotKauf.Views.Login.SignUpView" VerticalOptions="CenterAndExpand">
@@ -57,6 +57,7 @@
                                 <RowDefinition Height="Auto"/>
                                 <RowDefinition Height="Auto"/>
                                 <RowDefinition Height="42"/>
+                                <RowDefinition Height="Auto"/>
                                 <RowDefinition Height="Auto"/>
                                 <RowDefinition Height="Auto"/>
                                 <RowDefinition Height="Auto"/>
@@ -121,14 +122,60 @@
                                 <Button IsTabStop="True" TabIndex="3" Text="ANMELDEN" Command="{Binding RegisterCommand}" IsEnabled="{Binding IsValid}"/>
                             </Frame>
 
-                            <Frame Grid.Row="8" BackgroundColor="Transparent">
-                                <StackLayout Orientation="Horizontal">
+                                <Frame Grid.Row="8" BackgroundColor="Transparent">
+                                    <StackLayout Orientation="Horizontal">
                                         <CheckBox IsChecked="{Binding AutoLogOnActive}" WidthRequest="32" TabIndex="4" />
                                         <Label Text="Automatisch anmelden" VerticalOptions="CenterAndExpand" HorizontalOptions="StartAndExpand" TextColor="Black" BackgroundColor="Transparent"/>
-                                </StackLayout>
-                            </Frame>
+                                    </StackLayout>
+                                </Frame>
+                            
+                                <Frame Grid.Row="9" Padding="0,10">
+                                    <Grid VerticalOptions="CenterAndExpand" HorizontalOptions="CenterAndExpand">
+                                        <Grid.Resources>
+                                            <Style TargetType="Label">
+                                                <Setter Property="VerticalOptions" Value="Center"/>
+                                                <Setter Property="FontSize">
 
-                            <Frame Grid.Row="9">
+                                                    <Setter.Value>
+                                                        <OnPlatform x:TypeArguments="x:Double">
+                                                            <OnPlatform.iOS>9</OnPlatform.iOS>
+                                                            <OnPlatform.Android>9</OnPlatform.Android>
+                                                            <OnPlatform.WinPhone>11</OnPlatform.WinPhone>
+                                                        </OnPlatform>
+                                                    </Setter.Value>
+
+                                                </Setter>
+                                            </Style>
+                                            <Style TargetType="labels:HyperlinkLabel">
+                                                <Setter Property="VerticalOptions" Value="Center"/>
+                                                <Setter Property="FontSize">
+
+                                                    <Setter.Value>
+                                                        <OnPlatform x:TypeArguments="x:Double">
+                                                            <OnPlatform.iOS>9</OnPlatform.iOS>
+                                                            <OnPlatform.Android>9</OnPlatform.Android>
+                                                            <OnPlatform.WinPhone>11</OnPlatform.WinPhone>
+                                                        </OnPlatform>
+                                                    </Setter.Value>
+                                                    
+                                                </Setter>
+                                            </Style>
+                                        </Grid.Resources>
+
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="Auto"/>
+                                            <ColumnDefinition Width="Auto"/>
+                                            <ColumnDefinition Width="Auto"/>
+                                        </Grid.ColumnDefinitions>
+                                            
+                                        <Label Grid.Column="0" Text="Beim Anmelden, stimme ich den allgemeinen"/>
+                                        <labels:HyperlinkLabel Grid.Column="1" Url="https://notkauf.ch/privacy/tos_ds.html" Text="Nutzungsbedingungen"/>
+                                        <Label Grid.Column="2" Text="zu" VerticalOptions="Center"/>
+                                    </Grid>
+                                </Frame>
+                            
+
+                            <Frame Grid.Row="10" Padding="0">
                                 <ActivityIndicator IsRunning="{Binding IsBusy}" VerticalOptions="Center" HorizontalOptions="Center" />
                             </Frame>
 
