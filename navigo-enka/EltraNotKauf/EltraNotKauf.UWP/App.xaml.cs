@@ -6,6 +6,8 @@ using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Navigation;
 using EltraNotKauf.UWP.Controls.Toast;
 using EltraNotKauf.UWP.Helpers;
+using System.Collections.Generic;
+using System.Reflection;
 
 namespace EltraNotKauf.UWP
 {
@@ -44,7 +46,16 @@ namespace EltraNotKauf.UWP
 
                 Windows.Services.Maps.MapService.ServiceToken = "AiiFY0nwNBSMYNGMryV0jMxxFHFk5_MfODMS80mUamw-BCI67dNGaDpwfH9Bwxom";
 
-                Xamarin.Forms.Forms.Init(e);
+                List<Assembly> assembliesToInclude = new List<Assembly>
+                {
+                    typeof(dotMorten.Xamarin.Forms.AutoSuggestBox).GetTypeInfo().Assembly
+                };
+
+                assembliesToInclude.AddRange(Forms9Patch.UWP.Settings.AssembliesToInclude);
+
+                Xamarin.Forms.Forms.Init(e, assembliesToInclude);
+                Forms9Patch.UWP.Settings.Initialize(this);
+
                 Xamarin.FormsMaps.Init("AiiFY0nwNBSMYNGMryV0jMxxFHFk5_MfODMS80mUamw-BCI67dNGaDpwfH9Bwxom");
 
                 Xamarin.Forms.DependencyService.Register<ToastMessage>();

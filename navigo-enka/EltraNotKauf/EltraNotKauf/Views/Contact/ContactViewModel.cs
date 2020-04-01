@@ -257,15 +257,27 @@ namespace EltraNotKauf.Views.Contact
             {
                 Contact = contact;
 
-                Name = Contact.Name;
-                Phone = Contact.Phone;
-                Street = Contact.Street;
-                
-                Region = FindRegion(Contact.Region);
+                if (!string.IsNullOrEmpty(Contact.Name))
+                    Name = Contact.Name;
 
-                City = Contact.City;
-                PostalCode = Contact.PostalCode;
-                Notice = Contact.Notice;
+
+                if (!string.IsNullOrEmpty(Contact.Phone)) 
+                    Phone = Contact.Phone;
+                
+                if(!string.IsNullOrEmpty(Contact.Street))
+                    Street = Contact.Street;
+                
+                if(Contact.Region!=null)
+                    Region = FindRegion(Contact.Region);
+
+                if(!string.IsNullOrEmpty(Contact.City))
+                    City = Contact.City;
+
+                if (!string.IsNullOrEmpty(Contact.City))
+                    PostalCode = Contact.PostalCode;
+
+                if (!string.IsNullOrEmpty(Contact.City))
+                    Notice = Contact.Notice;
             }
         }
 
