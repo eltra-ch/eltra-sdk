@@ -9,7 +9,7 @@
   <Identity
     Name="56594Eltra.Notkauf"
     Publisher="CN=8A52A58C-B182-4AA7-A140-F67842C4077A"
-    Version="1.0.9.0" />
+    Version="1.0.10.0" />
 
   <mp:PhoneIdentity PhoneProductId="10830d53-15e8-4548-8b77-d6664c5beee6" PhonePublisherId="00000000-0000-0000-0000-000000000000"/>
 
