@@ -23,7 +23,7 @@
     <AppxAutoIncrementPackageRevision>True</AppxAutoIncrementPackageRevision>
     <AppxBundle>Always</AppxBundle>
     <AppxBundlePlatforms>x86|x64|arm</AppxBundlePlatforms>
-    <PackageCertificateThumbprint>DA64EEA044030AB04BEC4B0FB4A93EF6DF8BF126</PackageCertificateThumbprint>
+    <PackageCertificateThumbprint>8BBD72A2183A419947AD2692B03D2DB67510A3C6</PackageCertificateThumbprint>
     <AppInstallerUpdateFrequency>0</AppInstallerUpdateFrequency>
     <AppInstallerCheckForUpdateFrequency>OnApplicationRun</AppInstallerCheckForUpdateFrequency>
     <AppxSymbolPackageEnabled>False</AppxSymbolPackageEnabled>
@@ -118,6 +118,8 @@
     </AppxManifest>
   </ItemGroup>
   <ItemGroup>
+    <None Include="HWA.pfx" />
+    <None Include="HWA17332.pfx" />
     <None Include="Package.StoreAssociation.xml" />
     <Content Include="Properties\Default.rd.xml" />
     <Content Include="Assets\LargeTile.scale-100.png" />
@@ -159,12 +161,12 @@
     </Page>
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Xamarin.Forms" Version="4.6.0.379-pre1" />
+    <PackageReference Include="Xamarin.Forms" Version="4.5.0.495" />
     <PackageReference Include="Microsoft.NETCore.UniversalWindowsPlatform" Version="6.2.10" />
-    <PackageReference Include="Xamarin.Essentials" Version="1.5.1" />
+    <PackageReference Include="Xamarin.Essentials" Version="1.5.2" />
     <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
     <PackageReference Include="Xamarin.Forms.Maps">
-      <Version>4.6.0.379-pre1</Version>
+      <Version>4.5.0.495</Version>
     </PackageReference>
   </ItemGroup>
   <ItemGroup>
@@ -196,7 +198,7 @@
     <SignAssembly>true</SignAssembly>
   </PropertyGroup>
   <PropertyGroup>
-    <AssemblyOriginatorKeyFile>EltraNotKauf.pfx</AssemblyOriginatorKeyFile>
+    <AssemblyOriginatorKeyFile>HWA17332.pfx</AssemblyOriginatorKeyFile>
   </PropertyGroup>
   <Import Project="$(MSBuildExtensionsPath)\Microsoft\WindowsXaml\v$(VisualStudioVersion)\Microsoft.Windows.UI.Xaml.CSharp.targets" />
 </Project>

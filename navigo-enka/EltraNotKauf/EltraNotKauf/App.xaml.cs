@@ -4,9 +4,11 @@ using Xamarin.Essentials;
 using System;
 using EltraCommon.Logger;
 using EltraNotKauf.Helpers;
+using Xamarin.Forms.Xaml;
 
 namespace EltraNotKauf
 {
+    [XamlCompilation(XamlCompilationOptions.Compile)]
     public partial class App : Application
     {
         #region Private fields
