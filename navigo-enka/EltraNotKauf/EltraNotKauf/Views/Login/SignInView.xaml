@@ -107,7 +107,7 @@
                                 </Frame>
 
                                 <Frame Grid.Row="7">
-                                    <Button IsTabStop="True" TabIndex="3" Text="AUSLOGGEN" Command="{Binding RegisterCommand}" IsEnabled="{Binding IsConnected}"/>
+                                    <Button IsTabStop="True" TabIndex="3" Text="ANMELDEN" Command="{Binding RegisterCommand}" IsEnabled="{Binding IsConnected}"/>
                                 </Frame>
 
                                 <Frame Grid.Row="8" BackgroundColor="Transparent">

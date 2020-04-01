@@ -198,9 +198,12 @@ namespace EltraNotKauf.Views.Orders
 
         private async void OnViewPropertyChanged(object sender, PropertyChangedEventArgs args)
         {
-            if(args.PropertyName == "Notice")
+            if (IsVisible)
             {
-                await OnMessageChanged();
+                if (args.PropertyName == "Notice")
+                {
+                    await OnMessageChanged();
+                }
             }
         }
 

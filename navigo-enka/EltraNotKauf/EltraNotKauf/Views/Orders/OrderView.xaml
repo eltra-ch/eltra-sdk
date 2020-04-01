@@ -72,7 +72,7 @@
 					</Frame>
 				</Grid>
 			</Frame>
-			<Frame Grid.Row="3" BorderColor="{StaticResource NavigationPrimary}">
+			<Frame Grid.Row="3" BorderColor="Transparent">
 				<StackLayout>
 					<Frame CornerRadius="5" Padding="0">
 						<StackLayout>
@@ -86,7 +86,7 @@
 					</Frame>
 				</StackLayout>
 			</Frame>
-			<Frame Grid.Row="4" BorderColor="{StaticResource NavigationPrimary}">
+			<Frame Grid.Row="4" BorderColor="Transparent">
 				<Grid HorizontalOptions="FillAndExpand" >
 					<Grid.ColumnDefinitions>
 						<ColumnDefinition/>

@@ -22,10 +22,12 @@ namespace EltraNotKauf.Views.Behaviors
 
         private void OnPageAppearing(object sender, EventArgs e)
         {
-            if (!_toolViewModel.IsVisible)
+            if (_toolViewModel !=null && !_toolViewModel.IsVisible)
             {
                 _toolViewModel?.Show();
             }
+
+            _page?.Focus();
         }
 
         private void OnPageBindingContextChanged(object sender, EventArgs e)

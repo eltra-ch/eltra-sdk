@@ -1,5 +1,4 @@
 ﻿using dotMorten.Xamarin.Forms;
-using EltraNotKauf.Views.Contact;
 using System;
 using System.ComponentModel;
 using Xamarin.Forms;
@@ -56,7 +55,7 @@ namespace EltraNotKauf.Views.Contact.Behaviors
             }
         }
 
-        private async void OnTextChanged(object sender, AutoSuggestBoxTextChangedEventArgs args)
+        private void OnTextChanged(object sender, AutoSuggestBoxTextChangedEventArgs args)
         {
             var view = (AutoSuggestBox)sender;
             
@@ -70,7 +69,7 @@ namespace EltraNotKauf.Views.Contact.Behaviors
                 {
                     if (_contactViewModel != null)
                     {
-                        await _contactViewModel.UpdateStreetSuggestions(view.Text);
+                        //await _contactViewModel.UpdateStreetSuggestions(view.Text);
                     }                    
                 }
             }
@@ -88,29 +87,24 @@ namespace EltraNotKauf.Views.Contact.Behaviors
 
         private void OnViewModelPropertyChanged(object sender, PropertyChangedEventArgs e)
         {
-            if(e.PropertyName == "Street")
+            if (_contactViewModel != null && _contactViewModel.IsVisible)
             {
-                _view.Text = _contactViewModel.Street;
-            }
-            else if(e.PropertyName == "StreetSuggestions")
-            {
-                _view.ItemsSource = _contactViewModel.StreetSuggestions;
-            }
-            else if(e.PropertyName == "Region")
-            {
-                /*if (_contactViewModel.IsVisible)
+                if (e.PropertyName == "Street")
                 {
-                    _view.Text = string.Empty;
-                }*/
-                _view.ItemsSource = null;
-            }
-            else if (e.PropertyName == "PostalCode")
-            {
-                /*if (_contactViewModel.IsVisible)
+                    _view.Text = _contactViewModel.Street;
+                }
+                else if (e.PropertyName == "StreetSuggestions")
                 {
-                    _view.Text = string.Empty;
-                }*/
-                _view.ItemsSource = null;
+                    _view.ItemsSource = _contactViewModel.StreetSuggestions;
+                }
+                else if (e.PropertyName == "Region")
+                {
+                    _view.ItemsSource = null;
+                }
+                else if (e.PropertyName == "PostalCode")
+                {
+                    _view.ItemsSource = null;
+                }
             }
         }
     }

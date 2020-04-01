@@ -5,7 +5,6 @@ using Xamarin.Forms;
 using System.Collections.Generic;
 using Region = EltraCloudContracts.Enka.Regional.Region;
 using EltraNotKauf.Endpoints;
-using EltraConnector.Transport;
 using System.Linq;
 using System.Reflection;
 
@@ -46,16 +45,19 @@ namespace EltraNotKauf.Views.Requests
             _contactEndpoint = new ContactEndpoint();
 
             PropertyChanged += (sender, args) => 
-            { 
-                if(args.PropertyName == "PostalCode")
+            {
+                if (IsVisible)
                 {
-                    OnPostalCodeChanged();
-                }
-                if(args.PropertyName == "Region")
-                {
-                    if (Region != null && !string.IsNullOrEmpty(Region.ShortName))
+                    if (args.PropertyName == "PostalCode")
                     {
-                        SelectedRegionCode = Region.ShortName;
+                        OnPostalCodeChanged();
+                    }
+                    if (args.PropertyName == "Region")
+                    {
+                        if (Region != null && !string.IsNullOrEmpty(Region.ShortName))
+                        {
+                            SelectedRegionCode = Region.ShortName;
+                        }
                     }
                 }
             }; 
@@ -336,7 +338,9 @@ namespace EltraNotKauf.Views.Requests
 
                 if(info!=null)
                 {
-                    if(!string.IsNullOrEmpty(info.Region.ShortName) && info.Region.ShortName != Region.ShortName)
+                    if(!string.IsNullOrEmpty(info.Region.ShortName) &&
+                        (Region == null ||
+                        (Region != null && info.Region.ShortName != Region.ShortName)))
                     {
                         Region = FindRegionByName(info.Region.Name);
 

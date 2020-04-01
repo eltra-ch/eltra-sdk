@@ -88,21 +88,24 @@ namespace EltraNotKauf.Views.Requests.Behaviors
 
         private void OnViewModelPropertyChanged(object sender, PropertyChangedEventArgs e)
         {
-            if(e.PropertyName == "Street")
+            if (_viewModel !=null && _viewModel.IsVisible)
             {
-                _view.Text = _viewModel.Street;
-            }
-            else if(e.PropertyName == "StreetSuggestions")
-            {
-                _view.ItemsSource = _viewModel.StreetSuggestions;
-            }
-            else if(e.PropertyName == "Region")
-            {
-                _view.ItemsSource = null;
-            }
-            else if (e.PropertyName == "PostalCode")
-            {
-                _view.ItemsSource = null;
+                if (e.PropertyName == "Street")
+                {
+                    _view.Text = _viewModel.Street;
+                }
+                else if (e.PropertyName == "StreetSuggestions")
+                {
+                    _view.ItemsSource = _viewModel.StreetSuggestions;
+                }
+                else if (e.PropertyName == "Region")
+                {
+                    _view.ItemsSource = null;
+                }
+                else if (e.PropertyName == "PostalCode")
+                {
+                    _view.ItemsSource = null;
+                }
             }
         }
     }

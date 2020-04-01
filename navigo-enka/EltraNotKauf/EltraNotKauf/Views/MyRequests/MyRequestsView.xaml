@@ -43,7 +43,7 @@
 					</FlexLayout>
 				</Frame>
 
-                <Frame Grid.Row="2" BorderColor="{StaticResource NavigationPrimary}" Padding="8,8,8,8" IsVisible="{Binding AreRequestsVisible, Converter={StaticResource NegateBooleanConverter}}">
+                <Frame Grid.Row="2" BorderColor="Transparent" Padding="8,8,8,8" IsVisible="{Binding AreRequestsVisible, Converter={StaticResource NegateBooleanConverter}}">
                     <Label Text="Keine Einträge vorhanden. Jetzt zugreifen!"></Label>
                 </Frame>
                 

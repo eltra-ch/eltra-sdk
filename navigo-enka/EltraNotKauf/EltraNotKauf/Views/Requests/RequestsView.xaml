@@ -5,7 +5,6 @@
              xmlns:behaviors="clr-namespace:EltraNotKauf.Views.Requests.Behaviors"
              xmlns:behaviors2="clr-namespace:EltraNotKauf.Views.Behaviors"
              x:DataType="contact:RequestsViewModel"
-             xmlns:forms="clr-namespace:dotMorten.Xamarin.Forms;assembly=dotMorten.Xamarin.Forms.AutoSuggestBox"
              xmlns:connectionstatus="clr-namespace:EltraNotKauf.Views.ConnectionStatus"
              x:Class="EltraNotKauf.Views.Requests.RequestsView">
 
@@ -45,7 +44,7 @@
 
                         <!-- Edit -->
                         <Frame Grid.Column="0" Grid.Row="0" Style="{StaticResource BorderLikeFrame}">
-                            <Picker ItemsSource="{Binding Regions}" SelectedItem="{Binding Region}" ItemDisplayBinding="{Binding Name}" IsEnabled="{Binding IsConnected}"/>
+                            <Picker TabIndex="0" ItemsSource="{Binding Regions}" SelectedItem="{Binding Region}" ItemDisplayBinding="{Binding Name}" IsEnabled="{Binding IsConnected}"/>
                         </Frame>
                         <Frame Grid.Column="0" Grid.Row="1" Style="{StaticResource BorderLikeFrame}">
                             <Grid>
@@ -55,30 +54,22 @@
                                 </Grid.ColumnDefinitions>
 
                                 <Frame Grid.Column="0" Style="{StaticResource BorderLikeFrame}">
-                                    <forms:AutoSuggestBox PlaceholderText="PLZ" Text="{Binding PostalCode, Mode=TwoWay}" ItemsSource="{Binding PostalCodeSuggestions}" WidthRequest="64" IsEnabled="{Binding IsConnected}">
-                                        <forms:AutoSuggestBox.Behaviors>
-                                            <behaviors:PostalCodeAutoSuggestBoxBehavior/>
-                                        </forms:AutoSuggestBox.Behaviors>
-                                    </forms:AutoSuggestBox>
+                                    <Entry TabIndex="1" Placeholder="PLZ" Text="{Binding PostalCode, Mode=TwoWay}" WidthRequest="64" IsEnabled="{Binding IsConnected}"/>
                                 </Frame>
                                 <Frame Grid.Column="1" Style="{StaticResource BorderLikeFrame}">
-                                    <forms:AutoSuggestBox PlaceholderText="Ort" Text="{Binding City, Mode=TwoWay}" ItemsSource="{Binding CitySuggestions}" IsEnabled="{Binding IsConnected}">
-                                        <forms:AutoSuggestBox.Behaviors>
-                                            <behaviors:CityAutoSuggestBoxBehavior/>
-                                        </forms:AutoSuggestBox.Behaviors>
-                                    </forms:AutoSuggestBox>
+                                    <Entry TabIndex="2" Placeholder="Ort" Text="{Binding City, Mode=TwoWay}" IsEnabled="{Binding IsConnected}"/>
                                 </Frame>
                             </Grid>
                         </Frame>
 
                         <Frame Grid.Column="0" Grid.Row="2" Style="{StaticResource BorderLikeFrame}" IsEnabled="{Binding IsConnected}" Padding="0">
-                            <Button Text="Suchen" Command="{Binding SearchCommand}"/>
+                            <Button TabIndex="3" Text="Suchen" Command="{Binding SearchCommand}"/>
                         </Frame>
 
                     </Grid>
                 </Frame>
 
-                <Frame Grid.Row="2" BorderColor="{StaticResource NavigationPrimary}" Padding="8,0,8,0">
+                <Frame Grid.Row="2" BorderColor="Transparent" Padding="8,0,8,0">
                     <FlexLayout BindableLayout.ItemsSource="{Binding RequestList}" Direction="Column">
                         <BindableLayout.ItemTemplate>
                             <DataTemplate>

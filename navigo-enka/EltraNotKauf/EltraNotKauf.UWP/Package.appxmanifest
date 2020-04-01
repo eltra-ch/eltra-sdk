@@ -8,7 +8,7 @@
 
   <Identity
     Name="56594Eltra.Notkauf"
-    Publisher="CN=MMAGDAWS"
+    Publisher="CN=Dawid Sienkiewicz"
     Version="1.0.10.0" />
 
   <mp:PhoneIdentity PhoneProductId="10830d53-15e8-4548-8b77-d6664c5beee6" PhonePublisherId="00000000-0000-0000-0000-000000000000"/>

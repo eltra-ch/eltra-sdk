@@ -65,11 +65,11 @@ namespace EltraNotKauf.Endpoints
 
                     if (!string.IsNullOrEmpty(startsWith))
                     {
-                        foreach (var city in postalCodes)
+                        foreach (var postalCode in postalCodes)
                         {
-                            if (city.StartsWith(startsWith, StringComparison.InvariantCultureIgnoreCase))
+                            if (postalCode.StartsWith(startsWith, StringComparison.InvariantCultureIgnoreCase))
                             {
-                                result.Add(city);
+                                result.Add(postalCode);
                             }
                         }
                     }

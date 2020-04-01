@@ -57,7 +57,7 @@ namespace EltraNotKauf.Views.Contact.Behaviors
             }
         }
 
-        private async void OnTextChanged(object sender, AutoSuggestBoxTextChangedEventArgs args)
+        private void OnTextChanged(object sender, AutoSuggestBoxTextChangedEventArgs args)
         {
             var view = (AutoSuggestBox)sender;
             
@@ -69,9 +69,9 @@ namespace EltraNotKauf.Views.Contact.Behaviors
                 }
                 else
                 {
-                    var suggestions = await GetSuggestions(view.Text);
+                    //var suggestions = await GetSuggestions(view.Text);
 
-                    view.ItemsSource = suggestions;
+                    //view.ItemsSource = suggestions;
                 }
             }
         }

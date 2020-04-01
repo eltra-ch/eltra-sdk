@@ -2,11 +2,9 @@
 <ContentView xmlns="http://xamarin.com/schemas/2014/forms"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:contact="clr-namespace:EltraNotKauf.Views.Contact"
-             xmlns:behaviors="clr-namespace:EltraNotKauf.Views.Contact.Behaviors"
              xmlns:behaviors2="clr-namespace:EltraNotKauf.Views.Behaviors"
              x:DataType="contact:ContactViewModel"
-             xmlns:forms="clr-namespace:dotMorten.Xamarin.Forms;assembly=dotMorten.Xamarin.Forms.AutoSuggestBox"
-             xmlns:connectionstatus="clr-namespace:EltraNotKauf.Views.ConnectionStatus"
+             xmlns:connectionstatus="clr-namespace:EltraNotKauf.Views.ConnectionStatus" xmlns:behaviors="clr-namespace:EltraNotKauf.Controls.Behaviors"
              x:Class="EltraNotKauf.Views.Contact.ContactView">
 
     <ContentView.Resources>
@@ -22,6 +20,7 @@
         <behaviors2:ToolViewBehavior/>
     </ContentView.Behaviors>
 
+    <StackLayout>
     <ScrollView>
         <Grid>
             <Grid.RowDefinitions>
@@ -50,11 +49,20 @@
 
                     <!-- Edit -->
                     <Frame Grid.Column="0" Grid.Row="0" Style="{StaticResource BorderLikeFrame}">
-                        <Entry Placeholder="Vorname, Name" Text="{Binding Name}" IsEnabled="{Binding IsConnected}"/>
-                    </Frame>
+                            <Entry TabIndex="0" Placeholder="Vorname, Name" Text="{Binding Name}" IsEnabled="{Binding IsConnected}">
+                                <Entry.Behaviors>
+                                    <behaviors:EntryBehaviour/>
+                                </Entry.Behaviors>
+                            </Entry>
+                        </Frame>
                     <Frame Grid.Column="0" Grid.Row="1" Style="{StaticResource BorderLikeFrame}">
-                        <Entry Placeholder="Telefonnummer" Text="{Binding Phone}" IsEnabled="{Binding IsConnected}">
-                            <Entry.Triggers>
+                        <Entry TabIndex="1" Placeholder="Telefonnummer" Text="{Binding Phone}" IsEnabled="{Binding IsConnected}">
+
+                                <Entry.Behaviors>
+                                    <behaviors:EntryBehaviour/>
+                                </Entry.Behaviors>
+                            
+                                <Entry.Triggers>
                                 <DataTrigger TargetType="Entry" Binding="{Binding IsPhoneValid}" Value="true">
                                     <Setter Property="TextColor" Value="Default"/>
                                 </DataTrigger>
@@ -65,7 +73,7 @@
                         </Entry>
                     </Frame>
                     <Frame Grid.Column="0" Grid.Row="2" Style="{StaticResource BorderLikeFrame}">
-                        <Picker ItemsSource="{Binding Regions}" SelectedItem="{Binding Region}" ItemDisplayBinding="{Binding Name}" IsEnabled="{Binding IsConnected}"/>
+                        <Picker TabIndex="3" ItemsSource="{Binding Regions}" SelectedItem="{Binding Region}" ItemDisplayBinding="{Binding Name}" IsEnabled="{Binding IsConnected}"/>
                     </Frame>
                     <Frame Grid.Column="0" Grid.Row="3" Style="{StaticResource BorderLikeFrame}">
                         <Grid>
@@ -75,35 +83,39 @@
                             </Grid.ColumnDefinitions>
 
                             <Frame Grid.Column="0" Style="{StaticResource BorderLikeFrame}">
-                                <forms:AutoSuggestBox PlaceholderText="PLZ" Text="{Binding PostalCode, Mode=TwoWay}" ItemsSource="{Binding PostalCodeSuggestions}" WidthRequest="64" IsEnabled="{Binding IsConnected}">
-                                    <forms:AutoSuggestBox.Behaviors>
-                                        <behaviors:PostalCodeAutoSuggestBoxBehavior/>
-                                    </forms:AutoSuggestBox.Behaviors>
-                                </forms:AutoSuggestBox>
-                            </Frame>
-                            <Frame Grid.Column="1" Style="{StaticResource BorderLikeFrame}">
-                                <forms:AutoSuggestBox PlaceholderText="Ort" Text="{Binding City, Mode=TwoWay}" ItemsSource="{Binding CitySuggestions}" IsEnabled="{Binding IsConnected}">
-                                    <forms:AutoSuggestBox.Behaviors>
-                                        <behaviors:CityAutoSuggestBoxBehavior/>
-                                    </forms:AutoSuggestBox.Behaviors>
-                                </forms:AutoSuggestBox>
-                            </Frame>
-                        </Grid>
+                                    <Entry TabIndex="4" Placeholder="PLZ" Text="{Binding PostalCode, Mode=TwoWay}" WidthRequest="64" IsEnabled="{Binding IsConnected}">
+                                        <Entry.Behaviors>
+                                            <behaviors:EntryBehaviour/>
+                                        </Entry.Behaviors>
+                                    </Entry>
+                                </Frame>
+                                <Frame Grid.Column="1" Style="{StaticResource BorderLikeFrame}">
+                                    <Entry TabIndex="5" Text="{Binding City, Mode=TwoWay}" IsEnabled="{Binding IsConnected}">
+                                        <Entry.Behaviors>
+                                            <behaviors:EntryBehaviour/>
+                                        </Entry.Behaviors>
+                                    </Entry>
+                                </Frame>
+                            </Grid>
                     </Frame>
                     
                     <Frame Grid.Column="0" Grid.Row="4" Style="{StaticResource BorderLikeFrame}">
-                        <forms:AutoSuggestBox PlaceholderText="Strasse" Text="{Binding Street, Mode=TwoWay}" ItemsSource="{Binding StreetSuggestions}" IsEnabled="{Binding IsConnected}">
-                            <forms:AutoSuggestBox.Behaviors>
-                                <behaviors:StreetAutoSuggestBoxBehavior/>
-                            </forms:AutoSuggestBox.Behaviors>
-                        </forms:AutoSuggestBox>
-                    </Frame>
+                            <Entry TabIndex="6" Placeholder="Strasse" Text="{Binding Street, Mode=TwoWay}" IsEnabled="{Binding IsConnected}">
+                                <Entry.Behaviors>
+                                    <behaviors:EntryBehaviour/>
+                                </Entry.Behaviors>
+                            </Entry>
+                        </Frame>
                     <Frame Grid.Column="0" Grid.Row="5" Style="{StaticResource BorderLikeFrame}">
-                        <Entry Placeholder="Über mich" Text="{Binding Notice}" IsEnabled="{Binding IsConnected}"/>
-                    </Frame>
+                            <Entry TabIndex="7" Placeholder="Über mich" Text="{Binding Notice}" IsEnabled="{Binding IsConnected}">
+                                <Entry.Behaviors>
+                                    <behaviors:EntryBehaviour/>
+                                </Entry.Behaviors>
+                            </Entry>
+                        </Frame>
 
                     <Frame Grid.Column="0" Grid.Row="6" Style="{StaticResource BorderLikeFrame}" IsEnabled="{Binding IsConnected}">
-                        <Button Text="Speichern" Command="{Binding SaveCommand}" IsEnabled="{Binding IsValid}"/>
+                        <Button TabIndex="8" Text="Speichern" Command="{Binding SaveCommand}" IsEnabled="{Binding IsValid}"/>
                     </Frame>
 
                 </Grid>
@@ -119,4 +131,5 @@
 
         </Grid>
     </ScrollView>
+        </StackLayout>
 </ContentView>

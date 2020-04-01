@@ -1,5 +1,4 @@
 ﻿using dotMorten.Xamarin.Forms;
-using EltraNotKauf.Views.Contact;
 using System;
 using System.ComponentModel;
 using Xamarin.Forms;
@@ -56,7 +55,7 @@ namespace EltraNotKauf.Views.Requests.Behaviors
             }
         }
 
-        private async void OnTextChanged(object sender, AutoSuggestBoxTextChangedEventArgs args)
+        private void OnTextChanged(object sender, AutoSuggestBoxTextChangedEventArgs args)
         {
             var view = (AutoSuggestBox)sender;
             
@@ -70,7 +69,7 @@ namespace EltraNotKauf.Views.Requests.Behaviors
                 {
                     if (_viewModel != null)
                     {
-                        await _viewModel.UpdateCitySuggestions(view.Text);
+                        //await _viewModel.UpdateCitySuggestions(view.Text);
                     }                    
                 }
             }
@@ -88,17 +87,20 @@ namespace EltraNotKauf.Views.Requests.Behaviors
 
         private void OnViewModelPropertyChanged(object sender, PropertyChangedEventArgs e)
         {
-            if(e.PropertyName == "City")
+            if (_viewModel != null && _viewModel.IsVisible)
             {
-                _view.Text = _viewModel.City;
-            }
-            else if(e.PropertyName == "CitySuggestions")
-            {
-                _view.ItemsSource = _viewModel.CitySuggestions;
-            }
-            else if(e.PropertyName == "Region")
-            {
-                _view.ItemsSource = null;
+                if (e.PropertyName == "City")
+                {
+                    _view.Text = _viewModel.City;
+                }
+                else if (e.PropertyName == "CitySuggestions")
+                {
+                    _view.ItemsSource = _viewModel.CitySuggestions;
+                }
+                else if (e.PropertyName == "Region")
+                {
+                    _view.ItemsSource = null;
+                }
             }
         }
     }

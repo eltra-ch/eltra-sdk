@@ -9,6 +9,7 @@ using EltraConnector.GeoAdmin;
 using EltraNotKauf.Endpoints;
 using EltraNotKauf.Controls.Toast;
 using System.Reflection;
+using System.Linq;
 
 namespace EltraNotKauf.Views.Contact
 {
@@ -53,17 +54,20 @@ namespace EltraNotKauf.Views.Contact
             _contactEndpoint = new ContactEndpoint();
 
             PropertyChanged += (sender, args) => 
-            { 
-                if(args.PropertyName == "PostalCode")
+            {
+                if (IsVisible)
                 {
-                    OnPostalCodeChanged();
-                }
-                if (args.PropertyName == "Phone")
-                {
-                    OnPhoneChanged();
-                }
+                    if (args.PropertyName == "PostalCode")
+                    {
+                        OnPostalCodeChanged();
+                    }
+                    if (args.PropertyName == "Phone")
+                    {
+                        OnPhoneChanged();
+                    }
 
-                UpdateValidFlag(); 
+                    UpdateValidFlag();
+                }
             }; 
         }
 
@@ -224,11 +228,20 @@ namespace EltraNotKauf.Views.Contact
 
         public override async void Show()
         {
+            IsBusy = true;
+
             Regions = await _regionEndpoint.ReadRegions();
+
+            if (Regions.Count > 0)
+            {
+                Region = Regions.FirstOrDefault();
+            }
 
             ReadContact();
 
             UpdateValidFlag();
+
+            IsBusy = false;
 
             base.Show();
         }
@@ -258,26 +271,39 @@ namespace EltraNotKauf.Views.Contact
                 Contact = contact;
 
                 if (!string.IsNullOrEmpty(Contact.Name))
+                {
                     Name = Contact.Name;
+                }
 
-
-                if (!string.IsNullOrEmpty(Contact.Phone)) 
+                if (!string.IsNullOrEmpty(Contact.Phone))
+                {
                     Phone = Contact.Phone;
-                
-                if(!string.IsNullOrEmpty(Contact.Street))
+                }
+
+                if (!string.IsNullOrEmpty(Contact.Street))
+                {
                     Street = Contact.Street;
-                
-                if(Contact.Region!=null)
+                }
+
+                if (Contact.Region != null)
+                {
                     Region = FindRegion(Contact.Region);
+                }
 
-                if(!string.IsNullOrEmpty(Contact.City))
+                if (!string.IsNullOrEmpty(Contact.City))
+                {
                     City = Contact.City;
+                }
 
                 if (!string.IsNullOrEmpty(Contact.City))
+                {
                     PostalCode = Contact.PostalCode;
+                }
 
                 if (!string.IsNullOrEmpty(Contact.City))
+                {
                     Notice = Contact.Notice;
+                }
             }
         }
 

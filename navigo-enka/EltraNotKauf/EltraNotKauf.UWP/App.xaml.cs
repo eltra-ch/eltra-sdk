@@ -46,14 +46,7 @@ namespace EltraNotKauf.UWP
 
                 Windows.Services.Maps.MapService.ServiceToken = "AiiFY0nwNBSMYNGMryV0jMxxFHFk5_MfODMS80mUamw-BCI67dNGaDpwfH9Bwxom";
 
-                List<Assembly> assembliesToInclude = new List<Assembly>
-                {
-                    typeof(dotMorten.Xamarin.Forms.AutoSuggestBox).GetTypeInfo().Assembly
-                };
-
-                assembliesToInclude.AddRange(Forms9Patch.UWP.Settings.AssembliesToInclude);
-
-                Xamarin.Forms.Forms.Init(e, assembliesToInclude);
+                Xamarin.Forms.Forms.Init(e, Forms9Patch.UWP.Settings.AssembliesToInclude);
                 Forms9Patch.UWP.Settings.Initialize(this);
 
                 Xamarin.FormsMaps.Init("AiiFY0nwNBSMYNGMryV0jMxxFHFk5_MfODMS80mUamw-BCI67dNGaDpwfH9Bwxom");

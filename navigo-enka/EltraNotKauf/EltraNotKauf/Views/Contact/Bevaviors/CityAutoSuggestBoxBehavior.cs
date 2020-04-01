@@ -70,7 +70,7 @@ namespace EltraNotKauf.Views.Contact.Behaviors
                 {
                     if (_contactViewModel != null)
                     {
-                        await _contactViewModel.UpdateCitySuggestions(view.Text);
+                        //await _contactViewModel.UpdateCitySuggestions(view.Text);
                     }                    
                 }
             }
@@ -88,22 +88,20 @@ namespace EltraNotKauf.Views.Contact.Behaviors
 
         private void OnViewModelPropertyChanged(object sender, PropertyChangedEventArgs e)
         {
-            if(e.PropertyName == "City")
+            if (_contactViewModel != null && _contactViewModel.IsVisible)
             {
-                _view.Text = _contactViewModel.City;
-            }
-            else if(e.PropertyName == "CitySuggestions")
-            {
-                _view.ItemsSource = _contactViewModel.CitySuggestions;
-            }
-            else if(e.PropertyName == "Region")
-            {
-                /*if (_contactViewModel.IsVisible)
+                if (e.PropertyName == "City")
                 {
-                    _view.Text = string.Empty;
-                }*/
-
-                _view.ItemsSource = null;
+                    _view.Text = _contactViewModel.City;
+                }
+                else if (e.PropertyName == "CitySuggestions")
+                {
+                    _view.ItemsSource = _contactViewModel.CitySuggestions;
+                }
+                else if (e.PropertyName == "Region")
+                {
+                    _view.ItemsSource = null;
+                }
             }
         }
     }

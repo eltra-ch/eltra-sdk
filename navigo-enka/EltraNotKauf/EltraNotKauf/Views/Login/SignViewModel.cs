@@ -119,9 +119,12 @@ namespace EltraNotKauf.Views.Login
         
         private void OnViewModelPropertyChanged(object sender, PropertyChangedEventArgs e)
         {
-            if (e.PropertyName == "AutoLogOnActive")
+            if (IsVisible)
             {
-                StoreLoginSettings();
+                if (e.PropertyName == "AutoLogOnActive")
+                {
+                    StoreLoginSettings();
+                }
             }
         }
 
