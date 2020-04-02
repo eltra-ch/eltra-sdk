@@ -72,8 +72,9 @@
     <CodesignKey>Apple Distribution: Dawid Sienkiewicz (9CN324KAN4)</CodesignKey>
     <CodesignEntitlements>Entitlements.plist</CodesignEntitlements>
     <CodesignProvision>ch.eltra.notkauf.dist</CodesignProvision>
-    <MtouchLink>None</MtouchLink>
+    <MtouchLink>Full</MtouchLink>
     <BuildIpa>false</BuildIpa>
+    <MtouchExtraArgs>--optimize=experimental-xforms-product-type</MtouchExtraArgs>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(RunConfiguration)' == 'Default' ">
     <AppExtensionDebugBundleId />
@@ -225,7 +226,7 @@
   </ItemGroup>
   <ProjectExtensions>
     <VisualStudio>
-      <UserProperties XamarinHotReloadMonoInterpreterErrorInfoBarNotKaufiOSHideInfoBar="True" XamarinHotReloadMonoInterpreterErrorInfoBarEltraNotKaufiOSHideInfoBar="True" />
+      <UserProperties XamarinHotReloadMonoInterpreterErrorInfoBarEltraNotKaufiOSHideInfoBar="True" XamarinHotReloadMonoInterpreterErrorInfoBarNotKaufiOSHideInfoBar="True" />
     </VisualStudio>
   </ProjectExtensions>
 </Project>

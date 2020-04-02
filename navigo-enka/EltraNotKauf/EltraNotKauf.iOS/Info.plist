@@ -19,9 +19,9 @@
 		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
 	<key>MinimumOSVersion</key>
-	<string>8.0</string>
+	<string>9.0</string>
 	<key>CFBundleDisplayName</key>
-	<string>Not Kauf</string>
+	<string>Notkauf</string>
 	<key>CFBundleIdentifier</key>
 	<string>ch.eltra.notkauf</string>
 	<key>UILaunchStoryboardName</key>
@@ -29,7 +29,7 @@
 	<key>CFBundleName</key>
 	<string>Not Kauf</string>
 	<key>CFBundleShortVersionString</key>
-	<string>1.0.0.1</string>
+	<string>1.1</string>
 	<key>NSLocationAlwaysUsageDescription</key>
 	<string>Can we use your location at all times?</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
@@ -37,7 +37,7 @@
 	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
 	<string>Can we use your location at all times?</string>
 	<key>CFBundleVersion</key>
-	<string>1</string>
+	<string>2</string>
 	<key>XSAppIconAssets</key>
 	<string>Assets.xcassets/AppIcon.appiconset</string>
 	<key>UIBackgroundModes</key>
