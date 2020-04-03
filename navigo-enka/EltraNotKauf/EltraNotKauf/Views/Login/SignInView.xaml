@@ -113,7 +113,7 @@
                                 <Frame Grid.Row="8" BackgroundColor="Transparent">
                                     <StackLayout Orientation="Horizontal">
                                         <CheckBox IsTabStop="True" TabIndex="4" IsChecked="{Binding AutoLogOnActive}" WidthRequest="32"/>
-                                        <Label Text="Automatisch anmelden" VerticalOptions="CenterAndExpand" HorizontalOptions="StartAndExpand" TextColor="Black" BackgroundColor="Transparent"/>
+                                        <Label Text="Automatisch einloggen" VerticalOptions="CenterAndExpand" HorizontalOptions="StartAndExpand" TextColor="Black" BackgroundColor="Transparent"/>
                                     </StackLayout>
                                 </Frame>
 

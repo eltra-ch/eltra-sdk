@@ -38,6 +38,8 @@ namespace EltraNotKauf.Views.Login
 
         public ICommand RegisterCommand => new Command(OnRegisterClicked);
 
+        public ICommand LoginRequestCommand => new Command(OnLoginRequestClicked);
+
         #endregion
 
         #region Methods
@@ -47,6 +49,11 @@ namespace EltraNotKauf.Views.Login
             RepeatPassword = newPassword;
 
             UpdateValidFlag();
+        }
+
+        private void OnLoginRequestClicked()
+        {
+            OnSignStatusChanged(SignStatus.SignInRequested);
         }
 
         private async void OnRegisterClicked()
@@ -90,12 +97,10 @@ namespace EltraNotKauf.Views.Login
             IsValid = !string.IsNullOrEmpty(LoginName) && !string.IsNullOrEmpty(Password) && !string.IsNullOrEmpty(RepeatPassword);
         }
 
-        internal void Reset()
+        public override void Reset()
         {
-            IsLoginValid = true;
-            IsValid = true;
-            LoginName = string.Empty;
-            Password = string.Empty;
+            base.Reset();
+
             RepeatPassword = string.Empty;
         }
 

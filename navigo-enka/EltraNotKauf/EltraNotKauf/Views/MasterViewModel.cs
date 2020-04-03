@@ -264,6 +264,13 @@ namespace EltraNotKauf.Views
                             SignUpViewModel.Reset();                            
                         }
                         break;
+                    case SignStatus.SignInRequested:
+                        {
+                            ChangePage(SignInViewModel, true);
+
+                            SignInViewModel.Reset();
+                        }
+                        break;
                     case SignStatus.SignedIn:
                         {
                             ActivateTools(true);
@@ -297,9 +304,17 @@ namespace EltraNotKauf.Views
                             ChangePage(ContactViewModel, true);
                         }
                         break;
+                    case SignStatus.SignInRequested:
+                        {
+                            ChangePage(SignInViewModel, true);
+
+                            SignInViewModel.Reset();
+                        } break;
                     case SignStatus.SignedOut:
                         {
                             ActivateTools(false);
+
+                            ChangePage(SignInViewModel, true);
                         }
                         break;
                 }

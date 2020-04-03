@@ -3,10 +3,9 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:d="http://xamarin.com/schemas/2014/forms/design"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-             xmlns:behaviors="clr-namespace:EltraNotKauf.Views.Behaviors;assembly=EltraNotKauf"
-             xmlns:behaviors2="clr-namespace:EltraNotKauf.Views.Login.Behaviors;assembly=EltraNotKauf"
+             xmlns:behaviors="clr-namespace:EltraNotKauf.Views.Behaviors"
              xmlns:views="clr-namespace:EltraNotKauf.Views.Login;assembly=EltraNotKauf"
-             xmlns:connectionstatus="clr-namespace:EltraNotKauf.Views.ConnectionStatus" xmlns:labels="clr-namespace:EltraNotKauf.Controls.Labels"
+             xmlns:connectionstatus="clr-namespace:EltraNotKauf.Views.ConnectionStatus" xmlns:labels="clr-namespace:EltraNotKauf.Controls.Labels" xmlns:behaviors2="clr-namespace:EltraNotKauf.Views.Login.Behaviors"
              mc:Ignorable="d"
              x:DataType="views:SignUpViewModel"
              x:Class="EltraNotKauf.Views.Login.SignUpView" VerticalOptions="CenterAndExpand">
@@ -61,7 +60,8 @@
                                 <RowDefinition Height="Auto"/>
                                 <RowDefinition Height="Auto"/>
                                 <RowDefinition Height="Auto"/>
-                            </Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                </Grid.RowDefinitions>
 
                             <Frame Grid.Row="0" BackgroundColor="Transparent">
                                 <Label IsTabStop="False" 
@@ -122,15 +122,19 @@
                                 <Button IsTabStop="True" TabIndex="3" Text="ANMELDEN" Command="{Binding RegisterCommand}" IsEnabled="{Binding IsValid}"/>
                             </Frame>
 
-                                <Frame Grid.Row="8" BackgroundColor="Transparent">
-                                    <StackLayout Orientation="Horizontal">
-                                        <CheckBox IsChecked="{Binding AutoLogOnActive}" WidthRequest="32" TabIndex="4" />
-                                        <Label Text="Automatisch anmelden" VerticalOptions="CenterAndExpand" HorizontalOptions="StartAndExpand" TextColor="Black" BackgroundColor="Transparent"/>
-                                    </StackLayout>
+                                <Frame Grid.Row="8">
+                                    <Button IsTabStop="True" TabIndex="4" Text="ZURÜCK" Command="{Binding LoginRequestCommand}"/>
                                 </Frame>
                             
-                                <Frame Grid.Row="9" Padding="0,10">
-                                    <Grid VerticalOptions="CenterAndExpand" HorizontalOptions="FillAndExpand" ColumnSpacing="2">
+                                <Frame Grid.Row="9" BackgroundColor="Transparent">
+                                    <StackLayout Orientation="Horizontal">
+                                        <CheckBox IsChecked="{Binding AutoLogOnActive}" WidthRequest="32" TabIndex="5" />
+                                        <Label Text="Automatisch einloggen" VerticalOptions="CenterAndExpand" HorizontalOptions="StartAndExpand" TextColor="Black" BackgroundColor="Transparent"/>
+                                    </StackLayout>
+                                </Frame>
+
+                                <Frame Grid.Row="10" Padding="0,10">
+                                    <Grid VerticalOptions="CenterAndExpand" HorizontalOptions="CenterAndExpand" ColumnSpacing="2">
                                         <Grid.Resources>
                                             <Style TargetType="Label">
                                                 <Setter Property="VerticalOptions" Value="Center"/>
@@ -152,7 +156,7 @@
 
                                                     <Setter.Value>
                                                         <OnPlatform x:TypeArguments="x:Double">
-                                                            <OnPlatform.iOS>7</OnPlatform.iOS>
+                                                            <OnPlatform.iOS>8</OnPlatform.iOS>
                                                             <OnPlatform.Android>9</OnPlatform.Android>
                                                             <OnPlatform.WinPhone>11</OnPlatform.WinPhone>
                                                         </OnPlatform>
@@ -175,7 +179,7 @@
                                 </Frame>
                             
 
-                            <Frame Grid.Row="10" Padding="0">
+                            <Frame Grid.Row="11" Padding="0">
                                 <ActivityIndicator IsRunning="{Binding IsBusy}" VerticalOptions="Center" HorizontalOptions="Center" />
                             </Frame>
 

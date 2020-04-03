@@ -6,6 +6,7 @@
         SignedIn,
         SignedOut,
         SignUpRequested,
+        SignInRequested,
         Failed
     }
 }

@@ -10,23 +10,23 @@
   <ContentView.Content>
         <Frame CornerRadius="5" Padding="0">
             <StackLayout>
-      
-        <Button Text="{Binding Title}" Command="{Binding ButtonPressedCommand}" HeightRequest="{Binding Height}" IsEnabled="{Binding IsEnabled}">
+                <Button Text="{Binding Title}" Command="{Binding ButtonPressedCommand}" HeightRequest="{Binding Height}" IsEnabled="{Binding IsEnabled}">
                     <Button.Triggers>
                         <DataTrigger TargetType="Button" Binding="{Binding ButtonState}" Value="0">
                             <Setter Property="BackgroundColor" Value="#BDBDBD" />
+                            <Setter Property="TextColor" Value="Default" />
                         </DataTrigger>
                         <DataTrigger TargetType="Button" Binding="{Binding ButtonState}" Value="1">
                             <Setter Property="BackgroundColor" Value="#03A9F4" />
+                            <Setter Property="TextColor" Value="White" />
                         </DataTrigger>
                         <DataTrigger TargetType="Button" Binding="{Binding ButtonState}" Value="2">
                             <Setter Property="BackgroundColor" Value="#757575" />
+                            <Setter Property="TextColor" Value="Default" />
                         </DataTrigger>
                     </Button.Triggers>
                 </Button>
-
             </StackLayout>
-        </Frame>
-      
+        </Frame>      
     </ContentView.Content>
 </ContentView>
