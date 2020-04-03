@@ -29,7 +29,7 @@
 	<key>CFBundleName</key>
 	<string>Not Kauf</string>
 	<key>CFBundleShortVersionString</key>
-	<string>1.2</string>
+	<string>1.5</string>
 	<key>NSLocationAlwaysUsageDescription</key>
 	<string>Can we use your location at all times?</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
@@ -37,12 +37,25 @@
 	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
 	<string>Can we use your location at all times?</string>
 	<key>CFBundleVersion</key>
-	<string>3</string>
+	<string>6</string>
 	<key>XSAppIconAssets</key>
 	<string>Assets.xcassets/AppIcon.appiconset</string>
 	<key>UIBackgroundModes</key>
 	<array>
 		<string>location</string>
 	</array>
+	<key>NSAppTransportSecurity</key>
+	<dict>
+		<key>NSExceptionDomains</key>
+		<dict>
+			<key>notkauf.ch</key>
+			<dict>
+				<key>NSExceptionAllowsInsecureHTTPLoads</key>
+				<true/>
+				<key>NSIncludesSubdomains</key>
+				<true/>
+			</dict>
+		</dict>
+	</dict>
 </dict>
 </plist>

@@ -1,5 +1,6 @@
 ﻿using Foundation;
 using UIKit;
+using Xamarin.Forms;
 
 namespace EltraNotKauf.iOS
 {
@@ -24,7 +25,9 @@ namespace EltraNotKauf.iOS
 
             Forms9Patch.iOS.Settings.Initialize(this);
 
-            LoadApplication(new App());
+            var application = new App();
+
+            LoadApplication(application);
 
             return base.FinishedLaunching(app, options);
         }

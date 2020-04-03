@@ -2,9 +2,9 @@
 using EltraNotKauf.Views;
 using Xamarin.Essentials;
 using System;
-using EltraCommon.Logger;
 using EltraNotKauf.Helpers;
 using Xamarin.Forms.Xaml;
+using EltraCommon.Logger;
 
 namespace EltraNotKauf
 {
@@ -27,12 +27,9 @@ namespace EltraNotKauf
             MsgLogger.LogLevels = "";
 #endif
 
-            string url = "https://notkauf.ch";
-            //string url = "http://localhost:5001/";
-
             Connectivity.ConnectivityChanged += OnConnectivityChanged;
 
-            Current.Properties["url"] = url;
+            Current.Properties["url"] = Url;
 
             ThreadHelper.Initialize(Environment.CurrentManagedThreadId);
 
@@ -62,6 +59,29 @@ namespace EltraNotKauf
         #endregion
 
         #region Properties
+
+        public string Url
+        {
+            get
+            {
+                string result;
+
+                switch (Device.RuntimePlatform)
+                {
+                    case Device.iOS:
+                        result = "http://notkauf.ch";
+                        break;
+                    case Device.Android:
+                    case Device.UWP:
+                    case Device.macOS:
+                    default:
+                        result = "https://notkauf.ch";
+                        break;
+                }
+
+                return result;
+            }
+        }
 
         #endregion
 
