@@ -147,7 +147,7 @@ namespace EltraNotKauf.Views
 
         public ContactViewModel ContactViewModel => _contactViewModel ?? (_contactViewModel = new ContactViewModel());
 
-        public OrderViewModel OrderViewModel => _orderViewModel ?? (_orderViewModel = new OrderViewModel());
+        public OrderViewModel OrderViewModel => _orderViewModel ?? (_orderViewModel = new OrderViewModel(ContactViewModel));
 
         public RequestsViewModel RequestsViewModel => _requestsViewModel ?? (_requestsViewModel = new RequestsViewModel());
 
@@ -351,7 +351,7 @@ namespace EltraNotKauf.Views
             {
                 foreach(var toolViewModel in ToolViewModels)
                 {
-                    toolViewModel.Clear();
+                    toolViewModel.Reset();
                 }
 
                 var supportedViewModels = new List<ToolViewModel>();

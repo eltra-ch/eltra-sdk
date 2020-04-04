@@ -13,9 +13,13 @@ using EltraNotKauf.Endpoints;
 using System.Collections.Generic;
 using EltraNotKauf.Views.Common;
 using System.Reflection;
+using EltraNotKauf.Controls.Toast;
+using EltraNotKauf.Helpers;
+using EltraNotKauf.Views.Contact;
 
 namespace EltraNotKauf.Views.Orders
 {
+    [Preserve(AllMembers = true)]
     public class OrderViewModel : ToolViewModel
     {
         #region Private fields
@@ -25,7 +29,6 @@ namespace EltraNotKauf.Views.Orders
         private bool _isValid;
         private OrdersEndpoint _ordersEndpoint;
         private Order _activeOrder;
-        private EltraCloudContracts.Enka.Contacts.Contact _contact;
         private List<AssignedToViewModel> _assignedTo;
 
         private ThreeStateButtonViewModel _otherButtonViewModel;
@@ -38,17 +41,21 @@ namespace EltraNotKauf.Views.Orders
         private string _notice;
         private Timer _orderUpdateTimer;
         private ContactEndpoint _contactEndpoint;
+        ContactViewModel _contactViewModel;
+        private ICommand _createOrderCommand;
 
         #endregion
 
         #region Constructors
 
-        public OrderViewModel()
+        public OrderViewModel(ContactViewModel contactViewModel)
         {
             Title = "Brauche Hilfe";
             Image = ImageSource.FromResource("EltraNotKauf.Resources.lifebuoy.png", Assembly.GetExecutingAssembly());
             IsMandatory = true;
             Uuid = "37A00C5A-3A87-40F5-B954-5BE2161728F2";
+
+            _contactViewModel = contactViewModel;
 
             _contactEndpoint = new ContactEndpoint();
             _ordersEndpoint = new OrdersEndpoint();
@@ -153,14 +160,23 @@ namespace EltraNotKauf.Views.Orders
 
         #region Command
 
+        [Preserve]
         public ICommand ButtonClosePressedCommand => new Command(OnButtonClosePressedCommand);
+        [Helpers.Preserve]
         public ICommand ButtonCreatePressedCommand => new Command(OnButtonCreatePressedCommand);
+
+        [Helpers.Preserve]
+        public ICommand CreateOrderCommand
+        {
+            get => _createOrderCommand ?? (_createOrderCommand = new Command(OnButtonCreatePressedCommand));
+            set => SetProperty(ref _createOrderCommand, value);
+        }
 
         #endregion
 
         #region Events
 
-        private async void OnButtonClosePressedCommand(object obj)
+        private void OnButtonClosePressedCommand()
         {
             if (ActiveOrder != null)
             {
@@ -168,31 +184,46 @@ namespace EltraNotKauf.Views.Orders
                 {
                     ActiveOrder.Status = OrderStatus.Closed;
 
-                    if (await _ordersEndpoint.ChangeOrder(ActiveOrder))
-                    {
-                        ActiveOrder = await _ordersEndpoint.GetActiveOrder();
-
-                        UpdateActiveOrderStatus();
-                    }
-                    else
-                    {
-                        ActiveOrderStatus = "Fehler :-(";
-                    }
+                    Task.Run(async () => { 
+                        if (await _ordersEndpoint.ChangeOrder(ActiveOrder))
+                        {
+                            await UpdateOrder();
+                        }
+                        else
+                        {
+                            ToastMessage.ShortAlert("Fehler :-(");
+                        }
+                    });
                 }
-            }
-        }
-
-        private async void OnButtonCreatePressedCommand(object obj)
-        {
-            if (await _ordersEndpoint.AddOrder(new Order() { Message = CreateMessage().ToJson() }))
-            {
-                ActiveOrder = await _ordersEndpoint.GetActiveOrder();
-
-                UpdateActiveOrderStatus();
             }
             else
             {
-                ActiveOrderStatus = "Fehler :-(";
+                ToastMessage.ShortAlert("Fehler :-(");
+            }
+        }
+
+        private void OnButtonCreatePressedCommand()
+        {
+            try
+            {
+                Task.Run(async () =>
+                {
+                    if (await _ordersEndpoint.AddOrder(new Order() 
+                        { 
+                            Message = CreateMessage().ToJson() 
+                        }))
+                    {
+                        await UpdateOrder();
+                    }
+                    else
+                    {
+                        ToastMessage.ShortAlert("Fehler :-(");
+                    }
+                });
+            }
+            catch(Exception)
+            {
+                ToastMessage.ShortAlert("Fehler :-(");
             }
         }
 
@@ -209,17 +240,7 @@ namespace EltraNotKauf.Views.Orders
 
         private async void OnUpdateOrderIntervalElapsed(object sender, ElapsedEventArgs e)
         {
-            var activeOrder = await _ordersEndpoint.GetActiveOrder();
-
-            if (IsActiveOrderChanged(activeOrder))
-            {
-                ActiveOrder = activeOrder;
-
-                UpdateActiveOrderStatus();
-                UpdateControlsState();
-                
-                UpdateContactInfo();
-            }
+            await UpdateOrder();
         }
 
         private async void OnButtonStateChanged(object sender, EventArgs e)
@@ -262,41 +283,41 @@ namespace EltraNotKauf.Views.Orders
 
             _orderUpdateTimer.Enabled = false;
 
-            ActiveOrder = await _ordersEndpoint.GetActiveOrder();
+            var activeOrder = await _ordersEndpoint.GetActiveOrder();
 
-            if (ActiveOrder != null)
+            if (activeOrder != null)
             {
-                if (ActiveOrder.Status == OrderStatus.Closed)
+                if (activeOrder.Status == OrderStatus.Closed)
                 {
                     if (await _ordersEndpoint.AddOrder(new Order() { Message = message.ToJson() }))
                     {
-                        ActiveOrder = await _ordersEndpoint.GetActiveOrder();
+                        activeOrder = await _ordersEndpoint.GetActiveOrder();
 
-                        UpdateActiveOrderStatus();
+                        UpdateActiveOrderStatus(activeOrder);
                     }
                     else
                     {
-                        ActiveOrderStatus = "Fehler :-(";
+                        ToastMessage.ShortAlert("Fehler :-(");
                     }
                 }
                 else
                 {
-                    if (ActiveOrder.Status == OrderStatus.Rejected)
+                    if (activeOrder.Status == OrderStatus.Rejected)
                     {
-                        ActiveOrder.Status = OrderStatus.Open;
+                        activeOrder.Status = OrderStatus.Open;
                     }
 
-                    ActiveOrder.Message = message.ToJson();
+                    activeOrder.Message = message.ToJson();
 
-                    if (await _ordersEndpoint.ChangeOrder(ActiveOrder))
+                    if (await _ordersEndpoint.ChangeOrder(activeOrder))
                     {
-                        ActiveOrder = await _ordersEndpoint.GetActiveOrder();
+                        activeOrder = await _ordersEndpoint.GetActiveOrder();
 
-                        UpdateActiveOrderStatus();
+                        UpdateActiveOrderStatus(activeOrder);
                     }
                     else
                     {
-                       ActiveOrderStatus = "Fehler :-(";
+                       ToastMessage.ShortAlert("Fehler :-(");
                     }
                 }
             }
@@ -308,24 +329,27 @@ namespace EltraNotKauf.Views.Orders
 
         #region Methods
 
-        private async Task UpdateAssignedInfo()
+        private async Task UpdateAssignedInfo(Order activeOrder)
         {
             var assignedToList = new List<AssignedToViewModel>();
 
-            if (ActiveOrder != null)
+            if (activeOrder != null)
             {
-                var orderInfo = await _ordersEndpoint.GetOrderInfo(ActiveOrder.Uuid);
-                
+                var orderInfo = await _ordersEndpoint.GetOrderInfo(activeOrder.Uuid);
+                var order = orderInfo?.Order;
                 var assignedTo = orderInfo?.AssignedTo;
 
-                if (assignedTo != null && _contact != null)
+                if (order!=null && assignedTo != null && _contactViewModel != null)
                 {
-                    foreach (var contact in assignedTo)
+                    if (order.Status == OrderStatus.Open || order.Status == OrderStatus.Assigned)
                     {
-                        if (contact.Uuid != _contact.Uuid)
+                        foreach (var contact in assignedTo)
                         {
-                            assignedToList.Add(new AssignedToViewModel() { Name = contact.Name, City = contact.City, Phone = contact.Phone });
-                        }                        
+                            if (contact.Uuid != _contactViewModel.ContactUuid)
+                            {
+                                assignedToList.Add(new AssignedToViewModel() { Name = contact.Name, City = contact.City, Phone = contact.Phone });
+                            }
+                        }
                     }
                 }
             }
@@ -346,28 +370,28 @@ namespace EltraNotKauf.Views.Orders
             return result;
         }
 
-        private void UpdateActiveOrderStatus()
+        private void UpdateActiveOrderStatus(Order order)
         {
-            if (ActiveOrder != null)
+            if (order != null)
             {
-                if (ActiveOrder.Status == OrderStatus.Open)
+                if (order.Status == OrderStatus.Open)
                 {
                     ActiveOrderStatus = "Erstellt. Bitte warten.";
                 }
-                else if (ActiveOrder.Status == OrderStatus.Assigned)
+                else if (order.Status == OrderStatus.Assigned)
                 {
                     ActiveOrderStatus = "in Bearbeitung";
                 }
-                else if (ActiveOrder.Status == OrderStatus.Closed)
+                else if (order.Status == OrderStatus.Closed)
                 {
                     ActiveOrderStatus = "Erledigt";
                 }
                 else
                 {
-                    ActiveOrderStatus = "";
+                    ActiveOrderStatus = $"Status = {ActiveOrder.Status}";
                 }
 
-                ActiveOrderTitle = ActiveOrder.Uuid;
+                ActiveOrderTitle = order.Uuid;
             }
             else
             {
@@ -376,37 +400,29 @@ namespace EltraNotKauf.Views.Orders
             }
         }
 
-        
-
         public override void Show()
         {
             Task.Run(async () => {
 
                 IsBusy = true;
 
-                UpdateContactInfo();
-
-                ActiveOrder = await _ordersEndpoint.GetActiveOrder();
-
-                UpdateActiveOrderStatus();
-
-                UpdateControlsState();
+                await UpdateOrder();
 
                 _orderUpdateTimer.Start();
 
                 IsBusy = false;
             });
-            
+
             base.Show();
         }
 
-        private void UpdateControlsState()
+        private void UpdateControlsState(Order order)
         {
             try
             {
-                if (ActiveOrder != null && !string.IsNullOrEmpty(ActiveOrder.Message))
+                if (order != null && !string.IsNullOrEmpty(order.Message))
                 {
-                    var jsonV1 = JsonConvert.DeserializeObject<JsonProtocolV1>(ActiveOrder.Message);
+                    var jsonV1 = JsonConvert.DeserializeObject<JsonProtocolV1>(order.Message);
 
                     OtherButtonViewModel.ButtonState = jsonV1.Other ? ButtonState.Active : ButtonState.Inactive;
                     CarButtonViewModel.ButtonState = jsonV1.Car ? ButtonState.Active : ButtonState.Inactive;
@@ -417,17 +433,25 @@ namespace EltraNotKauf.Views.Orders
                 }
                 else
                 {
-                    DrugStoreButtonViewModel.ButtonState = ButtonState.Inactive;
-                    OtherButtonViewModel.ButtonState = ButtonState.Inactive;
-                    ShopButtonViewModel.ButtonState = ButtonState.Inactive;
-                    CarButtonViewModel.ButtonState = ButtonState.Inactive;
-
-                    Notice = string.Empty;
+                    ResetControlsState();
                 }
             }
             catch(Exception)
             {
             }
+        }
+
+        private void ResetControlsState()
+        {
+            DrugStoreButtonViewModel.ButtonState = ButtonState.Inactive;
+            OtherButtonViewModel.ButtonState = ButtonState.Inactive;
+            ShopButtonViewModel.ButtonState = ButtonState.Inactive;
+            CarButtonViewModel.ButtonState = ButtonState.Inactive;
+
+            Notice = string.Empty;
+
+            ActiveOrderStatus = "noch keinen Auftrag platziert";
+            ActiveOrderTitle = "";
         }
 
         public override void Hide()
@@ -437,14 +461,31 @@ namespace EltraNotKauf.Views.Orders
             base.Hide();
         }
 
-        private void UpdateContactInfo()
+        private async Task UpdateOrder()
         {
-            var task = Task.Run(async () =>
-            {
-                _contact = await _contactEndpoint.GetContact();
-            });
+            var activeOrder = await _ordersEndpoint.GetActiveOrder();
 
-            task.ContinueWith(async (t) => { await UpdateAssignedInfo(); });
+            if (activeOrder == null)
+            {
+                if (ActiveOrder != null)
+                {
+                    ResetControlsState();
+                }
+
+                ActiveOrder = activeOrder;
+            }
+            else
+            {
+                if (IsActiveOrderChanged(activeOrder))
+                {
+                    UpdateActiveOrderStatus(activeOrder);
+                    UpdateControlsState(activeOrder);
+
+                    await UpdateAssignedInfo(activeOrder);
+
+                    ActiveOrder = activeOrder;
+                }
+            }
         }
 
         #endregion

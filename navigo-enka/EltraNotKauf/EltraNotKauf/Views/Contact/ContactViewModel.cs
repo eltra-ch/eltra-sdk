@@ -22,6 +22,7 @@ namespace EltraNotKauf.Views.Contact
         private ContactEndpoint _contactEndpoint;
         private EltraCloudContracts.Enka.Contacts.Contact _contact;
 
+        private string _contactUuid;
         private string _name;
         private List<Region> _regions;
         private string _phone;
@@ -120,6 +121,12 @@ namespace EltraNotKauf.Views.Contact
             }
         }
 
+        public string ContactUuid
+        {
+            get => _contactUuid;
+            set => SetProperty(ref _contactUuid, value);
+        }
+
         public string Name
         {
             get => _name;
@@ -195,8 +202,9 @@ namespace EltraNotKauf.Views.Contact
 
         #region Methods
 
-        public override void Clear()
+        public override void Reset()
         {
+            ContactUuid = string.Empty;
             Name = string.Empty;
             Phone = string.Empty;
             Street = string.Empty;
@@ -269,6 +277,11 @@ namespace EltraNotKauf.Views.Contact
             if (contact != null)
             {
                 Contact = contact;
+
+                if (!string.IsNullOrEmpty(Contact.Uuid))
+                {
+                    ContactUuid = Contact.Uuid;
+                }
 
                 if (!string.IsNullOrEmpty(Contact.Name))
                 {

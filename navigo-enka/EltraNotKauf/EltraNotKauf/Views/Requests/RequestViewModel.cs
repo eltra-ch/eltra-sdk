@@ -301,7 +301,7 @@ namespace EltraNotKauf.Views.Requests
                     {
                         ThreadHelper.RunOnMainThread(()=> 
                         {
-                            ToastMessage.ShortAlert($"Bravo! Aufgabe {ActiveOrder.Uuid} aufgenommen!");
+                            ToastMessage.ShortAlert($"Aufgabe {ActiveOrder.Uuid} aufgenommen!");
                         });
                         
                     }

@@ -2,9 +2,10 @@
 <ContentView xmlns="http://xamarin.com/schemas/2014/forms"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:contact="clr-namespace:EltraNotKauf.Views.Contact"
-             xmlns:behaviors2="clr-namespace:EltraNotKauf.Views.Behaviors"
+             xmlns:behaviors="clr-namespace:EltraNotKauf.Views.Behaviors"
              x:DataType="contact:ContactViewModel"
-             xmlns:connectionstatus="clr-namespace:EltraNotKauf.Views.ConnectionStatus" xmlns:behaviors="clr-namespace:EltraNotKauf.Controls.Behaviors"
+             xmlns:connectionstatus="clr-namespace:EltraNotKauf.Views.ConnectionStatus" 
+             xmlns:entryBehaviors="clr-namespace:EltraNotKauf.Controls.Behaviors"
              x:Class="EltraNotKauf.Views.Contact.ContactView">
 
     <ContentView.Resources>
@@ -17,7 +18,7 @@
     </ContentView.Resources>
 
     <ContentView.Behaviors>
-        <behaviors2:ToolViewBehavior/>
+        <behaviors:ToolViewBehavior/>
     </ContentView.Behaviors>
 
     <StackLayout>
@@ -51,7 +52,7 @@
                     <Frame Grid.Column="0" Grid.Row="0" Style="{StaticResource BorderLikeFrame}">
                             <Entry TabIndex="0" Placeholder="Vorname, Name" Text="{Binding Name}" IsEnabled="{Binding IsConnected}">
                                 <Entry.Behaviors>
-                                    <behaviors:EntryBehaviour/>
+                                    <entryBehaviors:EntryBehaviour/>
                                 </Entry.Behaviors>
                             </Entry>
                         </Frame>
@@ -59,7 +60,7 @@
                         <Entry TabIndex="1" Placeholder="Telefonnummer" Text="{Binding Phone}" IsEnabled="{Binding IsConnected}">
 
                                 <Entry.Behaviors>
-                                    <behaviors:EntryBehaviour/>
+                                    <entryBehaviors:EntryBehaviour/>
                                 </Entry.Behaviors>
                             
                                 <Entry.Triggers>
@@ -85,14 +86,14 @@
                             <Frame Grid.Column="0" Style="{StaticResource BorderLikeFrame}">
                                     <Entry TabIndex="4" Placeholder="PLZ" Text="{Binding PostalCode, Mode=TwoWay}" WidthRequest="64" IsEnabled="{Binding IsConnected}">
                                         <Entry.Behaviors>
-                                            <behaviors:EntryBehaviour/>
+                                            <entryBehaviors:EntryBehaviour/>
                                         </Entry.Behaviors>
                                     </Entry>
                                 </Frame>
                                 <Frame Grid.Column="1" Style="{StaticResource BorderLikeFrame}">
                                     <Entry TabIndex="5" Text="{Binding City, Mode=TwoWay}" IsEnabled="{Binding IsConnected}">
                                         <Entry.Behaviors>
-                                            <behaviors:EntryBehaviour/>
+                                            <entryBehaviors:EntryBehaviour/>
                                         </Entry.Behaviors>
                                     </Entry>
                                 </Frame>
@@ -102,14 +103,14 @@
                     <Frame Grid.Column="0" Grid.Row="4" Style="{StaticResource BorderLikeFrame}">
                             <Entry TabIndex="6" Placeholder="Strasse" Text="{Binding Street, Mode=TwoWay}" IsEnabled="{Binding IsConnected}">
                                 <Entry.Behaviors>
-                                    <behaviors:EntryBehaviour/>
+                                    <entryBehaviors:EntryBehaviour/>
                                 </Entry.Behaviors>
                             </Entry>
                         </Frame>
                     <Frame Grid.Column="0" Grid.Row="5" Style="{StaticResource BorderLikeFrame}">
                             <Entry TabIndex="7" Placeholder="Über mich" Text="{Binding Notice}" IsEnabled="{Binding IsConnected}">
                                 <Entry.Behaviors>
-                                    <behaviors:EntryBehaviour/>
+                                    <entryBehaviors:EntryBehaviour/>
                                 </Entry.Behaviors>
                             </Entry>
                         </Frame>

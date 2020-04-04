@@ -1,7 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <ContentView xmlns="http://xamarin.com/schemas/2014/forms" 
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml" 
-             xmlns:orders="clr-namespace:EltraNotKauf.Views.Orders" 
              xmlns:behaviors="clr-namespace:EltraNotKauf.Views.Behaviors" 
              xmlns:converters="clr-namespace:EltraNotKauf.Controls.Converters" 
              xmlns:buttons="clr-namespace:EltraNotKauf.Controls.Button" 
@@ -26,7 +25,7 @@
 		<Grid HorizontalOptions="FillAndExpand" VerticalOptions="FillAndExpand" IsEnabled="{Binding IsConnected}">
 			<Grid.RowDefinitions>
 				<RowDefinition Height="8"/>
-				<RowDefinition Height="68"/>
+				<RowDefinition Height="48"/>
 				<RowDefinition Height="Auto"/>
 				<RowDefinition Height="Auto"/>
 				<RowDefinition Height="Auto"/>
@@ -34,10 +33,12 @@
 				<RowDefinition Height="Auto"/>
 				<RowDefinition Height="8"/>
 			</Grid.RowDefinitions>
-			<Frame Grid.Row="1" BackgroundColor="Transparent">
-				<Label HorizontalOptions="CenterAndExpand" FontSize="Medium" Text="{Binding ActiveOrderTitle}"/>
-			</Frame>
-			<Frame Grid.Row="2" BorderColor="{StaticResource NavigationPrimary}">
+			<Frame Grid.Row="1" BackgroundColor="Transparent" Padding="0">
+                <StackLayout>
+                    <Label HorizontalOptions="CenterAndExpand" FontSize="Medium" Text="{Binding ActiveOrderTitle}"/>
+                </StackLayout>
+            </Frame>
+			<Frame Grid.Row="2" BorderColor="Transparent" Padding="4">
 				<Grid HorizontalOptions="FillAndExpand" VerticalOptions="FillAndExpand">
 					<Grid.RowDefinitions>
 						<RowDefinition Height="Auto"/>
@@ -72,21 +73,21 @@
 					</Frame>
 				</Grid>
 			</Frame>
-			<Frame Grid.Row="3" BorderColor="Transparent">
+			<Frame Grid.Row="3" BorderColor="Transparent" Padding="4">
 				<StackLayout>
-					<Frame CornerRadius="5" Padding="0">
+                    <Frame CornerRadius="5" Padding="0" IsVisible="{Binding ActiveOrder, Converter={StaticResource NegateNullToBooleanConverter}}">
 						<StackLayout>
-							<Button Text="Bitte um Hilfe!" HeightRequest="64" Command="{Binding ButtonCreatePressedCommand}" IsVisible="{Binding ActiveOrder, Converter={StaticResource NegateNullToBooleanConverter}}"/>
+							<Button Text="Bitte um Hilfe!" HeightRequest="64" Command="{Binding ButtonCreatePressedCommand}"/>
 						</StackLayout>
 					</Frame>
-					<Frame CornerRadius="5" Padding="0">
-						<StackLayout>
-							<Button Text="Erledigt"  HeightRequest="64" Command="{Binding ButtonClosePressedCommand}" IsVisible="{Binding ActiveOrder, Converter={StaticResource NullToBooleanConverter}}"/>
-						</StackLayout>
-					</Frame>
-				</StackLayout>
+                    <Frame CornerRadius="5" Padding="0" IsVisible="{Binding ActiveOrder, Converter={StaticResource NullToBooleanConverter}}">
+                        <StackLayout>
+                            <Button Text="Erledigt"  HeightRequest="64" Command="{Binding ButtonClosePressedCommand}"/>
+                        </StackLayout>
+                    </Frame>
+                </StackLayout>
 			</Frame>
-			<Frame Grid.Row="4" BorderColor="Transparent">
+			<Frame Grid.Row="4" BorderColor="Transparent" Padding="4">
 				<Grid HorizontalOptions="FillAndExpand" >
 					<Grid.ColumnDefinitions>
 						<ColumnDefinition/>

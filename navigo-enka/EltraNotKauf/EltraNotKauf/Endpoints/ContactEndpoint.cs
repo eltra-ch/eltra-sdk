@@ -92,7 +92,7 @@ namespace EltraNotKauf.Endpoints
             }
             catch (Exception e)
             {
-                MsgLogger.Exception($"{GetType().Name} - SignOut", e);
+                MsgLogger.Exception($"{GetType().Name} - SetContact", e);
             }
 
             return result;

@@ -170,7 +170,7 @@ namespace EltraNotKauf.Views.Requests
 
         #region Methods
 
-        public override void Clear()
+        public override void Reset()
         {
             Street = string.Empty;
             City = string.Empty;

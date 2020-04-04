@@ -221,7 +221,7 @@ namespace EltraNotKauf.Endpoints
             {
                 var json = JsonConvert.SerializeObject(order);
 
-                var response = await _transporter.Post(Url, "api/orders/add", json);
+                var response = await _transporter.Post(Url, "api/orders/add-order", json);
 
                 if (response.StatusCode == System.Net.HttpStatusCode.OK)
                 {
@@ -230,7 +230,7 @@ namespace EltraNotKauf.Endpoints
             }
             catch (Exception e)
             {
-                MsgLogger.Exception($"{GetType().Name} - StoreOrder", e);
+                MsgLogger.Exception($"{GetType().Name} - AddOrder", e);
             }
 
             return result;

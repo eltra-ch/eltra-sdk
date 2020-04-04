@@ -1,4 +1,5 @@
-﻿using Xamarin.Forms;
+﻿using EltraNotKauf.Helpers;
+using Xamarin.Forms;
 
 namespace EltraNotKauf.Controls.Toast
 {
@@ -6,16 +7,22 @@ namespace EltraNotKauf.Controls.Toast
     {
         public static void ShortAlert(string message)
         {
-            var toastMessage = DependencyService.Get<IToastMessage>();
+            ThreadHelper.RunOnMainThread(() => 
+            {
+                var toastMessage = DependencyService.Get<IToastMessage>();
 
-            toastMessage?.ShortAlert(message);
+                toastMessage?.ShortAlert(message);
+            });            
         }
 
         public static void LongAlert(string message)
         {
-            var toastMessage = DependencyService.Get<IToastMessage>();
+            ThreadHelper.RunOnMainThread(() =>
+            {
+                var toastMessage = DependencyService.Get<IToastMessage>();
 
-            toastMessage?.LongAlert(message);
+                toastMessage?.LongAlert(message);
+            });
         }
     }
 }

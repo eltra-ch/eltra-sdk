@@ -91,7 +91,7 @@ namespace EltraNotKauf.Controls
             Init();
         }
 
-        public virtual void Clear()
+        public virtual void Reset()
         {
         }
 

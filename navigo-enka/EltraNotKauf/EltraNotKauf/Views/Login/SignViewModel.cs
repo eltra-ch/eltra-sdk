@@ -252,7 +252,7 @@ namespace EltraNotKauf.Views.Login
             Application.Current.Properties[SignInPropertyPassword] = Password;
         }
 
-        public virtual void Reset()
+        public override void Reset()
         {
             IsLoginValid = true;
             IsValid = true;
