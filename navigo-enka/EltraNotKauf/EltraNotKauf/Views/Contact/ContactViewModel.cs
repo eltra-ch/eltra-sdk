@@ -44,8 +44,6 @@ namespace EltraNotKauf.Views.Contact
         public ContactViewModel()
         {
             Title = "Adresse";
-            
-            
             Image = ImageSource.FromResource("EltraNotKauf.Resources.home.png", Assembly.GetExecutingAssembly());
             IsMandatory = true;
             Uuid = "791AFBD3-E61D-4A0B-B35B-874D5A038E35";

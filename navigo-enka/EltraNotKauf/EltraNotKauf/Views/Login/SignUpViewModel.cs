@@ -2,7 +2,6 @@
 using Xamarin.Forms;
 using EltraConnector.Controllers;
 using EltraCloudContracts.Contracts.Users;
-using System;
 using EltraNotKauf.Controls.Toast;
 using System.Reflection;
 
@@ -10,7 +9,11 @@ namespace EltraNotKauf.Views.Login
 {
     public class SignUpViewModel : SignViewModel
     {
+        #region Private fields
+
         private string _repeatPassword;
+
+        #endregion
 
         #region Constructors
 
@@ -102,6 +105,13 @@ namespace EltraNotKauf.Views.Login
             base.Reset();
 
             RepeatPassword = string.Empty;
+        }
+
+        public override void Show()
+        {
+            UpdateValidFlag();
+
+            base.Show();
         }
 
         #endregion
