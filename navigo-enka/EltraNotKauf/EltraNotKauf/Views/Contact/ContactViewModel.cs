@@ -43,7 +43,7 @@ namespace EltraNotKauf.Views.Contact
 
         public ContactViewModel()
         {
-            Title = "Addresse";
+            Title = "Adresse";
             
             
             Image = ImageSource.FromResource("EltraNotKauf.Resources.home.png", Assembly.GetExecutingAssembly());

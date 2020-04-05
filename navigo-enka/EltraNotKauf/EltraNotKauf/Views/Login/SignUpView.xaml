@@ -5,7 +5,9 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:behaviors="clr-namespace:EltraNotKauf.Views.Behaviors"
              xmlns:views="clr-namespace:EltraNotKauf.Views.Login;assembly=EltraNotKauf"
-             xmlns:connectionstatus="clr-namespace:EltraNotKauf.Views.ConnectionStatus" xmlns:labels="clr-namespace:EltraNotKauf.Controls.Labels" xmlns:behaviors2="clr-namespace:EltraNotKauf.Views.Login.Behaviors"
+             xmlns:connectionstatus="clr-namespace:EltraNotKauf.Views.ConnectionStatus" 
+             xmlns:labels="clr-namespace:EltraNotKauf.Controls.Labels" 
+             xmlns:behaviors2="clr-namespace:EltraNotKauf.Views.Login.Behaviors"
              mc:Ignorable="d"
              x:DataType="views:SignUpViewModel"
              x:Class="EltraNotKauf.Views.Login.SignUpView" VerticalOptions="CenterAndExpand">
@@ -65,7 +67,7 @@
 
                             <Frame Grid.Row="0" BackgroundColor="Transparent">
                                 <Label IsTabStop="False" 
-                                       Text="NotKauf, Bitte einloggen" FontSize="Medium" TextColor="Black"
+                                       Text="NotKauf, Bitte anmelden" FontSize="Medium" TextColor="Black"
                                        BackgroundColor="Transparent"
                                        HorizontalOptions="CenterAndExpand"/>
                             </Frame>
