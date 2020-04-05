@@ -329,6 +329,11 @@ namespace EltraNotKauf.Views.Orders
 
         #region Methods
 
+        private void ResetAssignedInfo()
+        {
+            AssignedTo = new List<AssignedToViewModel>();
+        }
+
         private async Task UpdateAssignedInfo(Order activeOrder)
         {
             var assignedToList = new List<AssignedToViewModel>();
@@ -352,6 +357,10 @@ namespace EltraNotKauf.Views.Orders
                         }
                     }
                 }
+            }
+            else
+            {
+                ResetAssignedInfo();
             }
 
             AssignedTo = assignedToList;
@@ -470,6 +479,7 @@ namespace EltraNotKauf.Views.Orders
                 if (ActiveOrder != null)
                 {
                     ResetControlsState();
+                    ResetAssignedInfo();
                 }
 
                 ActiveOrder = activeOrder;
