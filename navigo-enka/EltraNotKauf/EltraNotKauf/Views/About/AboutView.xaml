@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <ContentView xmlns="http://xamarin.com/schemas/2014/forms"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             xmlns:about="clr-namespace:EltraNotKauf.Views.About"
+             xmlns:about="clr-namespace:EltraNotKauf.Views.About" xmlns:labels="clr-namespace:EltraNotKauf.Controls.Labels"
              x:DataType="about:AboutViewModel"
              x:Class="EltraNotKauf.Views.About.AboutView">
 
@@ -16,9 +16,13 @@
             <RowDefinition Height="8"></RowDefinition>
         </Grid.RowDefinitions>
 
-        <Frame Grid.Row="1" BorderColor="{StaticResource NavigationPrimary}">
+        <Frame Grid.Row="1" BorderColor="{StaticResource NavigationPrimary}" Padding="8">
             <Grid HorizontalOptions="Center" VerticalOptions="Center">
-                
+                <Grid.Resources>
+                    <Style TargetType="Label">
+                        <Setter Property="HorizontalOptions" Value="CenterAndExpand"/>
+                    </Style>
+                </Grid.Resources>
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto"></RowDefinition>
                     <RowDefinition Height="20"></RowDefinition>
@@ -32,16 +36,16 @@
                     <RowDefinition Height="Auto"></RowDefinition>
                 </Grid.RowDefinitions>
 
-                <Label HorizontalOptions="CenterAndExpand" Grid.Row="0" Text="NotKauf" FontSize="Medium" />
+                <Label Grid.Row="0" Text="NotKauf" FontSize="Medium" />
 
-                <Image HorizontalOptions="CenterAndExpand" Grid.Row="2" Source="{Binding LogoImage}"/>
+                <Image Grid.Row="2" Source="{Binding LogoImage}"/>
                 
-                <Label HorizontalOptions="CenterAndExpand" Grid.Row="4" Text="{Binding VersionName}" />
-                <Label HorizontalOptions="CenterAndExpand" Grid.Row="5" Text="Das Konzept: Jakub Sienkiewicz" />
-                <Label HorizontalOptions="CenterAndExpand" Grid.Row="6" Text="Bilder: Marta Sienkiewicz" />
-                <Label HorizontalOptions="CenterAndExpand" Grid.Row="7" Text="Ikonen: tabler-icons" />
-                <Label HorizontalOptions="CenterAndExpand" Grid.Row="8" Text="Copyright (c) 2020, Dawid Sienkiewicz" />
-                <Label HorizontalOptions="CenterAndExpand" Grid.Row="9" Text="notkauf.ch" />
+                <Label Grid.Row="4" Text="{Binding VersionName}" />
+                <Label Grid.Row="5" Text="Das Konzept: Jakub" />
+                <Label Grid.Row="6" Text="Bilder: Marta" />
+                <Label Grid.Row="7" Text="Ikonen: tabler-icons" />
+                <Label Grid.Row="8" Text="Copyright (c) 2020, Dawid Sienkiewicz" />
+                <labels:HyperlinkLabel Grid.Row="9" HorizontalOptions="CenterAndExpand" Url="https://notkauf.ch" Text="notkauf.ch"/>
             </Grid>
         </Frame>
     </Grid>
