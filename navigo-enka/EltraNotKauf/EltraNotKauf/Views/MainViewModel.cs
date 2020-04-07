@@ -114,14 +114,14 @@ namespace EltraNotKauf.Views
             OnPropertyChanged("IsMasterPageVisible");
         }
         
-        public async void StartUpdate()
+        public void StartUpdate()
         {
-            await MasterViewModel.StartUpdate();
+            MasterViewModel.StartUpdate();
         }
 
-        public async void StopUpdate()
+        public void StopUpdate()
         {
-            await MasterViewModel.StopUpdate();
+            MasterViewModel.StopUpdate();
         }
 
         public async void StartCommunication()

@@ -7,6 +7,8 @@ using Region = EltraCloudContracts.Enka.Regional.Region;
 using EltraNotKauf.Endpoints;
 using System.Linq;
 using System.Reflection;
+using System.Threading;
+using EltraNotKauf.Helpers;
 
 namespace EltraNotKauf.Views.Requests
 {
@@ -18,7 +20,7 @@ namespace EltraNotKauf.Views.Requests
         private OrdersEndpoint _ordersEndpoint;
         private ContactEndpoint _contactEndpoint;
 
-        private List<Region> _regions;
+        private List<Region> _regionList;
         private string _street;
         private Region _region;
         private string _city;
@@ -110,10 +112,10 @@ namespace EltraNotKauf.Views.Requests
             set => SetProperty(ref _streetSuggestions, value);
         }
         
-        public List<Region> Regions
+        public List<Region> RegionList
         {
-            get => _regions ?? (_regions = new List<Region>());
-            set => SetProperty(ref _regions, value);
+            get => _regionList ?? (_regionList = new List<Region>());
+            set => SetProperty(ref _regionList, value);
         }
 
         internal async Task<List<string>> GetPostalCodes(string text)
@@ -233,14 +235,19 @@ namespace EltraNotKauf.Views.Requests
             {
                 IsBusy = true;
 
-                Regions = await _regionEndpoint.ReadRegions();
+                var regions = await _regionEndpoint.ReadRegions();
 
-                Regions.Insert(0, new Region() { Name = "Alle", ShortName = "--" });
+                regions.Insert(0, new Region() { Name = "Alle", ShortName = "--" });
 
-                ReadContact();
+                ThreadHelper.RunOnMainThread(() => {
+                    
+                    RegionList = regions;
+
+                    UpdateRegion();
+                });
                 
-                UpdateRegion();
-
+                await ReadContact();
+                
                 await UpdateRequests();
 
                 IsBusy = false;
@@ -262,12 +269,12 @@ namespace EltraNotKauf.Views.Requests
 
                 if (Region == null)
                 {
-                    Region = Regions.FirstOrDefault();
+                    Region = RegionList.FirstOrDefault();
                 }
             }
         }
 
-        private async void ReadContact()
+        private async Task ReadContact()
         {
             var contact = await _contactEndpoint.GetContact();
 
@@ -285,7 +292,7 @@ namespace EltraNotKauf.Views.Requests
         {
             Region result = null;
 
-            foreach (var region in Regions)
+            foreach (var region in RegionList)
             {
                 if (region.Name == name)
                 {
@@ -301,7 +308,7 @@ namespace EltraNotKauf.Views.Requests
         {
             Region result = null;
 
-            foreach (var region in Regions)
+            foreach (var region in RegionList)
             {
                 if (region.ShortName == code)
                 {

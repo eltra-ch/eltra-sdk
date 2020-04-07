@@ -68,7 +68,6 @@ namespace EltraNotKauf.Controls
                     OnPropertyChanged(propertyName);
                 });
                 
-
                 result = true;
             }
 

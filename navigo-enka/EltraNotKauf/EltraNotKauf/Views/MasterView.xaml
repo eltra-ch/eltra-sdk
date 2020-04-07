@@ -13,7 +13,8 @@
              x:DataType="views:MasterViewModel"
              x:Class="EltraNotKauf.Views.MasterView">
     <ContentPage.Content>
-        <ListView ItemsSource="{Binding SupportedViewModels}" HasUnevenRows="True" SelectedItem="{Binding ActiveViewModel, Mode=OneWay}">
+        <ListView ItemsSource="{Binding SupportedViewModels}" HasUnevenRows="True" 
+                  SelectedItem="{Binding ActiveViewModel, Mode=OneWay}">
             <ListView.Behaviors>
                 <behaviors:NavigationPageSelection/>
             </ListView.Behaviors>

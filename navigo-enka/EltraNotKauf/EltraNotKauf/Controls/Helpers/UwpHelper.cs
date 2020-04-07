@@ -1,5 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Threading.Tasks;
 using Xamarin.Forms;
 
@@ -18,13 +20,24 @@ namespace EltraNotKauf.Controls.Helpers
 			{
 				foreach (var element in elements)
 				{
+					await Task.Delay(100).ConfigureAwait(true);
+
 					if (element is VisualElement visualElement)
 					{
-						visualElement.HeightRequest = visualElement.Height;
+						/*var h = visualElement.Width;
+
+						visualElement.WidthRequest = h - 1;
+						
+						await Task.Delay(10).ConfigureAwait(true);
+
+						visualElement.WidthRequest = h;
+
+						await Task.Delay(10).ConfigureAwait(true);*/
+
+						visualElement.InvalidateSize();
 					}
 				}
 
-				await Task.Delay(100).ConfigureAwait(true);
 			});
 		}
 
@@ -42,5 +55,7 @@ namespace EltraNotKauf.Controls.Helpers
 				}
 			}
 		}
+
+		
 	}
 }

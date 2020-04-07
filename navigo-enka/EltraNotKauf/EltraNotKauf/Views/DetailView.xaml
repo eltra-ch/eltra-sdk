@@ -61,7 +61,7 @@
 
     </ContentPage.Resources>
     <ContentPage.Content>
-        <Frame>
+        <Frame Padding="10">
             <StackLayout BindableLayout.ItemsSource="{Binding MasterViewModel.ViewModels}"
                          BindableLayout.ItemTemplateSelector="{StaticResource DetailPageSelector}"/>
         </Frame>

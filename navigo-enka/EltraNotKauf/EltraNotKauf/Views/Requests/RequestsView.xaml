@@ -44,7 +44,10 @@
 
                         <!-- Edit -->
                         <Frame Grid.Column="0" Grid.Row="0" Style="{StaticResource BorderLikeFrame}">
-                            <Picker TabIndex="0" ItemsSource="{Binding Regions}" SelectedItem="{Binding Region}" ItemDisplayBinding="{Binding Name}" IsEnabled="{Binding IsConnected}"/>
+                            <Picker TabIndex="0" ItemsSource="{Binding RegionList, Mode=OneWay}" 
+                                                    SelectedItem="{Binding Region}" 
+                                                    ItemDisplayBinding="{Binding Name, Mode=OneWay}" 
+                                                    IsEnabled="{Binding IsConnected}"/>
                         </Frame>
                         <Frame Grid.Column="0" Grid.Row="1" Style="{StaticResource BorderLikeFrame}">
                             <Grid>

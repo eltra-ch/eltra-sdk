@@ -19,7 +19,7 @@ namespace EltraNotKauf.Controls.Behaviors
         {
             if(!_view.IsFocused)
             {
-                _view.Focus();
+                //_view.Focus();
             }
         }
     }

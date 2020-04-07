@@ -23,18 +23,18 @@ namespace EltraNotKauf.Controls
 
         #region Methods
 
-        public override async Task<bool> StartUpdate()
+        public override bool StartUpdate()
         {
-            bool result = await base.StartUpdate();
+            bool result = base.StartUpdate();
 
             IsBusy = false;
 
             return result;
         }
 
-        public override async Task<bool> StopUpdate()
+        public override bool StopUpdate()
         {
-            bool result = await base.StopUpdate();
+            bool result = base.StopUpdate();
 
             IsBusy = true;
 

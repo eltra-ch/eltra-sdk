@@ -201,7 +201,9 @@ namespace EltraNotKauf.Views
         {
             if (viewModel != null && _activeViewModel != viewModel)
             {
-                foreach(var page in ViewModels)
+                ActiveViewModel = null;
+
+                foreach (var page in ViewModels)
                 {
                     if(page.IsVisible)
                     {
@@ -406,19 +408,19 @@ namespace EltraNotKauf.Views
             SupportedViewModels = supportedViewModels;
         }
         
-        public async Task StopUpdate()
+        public void StopUpdate()
         {
             foreach (var viewModel in SupportedViewModels)
             {
-                await viewModel.StopUpdate();
+                viewModel.StopUpdate();
             }    
         }
 
-        public async Task StartUpdate()
+        public void StartUpdate()
         {
             foreach (var viewModel in SupportedViewModels)
             {
-                await viewModel.StartUpdate();
+                viewModel.StartUpdate();
             }
         }
 

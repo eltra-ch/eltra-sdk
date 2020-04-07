@@ -178,7 +178,7 @@ namespace EltraNotKauf.Controls
 
                 OnVisibilityChanged();
 
-                Task.Run(async ()=> { await StartUpdate(); });
+                StartUpdate();
             }
 
             IsBusy = false;
@@ -190,7 +190,7 @@ namespace EltraNotKauf.Controls
 
             if (IsVisible)
             {
-                Task.Run(async () => { await StopUpdate(); });
+                StopUpdate();
 
                 foreach (var child in SafeChildrenArray)
                 {
@@ -205,7 +205,7 @@ namespace EltraNotKauf.Controls
             IsBusy = false;
         }
 
-        public virtual async Task<bool> StartUpdate()
+        public virtual bool StartUpdate()
         {
             bool result = true;
 
@@ -215,7 +215,7 @@ namespace EltraNotKauf.Controls
 
                 foreach (var child in SafeChildrenArray)
                 {
-                    result = await child.StartUpdate();
+                    result = child.StartUpdate();
 
                     if(!result)
                     {
@@ -231,7 +231,7 @@ namespace EltraNotKauf.Controls
             return result;
         }
 
-        public virtual async Task<bool> StopUpdate()
+        public virtual bool StopUpdate()
         {
             bool result = true;
 
@@ -243,7 +243,7 @@ namespace EltraNotKauf.Controls
 
                 foreach (var child in SafeChildrenArray)
                 {
-                    result = await child.StopUpdate();
+                    result = child.StopUpdate();
 
                     if (!result)
                     {

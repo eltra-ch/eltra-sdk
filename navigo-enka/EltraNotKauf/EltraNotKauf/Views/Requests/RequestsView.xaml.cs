@@ -11,16 +11,7 @@ namespace EltraNotKauf.Views.Requests
     {
         public RequestsView()
         {
-            InitializeComponent();
-
-            var entries = new List<Entry>();
-            var pickers = new List<Picker>();
-
-            UwpHelper.DeepSearch(Children.ToList(), ref entries);
-            UwpHelper.DeepSearch(Children.ToList(), ref pickers);
-
-            UwpHelper.FixElements(entries);
-            UwpHelper.FixElements(pickers);
+            InitializeComponent();            
         }
     }
 }

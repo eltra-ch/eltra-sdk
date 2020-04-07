@@ -50,14 +50,14 @@
 
                     <!-- Edit -->
                     <Frame Grid.Column="0" Grid.Row="0" Style="{StaticResource BorderLikeFrame}">
-                            <Entry TabIndex="0" Placeholder="Vorname, Name" Text="{Binding Name}" IsEnabled="{Binding IsConnected}">
+                            <Entry Placeholder="Vorname, Name" Text="{Binding Name}" IsEnabled="{Binding IsConnected}">
                                 <Entry.Behaviors>
                                     <entryBehaviors:EntryBehaviour/>
                                 </Entry.Behaviors>
                             </Entry>
                         </Frame>
                     <Frame Grid.Column="0" Grid.Row="1" Style="{StaticResource BorderLikeFrame}">
-                        <Entry TabIndex="1" Placeholder="Telefonnummer" Text="{Binding Phone}" IsEnabled="{Binding IsConnected}">
+                        <Entry Placeholder="Telefonnummer" Text="{Binding Phone}" IsEnabled="{Binding IsConnected}">
 
                                 <Entry.Behaviors>
                                     <entryBehaviors:EntryBehaviour/>
@@ -74,7 +74,7 @@
                         </Entry>
                     </Frame>
                     <Frame Grid.Column="0" Grid.Row="2" Style="{StaticResource BorderLikeFrame}">
-                        <Picker TabIndex="3" ItemsSource="{Binding Regions}" SelectedItem="{Binding Region}" ItemDisplayBinding="{Binding Name}" IsEnabled="{Binding IsConnected}"/>
+                        <Picker ItemsSource="{Binding Regions}" SelectedItem="{Binding Region}" ItemDisplayBinding="{Binding Name}" IsEnabled="{Binding IsConnected}"/>
                     </Frame>
                     <Frame Grid.Column="0" Grid.Row="3" Style="{StaticResource BorderLikeFrame}">
                         <Grid>
@@ -84,14 +84,14 @@
                             </Grid.ColumnDefinitions>
 
                             <Frame Grid.Column="0" Style="{StaticResource BorderLikeFrame}">
-                                    <Entry TabIndex="4" Placeholder="PLZ" Text="{Binding PostalCode, Mode=TwoWay}" WidthRequest="64" IsEnabled="{Binding IsConnected}">
+                                    <Entry Placeholder="PLZ" Text="{Binding PostalCode, Mode=TwoWay}" WidthRequest="64" IsEnabled="{Binding IsConnected}">
                                         <Entry.Behaviors>
                                             <entryBehaviors:EntryBehaviour/>
                                         </Entry.Behaviors>
                                     </Entry>
                                 </Frame>
                                 <Frame Grid.Column="1" Style="{StaticResource BorderLikeFrame}">
-                                    <Entry TabIndex="5" Text="{Binding City, Mode=TwoWay}" IsEnabled="{Binding IsConnected}">
+                                    <Entry Text="{Binding City, Mode=TwoWay}" IsEnabled="{Binding IsConnected}">
                                         <Entry.Behaviors>
                                             <entryBehaviors:EntryBehaviour/>
                                         </Entry.Behaviors>
@@ -101,14 +101,14 @@
                     </Frame>
                     
                     <Frame Grid.Column="0" Grid.Row="4" Style="{StaticResource BorderLikeFrame}">
-                            <Entry TabIndex="6" Placeholder="Strasse" Text="{Binding Street, Mode=TwoWay}" IsEnabled="{Binding IsConnected}">
+                            <Entry Placeholder="Strasse" Text="{Binding Street, Mode=TwoWay}" IsEnabled="{Binding IsConnected}">
                                 <Entry.Behaviors>
                                     <entryBehaviors:EntryBehaviour/>
                                 </Entry.Behaviors>
                             </Entry>
                         </Frame>
                     <Frame Grid.Column="0" Grid.Row="5" Style="{StaticResource BorderLikeFrame}">
-                            <Entry TabIndex="7" Placeholder="Über mich" Text="{Binding Notice}" IsEnabled="{Binding IsConnected}">
+                            <Entry Placeholder="Über mich" Text="{Binding Notice}" IsEnabled="{Binding IsConnected}">
                                 <Entry.Behaviors>
                                     <entryBehaviors:EntryBehaviour/>
                                 </Entry.Behaviors>
@@ -116,7 +116,7 @@
                         </Frame>
 
                     <Frame Grid.Column="0" Grid.Row="6" Style="{StaticResource BorderLikeFrame}" IsEnabled="{Binding IsConnected}">
-                        <Button TabIndex="8" Text="Speichern" Command="{Binding SaveCommand}" IsEnabled="{Binding IsValid}"/>
+                        <Button Text="Speichern" Command="{Binding SaveCommand}" IsEnabled="{Binding IsValid}"/>
                     </Frame>
 
                 </Grid>

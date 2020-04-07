@@ -1,10 +1,15 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <MasterDetailPage xmlns="http://xamarin.com/schemas/2014/forms"
             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-            xmlns:views="clr-namespace:EltraNotKauf.Views;assembly=EltraNotKauf"
+            xmlns:views="clr-namespace:EltraNotKauf.Views;assembly=EltraNotKauf" 
+            xmlns:behaviors="clr-namespace:EltraNotKauf.Controls.Behaviors"
             x:Class="EltraNotKauf.Views.MainView" MasterBehavior="Popover" 
             x:DataType="views:MainViewModel"      
             IsPresented="{Binding IsMasterPageVisible, Mode=TwoWay}">
+
+    <MasterDetailPage.Behaviors>
+        <behaviors:MasterDetailPageBehavior/>
+    </MasterDetailPage.Behaviors>
     
     <MasterDetailPage.Master>
         <views:MasterView BindingContext="{Binding MasterViewModel}" />
