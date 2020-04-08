@@ -87,7 +87,8 @@
                                 </Frame>
 
                                 <Frame Grid.Row="5">
-                                    <Entry Placeholder="Kennwort" IsTabStop="True" TabIndex="1" Text="{Binding Password, Mode=OneWay}" IsPassword="True" IsEnabled="{Binding IsConnected}">
+                                    <Entry Placeholder="Kennwort" IsTabStop="True" TabIndex="1" Text="{Binding Password, Mode=OneWay}" 
+                                           IsPassword="True" IsEnabled="{Binding IsConnected}">
                                         <Entry.Behaviors>
                                             <behaviors:PasswordValidationBehavior/>
                                         </Entry.Behaviors>

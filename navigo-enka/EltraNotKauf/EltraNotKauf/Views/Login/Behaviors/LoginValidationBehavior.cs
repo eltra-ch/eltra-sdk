@@ -1,25 +1,46 @@
 using Xamarin.Forms;
-using EltraNotKauf.Views.Login;
 
-namespace EltraNotKauf.Views.Login.Behaviors 
-{    
+namespace EltraNotKauf.Views.Login.Behaviors
+{
     public class LoginValidationBehavior : Behavior<Entry> 
     {
         private Entry _entry;
         private SignViewModel _loginViewModel;
         
-
         protected override void OnAttachedTo(Entry entry) 
         {
             _entry = entry;
         
             entry.TextChanged += OnEntryTextChanged;
+            entry.BindingContextChanged += OnBindingContextChanged;
             
             base.OnAttachedTo(entry);
         }
 
+        private void OnBindingContextChanged(object sender, System.EventArgs e)
+        {
+            if (((Entry)sender).BindingContext is SignViewModel loginViewModel)
+            {
+                _loginViewModel = loginViewModel;
+                _loginViewModel.StatusChanged += OnLoginViewModelStatusChanged;
+            }
+        }
+
+        private void OnLoginViewModelStatusChanged(object sender, Events.SignStatusEventArgs e)
+        {
+            if (e.Status == SignStatus.Failed)
+            {
+                Shake();
+            }
+        }
+
         protected override void OnDetachingFrom(Entry entry) 
         {
+            if(_loginViewModel != null)
+            {
+                _loginViewModel.StatusChanged -= OnLoginViewModelStatusChanged;
+            }
+
             entry.TextChanged -= OnEntryTextChanged;
             
             base.OnDetachingFrom(entry);
@@ -32,7 +53,6 @@ namespace EltraNotKauf.Views.Login.Behaviors
                 if (_loginViewModel != loginViewModel)
                 {
                     _loginViewModel = loginViewModel;
-                    _loginViewModel.StatusChanged += (s, a) => { if(a.Status == SignStatus.Failed) Shake(); };
                 }
 
                 loginViewModel.OnLoginChanged(args.NewTextValue);

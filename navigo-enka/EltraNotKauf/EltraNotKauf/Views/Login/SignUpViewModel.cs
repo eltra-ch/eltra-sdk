@@ -47,6 +47,14 @@ namespace EltraNotKauf.Views.Login
 
         #region Methods
 
+        public override void OnPasswordCompleted()
+        {
+            if (IsValid && IsLoginValid)
+            {
+                OnRegisterClicked();
+            }
+        }
+
         public void OnRepeatPasswordChanged(string newPassword)
         {
             RepeatPassword = newPassword;
@@ -98,6 +106,9 @@ namespace EltraNotKauf.Views.Login
             IsLoginValid = true;
 
             IsValid = !string.IsNullOrEmpty(LoginName) && !string.IsNullOrEmpty(Password) && !string.IsNullOrEmpty(RepeatPassword);
+
+            OnPropertyChanged("IsLoginValid");
+            OnPropertyChanged("IsValid");
         }
 
         public override void Reset()

@@ -132,6 +132,14 @@ namespace EltraNotKauf.Views.Login
 
         #region Methods
         
+        public virtual void OnPasswordCompleted()
+        {
+            if(IsValid && IsLoginValid)
+            {
+                OnLoginClicked();
+            }
+        }
+
         public void OnPasswordChanged(string newPassword)
         {
             Password = newPassword;
