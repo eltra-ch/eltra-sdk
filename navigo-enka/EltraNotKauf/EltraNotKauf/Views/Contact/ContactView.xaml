@@ -50,20 +50,18 @@
 
                     <!-- Edit -->
                     <Frame Grid.Column="0" Grid.Row="0" Style="{StaticResource BorderLikeFrame}">
-                            <Entry Placeholder="Vorname, Name" Text="{Binding Name}" IsEnabled="{Binding IsConnected}">
-                                <Entry.Behaviors>
-                                    <entryBehaviors:EntryBehaviour/>
-                                </Entry.Behaviors>
-                            </Entry>
-                        </Frame>
+                            <Entry Placeholder="Vorname, Name - erforderlich" Text="{Binding Name}" IsEnabled="{Binding IsConnected}">
+                            <Entry.Behaviors>
+                                <entryBehaviors:EntryBehaviour/>
+                            </Entry.Behaviors>
+                        </Entry>
+                    </Frame>
                     <Frame Grid.Column="0" Grid.Row="1" Style="{StaticResource BorderLikeFrame}">
-                        <Entry Placeholder="Telefonnummer" Text="{Binding Phone}" IsEnabled="{Binding IsConnected}">
-
-                                <Entry.Behaviors>
-                                    <entryBehaviors:EntryBehaviour/>
-                                </Entry.Behaviors>
-                            
-                                <Entry.Triggers>
+                            <Entry Placeholder="Telefonnummer - erforderlich" Text="{Binding Phone}" IsEnabled="{Binding IsConnected}">
+                            <Entry.Behaviors>
+                                <entryBehaviors:EntryBehaviour/>
+                            </Entry.Behaviors>                            
+                            <Entry.Triggers>
                                 <DataTrigger TargetType="Entry" Binding="{Binding IsPhoneValid}" Value="true">
                                     <Setter Property="TextColor" Value="Default"/>
                                 </DataTrigger>
