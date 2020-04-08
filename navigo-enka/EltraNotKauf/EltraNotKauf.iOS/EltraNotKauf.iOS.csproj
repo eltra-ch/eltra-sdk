@@ -40,7 +40,8 @@
     <MtouchLink>None</MtouchLink>
     <MtouchArch>x86_64</MtouchArch>
     <ConsolePause>false</ConsolePause>
-    <CodesignKey>iPhone Developer: dsienkiewicz@outlook.com (H8X5HWB4P6)</CodesignKey>
+    <CodesignKey>Apple Distribution: Dawid Sienkiewicz (9CN324KAN4)</CodesignKey>
+    <CodesignProvision>ch.eltra.notkauf.dist</CodesignProvision>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|iPhone' ">
     <DebugSymbols>true</DebugSymbols>
@@ -229,7 +230,7 @@
   </ItemGroup>
   <ProjectExtensions>
     <VisualStudio>
-      <UserProperties XamarinHotReloadMonoInterpreterErrorInfoBarEltraNotKaufiOSHideInfoBar="True" XamarinHotReloadMonoInterpreterErrorInfoBarNotKaufiOSHideInfoBar="True" />
+      <UserProperties XamarinHotReloadMonoInterpreterErrorInfoBarNotKaufiOSHideInfoBar="True" XamarinHotReloadMonoInterpreterErrorInfoBarEltraNotKaufiOSHideInfoBar="True" />
     </VisualStudio>
   </ProjectExtensions>
 </Project>
