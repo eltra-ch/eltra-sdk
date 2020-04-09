@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android" android:versionCode="5" android:versionName="1.4" package="com.eltra.NotKauf" android:installLocation="internalOnly">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android" android:versionCode="6" android:versionName="1.5" package="ch.eltra.nachbarnhilfe" android:installLocation="internalOnly">
 	<uses-sdk android:targetSdkVersion="28" android:minSdkVersion="20" />
-	<application android:label="Notkauf">
+	<application android:label="Nachbarnhilfe">
 		<meta-data android:name="com.google.android.maps.v2.API_KEY" android:value="AIzaSyAm9dmqlY0cAbCsHOcnm6TvLandYP0rwE4" />
 	</application>
 	<uses-permission android:name="android.permission.INTERNET" />
