@@ -164,7 +164,7 @@ namespace EltraNotKauf.Endpoints
             }
             catch (Exception e)
             {
-                MsgLogger.Exception($"{GetType().Name} - GetOrders", e);
+                MsgLogger.Exception($"{GetType().Name} - GetAssignedToMeOrderInfoList", e);
             }
 
             return result;
