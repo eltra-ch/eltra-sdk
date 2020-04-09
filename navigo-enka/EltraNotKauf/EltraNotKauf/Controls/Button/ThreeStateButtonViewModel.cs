@@ -13,7 +13,8 @@ namespace EltraNotKauf.Controls.Button
         private ButtonState _buttonState;
         private bool _isEnabled;
         private int _height;
-        
+        private bool _longPressActive;
+
         #endregion
 
         #region Constructors
@@ -52,11 +53,18 @@ namespace EltraNotKauf.Controls.Button
             set => SetProperty(ref _height, value);
         }
 
+        public bool LongPressActive
+        {
+            get => _longPressActive;
+            set => SetProperty(ref _longPressActive, value);
+        }
+
         #endregion
 
         #region Events
 
         public ICommand ButtonPressedCommand => new Command(OnButtonPressedCommand);
+        public ICommand ButtonReleasedCommand => new Command(OnButtonReleasedCommand);
 
         public event EventHandler ButtonStateChanged;
 
@@ -69,7 +77,7 @@ namespace EltraNotKauf.Controls.Button
             ButtonStateChanged?.Invoke(this, new EventArgs());
         }
 
-        private void OnButtonPressedCommand(object obj)
+        private void OnButtonPressedCommand()
         {
             if (ButtonState == ButtonState.Inactive)
             {
@@ -81,6 +89,11 @@ namespace EltraNotKauf.Controls.Button
             }
 
             OnButtonStateChanged();
+        }
+
+        private void OnButtonReleasedCommand()
+        {
+            //TODO
         }
 
         #endregion

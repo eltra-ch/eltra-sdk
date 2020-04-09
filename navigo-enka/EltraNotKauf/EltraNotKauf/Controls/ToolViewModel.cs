@@ -51,7 +51,7 @@ namespace EltraNotKauf.Controls
         #endregion
 
         #region Properties
-        
+
         public bool UpdateViewModels { get; set; }
 
         public int UpdateInterval { get; set; }
@@ -80,6 +80,13 @@ namespace EltraNotKauf.Controls
         #endregion
 
         #region Methods
+        public virtual void ButtonPressed(string classId)
+        {   
+        }
+
+        public virtual void ButtonReleased(string classId)
+        {
+        }
 
         protected virtual void OnAgentChanged()
         {

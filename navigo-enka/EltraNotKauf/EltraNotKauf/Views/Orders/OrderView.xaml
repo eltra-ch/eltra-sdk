@@ -5,7 +5,7 @@
              xmlns:converters="clr-namespace:EltraNotKauf.Controls.Converters" 
              xmlns:buttons="clr-namespace:EltraNotKauf.Controls.Button" 
              xmlns:common="clr-namespace:EltraNotKauf.Views.Common" 
-             xmlns:connectionstatus="clr-namespace:EltraNotKauf.Views.ConnectionStatus" 
+             xmlns:connectionstatus="clr-namespace:EltraNotKauf.Views.ConnectionStatus" xmlns:behaviors1="clr-namespace:EltraNotKauf.Controls.Behaviors"
              x:Class="EltraNotKauf.Views.Orders.OrderView">
 	<ContentView.Resources>
 		<Color x:Key="NavigationPrimary">#2196F3</Color>
@@ -83,7 +83,11 @@
 					</Frame>
                     <Frame CornerRadius="5" Padding="0" IsVisible="{Binding ActiveOrder, Converter={StaticResource NullToBooleanConverter}}">
                         <StackLayout>
-                            <Button Text="Erledigt"  HeightRequest="64" Command="{Binding ButtonClosePressedCommand}"/>
+                            <Button ClassId="btnCloseButton" Text="{Binding CloseButtonText}" HeightRequest="64">
+                                <Button.Behaviors>
+                                    <behaviors1:ButtonBehaviors/>
+                                </Button.Behaviors>
+                            </Button>
                         </StackLayout>
                     </Frame>
                 </StackLayout>

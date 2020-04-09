@@ -40,10 +40,14 @@ namespace EltraNotKauf.Views.Orders
         private string _activeOrderTitle;
         private string _notice;
         private string _orderRemainingTime;
+        private string _closeButtonText;
+
         private Timer _orderUpdateTimer;
         ContactViewModel _contactViewModel;
         private ICommand _createOrderCommand;
         private Timer _remainingTimer;
+        private Timer _closingTimer;
+        private DateTime _closingTimeStart;
 
         #endregion
 
@@ -55,6 +59,7 @@ namespace EltraNotKauf.Views.Orders
             Image = ImageSource.FromResource("EltraNotKauf.Resources.lifebuoy.png", Assembly.GetExecutingAssembly());
             IsMandatory = true;
             Uuid = "37A00C5A-3A87-40F5-B954-5BE2161728F2";
+            CloseButtonText = "Erledigt";
 
             _contactViewModel = contactViewModel;
 
@@ -151,13 +156,17 @@ namespace EltraNotKauf.Views.Orders
             set => SetProperty(ref _assignedTo, value);
         }
 
+        public string CloseButtonText
+        {
+            get => _closeButtonText;
+            set => SetProperty(ref _closeButtonText, value);
+        }
+
         #endregion
 
         #region Command
 
         [Preserve]
-        public ICommand ButtonClosePressedCommand => new Command(OnButtonClosePressedCommand);
-        [Helpers.Preserve]
         public ICommand ButtonCreatePressedCommand => new Command(OnButtonCreatePressedCommand);
 
         [Helpers.Preserve]
@@ -176,29 +185,49 @@ namespace EltraNotKauf.Views.Orders
             UpdateRemainingTime();
         }
 
-        private void OnButtonClosePressedCommand()
+        public override void ButtonReleased(string classId)
         {
-            if (ActiveOrder != null)
+            if (classId == "btnCloseButton")
             {
-                if (ActiveOrder.Status == OrderStatus.Assigned || ActiveOrder.Status == OrderStatus.Open)
-                {
-                    ActiveOrder.Status = OrderStatus.Closed;
+                _closingTimer.Stop();
 
-                    Task.Run(async () => { 
-                        if (await _ordersEndpoint.ChangeOrder(ActiveOrder))
-                        {
-                            await UpdateOrder();
-                        }
-                        else
-                        {
-                            ToastMessage.ShortAlert("Fehler :-(");
-                        }
-                    });
-                }
+                CloseButtonText = "Erledigt";
+            }
+        }
+
+        public override void ButtonPressed(string classId)
+        {
+            if (classId == "btnCloseButton")
+            {
+                _closingTimer = new Timer();
+                _closingTimer.Interval = 100;
+                _closingTimer.Elapsed += ClosingTimerElapsed;
+
+                _closingTimeStart = DateTime.Now;
+
+                _closingTimer.Start();
+            }
+        }
+
+        private void ClosingTimerElapsed(object sender, ElapsedEventArgs e)
+        {
+            const double maxWaitTime = 2;
+
+            var elapsedTimeInSec = (DateTime.Now - _closingTimeStart).TotalSeconds;
+            var elapsedTimeAvgInSec = Math.Round(elapsedTimeInSec, 1);
+            var remainsSec = maxWaitTime - elapsedTimeAvgInSec;
+
+            if (elapsedTimeAvgInSec <= maxWaitTime)
+            {
+                CloseButtonText = string.Format("Erledigt in {0:F1} s", remainsSec);
             }
             else
             {
-                ToastMessage.ShortAlert("Fehler :-(");
+                _closingTimer.Stop();
+                
+                CloseButtonText = "Erledigt";
+
+                CloseOrder();
             }
         }
 
@@ -507,6 +536,32 @@ namespace EltraNotKauf.Views.Orders
             if (ActiveOrder != null)
             {
                 OrderRemainingTime = $"Gültig noch {ActiveOrder.RemainingTime()}";
+            }
+        }
+
+        private void CloseOrder()
+        {
+            if (ActiveOrder != null)
+            {
+                if (ActiveOrder.Status == OrderStatus.Assigned || ActiveOrder.Status == OrderStatus.Open)
+                {
+                    ActiveOrder.Status = OrderStatus.Closed;
+
+                    Task.Run(async () => {
+                        if (await _ordersEndpoint.ChangeOrder(ActiveOrder))
+                        {
+                            await UpdateOrder();
+                        }
+                        else
+                        {
+                            ToastMessage.ShortAlert("Fehler :-(");
+                        }
+                    });
+                }
+            }
+            else
+            {
+                ToastMessage.ShortAlert("Fehler :-(");
             }
         }
 
