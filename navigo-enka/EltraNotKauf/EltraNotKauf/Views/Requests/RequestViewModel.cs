@@ -5,6 +5,7 @@ using EltraNotKauf.Controls.Toast;
 using EltraNotKauf.Endpoints;
 using EltraNotKauf.Helpers;
 using EltraNotKauf.Views.Common;
+using EltraNotKauf.Extensions;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -106,8 +107,8 @@ namespace EltraNotKauf.Views.Requests
                             ActiveOrder = newOrder;
 
                             UpdateOrderInfo();
-
                             UpdateAssignedInfo();
+                            UpdateRemainingTime();
                         }
                     }
                 }
@@ -322,61 +323,7 @@ namespace EltraNotKauf.Views.Requests
         {
             if (ActiveOrder != null)
             {
-                var durationInSec = (int)(DateTime.Now - ActiveOrder.Modified).TotalSeconds;
-                var timeout = ActiveOrder.Timeout;
-                var remainingSec = timeout - durationInSec;
-
-                TimeSpan remains = new TimeSpan(remainingSec * TimeSpan.TicksPerSecond);
-
-                var totalDays = (int)Math.Round(remains.TotalDays);
-                var totalHours = (int)Math.Round(remains.TotalHours);
-                var totalMinutes = (int)Math.Round(remains.TotalMinutes); 
-                var totalSeconds = (int)Math.Round(remains.TotalSeconds);
-                
-                if (totalDays > 0)
-                {
-                    if (totalDays == 1)
-                    {
-                        OrderRemainingTime = $"{totalDays} Tag";
-                    }
-                    else
-                    {
-                        OrderRemainingTime = $"{totalDays} Tage";
-                    }
-                }
-                else if (totalHours > 0)
-                {
-                    if (totalHours == 1)
-                    {
-                        OrderRemainingTime = $"{totalHours} Stunde";
-                    }
-                    else
-                    {
-                        OrderRemainingTime = $"{totalHours} Stunden";
-                    }
-                }
-                else if (totalMinutes > 0)
-                {
-                    if (totalMinutes == 1)
-                    {
-                        OrderRemainingTime = $"{totalMinutes} Minute";
-                    }
-                    else
-                    {
-                        OrderRemainingTime = $"{totalMinutes} Minuten";
-                    }
-                }
-                else if (totalSeconds > 0)
-                {
-                    if (totalSeconds == 1)
-                    {
-                        OrderRemainingTime = $"{totalSeconds} Sekunde";
-                    }
-                    else
-                    {
-                        OrderRemainingTime = $"{totalSeconds} Sekunden";
-                    }
-                }
+                OrderRemainingTime = ActiveOrder.RemainingTime();
             }
         }
 
@@ -459,7 +406,7 @@ namespace EltraNotKauf.Views.Requests
 
                     if (_message.Shop)
                     {
-                        Description += "LADEN";
+                        Description += "ESSEN & TRINKEN";
                         Description += ", ";
                     }
 

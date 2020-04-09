@@ -39,10 +39,11 @@ namespace EltraNotKauf.Views.Orders
         private string _activeOrderStatus;
         private string _activeOrderTitle;
         private string _notice;
+        private string _orderRemainingTime;
         private Timer _orderUpdateTimer;
-        private ContactEndpoint _contactEndpoint;
         ContactViewModel _contactViewModel;
         private ICommand _createOrderCommand;
+        private Timer _remainingTimer;
 
         #endregion
 
@@ -57,7 +58,6 @@ namespace EltraNotKauf.Views.Orders
 
             _contactViewModel = contactViewModel;
 
-            _contactEndpoint = new ContactEndpoint();
             _ordersEndpoint = new OrdersEndpoint();
             _orderUpdateTimer = new Timer(OrderUpdateInterval);
             _orderUpdateTimer.Elapsed += OnUpdateOrderIntervalElapsed;
@@ -66,7 +66,7 @@ namespace EltraNotKauf.Views.Orders
             OtherButtonViewModel.Title = "ANDERE";
 
             ShopButtonViewModel.Id = "shop;";
-            ShopButtonViewModel.Title = "LEBENSMITTEL";
+            ShopButtonViewModel.Title = "ESSEN & TRINKEN";
 
             CarButtonViewModel.Id = "car;";
             CarButtonViewModel.Title = "AUTO";
@@ -78,6 +78,10 @@ namespace EltraNotKauf.Views.Orders
             ShopButtonViewModel.ButtonStateChanged += OnButtonStateChanged;
             CarButtonViewModel.ButtonStateChanged += OnButtonStateChanged;
             DrugStoreButtonViewModel.ButtonStateChanged += OnButtonStateChanged;
+
+            _remainingTimer = new Timer();
+            _remainingTimer.Interval = 1000;
+            _remainingTimer.Elapsed += OnRemainingTimeElapsed;
 
             PropertyChanged += OnViewPropertyChanged;
         }
@@ -135,19 +139,10 @@ namespace EltraNotKauf.Views.Orders
             set => SetProperty(ref _notice, value);
         }
 
-        public string Url
+        public string OrderRemainingTime
         {
-            get
-            {
-                string result = string.Empty;
-
-                if (Application.Current.Properties.ContainsKey("url"))
-                {
-                    result = Application.Current.Properties["url"] as string;
-                }
-
-                return result;
-            }
+            get => _orderRemainingTime;
+            set => SetProperty(ref _orderRemainingTime, value);
         }
 
         public List<AssignedToViewModel> AssignedTo
@@ -175,6 +170,11 @@ namespace EltraNotKauf.Views.Orders
         #endregion
 
         #region Events
+
+        private void OnRemainingTimeElapsed(object sender, ElapsedEventArgs e)
+        {
+            UpdateRemainingTime();
+        }
 
         private void OnButtonClosePressedCommand()
         {
@@ -400,12 +400,12 @@ namespace EltraNotKauf.Views.Orders
                     ActiveOrderStatus = $"Status = {ActiveOrder.Status}";
                 }
 
-                ActiveOrderTitle = order.Uuid;
+                ActiveOrderTitle = $"Nummer: {order.Uuid}";
             }
             else
             {
                 ActiveOrderStatus = "noch keinen Auftrag platziert";
-                ActiveOrderTitle = "";
+                ActiveOrderTitle = string.Empty;
             }
         }
 
@@ -418,6 +418,7 @@ namespace EltraNotKauf.Views.Orders
                 await UpdateOrder();
 
                 _orderUpdateTimer.Start();
+                _remainingTimer.Start();
 
                 IsBusy = false;
             });
@@ -460,12 +461,15 @@ namespace EltraNotKauf.Views.Orders
             Notice = string.Empty;
 
             ActiveOrderStatus = "noch keinen Auftrag platziert";
-            ActiveOrderTitle = "";
+            ActiveOrderTitle = string.Empty;
+
+            OrderRemainingTime = string.Empty;
         }
 
         public override void Hide()
         {
             _orderUpdateTimer.Stop();
+            _remainingTimer.Stop();
 
             base.Hide();
         }
@@ -495,6 +499,14 @@ namespace EltraNotKauf.Views.Orders
 
                     ActiveOrder = activeOrder;
                 }
+            }
+        }
+
+        private void UpdateRemainingTime()
+        {
+            if (ActiveOrder != null)
+            {
+                OrderRemainingTime = $"Gültig noch {ActiveOrder.RemainingTime()}";
             }
         }
 

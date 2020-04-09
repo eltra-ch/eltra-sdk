@@ -34,8 +34,9 @@
 				<RowDefinition Height="8"/>
 			</Grid.RowDefinitions>
 			<Frame Grid.Row="1" BackgroundColor="Transparent" Padding="0">
-                <StackLayout>
+                <StackLayout Orientation="Vertical">
                     <Label HorizontalOptions="CenterAndExpand" FontSize="Medium" Text="{Binding ActiveOrderTitle}"/>
+                    <Label HorizontalOptions="CenterAndExpand" FontSize="Small" Text="{Binding OrderRemainingTime}"/>
                 </StackLayout>
             </Frame>
 			<Frame Grid.Row="2" BorderColor="Transparent" Padding="4">
