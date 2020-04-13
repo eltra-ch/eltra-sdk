@@ -1,10 +1,12 @@
-﻿using EltraCloudContracts.Enka.Orders;
+﻿using EltraCloudContracts.Enka.Contacts;
+using EltraCloudContracts.Enka.Orders;
 using EltraCommon.Helpers;
 using EltraCommon.Logger;
 using EltraConnector.Transport;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Web;
 using Xamarin.Forms;
@@ -63,6 +65,32 @@ namespace EltraNotKauf.Endpoints
                 if (response.StatusCode == System.Net.HttpStatusCode.OK)
                 {
                     result = true;
+                }
+            }
+            catch (Exception e)
+            {
+                MsgLogger.Exception($"{GetType().Name} - ChangeOrder", e);
+            }
+
+            return result;
+        }
+
+        public async Task<bool> ConfirmOrder(Order order, Contact contact)
+        {
+            bool result = false;
+
+            try
+            {
+                var query = HttpUtility.ParseQueryString(string.Empty);
+
+                if (order != null && contact != null)
+                {
+                    query.Add("orderUuid", order.Uuid);
+                    query.Add("contactUuid", contact.Uuid);
+
+                    var url = UrlHelper.BuildUrl(Url, "/api/Orders/confirm-order", query);
+
+                    result = await _transporter.Get(url, CancellationToken.None);
                 }
             }
             catch (Exception e)

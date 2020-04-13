@@ -8,7 +8,7 @@
              xmlns:labels="clr-namespace:EltraNotKauf.Controls.Labels"
              xmlns:button="clr-namespace:EltraNotKauf.Controls.Button"
              xmlns:common="clr-namespace:EltraNotKauf.Views.Common"
-             xmlns:helpers="clr-namespace:EltraNotKauf.Controls.Helpers;assembly=EltraNotKauf"
+             xmlns:helpers="clr-namespace:EltraNotKauf.Controls.Helpers;assembly=EltraNotKauf" xmlns:converters="clr-namespace:EltraNotKauf.Views.Converters"
              x:DataType="request:RequestViewModel"
              x:Class="EltraNotKauf.Views.Requests.RequestView">
 
@@ -20,11 +20,12 @@
     
   <ContentView.Content>
         
-        <Grid>
+        <Grid>            
             <Grid.Resources>
                 <Style TargetType="Label">
                     <Setter Property="VerticalOptions" Value="Center"/>
                 </Style>
+                <converters:StringToBooleanConverter x:Key="StringToBooleanConverter"/>
             </Grid.Resources>
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
@@ -104,24 +105,26 @@
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="Auto"/>
                             <ColumnDefinition Width="Auto"/>
-                            <ColumnDefinition Width="Auto"/>
                         </Grid.ColumnDefinitions>
 
-                        <Label Grid.Column="0" Text="{Binding OrderPostalCode}"/>
-                        <Label Grid.Column="1" Text=""/>
-                        <Label Grid.Column="2" Text="{Binding OrderCity}"/>                        
+                        <Frame Grid.Column="0" Padding="0" IsVisible="{Binding OrderPostalCode, Converter={StaticResource StringToBooleanConverter}}">
+                            <Label Text="{Binding OrderPostalCode}"/>
+                        </Frame>
+                        <Frame Grid.Column="1" Padding="0" IsVisible="{Binding OrderCity, Converter={StaticResource StringToBooleanConverter}}">
+                            <Label Text="{Binding OrderCity}"/>
+                        </Frame>
                     </Grid>
 
                     <Grid Grid.Row="2">
-                        <Label Text="{Binding OrderStreet}" />
+                        <Label Text="{Binding OrderStreet}" IsVisible="{Binding OrderStreet, Converter={StaticResource StringToBooleanConverter}}" />
                     </Grid>
                     
                     <Grid Grid.Row="3">
-                        <labels:LabelLink Phone="{Binding OrderPhone}" />
+                        <labels:LabelLink Phone="{Binding OrderPhone}" IsVisible="{Binding OrderPhone, Converter={StaticResource StringToBooleanConverter}}"/>
                     </Grid>
 
                     <Grid Grid.Row="4">
-                        <Label Text="{Binding Description}"></Label>
+                        <Label Text="{Binding Description}"/>
                     </Grid>
 
                 </Grid>

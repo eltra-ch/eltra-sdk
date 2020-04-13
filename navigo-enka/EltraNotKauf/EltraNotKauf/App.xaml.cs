@@ -75,7 +75,8 @@ namespace EltraNotKauf
                     case Device.UWP:
                     case Device.macOS:
                     default:
-                        result = "https://notkauf.ch";
+                        //result = "https://notkauf.ch";
+                        result = "http://localhost:64911/";
                         break;
                 }
 

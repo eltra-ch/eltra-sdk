@@ -352,7 +352,7 @@ namespace EltraNotKauf.Views.Requests
                 {
                     if (contact.Uuid != _contact.Uuid)
                     {
-                        assignedToList.Add(new AssignedToViewModel() { Name = contact.Name, City = contact.City, Phone = contact.Phone });
+                        assignedToList.Add(new AssignedToViewModel(contact) { ActiveOrder = _orderInfo.Order, OrdersEndpoint = _ordersEndpoint });
                     }
                     else
                     {

@@ -44,7 +44,6 @@ namespace EltraNotKauf.Views.Orders
 
         private Timer _orderUpdateTimer;
         ContactViewModel _contactViewModel;
-        private ICommand _createOrderCommand;
         private Timer _remainingTimer;
         private Timer _closingTimer;
         private DateTime _closingTimeStart;
@@ -166,15 +165,7 @@ namespace EltraNotKauf.Views.Orders
 
         #region Command
 
-        [Preserve]
         public ICommand ButtonCreatePressedCommand => new Command(OnButtonCreatePressedCommand);
-
-        [Helpers.Preserve]
-        public ICommand CreateOrderCommand
-        {
-            get => _createOrderCommand ?? (_createOrderCommand = new Command(OnButtonCreatePressedCommand));
-            set => SetProperty(ref _createOrderCommand, value);
-        }
 
         #endregion
 
@@ -381,7 +372,7 @@ namespace EltraNotKauf.Views.Orders
                         {
                             if (contact.Uuid != _contactViewModel.ContactUuid)
                             {
-                                assignedToList.Add(new AssignedToViewModel() { Name = contact.Name, City = contact.City, Phone = contact.Phone });
+                                assignedToList.Add(new AssignedToViewModel(contact) { ActiveOrder = activeOrder, OrdersEndpoint = _ordersEndpoint });
                             }
                         }
                     }

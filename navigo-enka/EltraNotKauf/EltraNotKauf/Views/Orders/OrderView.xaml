@@ -25,7 +25,7 @@
 		<Grid HorizontalOptions="FillAndExpand" VerticalOptions="FillAndExpand" IsEnabled="{Binding IsConnected}">
 			<Grid.RowDefinitions>
 				<RowDefinition Height="8"/>
-				<RowDefinition Height="48"/>
+				<RowDefinition Height="Auto"/>
 				<RowDefinition Height="Auto"/>
 				<RowDefinition Height="Auto"/>
 				<RowDefinition Height="Auto"/>
@@ -114,7 +114,8 @@
 											<Label Text="{Binding Name}"/>
 											<Label Text="{Binding City}"/>
 											<Label Text="{Binding Phone}"/>
-										</StackLayout>
+                                            <Button Text="Bestätigen" Command="{Binding ConfirmButtonPressedCommand}"/>
+                                        </StackLayout>
 									</StackLayout>
 								</DataTemplate>
 							</BindableLayout.ItemTemplate>
