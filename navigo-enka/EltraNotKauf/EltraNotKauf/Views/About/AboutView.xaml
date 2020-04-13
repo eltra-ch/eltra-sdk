@@ -41,10 +41,11 @@
                 <Image Grid.Row="2" Source="{Binding LogoImage}"/>
                 
                 <Label Grid.Row="4" Text="{Binding VersionName}" />
-                <Label Grid.Row="5" Text="Das Konzept: Jakub" />
-                <Label Grid.Row="6" Text="Bilder: Marta" />
-                <Label Grid.Row="7" Text="Ikonen: tabler-icons" />
-                <Label Grid.Row="8" Text="Copyright (c) 2020, Dawid Sienkiewicz" />
+                <Label Grid.Row="5" Text="Entwicklung: eltra.ch" />
+                <labels:HyperlinkLabel Grid.Row="6" HorizontalOptions="CenterAndExpand" Url="https://www.notkauf.ch/documents/GettingStarted.htm" Text="Kurzanleitung"/>
+                <labels:HyperlinkLabel Grid.Row="7" HorizontalOptions="CenterAndExpand" Url="https://groups.google.com/forum/#!forum/notkauf" Text="Produkthilfe und Support"/>
+                
+                <Label Grid.Row="8" Text="Ikonen: tabler-icons" />
                 <labels:HyperlinkLabel Grid.Row="9" HorizontalOptions="CenterAndExpand" Url="https://notkauf.ch" Text="notkauf.ch"/>
             </Grid>
         </Frame>
