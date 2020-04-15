@@ -12,13 +12,17 @@ namespace EltraNotKauf.Views.Common
 {
     public class AssignedToViewModel : BaseViewModel
     {
+        #region private fields
+
         private string _name;
         private string _city;
         private string _phone;
         private Order _activeOrder;
         private AssignerContact _contact;
 
-        public ICommand ConfirmButtonPressedCommand => new Command(OnButtonConfirmPressedCommand);
+        #endregion
+
+        #region Constructors
 
         public AssignedToViewModel(AssignerContact contact)
         {
@@ -28,7 +32,17 @@ namespace EltraNotKauf.Views.Common
             City = contact.City;
             Phone = contact.Phone;
         }
-                
+
+        #endregion
+
+        #region Commands
+
+        public ICommand ConfirmButtonPressedCommand => new Command(OnButtonConfirmPressedCommand);
+
+        #endregion
+
+        #region Properties
+
         public OrdersEndpoint OrdersEndpoint { get; set; }
 
         public string Name 
@@ -54,7 +68,11 @@ namespace EltraNotKauf.Views.Common
             get => _activeOrder; 
             set => SetProperty(ref _activeOrder, value); 
         }
-        
+
+        #endregion
+
+        #region Methods
+
         private void OnButtonConfirmPressedCommand()
         {
             try
@@ -79,5 +97,7 @@ namespace EltraNotKauf.Views.Common
                 ToastMessage.ShortAlert("Fehler :-(");
             }
         }
+
+        #endregion
     }
 }
