@@ -180,7 +180,10 @@ namespace EltraConnector.Controllers
 
             if (IsStopped())
             {
-                StartUpdate(device);
+                Task.Run(()=> 
+                { 
+                    StartUpdate(device); 
+                });
             }
         }
 
