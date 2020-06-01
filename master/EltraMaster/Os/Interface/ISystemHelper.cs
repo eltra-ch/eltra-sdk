@@ -4,7 +4,10 @@ namespace EltraMaster.Os.Interface
 {
     public interface ISystemHelper
     {
-        IntPtr GetDllInstance();
+        IntPtr GetDllInstance(string dllName);
+        
+        bool Is64BitProcess();
+        bool IsWindows();
 
         IntPtr GetProcAddress(IntPtr dllHandle, string funcName);
 

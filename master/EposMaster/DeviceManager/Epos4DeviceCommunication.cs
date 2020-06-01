@@ -120,7 +120,7 @@ namespace EposMaster.DeviceManager
             }
         }
 
-        public bool GetObject(ushort objectIndex, byte objectSubindex, byte[] data)
+        public override bool GetObject(ushort objectIndex, byte objectSubindex, ref byte[] data)
         {
             bool result;
             uint lastErrorCode = 0;
@@ -146,7 +146,7 @@ namespace EposMaster.DeviceManager
             return result;
         }
 
-        public bool SetObject(ushort objectIndex, byte objectSubindex, ref byte[] data)
+        public override bool SetObject(ushort objectIndex, byte objectSubindex, byte[] data)
         {
             bool result;
             uint lastErrorCode = 0;

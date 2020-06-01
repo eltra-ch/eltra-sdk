@@ -18,14 +18,14 @@
             {
                 VcsWrapper.Device.VcsGetVersion(keyHandle, nodeId, ref hardwareVersion, ref softwareVersion, ref applicationNumber, ref applicationVersion, ref errorCode);
 
-                result = $"{deviceName}_{hardwareVersion:X4}h_{softwareVersion:X4}h_{applicationNumber:X4}h_{applicationVersion:X4}h";
+                result = $"{deviceName}_{softwareVersion:X4}h_{hardwareVersion:X4}h_{applicationNumber:X4}h_{applicationVersion:X4}h.xdd";
             }
 
             return result;
         }
 
 
-        public static EposDevice CreateDevice(string deviceName, string interfaceName, string protocolStackName, string portName)
+        public static EposDevice CreateDevice(string deviceName, string interfaceName, string protocolStackName, string portName, uint updateInterval, uint timeout)
         {
             EposDevice result = null;
             string deviceDescriptionFile = GetDeviceDescriptionFile(deviceName, interfaceName, protocolStackName, portName);
@@ -33,10 +33,10 @@
             switch (deviceName)
             {
                 case "EPOS2":
-                    result = new Epos2Device(deviceDescriptionFile) { InterfaceName = interfaceName, ProtocolStackName = protocolStackName, PortName = portName};
+                    result = new Epos2Device(deviceDescriptionFile, updateInterval, timeout) { InterfaceName = interfaceName, ProtocolStackName = protocolStackName, PortName = portName};
                     break;
                 case "EPOS4":
-                    result = new Epos4Device(deviceDescriptionFile) { InterfaceName = interfaceName, ProtocolStackName = protocolStackName, PortName = portName };
+                    result = new Epos4Device(deviceDescriptionFile, updateInterval, timeout) { InterfaceName = interfaceName, ProtocolStackName = protocolStackName, PortName = portName };
                     break;
             }
 

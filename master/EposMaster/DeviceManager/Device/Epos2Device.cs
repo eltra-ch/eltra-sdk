@@ -6,8 +6,8 @@ namespace EposMaster.DeviceManager.Device
     {
         #region Constructors
 
-        public Epos2Device(string deviceDescriptionFile)
-            : base("EPOS2", deviceDescriptionFile)
+        public Epos2Device(string deviceDescriptionFile, uint updateInterval, uint timeout)
+            : base("EPOS2", deviceDescriptionFile, updateInterval, timeout)
         {
             CreateCommandSet();
         }

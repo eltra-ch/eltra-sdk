@@ -1160,7 +1160,21 @@ namespace EposMaster.DeviceManager.VcsWrapper
 
         private static void LoadLibraryFunctions()
         {
-            _eposCmdDll = _systemHelper.GetDllInstance();
+            string dllFileName = "EposCmd.dll";
+
+            if (_systemHelper.IsWindows())
+            {   
+                if (_systemHelper.Is64BitProcess())
+                {
+                    dllFileName = "EposCmd64.dll";
+                }
+            }
+            else
+            {
+                dllFileName = "libEposCmd.so";
+            }
+            
+            _eposCmdDll = _systemHelper.GetDllInstance(dllFileName);
 
             _addressOfOpenDevice = _systemHelper.GetProcAddress(_eposCmdDll, "_VCS_OpenDevice@20");
             _addressOfOpenDeviceDlg = _systemHelper.GetProcAddress(_eposCmdDll, "_VCS_OpenDeviceDlg@4");

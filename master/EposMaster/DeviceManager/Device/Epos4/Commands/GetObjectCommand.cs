@@ -57,7 +57,7 @@ namespace EposMaster.DeviceManager.Device.Epos4.Commands
 
             if (deviceCommunication is Epos4DeviceCommunication communication)
             {
-                var commandResult = communication.GetObject(index, subIndex, data);
+                var commandResult = communication.GetObject(index, subIndex, ref data);
 
                 if (typeCode != TypeCode.Object)
                 {

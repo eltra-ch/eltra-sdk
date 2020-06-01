@@ -1,7 +1,7 @@
 ﻿using EltraCloudContracts.Contracts.Devices;
+using EltraCloudContracts.Contracts.Parameters;
 using EltraCloudContracts.ObjectDictionary.Common.DeviceDescription.Profiles.Application.Parameters;
 using EltraCloudContracts.ObjectDictionary.DeviceDescription;
-using EltraCloudContracts.ObjectDictionary.DeviceDescription.Events;
 using EltraConnector.SyncAgent;
 using EltraMaster.Device.Commands;
 using EltraMaster.Device.ParameterConnection;
@@ -221,6 +221,32 @@ namespace EltraMaster.Device
             }
 
             Status = DeviceStatus.Disconnected;
+        }
+
+        public virtual int GetUpdateInterval(ParameterUpdatePriority priority)
+        {
+            int result;
+
+            switch (priority)
+            {
+                case ParameterUpdatePriority.High:
+                    result = 10000;
+                    break;
+                case ParameterUpdatePriority.Medium:
+                    result = 30000;
+                    break;
+                case ParameterUpdatePriority.Low:
+                    result = 60000;
+                    break;
+                case ParameterUpdatePriority.Lowest:
+                    result = 180000;
+                    break;
+                default:
+                    result = 60000;
+                    break;
+            }
+
+            return result;
         }
 
         #endregion

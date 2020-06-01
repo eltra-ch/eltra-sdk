@@ -101,7 +101,7 @@ namespace EltraMaster.Device
             }
         }
 
-        public async Task Run()
+        public virtual async Task Run()
         {
             foreach (var device in DeviceList)
             {

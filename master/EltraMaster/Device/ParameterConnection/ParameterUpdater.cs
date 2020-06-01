@@ -66,32 +66,6 @@ namespace EltraMaster.Device.ParameterConnection
             return Task.Run(()=>{});
         }
 
-        private int GetUpdateInterval()
-        {
-            int result;
-
-            switch (Priority)
-            {
-                case ParameterUpdatePriority.High:
-                    result = 10000;
-                    break;
-                case ParameterUpdatePriority.Medium:
-                    result = 30000;
-                    break;
-                case ParameterUpdatePriority.Low:
-                    result = 60000;
-                    break;
-                case ParameterUpdatePriority.Lowest:
-                    result = 180000;
-                    break;
-                default:
-                    result = 60000;
-                    break;
-            }
-
-            return result;
-        }
-        
         public bool ReadParameter(Parameter parameter)
         {
             bool result = false;
@@ -152,7 +126,7 @@ namespace EltraMaster.Device.ParameterConnection
                             break;
                         }
 
-                        if (registeredParameter.ElapsedTime >= GetUpdateInterval())
+                        if (registeredParameter.ElapsedTime >= _device.GetUpdateInterval(registeredParameter.Priority))
                         {
                             var parameter = registeredParameter.Parameter;
 

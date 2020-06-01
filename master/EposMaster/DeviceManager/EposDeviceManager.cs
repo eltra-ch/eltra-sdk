@@ -102,6 +102,13 @@ namespace EposMaster.DeviceManager
             device.StatusChanged -= OnDeviceStatusChanged;
         }
 
+        protected override void OnCloudAgentChanged()
+        {
+            base.OnCloudAgentChanged();
+
+            
+        }
+
         private async void OnDeviceStatusChanged(object sender, EventArgs e)
         {
             if (sender is EposDevice device)
@@ -127,9 +134,14 @@ namespace EposMaster.DeviceManager
             }
         }
         
-        public void ScanDevices()
+        public override Task Run()
         {
-            _deviceScanner.Scan();
+            var task = Task.Run(() =>
+            {
+                _deviceScanner.Scan();
+            });
+
+            return task;
         }
 
         private async Task<bool> ConnectDevice(EposDevice device)

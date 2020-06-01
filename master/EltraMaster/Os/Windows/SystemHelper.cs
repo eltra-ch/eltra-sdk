@@ -11,37 +11,35 @@ namespace EltraMaster.Os.Windows
     {
         #region Methods
 
-        public IntPtr GetDllInstance()
+        public bool IsWindows()
         {
-            string eposCmdFileName = "EltraCmd.dll";
+            return true;
+        }
 
-            if (Is64BitProcess())
-            {
-                eposCmdFileName = "EltraCmd64.dll";
-            }
-
+        public IntPtr GetDllInstance(string dllFileName)
+        {
             Assembly asm = Assembly.GetEntryAssembly() ?? Assembly.GetExecutingAssembly();
             string directory = Path.GetDirectoryName(asm.Location);
 
             // Working Directory
-            FileInfo workingDirectory = new FileInfo(eposCmdFileName);
+            FileInfo workingDirectory = new FileInfo(dllFileName);
             if (!File.Exists(workingDirectory.FullName))
             {
                 // Application Directory
-                FileInfo applicationDirectory = new FileInfo(directory + "\\" + eposCmdFileName);
+                FileInfo applicationDirectory = new FileInfo(directory + "\\" + dllFileName);
                 if (!File.Exists(applicationDirectory.FullName))
                 {
-                    throw new Exception(string.Format("File {0} not found!\n\nWorking Directory: {1}\nApplication Directory: {2}", eposCmdFileName, workingDirectory.FullName, applicationDirectory.FullName));
+                    throw new Exception(string.Format("File {0} not found!\n\nWorking Directory: {1}\nApplication Directory: {2}", dllFileName, workingDirectory.FullName, applicationDirectory.FullName));
                 }
 
-                eposCmdFileName = directory + "\\" + eposCmdFileName;
+                dllFileName = directory + "\\" + dllFileName;
             }
 
-            var _eposCmdDll = KernelDll.LoadLibrary(eposCmdFileName);
+            var _eposCmdDll = KernelDll.LoadLibrary(dllFileName);
 
             if (_eposCmdDll == IntPtr.Zero)
             {
-                throw new Exception(string.Format("{0} could not be loaded!", eposCmdFileName));
+                throw new Exception(string.Format("{0} could not be loaded!", dllFileName));
             }
 
             return _eposCmdDll;
@@ -63,7 +61,7 @@ namespace EltraMaster.Os.Windows
             return result;
         }
 
-        private static bool Is64BitProcess()
+        public bool Is64BitProcess()
         {
             if (IntPtr.Size == 8)
             {

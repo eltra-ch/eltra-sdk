@@ -1,5 +1,4 @@
 ﻿using EltraCloudContracts.Contracts.Devices;
-using EltraCloudContracts.ObjectDictionary.DeviceDescription.Events;
 using EposMaster.DeviceManager.Events;
 using EposMaster.DeviceManager.Identification.Factory;
 using EposMaster.DeviceManager.Status;
@@ -9,6 +8,7 @@ using EltraCommon.Logger;
 using EposMaster.DeviceManager.Identification;
 using EposMaster.DeviceManager.Identification.Events;
 using EltraMaster.DeviceManager.Events;
+using EltraCloudContracts.Contracts.Parameters;
 
 namespace EposMaster.DeviceManager.Device
 {
@@ -17,15 +17,20 @@ namespace EposMaster.DeviceManager.Device
         #region Private fields
 
         private StatusManager _statusManager;
-        
+        private uint _updateInterval;
+        private uint _timeout;
+
         #endregion
 
         #region Constructors
 
-        public EposDevice(string name, string deviceDescriptionFile)
+        public EposDevice(string name, string deviceDescriptionFile, uint updateInterval, uint timeout)
             : base(name, deviceDescriptionFile)
         {
-            RegisterEvents();
+            _updateInterval = updateInterval;
+            _timeout = timeout;
+
+            CreateVersion();
         }
 
         #endregion
@@ -34,9 +39,10 @@ namespace EposMaster.DeviceManager.Device
 
         protected override void OnCloudAgentChanged()
         {
+            base.OnCloudAgentChanged();
+
             CreateIdentification();
-            CreateStatusManager();
-            CreateVersion();
+            CreateStatusManager();            
         }
         
         private void OnCommunicationStatusChanged(object sender, DeviceCommunicationEventArgs e)
@@ -103,6 +109,13 @@ namespace EposMaster.DeviceManager.Device
 
         #endregion
 
+        #region Properties
+
+        protected uint UpdateInterval => _updateInterval;
+        protected uint Timeout => _timeout;
+        
+        #endregion
+
         #region Methods
 
         private void CreateVersion()
@@ -118,11 +131,21 @@ namespace EposMaster.DeviceManager.Device
         private void CreateIdentification()
         {
             Identification = DeviceIdentificationFactory.CreateIdentification(this);
+
+            RegisterEvents();
         }
-        
+
+        protected override void OnInitialized()
+        {
+            
+        }
+
         private void RegisterEvents()
         {
-            Communication.StatusChanged += OnCommunicationStatusChanged;
+            if (Communication != null)
+            {
+                Communication.StatusChanged += OnCommunicationStatusChanged;
+            }
 
             if (Version is EposDeviceVersion eposDeviceVersion)
             {
@@ -141,7 +164,10 @@ namespace EposMaster.DeviceManager.Device
 
             await Task.Run(() =>
             {
-                result = (Communication as Epos4DeviceCommunication).Connect();
+                if(Communication is Epos4DeviceCommunication epos4DeviceCommunication)
+                {
+                    result = epos4DeviceCommunication.Connect();
+                }                
             });
 
             return result;
@@ -171,6 +197,32 @@ namespace EposMaster.DeviceManager.Device
             statusManagerTask.Start();
 
             tasks.Add(statusManagerTask);
+        }
+
+        public override int GetUpdateInterval(ParameterUpdatePriority priority)
+        {
+            int result;
+
+            switch (priority)
+            {
+                case ParameterUpdatePriority.High:
+                    result = 200;
+                    break;
+                case ParameterUpdatePriority.Medium:
+                    result = 500;
+                    break;
+                case ParameterUpdatePriority.Low:
+                    result = 1000;
+                    break;
+                case ParameterUpdatePriority.Lowest:
+                    result = 3000;
+                    break;
+                default:
+                    result = 3000;
+                    break;
+            }
+
+            return result;
         }
 
         #endregion

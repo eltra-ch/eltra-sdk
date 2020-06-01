@@ -7,8 +7,8 @@ namespace EposMaster.DeviceManager.Device
     {
         #region Constructors
 
-        public Epos4Device(string deviceDescriptionFile)
-            : base("EPOS4", deviceDescriptionFile)
+        public Epos4Device(string deviceDescriptionFile, uint updateInterval, uint timeout)
+            : base("EPOS4", deviceDescriptionFile, updateInterval, timeout)
         {
             CreateCommandSet();
             CreateToolSet();
@@ -135,6 +135,11 @@ namespace EposMaster.DeviceManager.Device
             AddTool(new Epos4ProfileVelocityModeTool());
             AddTool(new Epos4HomingModeTool());
             AddTool(new Epos4DataRecorderTool());
+        }
+
+        protected override void CreateCommunication()
+        {
+            Communication = new Epos4DeviceCommunication(this, UpdateInterval, Timeout);
         }
 
         #endregion

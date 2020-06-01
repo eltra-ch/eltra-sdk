@@ -184,7 +184,7 @@ namespace EposMaster.DeviceManager.Scanner
                         var eposDevice = EposDeviceFactory.CreateDevice(device.Family,
                             device.InterfaceName,
                             device.ProtocolStackName,
-                            device.PortName);
+                            device.PortName, _settings.UpdateInterval, _settings.Timeout);
 
                         eposDevice.Status = DeviceStatus.Detected;
 

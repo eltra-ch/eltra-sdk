@@ -30,6 +30,11 @@ namespace EltraMaster.Os.Linux
 
         #region Methods
 
+        public bool IsWindows()
+        {
+            return false;
+        }
+
         [DllImport("libdl.so", CharSet = CharSet.Unicode)]
 
         private static extern IntPtr dlopen(string fileName, int flags);
@@ -43,16 +48,14 @@ namespace EltraMaster.Os.Linux
         [DllImport("libdl.so")]
         private static extern IntPtr dlerror();
 
-        public IntPtr GetDllInstance()
+        public IntPtr GetDllInstance(string dllFileName)
         {
-            string fileName = "libEposCmd.so";
-
-            IntPtr dll = dlopen(fileName, RtldNow | RtldGlobal);
+            IntPtr dll = dlopen(dllFileName, RtldNow | RtldGlobal);
             
             if (dll == IntPtr.Zero)
             {
                 var errPtr = dlerror();
-                throw new Exception("libEposCmd.so not found: " + Marshal.PtrToStringAnsi(errPtr));
+                throw new Exception($"{dllFileName} not found: " + Marshal.PtrToStringAnsi(errPtr));
             }
 
             return dll;
@@ -90,6 +93,11 @@ namespace EltraMaster.Os.Linux
             var result = dlclose(dllHandle) == 0;
 
             return result;
+        }
+
+        public bool Is64BitProcess()
+        {
+            return false;
         }
 
         #endregion
