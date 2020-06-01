@@ -373,7 +373,7 @@ namespace EltraNavigo.Views
 
         private LoginViewModel CreateLoginViewModel()
         {
-            var  result = new LoginViewModel();
+            var  result = new UserSignInViewModel();
 
             result.Changed += (sender, args) =>
             {

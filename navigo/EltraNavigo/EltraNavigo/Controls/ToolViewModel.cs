@@ -34,6 +34,7 @@ namespace EltraNavigo.Controls
             _running = new ManualResetEvent(false);
 
             UpdateInterval = defaultUpdateInterval;
+            UpdateViewModels = true;
 
             IsSupported = true;
         }
@@ -75,7 +76,7 @@ namespace EltraNavigo.Controls
 
         public int UpdateInterval { get; set; }
 
-        public EltraCloudContracts.Contracts.Devices.EltraDevice Device 
+        public EltraDevice Device 
         { 
             get => _device; 
             set

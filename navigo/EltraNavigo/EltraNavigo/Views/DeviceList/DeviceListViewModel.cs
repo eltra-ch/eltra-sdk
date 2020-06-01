@@ -159,9 +159,9 @@ namespace EltraNavigo.Views.DeviceList
             {
                 string result = string.Empty;
 
-                if (Application.Current.Properties.ContainsKey("device_login"))
+                if (Application.Current.Properties.ContainsKey("user_login"))
                 {
-                    result = Application.Current.Properties["device_login"] as string;
+                    result = Application.Current.Properties["user_login"] as string;
                 }
 
                 return result;
@@ -174,9 +174,9 @@ namespace EltraNavigo.Views.DeviceList
             {
                 string result = string.Empty;
 
-                if (Application.Current.Properties.ContainsKey("device_password"))
+                if (Application.Current.Properties.ContainsKey("user_password"))
                 {
-                    result = Application.Current.Properties["device_password"] as string;
+                    result = Application.Current.Properties["user_password"] as string;
                 }
 
                 return result;

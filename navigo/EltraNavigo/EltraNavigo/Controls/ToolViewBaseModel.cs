@@ -174,7 +174,7 @@ namespace EltraNavigo.Controls
         {
             MsgLogger.WriteDebug($"{GetType().Name} - Update", "Update ToolViewBaseModel");
 
-            return default;
+            return Task.CompletedTask;
         }
 
         public virtual async Task Show()
