@@ -23,10 +23,10 @@ namespace EltraNavigo
             MsgLogger.LogLevels = "";
 #endif
 
-            //string url = "https://eltra.ch";
+            string url = "https://eltra.ch";
             //string url = "http://localhost:60476/";
             //string url = "http://localhost:64911/";
-            string url = "http://localhost:5001/";
+            //string url = "http://localhost:5001/";
 
             CreateIdentity();
 

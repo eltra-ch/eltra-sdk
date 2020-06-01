@@ -5,19 +5,17 @@
              x:Class="EltraNavigo.Controls.Status.ToolStatusView">
     <ContentView.Content>
         <Grid>
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="Auto"></ColumnDefinition>
-                <ColumnDefinition Width="Auto"></ColumnDefinition>
-                <ColumnDefinition Width="*"></ColumnDefinition>
-            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"></RowDefinition>
+                <RowDefinition Height="Auto"></RowDefinition>
+                <RowDefinition Height="Auto"></RowDefinition>
+            </Grid.RowDefinitions>
 
-            <Grid Grid.Column="0">
-                <Frame Padding="8,0,0,0">
-                    <Label Text="{Binding StatusText}" VerticalOptions="Center"/>
-                </Frame>
+            <Grid Grid.Row="0">
+                <Label Text="{Binding StatusText}" VerticalOptions="Center"/>
             </Grid>
 
-            <Frame Grid.Column="1">
+            <Frame Grid.Row="1">
                 <ListView ItemsSource="{Binding ErrorHistory}" 
                           IsRefreshing="{Binding ErrorHistoryRefreshing}" 
                           HeightRequest="{Binding ErrorHistoryListHeight}" 
@@ -33,8 +31,8 @@
                     </ListView.ItemTemplate>
                 </ListView>
             </Frame>
-            <Grid Grid.Column="2">
-                <Button Text="Clear Fault" IsVisible="{Binding IsClearFaultButtonVisible}" HeightRequest="32" VerticalOptions="Center">
+            <Grid Grid.Row="2">
+                <Button Text="Clear Fault" IsVisible="{Binding IsClearFaultButtonVisible}" VerticalOptions="Center">
                     <Button.Triggers> 
                         <EventTrigger Event="Clicked">
                             <triggers:ClearFaultClicked/>

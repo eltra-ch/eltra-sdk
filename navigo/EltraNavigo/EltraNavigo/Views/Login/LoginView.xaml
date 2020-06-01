@@ -97,7 +97,7 @@
                                 <Button IsTabStop="True" TabIndex="3" Text="LOGIN" Command="{Binding LoginCommand}" IsEnabled="{Binding IsValid}"/>
                             </Frame>
 
-                            <Frame Grid.Row="7">
+                            <Frame Grid.Row="7" IsVisible="false">
                                 <Button IsTabStop="True" TabIndex="3" Text="REGISTER" Command="{Binding RegisterCommand}" IsEnabled="{Binding IsValid}"/>
                             </Frame>
 
