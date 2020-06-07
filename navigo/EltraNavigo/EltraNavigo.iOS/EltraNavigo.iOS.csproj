@@ -68,9 +68,11 @@
     <WarningLevel>4</WarningLevel>
     <MtouchArch>ARM64</MtouchArch>
     <ConsolePause>false</ConsolePause>
-    <CodesignKey>Apple Development: Dawid Sienkiewicz (2NZ3UN6W7R)</CodesignKey>
+    <CodesignKey>iPhone Distribution: Dawid Sienkiewicz (9CN324KAN4)</CodesignKey>
     <CodesignEntitlements>Entitlements.plist</CodesignEntitlements>
-    <CodesignProvision>navigo_dev</CodesignProvision>
+    <CodesignProvision>ch.eltra.navigo.dist</CodesignProvision>
+    <MtouchLink>Full</MtouchLink>
+    <MtouchExtraArgs>--optimize=experimental-xforms-product-type</MtouchExtraArgs>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(RunConfiguration)' == 'Default' ">
     <AppExtensionDebugBundleId />

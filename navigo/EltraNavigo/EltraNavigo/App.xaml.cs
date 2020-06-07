@@ -23,14 +23,9 @@ namespace EltraNavigo
             MsgLogger.LogLevels = "";
 #endif
 
-            string url = "https://eltra.ch";
-            //string url = "http://localhost:60476/";
-            //string url = "http://localhost:64911/";
-            //string url = "http://localhost:5001/";
-
             CreateIdentity();
 
-            Current.Properties["url"] = url;
+            Current.Properties["url"] = Url;
             
             MainPage = new MainView();
             
@@ -42,6 +37,29 @@ namespace EltraNavigo
         #endregion
 
         #region Properties
+
+        public string Url
+        {
+            get
+            {
+                string result;
+
+                switch (Xamarin.Forms.Device.RuntimePlatform)
+                {
+                    case Xamarin.Forms.Device.iOS:
+                        result = "http://eltra.ch";
+                        break;
+                    case Xamarin.Forms.Device.Android:
+                    case Xamarin.Forms.Device.UWP:
+                    case Xamarin.Forms.Device.macOS:
+                    default:
+                        result = "https://eltra.ch";
+                        break;
+                }
+
+                return result;
+            }
+        }
 
         public string Uuid
         {

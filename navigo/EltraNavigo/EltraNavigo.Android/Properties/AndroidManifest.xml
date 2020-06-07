@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android" android:versionName="1.0.5.8" package="com.eltra.EltraNavigo" android:installLocation="auto" android:versionCode="58">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android" android:versionName="1.5.9" package="com.eltra.EltraNavigo" android:installLocation="auto" android:versionCode="59">
 	<uses-sdk android:targetSdkVersion="28" android:minSdkVersion="20" />
 	<application android:label="EltraNavigo.Android" android:icon="@mipmap/icon">
 		<meta-data android:name="com.google.android.maps.v2.API_KEY" android:value="AIzaSyAm9dmqlY0cAbCsHOcnm6TvLandYP0rwE4" />
