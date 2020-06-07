@@ -243,12 +243,13 @@ namespace EltraConnector.Controllers
         private async Task<bool> UploadDeviceDescription(EltraDevice device)
         {
             bool result;
-            var deviceDescriptionPayload = new DeviceDescriptionPayload(device);
+            var deviceDescriptionPayload = new DeviceDescriptionPayload(device)
+            {
+                CallerUuid = Session.Uuid
+            };
 
             if (!await DescriptionContollerAdapter.Exists(deviceDescriptionPayload))
             {
-                deviceDescriptionPayload.CallerUuid = Session.Uuid;
-
                 result = await DescriptionContollerAdapter.Upload(deviceDescriptionPayload);
 
                 if (!result)
