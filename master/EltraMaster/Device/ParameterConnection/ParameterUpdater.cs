@@ -63,7 +63,7 @@ namespace EltraMaster.Device.ParameterConnection
                 Thread.Sleep(minUpdateInterval);
             }
 
-            return Task.Run(()=>{});
+            return Task.CompletedTask;
         }
 
         public bool ReadParameter(Parameter parameter)
@@ -117,7 +117,7 @@ namespace EltraMaster.Device.ParameterConnection
             {
                 if (_registeredParameters.Count > 0)
                 {
-                    MsgLogger.WriteDebug($"{GetType().Name} - ParametersUpdate", $"Parameters to update count = {_registeredParameters.Count}");
+                    //MsgLogger.WriteDebug($"{GetType().Name} - ParametersUpdate", $"Parameters to update count = {_registeredParameters.Count}");
 
                     foreach (var registeredParameter in _registeredParameters.Values)
                     {
