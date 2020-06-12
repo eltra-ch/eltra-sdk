@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.29424.173
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PhotoMasterConsole", "ThermoMasterConsole.csproj", "{61DA541A-88D6-4E99-AA52-B8B4F9945C6F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PhotoMasterConsole", "PhotoMasterConsole.csproj", "{61DA541A-88D6-4E99-AA52-B8B4F9945C6F}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PhotoMaster", "..\PhotoMaster\PhotoMaster.csproj", "{C66B905C-278F-4FE3-88A6-339559187A93}"
 EndProject
