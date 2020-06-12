@@ -31,7 +31,7 @@ DLL_EXPORT int fswebcam_take_picture(unsigned short p_usIndex, char* p_pFileName
     int lResult = 0;
 
 #ifdef __arm__
-    int child_ret;
+    int child_ret = 0;
     pid_t pid;
     
     pid = fork();
@@ -44,13 +44,17 @@ DLL_EXPORT int fswebcam_take_picture(unsigned short p_usIndex, char* p_pFileName
 
         sprintf(pCmd, "fswebcam --input %d %s", p_usIndex, p_pFileName);
         
-        execl("/bin/bash", pCmd, NULL);
+        child_ret = execl("/bin/bash", pCmd, NULL);
         
         delete[] pCmd;
+
+        _exit(child_ret);
     }
     else if(pid > 0)
     {
-        wait(0);
+        wait(&child_ret);
+        
+        printf("fswebcam process finished %d, exit code = %d", pid, child_ret);
     }
 
 #else
