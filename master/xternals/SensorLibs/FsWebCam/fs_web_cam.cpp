@@ -1,12 +1,15 @@
 #include <stdio.h>
+
 #ifdef __arm__
     #include <unistd.h>
     #include <sys/types.h>
     #include <sys/wait.h>
     #include <string.h>
-#else 
+    #include <stdlib.h>
+#else
     #include <windows.h>
 #endif
+
 #include <mutex>
 #include <stdlib.h>
 #include "common.h"
@@ -31,31 +34,15 @@ DLL_EXPORT int fswebcam_take_picture(unsigned short p_usIndex, char* p_pFileName
     int lResult = 0;
 
 #ifdef __arm__
-    int child_ret = 0;
-    pid_t pid;
-    
-    pid = fork();
-
-    if (pid == 0) 
-    {
         char* pCmd = new char[255];
 
         memset(pCmd, 0, 255);
 
         sprintf(pCmd, "fswebcam --input %d %s", p_usIndex, p_pFileName);
         
-        child_ret = execl("/bin/bash", pCmd, NULL);
+        system(pCmd);
         
         delete[] pCmd;
-
-        _exit(child_ret);
-    }
-    else if(pid > 0)
-    {
-        wait(&child_ret);
-        
-        printf("fswebcam process finished %d, exit code = %d", pid, child_ret);
-    }
 
 #else
     char* pBuffer = 0;
