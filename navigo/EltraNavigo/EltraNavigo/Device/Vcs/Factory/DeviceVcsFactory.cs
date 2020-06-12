@@ -24,6 +24,11 @@ namespace EltraNavigo.Device.Vcs.Factory
                     vcs = new ThermoVcs(agent, device);
                 }    
                 break;
+                case "PHOTO":
+                    {
+                        vcs = new PhotoVcs(agent, device);
+                    }
+                    break;
             }
 
             return vcs;

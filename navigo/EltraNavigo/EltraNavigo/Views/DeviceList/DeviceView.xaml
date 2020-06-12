@@ -32,10 +32,10 @@
                         <ColumnDefinition Width="Auto"></ColumnDefinition>
                         <ColumnDefinition Width="*"/>
                     </Grid.ColumnDefinitions>
-                    <Frame Grid.Column="1" Grid.Row="0" Padding="4">
-                        <Image Source="{Binding Image}" Scale="1.1" HorizontalOptions="CenterAndExpand" VerticalOptions="CenterAndExpand"  Aspect="AspectFit"/>
+                    <Frame Grid.Column="1" Grid.Row="0" Padding="4" BackgroundColor="Transparent">
+                        <Image Source="{Binding Image}" Scale="1.5" HorizontalOptions="CenterAndExpand" VerticalOptions="CenterAndExpand"  Aspect="AspectFit"/>
                     </Frame>
-                    <Frame Grid.Column="3" Grid.Row="0" Padding="2">
+                    <Frame Grid.Column="3" Grid.Row="0" Padding="2" BackgroundColor="Transparent">
                         <Grid>
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="*"/>

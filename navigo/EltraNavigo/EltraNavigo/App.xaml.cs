@@ -53,7 +53,8 @@ namespace EltraNavigo
                     case Xamarin.Forms.Device.UWP:
                     case Xamarin.Forms.Device.macOS:
                     default:
-                        result = "https://eltra.ch";
+                        //result = "https://eltra.ch";
+                        result = "http://localhost:5001";
                         break;
                 }
 

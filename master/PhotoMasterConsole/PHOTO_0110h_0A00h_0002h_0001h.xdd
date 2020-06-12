@@ -1,0 +1,142 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<ProfileContainer>
+	<Profile>
+		<ProfileHeader>
+			<ProfileIdentification>ELTRA Device Profile</ProfileIdentification>
+			<ProfileRevision>1</ProfileRevision>
+			<ProfileName>Photo rev.1</ProfileName>
+			<ProfileSource>eltra.ch</ProfileSource>
+			<ProfileClassID>Device</ProfileClassID>
+			<SecurityCode/>
+		</ProfileHeader>
+		<ProfileBody type="ProfileBody_Device_Eltra" formatName="ELTRA" formatVersion="1.0" supportedLanguages="en"  fileVersion="1.0" fileCreator="DS" fileName="DeviceDescription.xdd" fileCreationDate="16.11.2019">
+			<DeviceIdentity>
+				<vendorName readOnly="true">eltra.ch</vendorName>
+				<deviceFamily readOnly="true">
+					<label lang="en-TT">Photo Controller</label>
+				</deviceFamily>
+				<productFamily readOnly="true">PHOTO</productFamily>
+				<productName readOnly="true">Photo rev.1</productName>
+				<productText readOnly="true">
+					<label lang="en-TT">Photo rev. 1 is ...</label>
+				</productText>
+				<productUrl readOnly="true">
+					<label lang="en-TT">http://www.eltra.ch</label>
+				</productUrl>
+				<productPicture readOnly="true">data:image/png;base64,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</productPicture>
+				<orderNumber readOnly="true">000000</orderNumber>
+				<version versionType="SW" readOnly="true">0x0110</version>
+				<version versionType="HW" readOnly="true">0x0A00</version>
+				<version versionType="APPNB" readOnly="true">0x0002</version>
+				<version versionType="APPVER" readOnly="true">0x0003</version>
+			</DeviceIdentity>
+			<DeviceManager>
+				<userLevelList>
+					<userLevel uniqueID="USR_Standard">
+						<role>operator</role>
+						<label lang="en-TT">Standard</label>
+						<description lang="en-TT">Standard user level</description>
+					</userLevel>
+					<userLevel uniqueID="USR_Expert">
+						<role>engineer</role>
+						<label lang="en-TT">Expert</label>
+						<description lang="en-TT">Expert user level (Configuration allowed)</description>
+					</userLevel>
+					<userLevel uniqueID="USR_Internal">
+						<role>developer</role>
+						<label lang="en-TT">Internal</label>
+						<description lang="en-TT">Only for eltra internal use</description>
+						<password/>
+					</userLevel>
+				</userLevelList>
+			</DeviceManager>
+			<DeviceHardware/>
+			<DeviceInteraction>
+				<DeviceTools>
+				  <DeviceTool Uuid="8AE87F6A-A118-4852-AD35-875D45E7DE36" Name="Overview" Status="Enabled"/>
+				</DeviceTools>
+			</DeviceInteraction>
+			<ApplicationProcess>
+				<dataTypeList/>
+				<unitsList/>
+				<templateList>
+					<flags uniqueID="AT_RO" name="AT_RO">
+						<Access>ro</Access>
+					</flags>
+					<flags uniqueID="AT_WO" name="AT_WO">
+						<Access>wo</Access>
+					</flags>
+					<flags uniqueID="AT_RW" name="AT_RW">
+						<Access>rw</Access>
+					</flags>
+					<flags uniqueID="AT_RW_BACKUP" name="AT_RW_BACKUP">
+						<Access>rw</Access>
+						<Backup>1</Backup>
+					</flags>
+				</templateList>
+				<parameterList>
+					<!-- Status Word -->
+					<parameter uniqueID="PARAM_StatusWord">
+						<index>0x6041</index>
+						<subIndex>0x00</subIndex>
+						<label lang="en-TT">Status Word</label>
+						<dataType>
+							<type>UNSIGNED16</type>
+						</dataType>
+						<flagsIDRef uniqueIDRef="AT_RO" />
+						<defaultValue>0x00</defaultValue>
+						<allowedValues>
+							<range>
+								<minValue>
+									<value>0x00</value>
+								</minValue>
+								<maxValue>
+									<value>0xFFFF</value>
+								</maxValue>
+							</range>
+						</allowedValues>
+						<userLevels>
+							<userLevelIDRef uniqueIDRef="USR_Standard" />
+							<userLevelIDRef uniqueIDRef="USR_Expert" />
+							<userLevelIDRef uniqueIDRef="USR_Internal" />
+						</userLevels>
+						<displayFormat>hex</displayFormat>
+					</parameter>
+          <!-- Data Recorder -->
+          <structuredParameter uniqueID="PARAM_InternalRecorderBufferVariable1">
+            <index>0x31E6</index>
+            <label lang="en-TT">Internal data recorder buffer variable 1</label>
+          </structuredParameter>
+          <parameter uniqueID="PARAM_InternalRecorderBufferVariable1MaxSubIdx">
+            <index>0x31E6</index>
+            <subIndex>0x00</subIndex>
+            <label lang="en-TT">Highest sub-index supported</label>
+            <dataType>
+              <type>UNSIGNED8</type>
+            </dataType>
+            <flagsIDRef uniqueIDRef="AT_RO" />
+            <defaultValue>1</defaultValue>
+            <userLevels />
+          </parameter>
+          <parameter uniqueID="PARAM_InternalRecorderBufferVariable1Data">
+            <index>0x31E6</index>
+            <subIndex>0x01</subIndex>
+            <label lang="en-TT">Internal data recorder buffer variable 1</label>
+            <dataType>
+              <type>OCTET_STRING</type>
+              <size unit="byte">65535</size>
+            </dataType>
+            <flagsIDRef uniqueIDRef="AT_RO" />
+            <defaultValue>0</defaultValue>
+            <userLevels>
+              <userLevelIDRef uniqueIDRef="USR_Standard" />
+              <userLevelIDRef uniqueIDRef="USR_Expert" />
+              <userLevelIDRef uniqueIDRef="USR_Internal" />
+            </userLevels>
+          </parameter>
+          <!-- End -->
+				</parameterList>
+			</ApplicationProcess>
+		</ProfileBody>
+	</Profile>
+</ProfileContainer>

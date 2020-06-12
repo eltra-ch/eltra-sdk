@@ -17,7 +17,7 @@
              xmlns:thermoOverview="clr-namespace:EltraNavigo.Views.Devices.Thermo.Overview"
              xmlns:thermoControl="clr-namespace:EltraNavigo.Views.Devices.Thermo.Control"
              xmlns:thermoHistory="clr-namespace:EltraNavigo.Views.Devices.Thermo.History"
-             xmlns:thermoSettings="clr-namespace:EltraNavigo.Views.Devices.Thermo.Settings"
+             xmlns:thermoSettings="clr-namespace:EltraNavigo.Views.Devices.Thermo.Settings" xmlns:photo="clr-namespace:EltraNavigo.Views.PhotoControl"
              mc:Ignorable="d"
              x:DataType="views:DetailViewModel"
              x:Class="EltraNavigo.Views.DetailView" Title="{Binding Title}">
@@ -52,6 +52,10 @@
             <relay:RelayControlView IsVisible="{Binding IsVisible}"/>
         </DataTemplate>
 
+        <DataTemplate x:Key="PhotoControlView">
+            <photo:PhotoControlView IsVisible="{Binding IsVisible}"/>
+        </DataTemplate>
+
         <DataTemplate x:Key="ThermoControlView">
             <thermoControl:ThermoControlView IsVisible="{Binding IsVisible}"/>
         </DataTemplate>
@@ -84,6 +88,7 @@
                                       HomingView="{StaticResource HomingView}"
                                       DataRecorderView="{StaticResource DataRecorderView}"
                                       RelayControlView="{StaticResource RelayControlView}"
+                                      PhotoControlView="{StaticResource PhotoControlView}"
                                       ThermoControlView="{StaticResource ThermoControlView}"
                                       ThermoOverviewView="{StaticResource ThermoOverviewView}"
                                       ThermoHistoryView="{StaticResource ThermoHistoryView}"

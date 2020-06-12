@@ -8,6 +8,7 @@ using EltraNavigo.Views.Devices.Thermo.Settings;
 using EltraNavigo.Views.Homing;
 using EltraNavigo.Views.Login;
 using EltraNavigo.Views.Obd;
+using EltraNavigo.Views.PhotoControl;
 using EltraNavigo.Views.Ppm;
 using EltraNavigo.Views.Pvm;
 using EltraNavigo.Views.RelayControl;
@@ -25,7 +26,7 @@ namespace EltraNavigo.Views.Selectors
         public DataTemplate HomingView { get; set; }
         public DataTemplate DataRecorderView { get; set; }
         public DataTemplate RelayControlView { get; set; }
-
+        public DataTemplate PhotoControlView { get; set; }
         public DataTemplate ThermoControlView { get; set; }
         public DataTemplate ThermoOverviewView { get; set; }
         public DataTemplate ThermoHistoryView { get; set; }
@@ -68,6 +69,10 @@ namespace EltraNavigo.Views.Selectors
             else if (item is RelayControlViewModel)
             {
                 result = RelayControlView;
+            }
+            else if (item is PhotoControlViewModel)
+            {
+                result = PhotoControlView;
             }
             else if (item is ThermoControlViewModel)
             {

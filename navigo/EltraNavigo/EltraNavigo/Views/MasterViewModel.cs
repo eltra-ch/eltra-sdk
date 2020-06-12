@@ -18,6 +18,7 @@ using EltraNavigo.Views.Devices.Thermo.Overview;
 using EltraNavigo.Views.Devices.Thermo.Control;
 using EltraNavigo.Views.Devices.Thermo.History;
 using EltraNavigo.Views.Devices.Thermo.Settings;
+using EltraNavigo.Views.PhotoControl;
 
 namespace EltraNavigo.Views
 {
@@ -35,16 +36,20 @@ namespace EltraNavigo.Views
 
         private DeviceListViewModel _deviceListViewModel;
         private DataRecorderViewModel _dataRecorderViewModel;
+        
         private PvmViewModel _pvmViewModel;
         private PpmViewModel _ppmViewModel;
         private ObdViewModel _obdViewModel;
         private HomingViewModel _homingViewModel;
+        
         private RelayControlViewModel _relayControlViewModel;
         
         private ThermoControlViewModel _thermoControlViewModel;
         private ThermoOverviewViewModel _thermoOverviewViewModel;
         private ThermoHistoryViewModel _thermoHistoryViewModel;
         private ThermoSettingsViewModel _thermoSettingsViewModel;
+
+        private PhotoControlViewModel _photoControlViewModel;
 
         private LoginViewModel _loginViewModel;
         private AboutViewModel _aboutViewModel;
@@ -186,6 +191,8 @@ namespace EltraNavigo.Views
         public ObdViewModel ObdViewModel => _obdViewModel ?? (_obdViewModel = new ObdViewModel());
 
         public RelayControlViewModel RelayControlViewModel => _relayControlViewModel ?? (_relayControlViewModel = new RelayControlViewModel());
+
+        public PhotoControlViewModel PhotoControlViewModel => _photoControlViewModel ?? (_photoControlViewModel = new PhotoControlViewModel());
 
         public ThermoControlViewModel ThermoControlViewModel => _thermoControlViewModel ?? (_thermoControlViewModel = new ThermoControlViewModel());
 
@@ -414,6 +421,7 @@ namespace EltraNavigo.Views
                 HomingViewModel,
                 DataRecorderViewModel,
                 RelayControlViewModel,
+                PhotoControlViewModel,
                 ThermoOverviewViewModel,
                 ThermoControlViewModel,
                 ThermoHistoryViewModel,
