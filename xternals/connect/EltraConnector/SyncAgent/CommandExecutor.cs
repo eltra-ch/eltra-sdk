@@ -101,7 +101,9 @@ namespace EltraConnector.SyncAgent
                             
                             if (executeCommands != null)
                             {
-                                await _sessionControllerAdapter.ExecuteCommands(executeCommands);
+                                Task.Run(async ()=> {
+                                    await _sessionControllerAdapter.ExecuteCommands(executeCommands);
+                                });                                
                             }
                             else
                             {
