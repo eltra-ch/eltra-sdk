@@ -48,7 +48,15 @@ namespace EltraConnector.Controllers
 
         private async void OnParameterChanged(object sender, ParameterChangedEventArgs e)
         {
-            MsgLogger.WriteLine($"changed: {e.Parameter.UniqueId}, new value = {e.Parameter.ActualValue.Value}");
+            const int MaxLogValueLength = 8;
+            string logValue = e.Parameter.ActualValue.Value;
+
+            if(logValue.Length> MaxLogValueLength)
+            {
+                logValue = logValue.Substring(0, MaxLogValueLength-1);
+            }
+
+            MsgLogger.WriteLine($"changed: {e.Parameter.UniqueId}, new value = '{logValue}'");
 
             await UpdateParameter(e.Parameter.Device, e.Parameter);
         }
