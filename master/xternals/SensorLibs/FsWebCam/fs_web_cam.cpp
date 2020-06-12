@@ -3,7 +3,7 @@
     #include <unistd.h>
     #include <sys/types.h>
     #include <sys/wait.h>
-    #include <stdio.h>
+    #include <string.h>
 #else 
     #include <windows.h>
 #endif
