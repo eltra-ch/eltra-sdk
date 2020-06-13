@@ -95,12 +95,21 @@ namespace EltraConnector.UserAgent
         {
             if(e.Status == SessionStatus.Online)
             {
-                Task.Run(async () => {
-                    await GetSessions(_sessionAdapter.Uuid, _deviceAuthData);
-                });                
+                RecoverSession();
             }
 
             RemoteSessionStatusChanged?.Invoke(sender, e);
+        }
+
+        private void RecoverSession()
+        {
+            if (_deviceAuthData != null && _sessionAdapter != null)
+            {
+                Task.Run(async () =>
+                {
+                    await GetSessions(_sessionAdapter.Uuid, _deviceAuthData);
+                });
+            }
         }
 
         protected virtual void OnCommandExecuted(object sender, ExecuteCommanderEventArgs e)
