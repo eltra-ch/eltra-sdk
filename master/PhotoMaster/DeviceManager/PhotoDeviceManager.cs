@@ -9,7 +9,7 @@ namespace PhotoMaster.DeviceManager
     {
         public PhotoDeviceManager(MasterSettings settings)
         {
-            EltraFsWebCamWrapper.Initialize();
+            EltraFsWebCamWrapper.Initialize(settings.VideoCapture.DeviceId, settings.VideoCapture.AppId);
 
             AddDevice(new PhotoDevice(settings));
         }

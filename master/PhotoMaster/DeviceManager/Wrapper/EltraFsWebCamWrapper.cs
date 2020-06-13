@@ -12,6 +12,8 @@ namespace PhotoMaster.DeviceManager.Wrapper
         private static IntPtr _init;
         private static IntPtr _release;
         private static IntPtr _takePicture;
+        private static IntPtr _takePictureBufferSize;
+        private static IntPtr _takePictureBuffer;
         private static IntPtr _dll;
 
         #endregion
@@ -21,17 +23,23 @@ namespace PhotoMaster.DeviceManager.Wrapper
         #region Wrapper
 
         [UnmanagedFunctionPointer(CallingConvention.StdCall)]
-        private delegate int InternalFsWebCamInitialize();
+        private delegate int InternalFsWebCamInitialize(int deviceId, int apiID);
 
         [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate int InternalFsWebCamRelease();
 
         [UnmanagedFunctionPointer(CallingConvention.StdCall)]
-        private delegate int InternalFsWebCamTakePicture(ushort index, string fileName);
-        
+        private delegate int InternalFsWebCamTakePicture(string fileName);
+
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
+        private delegate int InternalFsWebCamTakePictureBufferSize(ref int bufferSize);
+
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
+        private delegate int InternalFsWebCamTakePictureBuffer([MarshalAs(UnmanagedType.LPArray)] byte[] buffer, int bufferSize);
+
         #endregion
 
-        public static int Initialize()
+        public static int Initialize(int deviceId, int apiID)
         {
             int result = 1;
 
@@ -51,7 +59,7 @@ namespace PhotoMaster.DeviceManager.Wrapper
 
                     var func = (InternalFsWebCamInitialize)Marshal.GetDelegateForFunctionPointer(_init, typeof(InternalFsWebCamInitialize));
 
-                    result = func();
+                    result = func(deviceId, apiID);
                 }
             }
             catch(Exception e)
@@ -78,7 +86,7 @@ namespace PhotoMaster.DeviceManager.Wrapper
             return result;
         }
 
-        public static int TakePicture(ushort index, string fileName)
+        public static int TakePicture(string fileName)
         {
             int result = 0;
 
@@ -94,7 +102,49 @@ namespace PhotoMaster.DeviceManager.Wrapper
 
             var func = (InternalFsWebCamTakePicture)Marshal.GetDelegateForFunctionPointer(_takePicture, typeof(InternalFsWebCamTakePicture));
 
-            result = func(index, fileName);
+            result = func(fileName);
+
+            return result;
+        }
+
+        public static int TakePictureBufferSize(ref int bufferSize)
+        {
+            int result = 0;
+
+            if (!IsLoaded())
+            {
+                Load();
+            }
+
+            if (_takePictureBufferSize == IntPtr.Zero)
+            {
+                throw new Exception("Function TakePictureBufferSize not supported");
+            }
+
+            var func = (InternalFsWebCamTakePictureBufferSize)Marshal.GetDelegateForFunctionPointer(_takePictureBufferSize, typeof(InternalFsWebCamTakePictureBufferSize));
+
+            result = func(ref bufferSize);
+
+            return result;
+        }
+
+        public static int TakePictureBuffer([MarshalAs(UnmanagedType.LPArray)] byte[] buffer, int bufferSize)
+        {
+            int result = 0;
+
+            if (!IsLoaded())
+            {
+                Load();
+            }
+
+            if (_takePictureBuffer == IntPtr.Zero)
+            {
+                throw new Exception("Function TakePictureBuffer not supported");
+            }
+
+            var func = (InternalFsWebCamTakePictureBuffer)Marshal.GetDelegateForFunctionPointer(_takePictureBuffer, typeof(InternalFsWebCamTakePictureBuffer));
+
+            result = func(buffer, bufferSize);
 
             return result;
         }
@@ -106,7 +156,9 @@ namespace PhotoMaster.DeviceManager.Wrapper
             result = _dll != IntPtr.Zero &&
                     _init != IntPtr.Zero &&
                     _release != IntPtr.Zero &&
-                    _takePicture != IntPtr.Zero;
+                    _takePicture != IntPtr.Zero &&
+                    _takePictureBufferSize != IntPtr.Zero &&
+                    _takePictureBuffer != IntPtr.Zero;
 
             return result;
         }
@@ -125,6 +177,8 @@ namespace PhotoMaster.DeviceManager.Wrapper
                     _init = GetProcAddress(_dll, "fswebcam_initialize");
                     _release = GetProcAddress(_dll, "fswebcam_release");
                     _takePicture = GetProcAddress(_dll, "fswebcam_take_picture");
+                    _takePictureBufferSize = GetProcAddress(_dll, "fswebcam_take_picture_buffer_size");
+                    _takePictureBuffer = GetProcAddress(_dll, "fswebcam_take_picture_buffer");
                 }
             }
             catch(Exception e)

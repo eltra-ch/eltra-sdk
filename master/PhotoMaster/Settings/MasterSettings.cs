@@ -12,7 +12,7 @@ namespace PhotoMaster.Settings
         private static DeviceSettings _deviceSettings;
         private static LoggingSettings _loggingSettings;
         private static AuthSettings _authSettings;
-
+        private static VideoCaptureSettings _videoCaptureSettings;
         #endregion
 
         #region Constructors
@@ -98,6 +98,11 @@ namespace PhotoMaster.Settings
         public AuthSettings Auth 
         { 
             get => _authSettings ?? (_authSettings = new AuthSettings(Configuration));
+        }
+
+        public VideoCaptureSettings VideoCapture
+        {
+            get => _videoCaptureSettings ?? (_videoCaptureSettings = new VideoCaptureSettings(Configuration));
         }
 
         #endregion

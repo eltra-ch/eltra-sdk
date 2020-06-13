@@ -116,6 +116,45 @@ namespace PhotoMaster.DeviceManager.Device
             return result;
         }
 
+        private byte[] TakePicture1()
+        {
+            byte[] bytes = null;
+            string tempFileName = Path.GetTempFileName();
+            int callResult;
+            
+            if ((callResult = EltraFsWebCamWrapper.TakePicture(tempFileName)) == 0)
+            {
+                bytes = File.ReadAllBytes(tempFileName);
+
+                if (File.Exists(tempFileName))
+                {
+                    File.Delete(tempFileName);
+                }
+            }
+
+            LastErrorCode = (uint)callResult;
+
+            return bytes;
+        }
+
+        private byte[] TakePicture0()
+        {
+            byte[] bytes = null;
+            int callResult;
+            int bufferSize = 0;
+
+            if ((callResult = EltraFsWebCamWrapper.TakePictureBufferSize(ref bufferSize)) == 0)
+            {
+                bytes = new byte[bufferSize];
+
+                callResult = EltraFsWebCamWrapper.TakePictureBuffer(bytes, bufferSize);
+            }
+
+            LastErrorCode = (uint)callResult;
+
+            return bytes;
+        }
+
         public bool TakePicture(ushort index)
         {
             bool result = false;
@@ -123,37 +162,31 @@ namespace PhotoMaster.DeviceManager.Device
 
             lock (SyncObject)
             {
-                MsgLogger.WriteFlow($"take picture - index: {index} ...");
+                MsgLogger.WriteFlow($"take picture ...");
 
                 try
                 {
-                    int callResult = 0;
-
                     if (_statusWordParameter != null)
                     {
                         _statusWordParameter.SetValue((ushort)StatusWordValues.Pending);
 
-                        string tempFileName = Path.GetTempFileName();
+                        byte[] bytes = TakePicture0();
 
-                        if ((callResult = EltraFsWebCamWrapper.TakePicture(index, tempFileName)) == 0)
+                        if (bytes == null)
                         {
-                            byte[] bytes = File.ReadAllBytes(tempFileName);
+                            bytes = TakePicture1();
+                        }
 
-                            if (bytes.Length > 0)
+                        if (bytes != null && bytes.Length > 0)
+                        {
+                            if (_internalRecorderBufferVariable1DataParameter != null)
                             {
-                                if (_internalRecorderBufferVariable1DataParameter != null)
-                                {
-                                    result = _internalRecorderBufferVariable1DataParameter.SetValue(bytes);
-                                }
+                                result = _internalRecorderBufferVariable1DataParameter.SetValue(bytes);
+                            }
 
-                                if (result)
-                                {
-                                    _statusWordParameter.SetValue((ushort)StatusWordValues.Operational);
-                                }
-                                else
-                                {
-                                    _statusWordParameter.SetValue((ushort)StatusWordValues.Failure);
-                                }
+                            if (result)
+                            {
+                                _statusWordParameter.SetValue((ushort)StatusWordValues.Operational);
                             }
                             else
                             {
@@ -163,13 +196,6 @@ namespace PhotoMaster.DeviceManager.Device
                         else
                         {
                             _statusWordParameter.SetValue((ushort)StatusWordValues.Failure);
-
-                            LastErrorCode = (uint)callResult;
-                        }
-
-                        if (File.Exists(tempFileName))
-                        {
-                            File.Delete(tempFileName);
                         }
                     }
                 }
