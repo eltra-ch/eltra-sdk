@@ -15,7 +15,6 @@ using EltraCloudContracts.Contracts.Sessions;
 using EltraCloudContracts.Contracts.Users;
 using EltraCloudContracts.ObjectDictionary.Common.DeviceDescription.Profiles.Application.Parameters;
 using EltraCloudContracts.ObjectDictionary.Common.DeviceDescription.Profiles.Application.Parameters.Events;
-using EltraConnector.Ws;
 using EltraCloudContracts.Contracts.Parameters;
 using EltraConnector.Sessions;
 using EltraConnector.SyncAgent;
@@ -38,6 +37,7 @@ namespace EltraConnector.UserAgent
         private ParameterUpdateManager _parameterUpdateManager;        
         private Authentication _authentication;
         private Session _session;
+        private UserAuthData _deviceAuthData;
 
         #endregion
 
@@ -93,6 +93,13 @@ namespace EltraConnector.UserAgent
         }
         private void OnRemoteSessionStatusChanged(object sender, SessionStatusChangedEventArgs e)
         {
+            if(e.Status == SessionStatus.Online)
+            {
+                Task.Run(async () => {
+                    await GetSessions(_sessionAdapter.Uuid, _deviceAuthData);
+                });                
+            }
+
             RemoteSessionStatusChanged?.Invoke(sender, e);
         }
 
@@ -272,6 +279,8 @@ namespace EltraConnector.UserAgent
 
         public async Task<List<Session>> GetSessions(string uuid, UserAuthData authData)
         {
+            _deviceAuthData = authData;
+
             var result = await _sessionAdapter.GetSessions(uuid, authData);
 
             return result;
