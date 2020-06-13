@@ -124,7 +124,7 @@
             <label lang="en-TT">Internal data recorder buffer variable 1</label>
             <dataType>
               <type>OCTET_STRING</type>
-              <size unit="byte">65535</size>
+              <size unit="byte">131072</size>
             </dataType>
             <flagsIDRef uniqueIDRef="AT_RO" />
             <defaultValue>0</defaultValue>

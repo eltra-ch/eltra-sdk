@@ -40,7 +40,7 @@
   </ItemGroup>
 
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="copy $(ProjectDir)..\xternals\SensorLibs\FsWebCam\build\Debug\EltraFsWebCam.dll $(TargetDir)" Condition=" '$(OS)' == 'Windows_NT' " />
+    <Exec Command="copy $(ProjectDir)..\xternals\SensorLibs\FsWebCam\build\Debug\EltraFsWebCam.dll $(TargetDir)&#xD;&#xA;copy $(ProjectDir)..\xternals\SensorLibs\FsWebCam\build\Debug\EltraFsWebCam.pdb $(TargetDir)" Condition=" '$(OS)' == 'Windows_NT' " />
   </Target>
  
 </Project>
