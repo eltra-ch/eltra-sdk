@@ -89,6 +89,17 @@ DLL_EXPORT int fswebcam_release()
     return 0;
 }
 
+int fswebcam_try_recover()
+{
+    int lResult = FSWEBCAM_FAILURE;
+
+    fswebcam_release();
+
+    lResult = OpenVideoCaptureDevice();
+
+    return lResult;
+}
+
 DLL_EXPORT int fswebcam_take_picture_buffer_size(unsigned int* p_pBufferSize)
 {
     int lResult = FSWEBCAM_FAILURE;
@@ -115,7 +126,12 @@ DLL_EXPORT int fswebcam_take_picture_buffer_size(unsigned int* p_pBufferSize)
         else
         {
             lResult = FSWEBCAM_FAILURE;
-            printf("ERROR: camera device id = '%d', app id = %d frame cannot be read\n", g_deviceID, g_apiID);
+            printf("ERROR: camera device id = '%d', app id = %d frame cannot be read, try recover...\n", g_deviceID, g_apiID);
+
+            if (fswebcam_try_recover() == FSWEBCAM_SUCCESS)
+            {
+                lResult = fswebcam_take_picture_buffer_size(p_pBufferSize);
+            }
         }
     }
 
