@@ -36,7 +36,8 @@ namespace PhotoMaster.DeviceManager.Device
         private void ExtendCommandSet()
         {            
             //Object
-            AddCommand(new Commands.TakePictureCommand(this));        
+            AddCommand(new Commands.TakePictureCommand(this));
+            AddCommand(new Commands.RecordVideoCommand(this));
         }
 
         protected override void CreateCommunication()

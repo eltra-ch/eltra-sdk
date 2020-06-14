@@ -6,6 +6,8 @@ using PhotoMaster.Settings;
 using EltraMaster.Device;
 using PhotoMaster.DeviceManager.Wrapper;
 using System.IO;
+using PhotoMaster.DeviceManager.Device.Commands;
+using System.Diagnostics;
 
 namespace PhotoMaster.DeviceManager.Device
 {
@@ -198,6 +200,81 @@ namespace PhotoMaster.DeviceManager.Device
                             _statusWordParameter.SetValue((ushort)StatusWordValues.Failure);
                         }
                     }
+                }
+                catch (Exception e)
+                {
+                    MsgLogger.Exception($"{GetType().Name} - TakePicture", e);
+                }
+            }
+
+            LastErrorCode = (uint)lastErrorCode;
+
+            return result;
+        }
+
+        private bool RecordVideoAsync(int durationInSec)
+        {
+            bool result = false;
+            var duration = new Stopwatch();
+            double rate = 1000 / 24;
+            long lastSnap = 0;
+            int counter = 0;
+            duration.Start();
+
+            _statusWordParameter?.SetValue((ushort)StatusWordValues.Pending);
+
+            do
+            {
+                if (duration.ElapsedMilliseconds - lastSnap > rate || lastSnap == 0)
+                {
+                    byte[] bytes = TakePicture0();
+
+                    if (bytes == null)
+                    {
+                        bytes = TakePicture1();
+                    }
+
+                    if (bytes != null && bytes.Length > 0)
+                    {
+                        if (_internalRecorderBufferVariable1DataParameter != null)
+                        {
+                            result = _internalRecorderBufferVariable1DataParameter.SetValue(bytes);
+                        }
+
+                        lastSnap = duration.ElapsedMilliseconds;
+                        counter++;
+                    }
+                    else
+                    {
+                        Task.Delay(250);
+                    }
+                }
+                else
+                {
+                    Task.Delay((int)rate/2);
+                }
+            } while (duration.ElapsedMilliseconds <= durationInSec * 1000);
+
+            _statusWordParameter?.SetValue(result ? (ushort)StatusWordValues.Operational : (ushort)StatusWordValues.Failure);
+
+            return result;
+        }
+
+        public bool RecordVideo(int durationInSec)
+        {
+            bool result = false;
+            int lastErrorCode = 0;
+
+            lock (SyncObject)
+            {
+                MsgLogger.WriteFlow($"record video ...");
+
+                try
+                {
+                    Task.Run(()=>
+                    {
+                        RecordVideoAsync(durationInSec);
+                    });
                 }
                 catch (Exception e)
                 {
