@@ -9,6 +9,7 @@ using EltraNavigo.Views.Devices.Relay.Base;
 using EltraCloudContracts.Contracts.Parameters;
 using EltraCloudContracts.ObjectDictionary.Common.DeviceDescription.Profiles.Application.Parameters;
 using System.IO;
+using EltraNavigo.Controls.Toast;
 
 namespace EltraNavigo.Views.PhotoControl
 {
@@ -16,8 +17,9 @@ namespace EltraNavigo.Views.PhotoControl
     {
         #region Private fields
 
-        private string[] _controlButtonText;
-        private bool[] _isControlButtonEnabled;
+        private string _controlButtonText;
+        private string _variable1ImageText;
+        private bool _isControlButtonEnabled;
         private ImageSource _variable1Image;
         private Parameter _variable1Data;
 
@@ -29,14 +31,11 @@ namespace EltraNavigo.Views.PhotoControl
         {
             UpdateViewModels = false;
 
-            _controlButtonText = new string[2];
-            _isControlButtonEnabled = new bool[2];
-
-            SetControlButtonText(0, "Take Picture");
-            EnableControlButton(0, true);
+            SetControlButtonText("Take Picture");
+            EnableControlButton(true);
 
             Title = "Photo Control";
-            Image = ImageSource.FromResource("EltraNavigo.Resources.hazardous_32px.png");
+            Image = ImageSource.FromResource("EltraNavigo.Resources.camera_32px.png");
             Uuid = "8AE87F6A-A118-4852-AD35-875D45E7DE36";
         }
 
@@ -44,23 +43,29 @@ namespace EltraNavigo.Views.PhotoControl
 
         #region Commands 
 
-        public ICommand ControlButton1Command => new Command(OnControlButton1Pressed);
-        public ICommand ControlButton2Command => new Command(OnControlButton2Pressed);
+        public ICommand ControlButtonCommand => new Command(OnControlButtonPressed);
+        public ICommand RecordVideoButtonCommand => new Command(OnRecordVideoButtonPressed);
 
         #endregion
 
         #region Properties
-       
-        public string ControlButton1Text
+
+        public string ControlButtonText
         {
-            get => _controlButtonText[0];
-            set => SetProperty(ref _controlButtonText[0], value);
+            get => _controlButtonText;
+            set => SetProperty(ref _controlButtonText, value);
+        }
+        public string Variable1ImageText
+        {
+            get => _variable1ImageText;
+            set => SetProperty(ref _variable1ImageText, value);
         }
         
-        public bool IsControlButton1Enabled
+
+        public bool IsControlButtonEnabled
         { 
-            get => _isControlButtonEnabled[0];
-            set => SetProperty(ref _isControlButtonEnabled[0], value);
+            get => _isControlButtonEnabled;
+            set => SetProperty(ref _isControlButtonEnabled, value);
         }
 
         public ImageSource Variable1Image
@@ -75,46 +80,54 @@ namespace EltraNavigo.Views.PhotoControl
 
         private void OnParameterChanged(object sender, ParameterChangedEventArgs e)
         {
-            byte[] buffer = null;
-
-            if(e.NewValue.GetValue(ref buffer) && buffer != null)
-            {
-                Variable1Image = ImageSource.FromStream(() => new MemoryStream(buffer));
-            }
+            UpdateVariable1Image(e.NewValue);
         }
 
         #endregion
 
         #region Methods
 
-        private async void OnControlButton1Pressed(object obj)
+        private async void OnControlButtonPressed(object obj)
         {
             await OnButtonPressed(0);
         }
 
-        private async void OnControlButton2Pressed(object obj)
+        private async void OnRecordVideoButtonPressed(object obj)
         {
-            await OnButtonPressed(1);
+            IsBusy = true;
+
+            if (PhotoVcs != null)
+            {
+                try
+                {
+                    var call = await PhotoVcs.RecordVideo(5);
+
+                    if (call == null || !call.Result)
+                    {
+                        ToastMessage.ShortAlert("Error - no video taken!");
+                    }
+                    else
+                    {
+                        ToastMessage.ShortAlert("Video");
+                    }
+                }
+                catch (Exception e)
+                {
+                    MsgLogger.Exception($"{GetType().Name} - OnButtonPressed", e);
+                }
+            }
+
+            IsBusy = false;
         }
 
-        private void SetControlButtonText(int channelIndex, string text)
+        private void SetControlButtonText(string text)
         {
-            _controlButtonText[channelIndex] = text;
-
-            Xamarin.Forms.Device.BeginInvokeOnMainThread(() =>
-            {
-                OnPropertyChanged($"ControlButton{channelIndex + 1}Text");
-            });
+            ControlButtonText = text;
         }
 
-        private void EnableControlButton(int channelIndex, bool enable)
+        private void EnableControlButton(bool enable)
         {
-            _isControlButtonEnabled[channelIndex] = enable;
-
-            Xamarin.Forms.Device.BeginInvokeOnMainThread(() =>
-            {
-                OnPropertyChanged($"IsControlButton{channelIndex + 1}Enabled");
-            });
+            IsControlButtonEnabled = enable;
         }
                 
         private async Task OnButtonPressed(int channelIndex)
@@ -128,7 +141,12 @@ namespace EltraNavigo.Views.PhotoControl
                     var call = await PhotoVcs.TakePicture((ushort)channelIndex);
 
                     if (call == null || !call.Result)
-                    {                        
+                    {
+                        ToastMessage.ShortAlert("Error - no picture taken!");
+                    }
+                    else
+                    {
+                        ToastMessage.ShortAlert("Picture taken!");
                     }
                 }
                 catch (Exception e)
@@ -140,28 +158,74 @@ namespace EltraNavigo.Views.PhotoControl
             IsBusy = false;
         }
 
-        public override Task Show()
+        private void RegisterParameterUpdate()
         {
-            Task.Run(async ()=>
+            Task.Run(async () =>
             {
                 _variable1Data = await Vcs.GetParameter("PARAM_InternalRecorderBufferVariable1Data");
 
-                if(_variable1Data!=null)
+                if (_variable1Data != null)
                 {
                     _variable1Data.ParameterChanged += OnParameterChanged;
                 }
 
                 Vcs.RegisterParameterUpdate("PARAM_InternalRecorderBufferVariable1Data", ParameterUpdatePriority.Medium);
             });
+        }
+
+        private void UnregisterParameterUpdate()
+        {
+            Vcs.UnregisterParameterUpdate("PARAM_InternalRecorderBufferVariable1Data", ParameterUpdatePriority.Medium);
+        }
+
+        private void UpdateVariable1Image(ParameterValue variable1DataValue)
+        {
+            byte[] buffer = null;
+
+            if (variable1DataValue != null)
+            {
+                if (variable1DataValue.GetValue(ref buffer) && buffer != null)
+                {
+                    Variable1Image = ImageSource.FromStream(() => new MemoryStream(buffer));
+                }
+
+                Variable1ImageText = $"{variable1DataValue.Modified}";
+            }
+        }
+
+        public override Task Show()
+        {
+            Task.Run(async () => {
+                var variable1DataValue = await Vcs.GetParameterValue("PARAM_InternalRecorderBufferVariable1Data");
+
+                UpdateVariable1Image(variable1DataValue);
+            });
             
             return base.Show();
         }
 
-        public override Task Hide()
+        public override async Task<bool> StartUpdate()
         {
-            Vcs.UnregisterParameterUpdate("PARAM_InternalRecorderBufferVariable1Data", ParameterUpdatePriority.Medium);
+            bool result = await base.StartUpdate();
 
-            return base.Hide();
+            if (result)
+            {
+                RegisterParameterUpdate();
+            }
+
+            return result;
+        }
+
+        public override async Task<bool> StopUpdate()
+        {
+            bool result = await base.StopUpdate();
+
+            if (result)
+            {
+                UnregisterParameterUpdate();
+            }
+
+            return result;
         }
 
         #endregion

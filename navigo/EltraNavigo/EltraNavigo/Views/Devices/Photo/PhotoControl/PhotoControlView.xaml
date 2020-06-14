@@ -42,10 +42,17 @@
 
                 <Frame Grid.Row="1" Grid.Column="1" BorderColor="{StaticResource NavigationPrimary}">
                     <StackLayout HeightRequest="100">
-                        <Button IsEnabled="{Binding IsControlButton1Enabled}"  
+                        <Button IsEnabled="{Binding IsControlButtonEnabled}"  
                                 FontSize="Large" BackgroundColor="{StaticResource NavigationPrimary}" BorderColor="White" TextColor="White"
                             VerticalOptions="FillAndExpand" HorizontalOptions="FillAndExpand"  
-                            Text="{Binding ControlButton1Text}" Command="{Binding ControlButton1Command}">
+                            Text="{Binding ControlButtonText}" Command="{Binding ControlButtonCommand}">
+                            <Button.HeightRequest>
+                                <OnPlatform x:TypeArguments="x:Double" iOS="100"/>
+                            </Button.HeightRequest>
+                        </Button>
+                        <Button FontSize="Large" BackgroundColor="{StaticResource NavigationPrimary}" BorderColor="White" TextColor="White"
+                            VerticalOptions="FillAndExpand" HorizontalOptions="FillAndExpand"  
+                            Text="Record Video" Command="{Binding RecordVideoButtonCommand}">
                             <Button.HeightRequest>
                                 <OnPlatform x:TypeArguments="x:Double" iOS="100"/>
                             </Button.HeightRequest>
@@ -58,8 +65,9 @@
                 </Frame>
 
                 <Frame Grid.Row="3" Grid.Column="1" BorderColor="{StaticResource NavigationPrimary}">
-                    <StackLayout HeightRequest="400">
+                    <StackLayout Orientation="Vertical">
                         <Image HorizontalOptions="CenterAndExpand" VerticalOptions="CenterAndExpand" Source="{Binding Variable1Image}" Aspect="AspectFill"/>
+                        <Label HorizontalOptions="CenterAndExpand" VerticalOptions="CenterAndExpand" Text="{Binding Variable1ImageText}"/>
                     </StackLayout>
                 </Frame>
                 

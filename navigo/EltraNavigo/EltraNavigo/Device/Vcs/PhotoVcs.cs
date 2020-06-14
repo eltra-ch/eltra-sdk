@@ -51,6 +51,32 @@ namespace EltraNavigo.Device.Vcs
             return result;
         }
 
+        public async Task<ExecuteResult> RecordVideo(int durationInSec)
+        {
+            var result = new ExecuteResult();
+            var command = await GetVcsCommand("RecordVideo");
+            bool commandResult = false;
+            uint lastErrorCode = 0;
+
+            if (command != null)
+            {
+                command.SetParameterValue("DurationInSec", durationInSec);
+
+                var responseCommand = await Agent.ExecuteCommand(command);
+
+                if (responseCommand != null)
+                {
+                    responseCommand.GetParameterValue("ErrorCode", ref lastErrorCode);
+                    responseCommand.GetParameterValue("Result", ref commandResult);
+                }
+
+                result.Result = commandResult;
+                result.ErrorCode = lastErrorCode;
+            }
+
+            return result;
+        }
+
         #endregion
     }
 }

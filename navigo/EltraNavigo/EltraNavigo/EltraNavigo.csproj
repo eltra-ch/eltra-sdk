@@ -33,6 +33,7 @@
     <None Remove="Resources\anchor_32px.png" />
     <None Remove="Resources\bike_32px.png" />
     <None Remove="Resources\book-open_32px.png" />
+    <None Remove="Resources\camera_32px.png" />
     <None Remove="Resources\clouds.jpg" />
     <None Remove="Resources\clouds.png" />
     <None Remove="Resources\download_32px.png" />
@@ -58,6 +59,7 @@
     <EmbeddedResource Include="Resources\anchor_32px.png" />
     <EmbeddedResource Include="Resources\bike_32px.png" />
     <EmbeddedResource Include="Resources\book-open_32px.png" />
+    <EmbeddedResource Include="Resources\camera_32px.png" />
     <EmbeddedResource Include="Resources\clouds.png" />
     <EmbeddedResource Include="Resources\download_32px.png" />
     <EmbeddedResource Include="Resources\hamburger.png" />
