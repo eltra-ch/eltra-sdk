@@ -11,7 +11,7 @@
     #include <sys/types.h>
     #include <sys/wait.h>
 #else
-    #include <windows.h>    
+    #include <windows.h>
 #endif
 
 #include "common.h"
@@ -141,7 +141,7 @@ DLL_EXPORT int fswebcam_take_picture(char* p_pFileName)
     Mat frame;
     vector<uchar> buf;
     FILE* fileHandler = 0;
-    
+
     lResult = OpenVideoCaptureDevice();
 
     if (lResult == FSWEBCAM_SUCCESS)
@@ -150,9 +150,9 @@ DLL_EXPORT int fswebcam_take_picture(char* p_pFileName)
         {
             if (imencode(".jpg", frame, buf))
             {
-                int err = fopen_s(&fileHandler, p_pFileName, "wb");
+                fileHandler = fopen(p_pFileName, "wb");
 
-                if (err == 0 && fileHandler)
+                if (fileHandler)
                 {
                     fwrite(buf.data(), sizeof(uchar), buf.size(), fileHandler);
 
@@ -162,7 +162,7 @@ DLL_EXPORT int fswebcam_take_picture(char* p_pFileName)
                 }
                 else
                 {
-                    printf("ERROR: file '%s' cannot be opened, error code = %d\n", p_pFileName, err);
+                    printf("ERROR: file '%s' cannot be opened, error code = %d\n", p_pFileName);
                 }
             }
             else
