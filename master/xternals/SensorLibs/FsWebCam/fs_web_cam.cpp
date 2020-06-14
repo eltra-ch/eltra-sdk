@@ -2,16 +2,16 @@
 #include <mutex>
 #include <stdlib.h>
 #include <string.h>
+#include <opencv2/videoio.hpp>
+#include <opencv2/core.hpp>
+#include <opencv2/highgui.hpp>
 
 #ifdef __arm__
     #include <unistd.h>
     #include <sys/types.h>
     #include <sys/wait.h>
 #else
-    #include <windows.h>
-    #include <opencv2/videoio.hpp>
-    #include <opencv2/core.hpp>
-    #include <opencv2/highgui.hpp>
+    #include <windows.h>    
 #endif
 
 #include "common.h"
@@ -20,8 +20,6 @@
 #define FSWEBCAM_SUCCESS 0
 #define FSWEBCAM_FAILURE 1
 
-#ifndef __arm__
-
 using namespace cv;
 using namespace std;
 
@@ -29,10 +27,6 @@ VideoCapture* g_pCapture = 0;
 int g_deviceID = 0;        // 0 = open default camera
 int g_apiID = cv::CAP_ANY; // 0 = autodetect default API
 vector<uchar> g_buffer;
-
-#endif
-
-#ifndef __arm__
 
 int OpenVideoCaptureDevice()
 {
@@ -63,13 +57,9 @@ int OpenVideoCaptureDevice()
     return lResult;
 }
 
-#endif
-
 DLL_EXPORT int fswebcam_initialize(int p_deviceId, int p_apiID)
 {
     int lResult = FSWEBCAM_SUCCESS;
-
-#ifndef __arm__
 
     if (g_pCapture)
     {
@@ -82,16 +72,12 @@ DLL_EXPORT int fswebcam_initialize(int p_deviceId, int p_apiID)
 
     lResult = OpenVideoCaptureDevice();
 
-#endif
-
     return lResult;
 }
 
 DLL_EXPORT int fswebcam_release()
 {
     int lResult = FSWEBCAM_SUCCESS;
-
-#ifndef __arm__
 
     if (g_pCapture)
     {
@@ -100,18 +86,12 @@ DLL_EXPORT int fswebcam_release()
         lResult = FSWEBCAM_SUCCESS;
     }
     
-#endif    
-
     return 0;
 }
 
-DLL_EXPORT int fswebcam_take_picture_buffer_size(int* p_pBufferSize)
+DLL_EXPORT int fswebcam_take_picture_buffer_size(unsigned int* p_pBufferSize)
 {
     int lResult = FSWEBCAM_FAILURE;
-
-#ifdef __arm__
-    
-#else
     Mat frame;
 
     lResult = OpenVideoCaptureDevice();
@@ -124,39 +104,33 @@ DLL_EXPORT int fswebcam_take_picture_buffer_size(int* p_pBufferSize)
         {
             if (imencode(".jpg", frame, g_buffer))
             {
-                *p_pBufferSize = g_buffer.size();
+                *p_pBufferSize = (unsigned int)g_buffer.size();
             }
             else
             {
-                lResult == FSWEBCAM_FAILURE;
+                lResult = FSWEBCAM_FAILURE;
                 printf("ERROR: camera device id = '%d', app id = %d frame cannot be encoded\n", g_deviceID, g_apiID);
             }
         }
         else
         {
-            lResult == FSWEBCAM_FAILURE;
+            lResult = FSWEBCAM_FAILURE;
             printf("ERROR: camera device id = '%d', app id = %d frame cannot be read\n", g_deviceID, g_apiID);
         }
     }
 
-#endif
-
     return lResult;
 }
 
-DLL_EXPORT int fswebcam_take_picture_buffer(unsigned char* p_Buffer, int p_BufferSize)
+DLL_EXPORT int fswebcam_take_picture_buffer(unsigned char* p_Buffer, unsigned int p_BufferSize)
 {
     int lResult = FSWEBCAM_FAILURE;
 
-#ifdef __arm__
-    
-#else
     if (p_BufferSize >= g_buffer.size())
     {
         memcpy(p_Buffer, g_buffer.data(), g_buffer.size());
         lResult = FSWEBCAM_SUCCESS;
     }
-#endif
 
     return lResult;
 }
@@ -164,21 +138,6 @@ DLL_EXPORT int fswebcam_take_picture_buffer(unsigned char* p_Buffer, int p_Buffe
 DLL_EXPORT int fswebcam_take_picture(char* p_pFileName)
 {
     int lResult = FSWEBCAM_FAILURE;
-
-#ifdef __arm__
-        char* pCmd = new char[255];
-
-        memset(pCmd, 0, 255);
-
-        sprintf(pCmd, "fswebcam --input %d %s", p_usIndex, p_pFileName);
-        
-        system(pCmd);
-
-        lResult = FSWEBCAM_SUCCESS;
-        
-        delete[] pCmd;
-
-#else
     Mat frame;
     vector<uchar> buf;
     FILE* fileHandler = 0;
@@ -216,8 +175,6 @@ DLL_EXPORT int fswebcam_take_picture(char* p_pFileName)
             printf("ERROR: camera device id = '%d', app id = %d frame cannot be read\n", g_deviceID, g_apiID);
         }
     }
-    
-#endif
 
     return lResult;
 }
