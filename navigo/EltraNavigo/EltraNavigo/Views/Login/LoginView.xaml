@@ -57,7 +57,7 @@
                                 <RowDefinition Height="Auto"/>
                                 <RowDefinition Height="Auto"/>
                                 <RowDefinition Height="Auto"/>
-                                <RowDefinition Height="42"/>
+                                <RowDefinition Height="Auto"/>
                                 <RowDefinition Height="42"/>
                                 <RowDefinition Height="Auto"/>
                             </Grid.RowDefinitions>
@@ -94,16 +94,19 @@
                             </Frame>
 
                             <Frame Grid.Row="6">
-                                <Button IsTabStop="True" TabIndex="3" Text="LOGIN" Command="{Binding LoginCommand}" IsEnabled="{Binding IsValid}"/>
+                                <StackLayout>
+                                    <Button IsTabStop="True" TabIndex="3" Text="LOGIN" Command="{Binding LoginCommand}" IsEnabled="{Binding IsValid}"/>
+                                    <Button IsTabStop="True" TabIndex="4" Text="TOUCH ID LOGIN" Command="{Binding TouchLoginCommand}"/>
+                                </StackLayout>
                             </Frame>
 
                             <Frame Grid.Row="7" IsVisible="false">
-                                <Button IsTabStop="True" TabIndex="3" Text="REGISTER" Command="{Binding RegisterCommand}" IsEnabled="{Binding IsValid}"/>
+                                <Button IsTabStop="True" TabIndex="5" Text="REGISTER" Command="{Binding RegisterCommand}" IsEnabled="{Binding IsValid}"/>
                             </Frame>
 
                             <Frame Grid.Row="8" BackgroundColor="Transparent">
                                 <StackLayout Orientation="Horizontal">
-                                    <CheckBox IsChecked="{Binding AutoLogOnActive}" WidthRequest="32"/>
+                                    <CheckBox TabIndex="6" IsChecked="{Binding AutoLogOnActive}" WidthRequest="32"/>
                                     <Label Text="Automatically Log On" VerticalOptions="CenterAndExpand" HorizontalOptions="StartAndExpand" TextColor="Black" BackgroundColor="Transparent"/>
                                 </StackLayout>
                             </Frame>

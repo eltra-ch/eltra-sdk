@@ -40,6 +40,8 @@
 	<string>61</string>
 	<key>XSAppIconAssets</key>
 	<string>Assets.xcassets/AppIcon.appiconset</string>
+	<key>NSFaceIDUsageDescription</key>
+	<string>Need your face to unlock secrets!</string>
 	<key>NSAppTransportSecurity</key>
 	<dict>
 		<key>NSExceptionDomains</key>

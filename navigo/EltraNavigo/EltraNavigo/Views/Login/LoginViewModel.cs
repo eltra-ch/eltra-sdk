@@ -4,6 +4,8 @@ using System.Windows.Input;
 using EltraNavigo.Controls;
 using Xamarin.Forms;
 using System.ComponentModel;
+using Plugin.Fingerprint.Abstractions;
+using Plugin.Fingerprint;
 
 namespace EltraNavigo.Views.Login
 {
@@ -78,6 +80,8 @@ namespace EltraNavigo.Views.Login
 
         public ICommand LoginCommand => new Command(OnLoginClicked);
 
+        public ICommand TouchLoginCommand => new Command(OnTouchLoginClicked);
+
         public ICommand RegisterCommand => new Command(OnRegisterClicked);
 
         #endregion
@@ -125,6 +129,21 @@ namespace EltraNavigo.Views.Login
             StoreLoginSettings();
 
             OnChanged();
+        }
+
+        private async void OnTouchLoginClicked()
+        {
+            var request = new AuthenticationRequestConfiguration("Prove you have fingers!", "Because without it you can't have access");
+            var result = await CrossFingerprint.Current.AuthenticateAsync(request);
+
+            if (result.Authenticated)
+            {
+                // do secret stuff :)
+            }
+            else
+            {
+                // not allowed to do secret stuff :(
+            }
         }
 
         private void OnRegisterClicked()
