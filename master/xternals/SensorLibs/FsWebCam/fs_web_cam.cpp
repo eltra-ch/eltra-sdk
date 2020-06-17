@@ -55,7 +55,7 @@ int OpenVideoCaptureDevice()
     }
     else
     {
-		printf("INFO: device id = %d, api id = %d already opened!\n", g_deviceId, g_apiID);
+		printf("INFO: device id = %d, api id = %d already opened!\n", g_deviceID, g_apiID);
 		
         lResult = FSWEBCAM_SUCCESS;
     }
@@ -104,7 +104,7 @@ DLL_EXPORT int fswebcam_release()
         g_pCapture = 0;
         lResult = FSWEBCAM_SUCCESS;
 		
-		printf("SUCCESS: device id = %d, api id = %d release\n", g_deviceId, g_apiID);
+		printf("SUCCESS: device id = %d, api id = %d release\n", g_deviceID, g_apiID);
     }
     else
 	{
