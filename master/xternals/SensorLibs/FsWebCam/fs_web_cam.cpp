@@ -32,6 +32,8 @@ int OpenVideoCaptureDevice()
 {
     int lResult = FSWEBCAM_FAILURE;
 
+	printf("open device id = %d, api id = %d ...\n", g_deviceID, g_apiID);
+
     if (g_pCapture == 0)
     {
         g_pCapture = new VideoCapture();
@@ -40,6 +42,8 @@ int OpenVideoCaptureDevice()
 
         if (g_pCapture->isOpened())
         {
+			printf("SUCCESS: device id = %d, api id = %d opened!\n", g_deviceID, g_apiID);
+			
             lResult = FSWEBCAM_SUCCESS;
         }
         else
@@ -51,6 +55,8 @@ int OpenVideoCaptureDevice()
     }
     else
     {
+		printf("INFO: device id = %d, api id = %d already opened!\n", p_deviceId, p_apiID);
+		
         lResult = FSWEBCAM_SUCCESS;
     }
 
@@ -60,6 +66,8 @@ int OpenVideoCaptureDevice()
 DLL_EXPORT int fswebcam_initialize(int p_deviceId, int p_apiID)
 {
     int lResult = FSWEBCAM_SUCCESS;
+
+	printf("initialize, device id = %d, api id = %d\n", p_deviceId, p_apiID);
 
     if (g_pCapture)
     {
@@ -72,6 +80,15 @@ DLL_EXPORT int fswebcam_initialize(int p_deviceId, int p_apiID)
 
     lResult = OpenVideoCaptureDevice();
 
+	if(lResult == FSWEBCAM_SUCCESS)
+	{
+		printf("ERROR: device id = %d, api id = %d initialization failed!\n", p_deviceId, p_apiID);
+	}
+	else
+	{
+		printf("SUCCESS: device id = %d, api id = %d initialization!\n", p_deviceId, p_apiID);
+	}
+	
     return lResult;
 }
 
@@ -79,19 +96,29 @@ DLL_EXPORT int fswebcam_release()
 {
     int lResult = FSWEBCAM_SUCCESS;
 
+	printf("release, device id = %d, api id = %d\n", g_deviceID, g_apiID);
+
     if (g_pCapture)
     {
         delete g_pCapture;
         g_pCapture = 0;
         lResult = FSWEBCAM_SUCCESS;
+		
+		printf("SUCCESS: device id = %d, api id = %d release\n", p_deviceId, p_apiID);
     }
-    
+    else
+	{
+		printf("WARNING: release, device id = %d, api id = %d not opened\n", g_deviceID, g_apiID);
+	}
+	
     return 0;
 }
 
 int fswebcam_try_recover()
 {
     int lResult = FSWEBCAM_FAILURE;
+
+	printf("recover, device id = %d, api id = %d\n", g_deviceID, g_apiID);
 
     fswebcam_release();
 
@@ -105,16 +132,24 @@ DLL_EXPORT int fswebcam_take_picture_buffer_size(unsigned int* p_pBufferSize)
     int lResult = FSWEBCAM_FAILURE;
     Mat frame;
 
+	printf("take picture buffer size, device id = %d, api id = %d\n", g_deviceID, g_apiID);
+
     lResult = OpenVideoCaptureDevice();
+
+	g_buffer.clear();
 
     if (lResult == FSWEBCAM_SUCCESS)
     {
-        g_buffer.clear();
+        printf("read frame, device id = %d, api id = %d\n", g_deviceID, g_apiID);
 
         if (g_pCapture && g_pCapture->read(frame))
         {
+			printf("SUCCESS: read frame, device id = %d, api id = %d\n", g_deviceID, g_apiID);
+			
             if (imencode(".jpg", frame, g_buffer))
             {
+				printf("SUCCESS: encoded, device id = %d, api id = %d, buffer size = %d\n", g_deviceID, g_apiID, g_buffer.size());
+				
                 *p_pBufferSize = (unsigned int)g_buffer.size();
             }
             else
@@ -134,6 +169,10 @@ DLL_EXPORT int fswebcam_take_picture_buffer_size(unsigned int* p_pBufferSize)
             }
         }
     }
+	else
+	{
+		printf("ERROR: device id = '%d', app id = %d cannot be opened\n", g_deviceID, g_apiID);
+	}
 
     return lResult;
 }
@@ -142,11 +181,20 @@ DLL_EXPORT int fswebcam_take_picture_buffer(unsigned char* p_Buffer, unsigned in
 {
     int lResult = FSWEBCAM_FAILURE;
 
+	printf("take picture buffer, device id = %d, api id = %d, size = %d\n", g_deviceID, g_apiID, g_buffer.size());
+
     if (p_BufferSize >= g_buffer.size())
     {
         memcpy(p_Buffer, g_buffer.data(), g_buffer.size());
+		
+		printf("SUCCESS: get buffer, device id = %d, api id = %d, buffer size = %d\n", g_deviceID, g_apiID, g_buffer.size());
+		
         lResult = FSWEBCAM_SUCCESS;
     }
+	else
+	{
+		printf("ERROR: buffer empty, device id = '%d', app id = %d\n", g_deviceID, g_apiID);
+	}
 
     return lResult;
 }
@@ -191,6 +239,10 @@ DLL_EXPORT int fswebcam_take_picture(char* p_pFileName)
             printf("ERROR: camera device id = '%d', app id = %d frame cannot be read\n", g_deviceID, g_apiID);
         }
     }
-
+	else
+	{
+		printf("ERROR: device id = '%d', app id = %d cannot be opened\n", g_deviceID, g_apiID);
+	}
+	
     return lResult;
 }
