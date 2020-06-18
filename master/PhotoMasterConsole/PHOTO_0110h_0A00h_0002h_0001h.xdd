@@ -28,7 +28,7 @@
 				<version versionType="SW" readOnly="true">0x0110</version>
 				<version versionType="HW" readOnly="true">0x0A00</version>
 				<version versionType="APPNB" readOnly="true">0x0002</version>
-				<version versionType="APPVER" readOnly="true">0x0004</version>
+				<version versionType="APPVER" readOnly="true">0x0005</version>
 			</DeviceIdentity>
 			<DeviceManager>
 				<userLevelList>

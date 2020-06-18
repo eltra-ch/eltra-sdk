@@ -69,11 +69,7 @@ DLL_EXPORT int fswebcam_initialize(int p_deviceId, int p_apiID)
 
 	printf("initialize, device id = %d, api id = %d\n", p_deviceId, p_apiID);
 
-    if (g_pCapture)
-    {
-        delete g_pCapture;
-        g_pCapture = 0;
-    }
+    fswebcam_release();
 
     g_deviceID = p_deviceId;
     g_apiID = p_apiID;
@@ -82,11 +78,11 @@ DLL_EXPORT int fswebcam_initialize(int p_deviceId, int p_apiID)
 
 	if(lResult == FSWEBCAM_SUCCESS)
 	{
-		printf("ERROR: device id = %d, api id = %d initialization failed!\n", p_deviceId, p_apiID);
+		printf("SUCCESS: device id = %d, api id = %d initialization failed!\n", p_deviceId, p_apiID);
 	}
 	else
 	{
-		printf("SUCCESS: device id = %d, api id = %d initialization!\n", p_deviceId, p_apiID);
+		printf("ERROR: device id = %d, api id = %d initialization!\n", p_deviceId, p_apiID);
 	}
 	
     return lResult;
