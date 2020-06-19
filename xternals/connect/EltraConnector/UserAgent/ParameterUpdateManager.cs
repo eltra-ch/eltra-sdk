@@ -90,18 +90,22 @@ namespace EltraConnector.UserAgent
                     {
                         var json = await _wsConnectionManager.Receive(_commandExecUuid);
 
-                        if (WsConnection.IsJson(json))
+                        _ = Task.Run(() =>
                         {
-                            var parameterEntry = JsonConvert.DeserializeObject<Parameter>(json, new JsonSerializerSettings
+                            if (WsConnection.IsJson(json))
                             {
-                                Error = HandleDeserializationError
-                            });                            
+                                var parameterEntry = JsonConvert.DeserializeObject<Parameter>(json, new JsonSerializerSettings
+                                {
+                                    Error = HandleDeserializationError
+                                });
 
-                            if (parameterEntry != null)
-                            {
-                                OnParameterChanged(new ParameterChangedEventArgs(parameterEntry, null, parameterEntry.ActualValue));
+                                if (parameterEntry != null)
+                                {
+                                    OnParameterChanged(new ParameterChangedEventArgs(parameterEntry, null, parameterEntry.ActualValue));
+                                }
                             }
-                        }                            
+                        });
+                       
                     }                    
                 }
                 catch (Exception e)
@@ -109,11 +113,11 @@ namespace EltraConnector.UserAgent
                     MsgLogger.Exception($"{GetType().Name} - Execute", e);
                 }
 
-                if (ShouldRun())
+                if (ShouldRun() && !_wsConnectionManager.IsConnected(_commandExecUuid))
                 {
                     await CreateWsChannel(_commandExecUuid, _wsChannelName);
 
-                    Thread.Sleep(executeIntervalWs);
+                    await Task.Delay(executeIntervalWs);
                 }
             }
 
