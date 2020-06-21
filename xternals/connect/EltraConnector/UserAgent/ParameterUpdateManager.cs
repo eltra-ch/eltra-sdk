@@ -10,6 +10,7 @@ using EltraCloudContracts.ObjectDictionary.Common.DeviceDescription.Profiles.App
 using EltraCommon.Threads;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
+using System.Collections.Generic;
 
 namespace EltraConnector.UserAgent
 {
@@ -57,14 +58,18 @@ namespace EltraConnector.UserAgent
             return base.Stop();
         }
 
-        private async Task SendSessionIdentyfication(string commandExecUuid)
+        private async Task<bool> SendSessionIdentyfication(string commandExecUuid)
         {
+            bool result = false;
+
             if (_wsConnectionManager.IsConnected(commandExecUuid))
             {
                 var sessionIdent = new SessionIdentification() { Uuid = _sessionAdapter.Uuid };
 
-                await _wsConnectionManager.Send(commandExecUuid, sessionIdent);
+                result = await _wsConnectionManager.Send(commandExecUuid, sessionIdent);
             }
+
+            return result;
         }
 
         private void HandleDeserializationError(object sender, ErrorEventArgs errorArgs)
@@ -78,10 +83,12 @@ namespace EltraConnector.UserAgent
 
         protected override async Task Execute()
         {
-            const int executeIntervalWs = 10;
-            
-            await CreateWsChannel(_commandExecUuid, _wsChannelName);
+            const int executeIntervalWs = 1;
 
+            var parameterChangedTasks = new List<Task>();
+
+            await CreateWsChannel(_commandExecUuid, _wsChannelName);
+            
             while (ShouldRun())
             {
                 try
@@ -90,22 +97,38 @@ namespace EltraConnector.UserAgent
                     {
                         var json = await _wsConnectionManager.Receive(_commandExecUuid);
 
-                        _ = Task.Run(() =>
+                        var parameterChangedTask = Task.Run(() =>
                         {
                             if (WsConnection.IsJson(json))
                             {
-                                var parameterEntry = JsonConvert.DeserializeObject<Parameter>(json, new JsonSerializerSettings
+                                var parameterSet = JsonConvert.DeserializeObject<ParameterSet>(json, new JsonSerializerSettings
                                 {
                                     Error = HandleDeserializationError
                                 });
 
-                                if (parameterEntry != null)
+                                if (parameterSet != null)
                                 {
-                                    OnParameterChanged(new ParameterChangedEventArgs(parameterEntry, null, parameterEntry.ActualValue));
+                                    foreach(var parameterEntry in parameterSet.ParameterList)
+                                    {
+                                        OnParameterChanged(new ParameterChangedEventArgs(parameterEntry, null, parameterEntry.ActualValue));
+                                    }
+                                }
+                                else
+                                {
+                                    var parameterEntry = JsonConvert.DeserializeObject<Parameter>(json, new JsonSerializerSettings
+                                    {
+                                        Error = HandleDeserializationError
+                                    });
+
+                                    if (parameterEntry != null)
+                                    {
+                                        OnParameterChanged(new ParameterChangedEventArgs(parameterEntry, null, parameterEntry.ActualValue));
+                                    }
                                 }
                             }
                         });
-                       
+
+                        parameterChangedTasks.Add(parameterChangedTask);
                     }                    
                 }
                 catch (Exception e)
@@ -121,18 +144,27 @@ namespace EltraConnector.UserAgent
                 }
             }
 
+            foreach(var parameterChangedTask in parameterChangedTasks)
+            {
+                parameterChangedTask.Wait();
+            }
+
             await CloseWsChannel(_commandExecUuid);
         }
 
-        private async Task CreateWsChannel(string commandExecUuid, string wsChannelName)
+        private async Task<bool> CreateWsChannel(string commandExecUuid, string wsChannelName)
         {
+            bool result = false;
+
             if (_wsConnectionManager.CanConnect(commandExecUuid))
             {
                 if (await _wsConnectionManager.Connect(commandExecUuid, wsChannelName))
                 {
-                    await SendSessionIdentyfication(commandExecUuid);
+                    result = await SendSessionIdentyfication(commandExecUuid);
                 }
             }
+
+            return result;
         }
 
         private async Task CloseWsChannel(string commandExecUuid)
