@@ -106,7 +106,7 @@ namespace EltraConnector.UserAgent
                                     Error = HandleDeserializationError
                                 });
 
-                                if (parameterSet != null)
+                                if (parameterSet != null && parameterSet.Count > 0)
                                 {
                                     foreach(var parameterEntry in parameterSet.ParameterList)
                                     {
