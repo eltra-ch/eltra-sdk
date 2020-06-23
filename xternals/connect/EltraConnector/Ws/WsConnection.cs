@@ -366,7 +366,7 @@ namespace EltraConnector.Ws
             }
             catch (WebSocketException e)
             {
-                MsgLogger.Exception($"{GetType().Name} - ReadMessage", e);
+                MsgLogger.Exception($"{GetType().Name} - ReadMessage", e.InnerException);
             }
             catch (Exception e)
             {

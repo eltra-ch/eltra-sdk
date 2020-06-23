@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Security.Cryptography;
 using System.Threading.Tasks;
 using EltraCloudContracts.Contracts.CommandSets;
 using EltraCloudContracts.Contracts.Sessions;
@@ -65,86 +66,114 @@ namespace EltraConnector.SyncAgent
             errorArgs.ErrorContext.Handled = true;
         }
 
-        protected override async Task Execute()
+        private async Task Connect(string sessionUuid, string channelName)
         {
-            const int executeIntervalRest = 100;
-            const int executeIntervalWs = 10;
-
-            var commandExecUuid = _sessionControllerAdapter.Session.Uuid + "_CommandExec";
-            string wsChannelName = "CommandsExecution";
-
-            if (_wsConnectionManager.CanConnect(commandExecUuid))
+            if (_wsConnectionManager != null)
             {
-                if(await _wsConnectionManager.Connect(commandExecUuid, wsChannelName))
+                if (_wsConnectionManager.CanConnect(sessionUuid))
                 {
-                    await SendSessionIdentyfication(commandExecUuid);
+                    if (await _wsConnectionManager.Connect(sessionUuid, channelName))
+                    {
+                        await SendSessionIdentyfication(sessionUuid);
+                    }
                 }
             }
+        }
+
+        protected override async Task Execute()
+        {
+            var sessionUuid = _sessionControllerAdapter.Session.Uuid + "_CommandExec";
+            string channelName = "CommandsExecution";
+
+            await Connect(sessionUuid, channelName);
 
             _stopping = false;
 
             while (ShouldRun())
             {
-                if(_wsConnectionManager.IsConnected(commandExecUuid))
+                await ProcessRequest(sessionUuid);
+
+                if (!_stopping)
                 {
-                    var json = await _wsConnectionManager.Receive(commandExecUuid);
+                    await Connect(sessionUuid, channelName);
+                }
+            }
+        }
 
-                    try
+        private async Task ProcessWebSocketRequest(string sessionUuid)
+        {
+            const int executeIntervalWs = 1;
+
+            try
+            {
+                var json = await _wsConnectionManager.Receive(sessionUuid);
+
+                if (WsConnection.IsJson(json))
+                {
+                    var executeCommands = JsonConvert.DeserializeObject<List<ExecuteCommand>>(json, new JsonSerializerSettings
                     {
+                        Error = HandleDeserializationError
+                    });
 
-                        if (WsConnection.IsJson(json))
+                    if (executeCommands != null)
+                    {
+                        int processedCommands = await _sessionControllerAdapter.ExecuteCommands(executeCommands);
+
+                        MsgLogger.WriteDebug($"{GetType().Name} - ProcessWebSocketRequest", $"executed: received commends = {executeCommands.Count}, processed commands = {processedCommands}");
+                    }
+                    else
+                    {
+                        var sessionStatusUpdate = JsonConvert.DeserializeObject<SessionStatusUpdate>(json, new JsonSerializerSettings
                         {
-                            var executeCommands = JsonConvert.DeserializeObject<List<ExecuteCommand>>(json, new JsonSerializerSettings
-                            {
-                                Error = HandleDeserializationError
-                            });                            
-                            
-                            if (executeCommands != null)
-                            {
-                                Task.Run(async ()=> {
-                                    await _sessionControllerAdapter.ExecuteCommands(executeCommands);
-                                });                                
-                            }
-                            else
-                            {
-                                var sessionStatusUpdate = JsonConvert.DeserializeObject<SessionStatusUpdate>(json, new JsonSerializerSettings
-                                {
-                                    Error = HandleDeserializationError
-                                });
+                            Error = HandleDeserializationError
+                        });
 
-                                if (sessionStatusUpdate != null)
-                                {
-                                    if (sessionStatusUpdate.SessionUuid != _sessionControllerAdapter.Session.Uuid)
-                                    {
-                                        MsgLogger.WriteDebug($"{GetType().Name} - Execute", $"session {sessionStatusUpdate.SessionUuid}, status changed to {sessionStatusUpdate.Status}");
+                        if (sessionStatusUpdate != null)
+                        {
+                            if (sessionStatusUpdate.SessionUuid != _sessionControllerAdapter.Session.Uuid)
+                            {
+                                MsgLogger.WriteDebug($"{GetType().Name} - Execute", $"session {sessionStatusUpdate.SessionUuid}, status changed to {sessionStatusUpdate.Status}");
 
-                                        OnRemoteSessionStatusChanged(new SessionStatusChangedEventArgs() { Uuid = sessionStatusUpdate.SessionUuid, Status = sessionStatusUpdate.Status });
-                                    }
-                                }
+                                OnRemoteSessionStatusChanged(new SessionStatusChangedEventArgs() { Uuid = sessionStatusUpdate.SessionUuid, Status = sessionStatusUpdate.Status });
                             }
                         }
+                        else
+                        {
+                            MsgLogger.WriteLine($"{GetType().Name} - Execute - Unknown message received");
+                        }
                     }
-                    catch (Exception e)
-                    {
-                        MsgLogger.Exception($"{GetType().Name} - Execute", e);
-                    }
-
-                    await Task.Delay(executeIntervalWs);
                 }
-                else if(!_stopping)
+                else
                 {
-                    await _sessionControllerAdapter.ExecuteCommands();
-                    
-                    await Task.Delay(executeIntervalRest);
+                    MsgLogger.WriteLine($"{GetType().Name} - Execute - message received");
                 }
+            }
+            catch (Exception e)
+            {
+                MsgLogger.Exception($"{GetType().Name} - Execute", e);
+            }
 
-                if (_wsConnectionManager.CanConnect(commandExecUuid) && !_stopping)
-                {
-                    if(await _wsConnectionManager.Connect(commandExecUuid, wsChannelName))
-                    {
-                        await SendSessionIdentyfication(commandExecUuid);
-                    }
-                }                
+            await Task.Delay(executeIntervalWs);
+        }
+
+        private async Task ProcessRestRequest()
+        {
+            const int executeIntervalRest = 100;
+
+            await _sessionControllerAdapter.ExecuteCommands();
+
+            await Task.Delay(executeIntervalRest);
+        }
+
+        private async Task ProcessRequest(string sessionUuid)
+        {   
+            if (_wsConnectionManager != null && _wsConnectionManager.IsConnected(sessionUuid))
+            {
+                await ProcessWebSocketRequest(sessionUuid);
+            }
+            else if (!_stopping)
+            {
+                await ProcessRestRequest();
             }
         }
 
