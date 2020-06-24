@@ -85,7 +85,7 @@ namespace EltraMaster
             }
             else
             {
-                result = true;
+                result = agent.Good;
             }
 
             return result;
@@ -134,7 +134,7 @@ namespace EltraMaster
                     {
                         repeat = true;
 
-                        MsgLogger.WriteError($"{GetType().Name} - Start", "Connection failed, repeat!");
+                        MsgLogger.WriteError($"{GetType().Name} - Start", $"Connection failed, repeat in {timeout} sec. !");
 
                         await Task.Delay(reconnectDelay);
                     }
