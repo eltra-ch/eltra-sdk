@@ -37,7 +37,12 @@ namespace EltraConnector.Controllers
 
                 if (response.StatusCode == HttpStatusCode.OK)
                 {
+                    MsgLogger.WriteDebug($"{GetType().Name} - SignIn", $"Sign-in for user {authData.Login} successful!");
                     result = true;
+                }
+                else
+                {
+                    MsgLogger.WriteError($"{GetType().Name} - SignIn", $"Sign-in for user {authData.Login} failed! status code = {response.StatusCode}");
                 }
             }
             catch (Exception e)
