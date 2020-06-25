@@ -2,17 +2,18 @@
 #include <mutex>
 #include <stdlib.h>
 #include <string.h>
-#include <opencv2/videoio.hpp>
-#include <opencv2/core.hpp>
-#include <opencv2/highgui.hpp>
 
-#ifdef __arm__
+#ifdef __linux__
     #include <unistd.h>
     #include <sys/types.h>
     #include <sys/wait.h>
-#else
+#elif _WIN32
     #include <windows.h>
 #endif
+
+#include <opencv2/videoio.hpp>
+#include <opencv2/core.hpp>
+#include <opencv2/highgui.hpp>
 
 #include "common.h"
 #include "fs_web_cam.h"
@@ -30,6 +31,7 @@ vector<uchar> g_buffer;
 
 int OpenVideoCaptureDevice()
 {
+
     int lResult = FSWEBCAM_FAILURE;
 
 	printf("open device id = %d, api id = %d ...\n", g_deviceID, g_apiID);
@@ -144,7 +146,7 @@ DLL_EXPORT int fswebcam_take_picture_buffer_size(unsigned int* p_pBufferSize)
 			
             if (imencode(".jpg", frame, g_buffer))
             {
-				printf("SUCCESS: encoded, device id = %d, api id = %d, buffer size = %d\n", g_deviceID, g_apiID, g_buffer.size());
+				printf("SUCCESS: encoded, device id = %d, api id = %d, buffer size = %d\n", g_deviceID, g_apiID, (int)g_buffer.size());
 				
                 *p_pBufferSize = (unsigned int)g_buffer.size();
             }
@@ -177,13 +179,13 @@ DLL_EXPORT int fswebcam_take_picture_buffer(unsigned char* p_Buffer, unsigned in
 {
     int lResult = FSWEBCAM_FAILURE;
 
-	printf("take picture buffer, device id = %d, api id = %d, size = %d\n", g_deviceID, g_apiID, g_buffer.size());
+	printf("take picture buffer, device id = %d, api id = %d, size = %d\n", g_deviceID, g_apiID, (int)g_buffer.size());
 
     if (p_BufferSize >= g_buffer.size())
     {
         memcpy(p_Buffer, g_buffer.data(), g_buffer.size());
 		
-		printf("SUCCESS: get buffer, device id = %d, api id = %d, buffer size = %d\n", g_deviceID, g_apiID, g_buffer.size());
+		printf("SUCCESS: get buffer, device id = %d, api id = %d, buffer size = %d\n", g_deviceID, g_apiID, (int)g_buffer.size());
 		
         lResult = FSWEBCAM_SUCCESS;
     }
@@ -222,7 +224,7 @@ DLL_EXPORT int fswebcam_take_picture(char* p_pFileName)
                 }
                 else
                 {
-                    printf("ERROR: file '%s' cannot be opened, error code = %d\n", p_pFileName);
+                    printf("ERROR: file '%s' cannot be opened\n", p_pFileName);
                 }
             }
             else
