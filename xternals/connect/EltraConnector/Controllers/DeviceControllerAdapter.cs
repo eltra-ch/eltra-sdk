@@ -358,7 +358,9 @@ namespace EltraConnector.Controllers
                 {
                     command.Status = status;
                 }
-                
+
+                execCommand.SessionUuid = Session.Uuid;
+
                 result = await DeviceCommandsAdapter.PushCommand(execCommand);
             }
             catch (Exception e)
@@ -371,11 +373,15 @@ namespace EltraConnector.Controllers
 
         public async Task<bool> PushCommand(ExecuteCommand execCommand)
         {
+            execCommand.SessionUuid = Session.Uuid;
+
             return await DeviceCommandsAdapter.PushCommand(execCommand);
         }
 
         public async Task<bool> SetCommandStatus(ExecuteCommandStatus status)
         {
+            status.SessionUuid = Session.Uuid;
+
             return await DeviceCommandsAdapter.SetCommandStatus(status);
         }
 

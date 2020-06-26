@@ -318,6 +318,8 @@ namespace EltraConnector.Controllers
 
                                         MsgLogger.WriteDebug($"{GetType().Name} - ExecuteCommand", $"Push Response for Command '{commandName}'");
 
+                                        executeCommand.SessionUuid = Session.Uuid;
+
                                         result = await DeviceControllerAdapter.PushCommand(executeCommand, ExecCommandStatus.Executed);
 
                                         if (result)
@@ -326,7 +328,7 @@ namespace EltraConnector.Controllers
                                         }
                                         else
                                         {
-                                            MsgLogger.WriteError($"{GetType().Name} - ExecuteCommand", $"Command '{commandName}' not found!");
+                                            MsgLogger.WriteError($"{GetType().Name} - ExecuteCommand", $"Set command '{commandName}' status to exectuted failed!");
                                         }
                                     }
                                     else
