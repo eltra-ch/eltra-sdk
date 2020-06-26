@@ -82,9 +82,9 @@
   <ItemGroup>
     <PackageReference Include="OxyPlot.Xamarin.Forms" Version="1.1.0-unstable0011" />
     <PackageReference Include="Plugin.Fingerprint" Version="2.1.1" />
-    <PackageReference Include="Xamarin.Forms" Version="4.6.0.847" />  
+    <PackageReference Include="Xamarin.Forms" Version="4.7.0.968" />  
     <PackageReference Include="Xamarin.Essentials" Version="1.5.3.2" />  
-    <PackageReference Include="Xamarin.Forms.Maps" Version="4.6.0.847" />
+    <PackageReference Include="Xamarin.Forms.Maps" Version="4.7.0.968" />
   </ItemGroup>
 
   <ItemGroup>
