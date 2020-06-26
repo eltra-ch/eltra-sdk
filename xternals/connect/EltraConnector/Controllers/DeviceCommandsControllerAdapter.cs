@@ -175,7 +175,7 @@ namespace EltraConnector.Controllers
 
         public async Task<bool> SetCommandStatus(ExecuteCommand executeCommand, ExecCommandStatus status)
         {
-            var execCommandStatus = new ExecuteCommandStatus(executeCommand) { Status = status };
+            var execCommandStatus = new ExecuteCommandStatus(Session.Uuid, executeCommand) { Status = status };
 
             return await SetCommandStatus(execCommandStatus);
         }

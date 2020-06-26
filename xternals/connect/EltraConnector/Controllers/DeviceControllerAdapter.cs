@@ -385,7 +385,7 @@ namespace EltraConnector.Controllers
 
             try
             {
-                var commandStatus = new ExecuteCommandStatus(command) { Status = status };
+                var commandStatus = new ExecuteCommandStatus(Session.Uuid, command) { Status = status };
 
                 result = await DeviceCommandsAdapter.SetCommandStatus(commandStatus);
             }
