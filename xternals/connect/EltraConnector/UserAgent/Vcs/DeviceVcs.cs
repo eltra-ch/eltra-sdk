@@ -8,13 +8,11 @@ using EltraCloudContracts.Contracts.Devices;
 using EltraCloudContracts.Contracts.Parameters;
 using EltraCloudContracts.Contracts.Users;
 using EltraCloudContracts.ObjectDictionary.Common.DeviceDescription.Profiles.Application.Parameters;
-using EltraCloudContracts.ObjectDictionary.DeviceDescription;
-using EltraCloudContracts.ObjectDictionary.DeviceDescription.Events;
-using EltraCloudContracts.ObjectDictionary.DeviceDescription.Factory;
 using EltraCloudContracts.ObjectDictionary.Common.DeviceDescription.Profiles.Application.Parameters.Events;
 using System.Collections.Generic;
 using EltraCommon.Logger;
 using System.Diagnostics;
+using EltraConnector.SyncAgent;
 
 namespace EltraConnector.UserAgent.Vcs
 {
@@ -39,6 +37,15 @@ namespace EltraConnector.UserAgent.Vcs
             Timeout = DefaultTimeout;
 
             Agent = new DeviceAgent(url, uuid, authData, updateInterval, timeout);
+
+            Agent.ParameterChanged += OnParameterChanged;
+        }
+
+        public DeviceVcs(SyncCloudAgent masterAgent, EltraDevice device, uint updateInterval, uint timeout)
+        {
+            Timeout = DefaultTimeout;
+
+            Agent = new DeviceAgent(masterAgent, device, updateInterval, timeout);
 
             Agent.ParameterChanged += OnParameterChanged;
         }

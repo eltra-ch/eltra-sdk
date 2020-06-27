@@ -7,6 +7,7 @@ using EltraCloudContracts.Contracts.Devices;
 using EltraCloudContracts.Contracts.Parameters;
 using EltraCloudContracts.Contracts.Users;
 using EltraCloudContracts.ObjectDictionary.Common.DeviceDescription.Profiles.Application.Parameters;
+using EltraConnector.SyncAgent;
 
 namespace EltraConnector.UserAgent
 {
@@ -28,6 +29,12 @@ namespace EltraConnector.UserAgent
         public DeviceAgent(string url, string uuid, UserAuthData authData, uint updateInterval, uint timeout)
             : base(url, uuid, authData, updateInterval, timeout)
         {
+        }
+
+        public DeviceAgent(SyncCloudAgent masterAgent, EltraDevice device, uint updateInterval, uint timeout)
+            : base(masterAgent, device, updateInterval, timeout)
+        {
+
         }
         
         #endregion

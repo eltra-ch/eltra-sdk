@@ -49,7 +49,7 @@ namespace EltraConnector.UserAgent
             _executedCommands = new List<DeviceCommand>();
             _sessionAdapter = new UserSessionControllerAdapter(url, authData, updateInterval, timeout) { UseWebSockets = true };
 
-            Initialize(url, updateInterval, timeout);
+            Initialize(url, updateInterval, timeout, true);
         }
 
         public UserCloudAgent(string url, string uuid, UserAuthData authData, uint updateInterval, uint timeout)
@@ -58,7 +58,16 @@ namespace EltraConnector.UserAgent
             _executedCommands = new List<DeviceCommand>();
             _sessionAdapter = new UserSessionControllerAdapter(url, uuid, authData, updateInterval, timeout) { UseWebSockets = true };
 
-            Initialize(url, updateInterval, timeout);
+            Initialize(url, updateInterval, timeout, true);
+        }
+
+        public UserCloudAgent(SyncCloudAgent masterAgent, EltraDevice device, uint updateInterval, uint timeout)
+        {
+            _authData = masterAgent.AuthData;
+            _executedCommands = new List<DeviceCommand>();
+            _sessionAdapter = new UserSessionControllerAdapter(masterAgent.Url, device.SessionUuid, masterAgent.AuthData, updateInterval, timeout) { UseWebSockets = true };
+
+            Initialize(masterAgent.Url, updateInterval, timeout, false);
         }
 
         #endregion
@@ -138,10 +147,15 @@ namespace EltraConnector.UserAgent
 
         #region Methods
 
-        private void Initialize(string url, uint updateInterval, uint timeout)
+        private void Initialize(string url, uint updateInterval, uint timeout, bool useSessionUpdater)
         {
             _authentication = new Authentication(url);
-            _sessionUpdater = new SessionUpdater(_sessionAdapter, updateInterval, timeout);
+
+            if (useSessionUpdater)
+            {
+                _sessionUpdater = new SessionUpdater(_sessionAdapter, updateInterval, timeout);
+            }
+
             _executeCommander = new ExecuteCommander(_sessionAdapter);
             _parameterUpdateManager = new ParameterUpdateManager(_sessionAdapter);
 
@@ -192,9 +206,9 @@ namespace EltraConnector.UserAgent
 
         private void StartSession()
         {
-            _sessionUpdater.Start();
-            _executeCommander.Start();
-            _parameterUpdateManager.Start();
+            _sessionUpdater?.Start();
+            _executeCommander?.Start();
+            _parameterUpdateManager?.Start();
 
             RegisterParameterUpdateManagerEvents();
 
@@ -203,15 +217,17 @@ namespace EltraConnector.UserAgent
 
         private async Task StopSession()
         {
-            _executeCommander.Stop();
-            _parameterUpdateManager.Stop();
-            _sessionUpdater.Stop();
-
+            _executeCommander?.Stop();
+           
             await UnregisterSession();
 
+            _sessionUpdater?.Stop();
+
             UnregisterParameterUpdateManagerEvents();
+
+            _parameterUpdateManager?.Stop();
         }
-        
+
         private async Task Run(CancellationToken token)
         {
             State = UserCloudAgentState.Starting;
@@ -281,7 +297,12 @@ namespace EltraConnector.UserAgent
 
         private async Task<bool> UnregisterSession()
         {
-            var result = await _sessionAdapter.UnregisterSession();
+            bool result = false;
+
+            if (_sessionUpdater != null)
+            {
+                result = await _sessionAdapter.UnregisterSession();
+            }
 
             return result;
         }
