@@ -45,7 +45,8 @@ namespace PhotoMasterConsole
 
             var master = new EltraMasterConnector();
 
-            if (!master.RunAsService(appName, new PhotoDeviceManager(settings), host, settings.UpdateInterval, settings.Timeout, login, settings.Auth.Name, password))
+            if (!master.RunAsService(appName, new PhotoDeviceManager(settings), 
+                                    host, settings.UpdateInterval, settings.Timeout, login, settings.Auth.Name, password))
             {
                 MsgLogger.WriteError(appName, "starting master service failed!");
             }
