@@ -177,26 +177,30 @@ namespace EltraConnector.SyncAgent
             return result;
         }
         
-        protected override async Task Execute()
+        protected override Task Execute()
         {
-            int minWaitTime = 10;
+            //int minWaitTime = 10;
 
             SetRunning();
 
             _sessionUpdater.Start();
             _commandExecutor.Start();
 
-            while (ShouldRun())
+            Wait();
+
+            /*while (ShouldRun())
             {
                 await Task.Delay(minWaitTime);
-            }
+            }*/
 
             _commandExecutor.Stop();
             _sessionUpdater.Stop();
             
             MsgLogger.WriteLine($"Sync agent working thread finished successfully!");
 
-            SetStopped();            
+            SetStopped();
+
+            return Task.CompletedTask;
         }
         
         public async Task UnregisterDevice(EltraDevice device)

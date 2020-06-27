@@ -153,7 +153,7 @@ namespace EltraConnector.Controllers
 
         private async void StartUpdate(EltraDevice device)
         {
-            int updateParametersInterval = 10;
+            //int updateParametersInterval = 10;
 
             _running.Set();
 
@@ -163,10 +163,11 @@ namespace EltraConnector.Controllers
             {
                 RegisterEvents(device);
 
-                while (ShouldRun())
+                Wait();
+                /*while (ShouldRun())
                 {
                     Thread.Sleep(updateParametersInterval);
-                }
+                }*/
 
                 UnregisterEvents(device);
             }
@@ -198,6 +199,11 @@ namespace EltraConnector.Controllers
         private bool ShouldRun()
         {
             return !_stopRequestEvent.WaitOne(0);
+        }
+
+        private bool Wait(int timeout = int.MaxValue)
+        {
+            return _stopRequestEvent.WaitOne(timeout);
         }
 
         public override bool Stop()

@@ -152,11 +152,17 @@ namespace EltraConnector.Ws
             {
                 if (IsConnected)
                 {
-                    _disconnectTokenSource.Cancel();
+                    if (!_disconnectTokenSource.IsCancellationRequested)
+                    {
+                        _disconnectTokenSource.Cancel();
+                    }
 
-                    const int maxDelay = 10000;
+                    if (Socket.State == WebSocketState.Open)
+                    {
+                        const int maxDelay = 10000;
 
-                    await Socket.CloseAsync(WebSocketCloseStatus.NormalClosure, "Disconnect", new CancellationTokenSource(maxDelay).Token);
+                        await Socket.CloseAsync(WebSocketCloseStatus.NormalClosure, "Disconnect", new CancellationTokenSource(maxDelay).Token);
+                    }
 
                     if (Socket.State == WebSocketState.Closed)
                     {
@@ -196,18 +202,17 @@ namespace EltraConnector.Ws
 
             try
             {
+                var wsMessage = new WsMessage();
+
+                wsMessage.ChannelName = ChannelName;
+                wsMessage.TypeName = typeName;
+                wsMessage.Data = data;
+
+                var json = JsonConvert.SerializeObject(wsMessage);
+                var buffer = Encoding.UTF8.GetBytes(json);
+
                 if (!Socket.CloseStatus.HasValue && Socket.State == WebSocketState.Open)
                 {
-                    var wsMessage = new WsMessage();
-
-                    wsMessage.ChannelName = ChannelName;
-                    wsMessage.TypeName = typeName;
-                    wsMessage.Data = data;
-
-                    var json = JsonConvert.SerializeObject(wsMessage);
-
-                    var buffer = Encoding.UTF8.GetBytes(json);
-
                     await Socket.SendAsync(new ArraySegment<byte>(buffer, 0, buffer.Length), WebSocketMessageType.Text, true, _cancellationTokenSource.Token);
 
                     result = true;
@@ -308,17 +313,53 @@ namespace EltraConnector.Ws
 
             try
             {
-                var receiveResult = await Socket.ReceiveAsync(segment, _cancellationTokenSource.Token);
-
-                while (!receiveResult.CloseStatus.HasValue)
+                if (Socket.State == WebSocketState.Open)
                 {
-                    if (receiveResult.EndOfMessage)
+                    var receiveResult = await Socket.ReceiveAsync(segment, _cancellationTokenSource.Token);
+
+                    while (!receiveResult.CloseStatus.HasValue)
                     {
-                        if (fullBufferSize > 0)
+                        if (receiveResult.EndOfMessage)
                         {
-                            if(fullBuffer.Length < receiveResult.Count + offset)
+                            if (fullBufferSize > 0)
                             {
-                                Array.Resize(ref fullBuffer, receiveResult.Count + offset);                                
+                                if (fullBuffer.Length < receiveResult.Count + offset)
+                                {
+                                    Array.Resize(ref fullBuffer, receiveResult.Count + offset);
+                                }
+
+                                Array.Copy(buffer, 0, fullBuffer, offset, receiveResult.Count);
+
+                                offset += receiveResult.Count;
+                                fullBufferSize += receiveResult.Count;
+                            }
+                            else
+                            {
+                                if (fullBuffer.Length < receiveResult.Count)
+                                {
+                                    Array.Resize(ref fullBuffer, receiveResult.Count);
+                                }
+
+                                Array.Copy(buffer, 0, fullBuffer, 0, receiveResult.Count);
+                                fullBufferSize = receiveResult.Count;
+                            }
+
+                            result = Encoding.UTF8.GetString(fullBuffer, 0, fullBufferSize);
+
+                            if (!string.IsNullOrEmpty(result))
+                            {
+                                break;
+                            }
+
+                            buffer = new byte[bufferSize];
+                            offset = 0;
+                            fullBufferSize = 0;
+                        }
+                        else
+                        {
+                            if (fullBuffer.Length < receiveResult.Count + offset)
+                            {
+                                Array.Resize(ref fullBuffer, receiveResult.Count + offset);
                             }
 
                             Array.Copy(buffer, 0, fullBuffer, offset, receiveResult.Count);
@@ -326,42 +367,21 @@ namespace EltraConnector.Ws
                             offset += receiveResult.Count;
                             fullBufferSize += receiveResult.Count;
                         }
+
+                        if (Socket.State == WebSocketState.Open)
+                        {
+                            receiveResult = await Socket.ReceiveAsync(new ArraySegment<byte>(buffer), _cancellationTokenSource.Token);
+                        }
                         else
                         {
-                            if (fullBuffer.Length < receiveResult.Count)
-                            {   
-                                Array.Resize(ref fullBuffer, receiveResult.Count);
-                            }
-
-                            Array.Copy(buffer, 0, fullBuffer, 0, receiveResult.Count);
-                            fullBufferSize = receiveResult.Count;
-                        }
-
-                        result = Encoding.UTF8.GetString(fullBuffer, 0, fullBufferSize);
-
-                        if (!string.IsNullOrEmpty(result))
-                        {
+                            MsgLogger.WriteError($"{GetType().Name} - ReadMessage", $"cannot read - socket state = {Socket.State}");
                             break;
                         }
-
-                        buffer = new byte[bufferSize];
-                        offset = 0;
-                        fullBufferSize = 0;
                     }
-                    else
-                    {
-                        if (fullBuffer.Length < receiveResult.Count + offset)
-                        {
-                            Array.Resize(ref fullBuffer, receiveResult.Count + offset);
-                        }
-
-                        Array.Copy(buffer, 0, fullBuffer, offset, receiveResult.Count);
-
-                        offset += receiveResult.Count;
-                        fullBufferSize += receiveResult.Count;
-                    }
-
-                    receiveResult = await Socket.ReceiveAsync(new ArraySegment<byte>(buffer), _cancellationTokenSource.Token);
+                }
+                else
+                {
+                    MsgLogger.WriteWarning($"{GetType().Name} - ReadMessage", $"cannot read - socket state = {Socket.State}");
                 }
             }
             catch (WebSocketException e)

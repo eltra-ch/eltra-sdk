@@ -55,10 +55,10 @@ namespace EltraConnector.Sessions
                 {
                     MsgLogger.WriteError($"{GetType().Name} - Execute", $"Update session '{sessionUuid}' failed!");
 
-                    if(wsConnectionManager.IsConnected(sessionUuid))
+                    /*if(wsConnectionManager.IsConnected(sessionUuid))
                     {
                         await wsConnectionManager.Disconnect(sessionUuid);
-                    }
+                    }*/
                 }
                 
                 var waitWatch = new Stopwatch();
@@ -81,7 +81,7 @@ namespace EltraConnector.Sessions
                     await Task.Delay(minWaitTime);
                 }
 
-                if (wsConnectionManager.CanConnect(sessionUuid))
+                if (!wsConnectionManager.IsConnected(sessionUuid) && wsConnectionManager.CanConnect(sessionUuid))
                 {
                     if (await wsConnectionManager.Connect(sessionUuid, wsChannelName))
                     {

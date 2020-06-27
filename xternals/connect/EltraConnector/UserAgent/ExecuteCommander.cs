@@ -210,8 +210,11 @@ namespace EltraConnector.UserAgent
                 }
 
                 if (ShouldRun())
-                { 
-                    await CreateWsChannel(_commandExecUuid, _wsChannelName);
+                {
+                    if (!_wsConnectionManager.IsConnected(_commandExecUuid))
+                    {
+                        await CreateWsChannel(_commandExecUuid, _wsChannelName);
+                    }
                 }
             }
 
