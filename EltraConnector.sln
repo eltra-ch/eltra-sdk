@@ -5,9 +5,11 @@ VisualStudioVersion = 16.0.28803.156
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EltraConnector", "connect\EltraConnector\EltraConnector.csproj", "{A9E7EF16-7713-4CA3-8C4F-2915C579194F}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EltraCloudContracts", "..\common\EltraCloudContracts\EltraCloudContracts.csproj", "{A82D7819-ACE6-4D03-AA7A-BC4AE0B6AE39}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EltraCommon", "xternals\common\EltraCommon\EltraCommon.csproj", "{88B5F3CF-1924-455B-AFB3-A6A0618B3D42}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EltraCommon", "..\common\EltraCommon\EltraCommon.csproj", "{A733AEBF-0988-4979-B742-E96950654CA6}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EltraResources", "xternals\common\EltraResources\EltraResources.csproj", "{0B092323-BAB5-405F-99D2-AD0101861856}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EltraCloudContracts", "xternals\common\EltraCloudContracts\EltraCloudContracts.csproj", "{C6F6BE70-DD1D-478F-B19D-E8DE3FF0C050}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -19,14 +21,18 @@ Global
 		{A9E7EF16-7713-4CA3-8C4F-2915C579194F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A9E7EF16-7713-4CA3-8C4F-2915C579194F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A9E7EF16-7713-4CA3-8C4F-2915C579194F}.Release|Any CPU.Build.0 = Release|Any CPU
-		{A82D7819-ACE6-4D03-AA7A-BC4AE0B6AE39}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{A82D7819-ACE6-4D03-AA7A-BC4AE0B6AE39}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{A82D7819-ACE6-4D03-AA7A-BC4AE0B6AE39}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{A82D7819-ACE6-4D03-AA7A-BC4AE0B6AE39}.Release|Any CPU.Build.0 = Release|Any CPU
-		{A733AEBF-0988-4979-B742-E96950654CA6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{A733AEBF-0988-4979-B742-E96950654CA6}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{A733AEBF-0988-4979-B742-E96950654CA6}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{A733AEBF-0988-4979-B742-E96950654CA6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{88B5F3CF-1924-455B-AFB3-A6A0618B3D42}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{88B5F3CF-1924-455B-AFB3-A6A0618B3D42}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{88B5F3CF-1924-455B-AFB3-A6A0618B3D42}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{88B5F3CF-1924-455B-AFB3-A6A0618B3D42}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0B092323-BAB5-405F-99D2-AD0101861856}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0B092323-BAB5-405F-99D2-AD0101861856}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0B092323-BAB5-405F-99D2-AD0101861856}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0B092323-BAB5-405F-99D2-AD0101861856}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C6F6BE70-DD1D-478F-B19D-E8DE3FF0C050}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C6F6BE70-DD1D-478F-B19D-E8DE3FF0C050}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C6F6BE70-DD1D-478F-B19D-E8DE3FF0C050}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C6F6BE70-DD1D-478F-B19D-E8DE3FF0C050}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
