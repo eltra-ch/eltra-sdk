@@ -13,13 +13,15 @@
     <PackageId>Eltra.Master</PackageId>
     <Authors>Dawid Sienkiewicz</Authors>
     <Company>Dawid Sienkiewicz</Company>
-    <Product>Eltra IoT platform</Product>
+    <Product>Eltra.Master</Product>
 	<dependencies>
       <dependency id="CommandLineParser" version="2.7.82" />
 	  <dependency id="Eltra.Common" version="1.0.0" />
 	  <dependency id="Eltra.Contracts" version="1.0.0" />
 	  <dependency id="Eltra.Connector" version="1.0.0" />
     </dependencies>
+	<Version>1.0.2</Version>
+	<Description>Eltra IoT platform</Description>
   </PropertyGroup>
 
   <ItemGroup>
@@ -27,10 +29,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\connect\EltraConnector\EltraConnector.csproj">
-		<ReferenceOutputAssembly>true</ReferenceOutputAssembly>
-		<IncludeAssets>EltraConnector.dll</IncludeAssets>
-	</ProjectReference>
+    <ProjectReference Include="..\..\connect\EltraConnector\EltraConnector.csproj" />
     <ProjectReference Include="..\..\xternals\common\EltraCloudContracts\EltraCloudContracts.csproj" />
     <ProjectReference Include="..\..\xternals\common\EltraCommon\EltraCommon.csproj" />
   </ItemGroup>
