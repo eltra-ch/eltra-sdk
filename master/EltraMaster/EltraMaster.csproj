@@ -2,6 +2,24 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
+    <Copyright>Dawid Sienkiewicz</Copyright>
+    <PackageLicenseFile>LICENSE</PackageLicenseFile>
+    <PackageProjectUrl>www.eltra.ch</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/eltra-ch/eltra-sdk</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PackageTags>eltra, IoT</PackageTags>
+    <PackageId>Eltra.Master</PackageId>
+    <Authors>Dawid Sienkiewicz</Authors>
+    <Company>Dawid Sienkiewicz</Company>
+    <Product>Eltra IoT platform</Product>
+	<dependencies>
+      <dependency id="CommandLineParser" version="2.7.82" />
+	  <dependency id="Eltra.Common" version="1.0.0" />
+	  <dependency id="Eltra.Contracts" version="1.0.0" />
+	  <dependency id="Eltra.Connector" version="1.0.0" />
+    </dependencies>
   </PropertyGroup>
 
   <ItemGroup>
@@ -9,9 +27,19 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\connect\EltraConnector\EltraConnector.csproj" />
+    <ProjectReference Include="..\..\connect\EltraConnector\EltraConnector.csproj">
+		<ReferenceOutputAssembly>true</ReferenceOutputAssembly>
+		<IncludeAssets>EltraConnector.dll</IncludeAssets>
+	</ProjectReference>
     <ProjectReference Include="..\..\xternals\common\EltraCloudContracts\EltraCloudContracts.csproj" />
     <ProjectReference Include="..\..\xternals\common\EltraCommon\EltraCommon.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="..\..\LICENSE">
+      <Pack>True</Pack>
+      <PackagePath></PackagePath>
+    </None>
   </ItemGroup>
 
 </Project>
