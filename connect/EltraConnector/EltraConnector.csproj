@@ -3,8 +3,21 @@
     <PropertyGroup>
         <TargetFramework>netstandard2.0</TargetFramework>
         <LangVersion>7.1</LangVersion>
-		<Company>eltra.ch</Company>
+		<Company>Dawid Sienkiewicz</Company>
 		<Authors>Dawid Sienkiewicz</Authors>
+		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+		<PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
+		<Copyright>Dawid Sienkiewicz</Copyright>
+		<PackageLicenseFile>LICENSE</PackageLicenseFile>
+		<PackageProjectUrl>www.eltra.ch</PackageProjectUrl>
+		<RepositoryUrl>https://github.com/eltra-ch/eltra-sdk</RepositoryUrl>
+		<RepositoryType>GIT</RepositoryType>
+		<dependencies>
+		  <dependency id="Newtonsoft.Json" version="12.0.3" />
+		  <dependency id="Eltra.Contracts" version="1.0.0" />
+		</dependencies>
+		<PackageId>Eltra.Connector</PackageId>
+		<Product>Eltra.Connector</Product>
     </PropertyGroup>
 
     <ItemGroup>
@@ -13,6 +26,13 @@
 
     <ItemGroup>
       <ProjectReference Include="..\..\xternals\common\EltraCloudContracts\EltraCloudContracts.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <None Include="..\..\LICENSE">
+        <Pack>True</Pack>
+        <PackagePath></PackagePath>
+      </None>
     </ItemGroup>
 
     <Target Name="PostBuild" AfterTargets="PostBuildEvent">
