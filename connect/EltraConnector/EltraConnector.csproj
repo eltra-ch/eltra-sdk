@@ -13,7 +13,6 @@
 
     <ItemGroup>
       <ProjectReference Include="..\..\xternals\common\EltraCloudContracts\EltraCloudContracts.csproj" />
-      <ProjectReference Include="..\..\xternals\common\EltraCommon\EltraCommon.csproj" />
     </ItemGroup>
 
     <Target Name="PostBuild" AfterTargets="PostBuildEvent">
