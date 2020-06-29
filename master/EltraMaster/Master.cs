@@ -8,6 +8,7 @@ using EltraMaster.Status;
 using EltraMaster.Events;
 using EltraMaster.Device;
 using EltraCommon.Ipc;
+using EltraMaster.Device.Connection;
 
 namespace EltraMaster
 {
@@ -25,6 +26,10 @@ namespace EltraMaster
         public EltraMasterConnector()
         {
             _cancellationTokenSource = new CancellationTokenSource();
+
+            Host = "https://eltra.ch";
+            AuthData = new UserAuthData() { Login = "", Password = "", Name = "" };
+            ConnectionSettings = new ConnectionSettings();
         }
 
         #endregion
@@ -34,6 +39,8 @@ namespace EltraMaster
         public UserAuthData AuthData { get; set; }
 
         public string Host { get; set; }
+
+        public ConnectionSettings ConnectionSettings { get; set; }
 
         public MasterStatus Status 
         { 
@@ -69,7 +76,7 @@ namespace EltraMaster
 
         #region Methods
 
-        public async Task Start(MasterDeviceManager deviceManager, uint updateInterval, uint timeout)
+        public async Task Start(MasterDeviceManager deviceManager)
         {
             if (Status != MasterStatus.Stopped && Status != MasterStatus.Undefined)
             {
@@ -79,11 +86,11 @@ namespace EltraMaster
             {
                 _cancellationTokenSource = new CancellationTokenSource();
 
-                int reconnectDelay = (int)TimeSpan.FromSeconds(timeout).TotalMilliseconds;
+                int reconnectDelay = (int)TimeSpan.FromSeconds(ConnectionSettings.Timeout).TotalMilliseconds;
 
                 try
                 {
-                    var agent = new SyncCloudAgent(Host, AuthData, updateInterval, timeout);
+                    var agent = new SyncCloudAgent(Host, AuthData, ConnectionSettings.UpdateInterval, ConnectionSettings.Timeout);
 
                     bool repeat = false;
 
@@ -130,7 +137,7 @@ namespace EltraMaster
                         {
                             repeat = true;
 
-                            MsgLogger.WriteError($"{GetType().Name} - Start", $"Connection failed, repeat in {timeout} sec. !");
+                            MsgLogger.WriteError($"{GetType().Name} - Start", $"Connection failed, repeat in {ConnectionSettings.Timeout} sec. !");
 
                             await Task.Delay(reconnectDelay);
                         }
@@ -163,7 +170,7 @@ namespace EltraMaster
             return result;
         }
 
-        public bool StartService(string appName, MasterDeviceManager deviceManager, uint updateInterval, uint timeout)
+        public bool StartService(string appName, MasterDeviceManager deviceManager)
         {
             bool result = false;
 
@@ -192,7 +199,7 @@ namespace EltraMaster
 
                     var task = Task.Run(async ()=>
                     {
-                        await Start(deviceManager, updateInterval, timeout);
+                        await Start(deviceManager);
                     });
 
                     task.Wait();
