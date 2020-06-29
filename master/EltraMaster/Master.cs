@@ -125,10 +125,19 @@ namespace EltraMaster
                             await Task.Delay(100);
                         }
 
+                        MsgLogger.Print("Disconnect ...");
+
+                        agent.Stop();
+
+                        MsgLogger.Print($"Stop device manager");
+
+                        await deviceManager.Stop();
+
                         MsgLogger.Print($"Sign out, login '{AuthData.Login}' ...");
 
                         await agent.SignOut();
 
+                        MsgLogger.Print("Disconnected");
                     }
                     else if (!agent.Good)
                     {
@@ -144,12 +153,6 @@ namespace EltraMaster
                     }                    
                 }
                 while (repeat && !_cancellationTokenSource.IsCancellationRequested);
-                
-                MsgLogger.Print("Disconnect ...");
-
-                agent.Stop();
-
-                MsgLogger.Print("Disconnected");
             }
             catch (Exception e)
             {
