@@ -30,15 +30,6 @@ namespace ConsoleApp1
             _statusWordParameter = Vcs.SearchParameter(0x6041, 0x00) as Parameter;
             _counterParameter = Vcs.SearchParameter(0x3000, 0x00) as Parameter;
 
-            Task.Run(async ()=>
-            {
-                StartCounting(1, 100);
-
-                await Task.Delay(30000);
-
-                StopCounting();
-            });
-
             base.OnInitialized();
         }
 

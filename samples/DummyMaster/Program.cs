@@ -15,8 +15,6 @@ namespace ConsoleApp1
             var connector = new EltraMasterConnector();
             const string ServiceName = "DUMMY#1";
 
-            const uint updateInterval = 60;
-            const uint timeout = 180;
             string filePath = "DUMMY_0100h_0000h_0000h_0000h.xdd";
 
             string[] urls = new string[] { "https://eltra.ch", "http://localhost:5001" };
@@ -27,8 +25,8 @@ namespace ConsoleApp1
             {
                 connector.Host = urls[0];
                 connector.AuthData = new UserAuthData() { Login= "dummy@eltra.ch", Name="Dummy", Password = "1234" };
-
-                connector.StartService(ServiceName, new DummyDeviceManager(filePath), updateInterval, timeout);
+                
+                connector.StartService(ServiceName, new DummyDeviceManager(filePath));
             });
 
             connector.StatusChanged += Connector_StatusChanged; 

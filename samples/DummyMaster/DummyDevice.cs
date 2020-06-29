@@ -8,7 +8,7 @@ namespace ConsoleApp1
         public DummyDevice(string deviceDescriptionFilePath) 
             : base("DUMMY", deviceDescriptionFilePath)
         {
-            Identification.SerialNumber = 0x100;
+            Identification.SerialNumber = 0x101;
         }
 
         protected override void OnStatusChanged()
