@@ -167,7 +167,7 @@ namespace EltraMaster
             _cancellationTokenSource.Cancel();
         }
 
-        public bool RunAsService(string appName, MasterDeviceManager masterDeviceManager, string host, uint updateInterval, uint timeout, string login, string userName, string password)
+        public bool StartService(string appName, string host, UserAuthData authData, MasterDeviceManager deviceManager, uint updateInterval, uint timeout)
         {
             bool result = false;
             MsgLogger.WriteFlow($"Start '{appName}'");
@@ -183,17 +183,15 @@ namespace EltraMaster
                     Stop();
                 };
 
-                var authData = new UserAuthData() { Login = login, Password = password, Name = userName };
-
                 if (MasterConsole.MasterConsole.CheckAuthData(ref authData))
                 {
                     result = true;
 
-                    MsgLogger.WriteFlow($"host='{host}', user={login}, pwd='{password}'");
+                    MsgLogger.WriteFlow($"host='{host}', user={authData.Login}, pwd='{authData.Password}'");
 
                     var task = Task.Run(async ()=>
                     {
-                        await Start(host, authData, masterDeviceManager, updateInterval, timeout);
+                        await Start(host, authData, deviceManager, updateInterval, timeout);
                     });
 
                     task.Wait();
@@ -213,7 +211,7 @@ namespace EltraMaster
             return result;
         }
 
-        public bool Stop(string appName)
+        public bool StopService(string appName)
         {
             bool result = false;
             const int requestTimeout = 3000;
@@ -231,11 +229,6 @@ namespace EltraMaster
             }
 
             return result;
-        }
-
-        public virtual Task Start(string host, UserAuthData authData)
-        {
-            return Task.CompletedTask;
         }
 
         #endregion

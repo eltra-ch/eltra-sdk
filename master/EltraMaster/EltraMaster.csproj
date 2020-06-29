@@ -20,7 +20,7 @@
 	  <dependency id="Eltra.Contracts" version="1.0.0" />
 	  <dependency id="Eltra.Connector" version="1.0.0" />
     </dependencies>
-	<Version>1.0.2</Version>
+	<Version>1.0.4</Version>
 	<Description>Eltra IoT platform</Description>
   </PropertyGroup>
 
