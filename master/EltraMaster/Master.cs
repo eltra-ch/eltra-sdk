@@ -69,108 +69,105 @@ namespace EltraMaster
 
         #region Methods
 
-        private async Task<bool> SignIn(SyncCloudAgent agent)
+        public async Task Start(MasterDeviceManager deviceManager, uint updateInterval, uint timeout)
         {
-            bool result = false;
-
-            if (!await agent.SignIn(AuthData) && agent.Good)
+            if (Status != MasterStatus.Stopped && Status != MasterStatus.Undefined)
             {
-                if (await agent.SignUp(AuthData) && agent.Good)
-                {
-                    if (await agent.SignIn(AuthData) && agent.Good)
-                    {
-                        result = true;
-                    }
-                }
+                MsgLogger.WriteError($"{GetType().Name} - Start", $"Master already running, status = {Status}");
             }
             else
             {
-                result = agent.Good;
+                _cancellationTokenSource = new CancellationTokenSource();
+
+                int reconnectDelay = (int)TimeSpan.FromSeconds(timeout).TotalMilliseconds;
+
+                try
+                {
+                    var agent = new SyncCloudAgent(Host, AuthData, updateInterval, timeout);
+
+                    bool repeat = false;
+
+                    do
+                    {
+                        Status = MasterStatus.Starting;
+
+                        MsgLogger.Print($"Sign in '{AuthData.Login}' ...");
+
+                        if (await SignIn(agent))
+                        {
+                            MsgLogger.Print($"'{AuthData.Login}' signed in successfully");
+
+                            deviceManager.CloudAgent = agent;
+
+                            MsgLogger.Print("scan devices...");
+
+                            await deviceManager.Run();
+
+                            Status = MasterStatus.Started;
+
+                            while (!_cancellationTokenSource.IsCancellationRequested)
+                            {
+                                await Task.Delay(100);
+                            }
+
+                            Status = MasterStatus.Stopping;
+
+                            MsgLogger.Print("Disconnect ...");
+
+                            agent.Stop();
+
+                            MsgLogger.Print($"Stop device manager");
+
+                            await deviceManager.Stop();
+
+                            MsgLogger.Print($"Sign out, login '{AuthData.Login}' ...");
+
+                            await agent.SignOut();
+
+                            MsgLogger.Print("Disconnected");
+                        }
+                        else if (!agent.Good)
+                        {
+                            repeat = true;
+
+                            MsgLogger.WriteError($"{GetType().Name} - Start", $"Connection failed, repeat in {timeout} sec. !");
+
+                            await Task.Delay(reconnectDelay);
+                        }
+                        else
+                        {
+                            MsgLogger.WriteError($"{GetType().Name} - Start", "Authentication failed, wrong password!");
+                        }
+                    }
+                    while (repeat && !_cancellationTokenSource.IsCancellationRequested);
+                }
+                catch (Exception e)
+                {
+                    MsgLogger.Exception($"{GetType().Name} - Start", e);
+                }
+
+                Status = MasterStatus.Stopped;
+            }
+        }
+
+        public bool Stop()
+        {
+            bool result = false;
+
+            if (Status == MasterStatus.Starting || Status == MasterStatus.Started)
+            {
+                _cancellationTokenSource.Cancel();
+                result = true;
             }
 
             return result;
         }
 
-        public async Task Start(string host, UserAuthData authData, MasterDeviceManager deviceManager, uint updateInterval, uint timeout)
-        {
-            int reconnectDelay = (int)TimeSpan.FromSeconds(timeout).TotalMilliseconds;
-
-            Host = host;
-            AuthData = authData;
-
-            try
-            {
-                var agent = new SyncCloudAgent(Host, AuthData, updateInterval, timeout);
-
-                bool repeat = false;
-
-                do
-                {
-                    MsgLogger.Print($"Sign in '{AuthData.Login}' ...");
-
-                    if (await SignIn(agent))
-                    {
-                        MsgLogger.Print($"'{AuthData.Login}' signed in successfully");
-
-                        deviceManager.CloudAgent = agent;
-
-                        MsgLogger.Print("scan devices...");
-
-                        await deviceManager.Run();
-
-                        Status = MasterStatus.Started;
-
-                        while (!_cancellationTokenSource.IsCancellationRequested)
-                        {
-                            await Task.Delay(100);
-                        }
-
-                        MsgLogger.Print("Disconnect ...");
-
-                        agent.Stop();
-
-                        MsgLogger.Print($"Stop device manager");
-
-                        await deviceManager.Stop();
-
-                        MsgLogger.Print($"Sign out, login '{AuthData.Login}' ...");
-
-                        await agent.SignOut();
-
-                        MsgLogger.Print("Disconnected");
-                    }
-                    else if (!agent.Good)
-                    {
-                        repeat = true;
-
-                        MsgLogger.WriteError($"{GetType().Name} - Start", $"Connection failed, repeat in {timeout} sec. !");
-
-                        await Task.Delay(reconnectDelay);
-                    }
-                    else
-                    {
-                        MsgLogger.WriteError($"{GetType().Name} - Start", "Authentication failed, wrong password!");
-                    }                    
-                }
-                while (repeat && !_cancellationTokenSource.IsCancellationRequested);
-            }
-            catch (Exception e)
-            {
-                MsgLogger.Exception($"{GetType().Name} - Start", e);
-            }
-
-            Status = MasterStatus.Stopped;
-        }
-
-        public void Stop()
-        {
-            _cancellationTokenSource.Cancel();
-        }
-
-        public bool StartService(string appName, string host, UserAuthData authData, MasterDeviceManager deviceManager, uint updateInterval, uint timeout)
+        public bool StartService(string appName, MasterDeviceManager deviceManager, uint updateInterval, uint timeout)
         {
             bool result = false;
-            MsgLogger.WriteFlow($"Start '{appName}'");
+
+            MsgLogger.WriteFlow($"Start master '{appName}' in service mode");
 
             var npServer = new NpServer() { Name = appName };
 
@@ -183,15 +180,19 @@ namespace EltraMaster
                     Stop();
                 };
 
+                var authData = AuthData;
+
                 if (MasterConsole.MasterConsole.CheckAuthData(ref authData))
                 {
+                    AuthData = authData;
+
                     result = true;
 
-                    MsgLogger.WriteFlow($"host='{host}', user={authData.Login}, pwd='{authData.Password}'");
+                    MsgLogger.WriteFlow($"host='{Host}', user={AuthData.Login}, pwd='{AuthData.Password}'");
 
                     var task = Task.Run(async ()=>
                     {
-                        await Start(host, authData, deviceManager, updateInterval, timeout);
+                        await Start(deviceManager, updateInterval, timeout);
                     });
 
                     task.Wait();
@@ -205,7 +206,7 @@ namespace EltraMaster
             }
             else
             {
-                Console.WriteLine("start failed!");
+                MsgLogger.WriteError($"{GetType().Name} - Start", "start failed!");
             }
 
             return result;
@@ -226,6 +227,28 @@ namespace EltraMaster
             else
             {
                 MsgLogger.WriteError("RunOptionsAndReturnExitCode", "stop request sending failed!");
+            }
+
+            return result;
+        }
+
+        private async Task<bool> SignIn(SyncCloudAgent agent)
+        {
+            bool result = false;
+
+            if (!await agent.SignIn(AuthData) && agent.Good)
+            {
+                if (await agent.SignUp(AuthData) && agent.Good)
+                {
+                    if (await agent.SignIn(AuthData) && agent.Good)
+                    {
+                        result = true;
+                    }
+                }
+            }
+            else
+            {
+                result = agent.Good;
             }
 
             return result;

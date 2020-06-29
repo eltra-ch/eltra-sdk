@@ -3,7 +3,9 @@
     public enum MasterStatus
     {
         Undefined,
+        Starting,
         Started,
+        Stopping,
         Stopped
     }
 }
