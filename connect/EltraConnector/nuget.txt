@@ -1,0 +1,1 @@
+dotnet nuget push Eltra.Connector.1.0.1.nupkg -k oy2a6blixbqhhgq2d2kqgley3awkxtouticw2ylzuj73oe -s https://api.nuget.org/v3/index.json

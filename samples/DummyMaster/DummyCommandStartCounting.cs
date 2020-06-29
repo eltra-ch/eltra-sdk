@@ -4,8 +4,21 @@ using System;
 
 namespace ConsoleApp1
 {
-    class StartCountingCommand : DeviceCommand
+    public class StartCountingCommand : DeviceCommand
     {
+        public StartCountingCommand()
+        {
+            Name = "StartCounting";
+
+            //In
+            AddParameter("Step", TypeCode.Int32);
+            AddParameter("Delay", TypeCode.Int32);
+
+            //Result
+            AddParameter("Result", TypeCode.Boolean, ParameterType.Out);
+            AddParameter("ErrorCode", TypeCode.UInt32, ParameterType.Out);
+        }
+
         public StartCountingCommand(EltraDevice device)
             : base(device)
         {

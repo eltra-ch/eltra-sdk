@@ -4,8 +4,17 @@ using System;
 
 namespace ConsoleApp1
 {
-    class StopCountingCommand : DeviceCommand
+    public class StopCountingCommand : DeviceCommand
     {
+        public StopCountingCommand()
+        {
+            Name = "StopCounting";
+
+            //Result
+            AddParameter("Result", TypeCode.Boolean, ParameterType.Out);
+            AddParameter("ErrorCode", TypeCode.UInt32, ParameterType.Out);
+        }
+
         public StopCountingCommand(EltraDevice device)
             : base(device)
         {

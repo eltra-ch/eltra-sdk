@@ -18,6 +18,7 @@
 		</dependencies>
 		<PackageId>Eltra.Connector</PackageId>
 		<Product>Eltra.Connector</Product>
+		<Version>1.0.1</Version>
     </PropertyGroup>
 
     <ItemGroup>
