@@ -1,10 +1,12 @@
 ﻿using EltraCloudContracts.Contracts.CommandSets;
 using EltraCloudContracts.Contracts.Devices;
 using EltraCloudContracts.Contracts.Parameters;
+using EltraCloudContracts.Contracts.Sessions;
 using EltraCloudContracts.Contracts.Users;
 using EltraCloudContracts.ObjectDictionary.Common.DeviceDescription.Profiles.Application.Parameters;
 using EltraConnector.UserAgent;
 using EltraConnector.UserAgent.Vcs;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -59,6 +61,27 @@ namespace EltraConnector.Agent
                 _vcsList.Add(new DeviceVcs(_deviceAgent, device));
 
                 result.Add(sessionDevice.Item2);
+            }
+
+            return result;
+        }
+
+        public async Task<List<(Session, EltraDevice)>> GetSessionDevices(UserAuthData deviceAuth)
+        {
+            var result = new List<(Session, EltraDevice)>();
+
+            _vcsList.Clear();
+            _deviceAgent = new DeviceAgent(Host, AuthData, _updateInterval, _timeout);
+
+            var sessionDevices = await _deviceAgent.GetDevices(deviceAuth);
+
+            foreach (var sessionDevice in sessionDevices)
+            {
+                EltraDevice device = sessionDevice.Item2;
+
+                _vcsList.Add(new DeviceVcs(_deviceAgent, device));
+
+                result.Add(sessionDevice);
             }
 
             return result;
@@ -177,6 +200,30 @@ namespace EltraConnector.Agent
             if (_deviceAgent != null)
             {
                 result = await _deviceAgent.GetDeviceCommands(device);
+            }
+
+            return result;
+        }
+
+        public async Task<List<ParameterValue>> GetParameterHistory(EltraDevice device, string uniqueId, DateTime from, DateTime to)
+        {
+            var result = new List<ParameterValue>();
+            
+            if (_deviceAgent!=null)
+            {
+                result = await _deviceAgent.GetParameterHistory(device, uniqueId, from, to);
+            }
+
+            return result;
+        }
+
+        public async Task<List<ParameterUniqueIdValuePair>> GetParameterHistoryPair(EltraDevice device, string uniqueId1, string uniqueId2, DateTime from, DateTime to)
+        {
+            var result = new List<ParameterUniqueIdValuePair>();
+
+            if (_deviceAgent != null)
+            {
+                result = await _deviceAgent.GetParameterHistoryPair(device, uniqueId1, uniqueId2, from, to);
             }
 
             return result;
