@@ -17,7 +17,7 @@ namespace EltraConnector.Agent
         private DeviceAgent _deviceAgent;
         private uint _updateInterval;
         private uint _timeout;
-        private List<DeviceVcs> _vcsList;
+        private readonly List<DeviceVcs> _vcsList = new List<DeviceVcs>();
 
         #endregion
 
