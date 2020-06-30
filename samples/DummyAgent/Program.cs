@@ -1,14 +1,9 @@
-﻿using EltraCloudContracts.Contracts.Devices;
-using EltraCloudContracts.Contracts.Sessions;
-using EltraCloudContracts.Contracts.Users;
+﻿using EltraCloudContracts.Contracts.Users;
 using EltraCloudContracts.ObjectDictionary.Common.DeviceDescription.Profiles.Application.Parameters;
-using EltraConnector.UserAgent;
-using EltraConnector.UserAgent.Vcs;
 using EltraCloudContracts.Contracts.Parameters;
 using EltraCloudContracts.ObjectDictionary.Common.DeviceDescription.Profiles.Application.Parameters.Events;
 using System;
 using System.Threading.Tasks;
-using EltraCommon.Logger;
 
 namespace DummyAgent
 {
@@ -18,67 +13,67 @@ namespace DummyAgent
         {
             Console.WriteLine("Hello World!");
 
-            DeviceVcs vcs = null;
+            AgentConnector connector = new AgentConnector();
             string paramUniqueId = string.Empty;
 
             var t = Task.Run(async ()=>
             {
-                var myAuth = new UserAuthData() { Login = "dummy@eltra.ch", Password = "1234" };
                 var deviceAuth = new UserAuthData() { Login = "dummy@eltra.ch", Password = "1234" };
 
-                var agent = new DeviceAgent("https://eltra.ch", myAuth, 60, 120);
+                var devices = await connector.GetDevices(deviceAuth);
 
-                var sessionDevices = await agent.GetDevices(deviceAuth);
-
-                foreach(var sd in sessionDevices)
+                foreach(var device in devices)
                 {
-                    Session session = sd.Item1;
-                    EltraDevice device = sd.Item2;
+                    Console.WriteLine($"device = {device.Name}");
 
-                    Console.WriteLine($"session = {session.Uuid}, device = {device.Name}");
+                    var parameter = device.SearchParameter(connector, 0x3000, 0x00) as Parameter;
 
-                    vcs = new DeviceVcs(agent, device);
-
-                    var parameter = vcs.SearchParameter(0x3000, 0x00) as Parameter;
-
-                    parameter.ParameterChanged += Parameter_ParameterChanged;
+                    parameter.ParameterChanged += OnParameterChanged;
 
                     paramUniqueId = parameter.UniqueId;
 
                     Console.WriteLine($"register parameter = {parameter.UniqueId}");
 
-                    vcs.RegisterParameterUpdate(parameter.UniqueId, ParameterUpdatePriority.High);
+                    connector.RegisterParameterUpdate(device, parameter.UniqueId, ParameterUpdatePriority.High);
+
+                    Console.WriteLine($"get all supported commands");
+
+                    var commands = await connector.GetDeviceCommands(device);
+
+                    foreach(var cmd in commands)
+                    {
+                        Console.WriteLine($"command = {cmd.Name}");
+                    }
 
                     Console.WriteLine($"get command - start counting");
 
-                    var command = await vcs.Agent.GetDeviceCommand(device, "StartCounting");
+                    var command = await connector.GetDeviceCommand(device, "StartCounting");
 
-                    command.SetParameterValue<int>("Step", 10);
-                    command.SetParameterValue<int>("Delay", 100);
+                    command.SetParameterValue("Step", 10);
+                    command.SetParameterValue("Delay", 100);
 
                     Console.WriteLine($"execute command - start counting");
 
-                    await agent.ExecuteCommand(command);
+                    await connector.ExecuteCommand(command);
 
                     Console.WriteLine($"wait ...");
 
                     await Task.Delay(30000);
+
+                    connector?.UnregisterParameterUpdate(device, paramUniqueId);
                 }
 
             });
 
             t.Wait();
-
-            vcs?.UnregisterParameterUpdate(paramUniqueId);
-
         }
 
-        private static void Parameter_ParameterChanged(object sender, ParameterChangedEventArgs e)
+        private static void OnParameterChanged(object sender, ParameterChangedEventArgs args)
         {
-            var parameterValue = e.NewValue;
+            var parameterValue = args.NewValue;
             int val = 0;
 
-            Console.WriteLine($"parameter changed {e.Parameter.UniqueId}");
+            Console.WriteLine($"parameter changed {args.Parameter.UniqueId}");
 
             try
             {
@@ -87,8 +82,9 @@ namespace DummyAgent
                     Console.WriteLine($"{val}");
                 }
             }
-            catch(Exception)
+            catch(Exception e)
             {
+                Console.WriteLine(e.Message);
             }
         }
     }
