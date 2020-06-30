@@ -11,7 +11,7 @@ using EltraConnector.SyncAgent;
 
 namespace EltraConnector.UserAgent
 {
-    public class DeviceAgent : UserCloudAgent
+    internal class DeviceAgent : UserCloudAgent
     {
         #region private fields
 

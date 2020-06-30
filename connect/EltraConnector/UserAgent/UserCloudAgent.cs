@@ -22,7 +22,7 @@ using EltraConnector.UserAgent.Definitions;
 
 namespace EltraConnector.UserAgent
 {
-    public class UserCloudAgent : IDisposable
+    internal class UserCloudAgent : IDisposable
     {
         #region Private fields
 

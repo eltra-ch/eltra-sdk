@@ -16,7 +16,7 @@ using EltraConnector.SyncAgent;
 
 namespace EltraConnector.UserAgent.Vcs
 {
-    public class DeviceVcs : IDisposable 
+    internal class DeviceVcs : IDisposable 
     {
         #region Private fields
 
@@ -50,7 +50,7 @@ namespace EltraConnector.UserAgent.Vcs
             Agent.ParameterChanged += OnParameterChanged;
         }
 
-        public DeviceVcs(DeviceAgent agent, EltraDevice device)
+        internal DeviceVcs(DeviceAgent agent, EltraDevice device)
         {
             Timeout = DefaultTimeout;
 
@@ -75,7 +75,7 @@ namespace EltraConnector.UserAgent.Vcs
             }
         }
 
-        public DeviceAgent Agent { get; }
+        internal DeviceAgent Agent { get; }
 
         public int Timeout { get; set; }
 
