@@ -18,7 +18,7 @@
 		</dependencies>
 		<PackageId>Eltra.Connector</PackageId>
 		<Product>Eltra.Connector</Product>
-		<Version>1.0.2</Version>
+		<Version>1.0.3</Version>
 		<Description>Eltra - CANOpen based IoT Framework - SDK</Description>
 		<PackageTags>CANOpen IoT Eltra OPCUA OPC</PackageTags>
     </PropertyGroup>
