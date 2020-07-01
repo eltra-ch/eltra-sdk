@@ -4,6 +4,8 @@ using EltraCloudContracts.Contracts.Parameters;
 using EltraCloudContracts.ObjectDictionary.Common.DeviceDescription.Profiles.Application.Parameters.Events;
 using System;
 using System.Threading.Tasks;
+using EltraConnector.Agent;
+using EltraConnector.Extensions;
 
 namespace DummyAgent
 {
