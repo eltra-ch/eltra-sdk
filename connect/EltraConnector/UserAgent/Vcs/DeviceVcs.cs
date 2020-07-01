@@ -32,7 +32,7 @@ namespace EltraConnector.UserAgent.Vcs
 
         #region Constructors
 
-        internal DeviceVcs(string url, string uuid, UserAuthData authData, uint updateInterval, uint timeout)
+        public DeviceVcs(string url, string uuid, UserAuthData authData, uint updateInterval, uint timeout)
         {
             Timeout = DefaultTimeout;
 
