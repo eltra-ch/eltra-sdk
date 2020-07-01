@@ -51,8 +51,8 @@ namespace DummyAgent
 
                     var command = await connector.GetDeviceCommand(device, "StartCounting");
 
-                    command.SetParameterValue("Step", 10);
-                    command.SetParameterValue("Delay", 100);
+                    command.SetParameterValue("Step", 333);
+                    command.SetParameterValue("Delay", 50);
 
                     Console.WriteLine($"execute command - start counting");
 
