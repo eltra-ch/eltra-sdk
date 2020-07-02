@@ -4,24 +4,24 @@
     <TargetFramework>netstandard2.0</TargetFramework>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
-    <Copyright>Dawid Sienkiewicz</Copyright>
+    <Copyright>Dawid Sienkiewicz, (c) 2020</Copyright>
     <PackageLicenseFile>LICENSE</PackageLicenseFile>
     <PackageProjectUrl>www.eltra.ch</PackageProjectUrl>
     <RepositoryUrl>https://github.com/eltra-ch/eltra-sdk</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
-    <PackageTags>eltra, IoT</PackageTags>
+    <PackageTags>CANOpen IoT Eltra OPCUA OPC</PackageTags>
     <PackageId>Eltra.Master</PackageId>
     <Authors>Dawid Sienkiewicz</Authors>
-    <Company>Dawid Sienkiewicz</Company>
+    <Company>eltra.ch</Company>
     <Product>Eltra.Master</Product>
 	<dependencies>
       <dependency id="CommandLineParser" version="2.7.82" />
 	  <dependency id="Eltra.Common" version="1.0.0" />
 	  <dependency id="Eltra.Contracts" version="1.0.0" />
 	  <dependency id="Eltra.Connector" version="1.0.0" />
-    </dependencies>
-	<Version>1.0.8</Version>
-	<Description>Eltra IoT platform</Description>
+    </dependencies>	
+	<Description>Eltra - CANOpen based IoT Framework - SDK</Description>
+    <Version>1.0.9</Version>
   </PropertyGroup>
 
   <ItemGroup>
