@@ -131,6 +131,104 @@ namespace EltraConnector.Agent
             return result;
         }
 
+        public async Task<Parameter> GetParameter(EltraDevice device, string uniqueId)
+        {
+            Parameter result = null;
+
+            var vcs = SearchDeviceVcs(device);
+
+            if (vcs != null)
+            {
+                result = await vcs.GetParameter(uniqueId);
+            }
+
+            return result;
+        }
+
+        public async Task<ParameterValue> GetParameterValue(EltraDevice device, string uniqueId)
+        {
+            ParameterValue result = null;
+
+            var vcs = SearchDeviceVcs(device);
+
+            if (vcs != null)
+            {
+                result = await vcs.GetParameterValue(uniqueId);
+            }
+
+            return result;
+        }
+
+        public async Task<bool> WriteParameter(EltraDevice device, Parameter parameter)
+        {
+            bool result = false;
+
+            var vcs = SearchDeviceVcs(device);
+
+            if (vcs != null)
+            {
+                result = await vcs.WriteParameter(parameter);
+            }
+
+            return result;
+        }
+
+        public async Task<bool> IsDeviceLocked(EltraDevice device)
+        {
+            bool result = false;
+            
+            var vcs = SearchDeviceVcs(device);
+
+            if (vcs != null)
+            {
+                result = await vcs.IsDeviceLocked(device);
+            }
+
+            return result;
+        }
+
+        public async Task<bool> CanLockDevice(EltraDevice device)
+        {
+            bool result = false;
+
+            var vcs = SearchDeviceVcs(device);
+
+            if (vcs != null)
+            {
+                result = await vcs.CanLockDevice(device);
+            }
+
+            return result;
+        }
+
+        public async Task<bool> LockDevice(EltraDevice device)
+        {
+            bool result = false;
+
+            var vcs = SearchDeviceVcs(device);
+
+            if (vcs != null)
+            {
+                result = await vcs.LockDevice(device);
+            }
+
+            return result;
+        }
+
+        public async Task<bool> UnlockDevice(EltraDevice device)
+        {
+            bool result = false;
+
+            var vcs = SearchDeviceVcs(device);
+
+            if (vcs != null)
+            {
+                result = await vcs.UnlockDevice(device);
+            }
+
+            return result;
+        }
+
         public void RegisterParameterUpdate(EltraDevice device, string uniqueId, ParameterUpdatePriority priority = ParameterUpdatePriority.Low)
         {
             var vcs = SearchDeviceVcs(device);

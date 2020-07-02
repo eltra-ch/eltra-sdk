@@ -1,5 +1,8 @@
 ﻿using EltraCloudContracts.Contracts.Devices;
+using EltraCloudContracts.Contracts.Parameters;
+using EltraCloudContracts.ObjectDictionary.Common.DeviceDescription.Profiles.Application.Parameters;
 using System;
+using System.Threading.Tasks;
 
 namespace EltraConnector.Agent
 {
@@ -69,6 +72,134 @@ namespace EltraConnector.Agent
 
                 return result;
             }
+        }
+
+        #endregion
+
+        #region Methods
+
+        public void RegisterParameterUpdate(string uniqueId, ParameterUpdatePriority priority = ParameterUpdatePriority.Low)
+        {
+            if (_connector != null)
+            {
+                _connector.RegisterParameterUpdate(Device, uniqueId, priority);
+            }
+        }
+
+        public void UnregisterParameterUpdate(string uniqueId, ParameterUpdatePriority priority = ParameterUpdatePriority.Low)
+        {
+            if (_connector != null)
+            {
+                _connector.UnregisterParameterUpdate(Device, uniqueId);
+            }
+        }
+
+        public ParameterBase SearchParameter(ushort index, byte subIndex)
+        {
+            ParameterBase result = null;
+
+            if (_connector != null)
+            {
+                result = _connector.SearchParameter(Device, index, subIndex);
+            }
+
+            return result;
+        }
+
+        public ParameterBase SearchParameter(string uniqueId)
+        {
+            ParameterBase result = null;
+
+            if (_connector != null)
+            {
+                result = _connector.SearchParameter(Device, uniqueId);
+            }
+
+            return result;
+        }
+
+        public async Task<Parameter> GetParameter(string uniqueId)
+        {
+            Parameter result = null;
+            
+            if(_connector!=null)
+            {
+                result = await _connector.GetParameter(Device, uniqueId);
+            }
+            
+            return result;
+        }
+
+        public async Task<ParameterValue> GetParameterValue(string uniqueId)
+        {
+            ParameterValue result = null;
+
+            if (_connector != null)
+            {
+                result = await _connector.GetParameterValue(Device, uniqueId);
+            }
+
+            return result;
+        }
+
+        public async Task<bool> WriteParameter(Parameter parameter)
+        {
+            bool result = false;
+
+            if (_connector != null)
+            {
+                result = await _connector.WriteParameter(Device, parameter);
+            }
+
+            return result;
+        }
+
+        public async Task<bool> IsLocked()
+        {
+            bool result = false;
+
+            if (_connector != null)
+            {
+                result = await _connector.IsDeviceLocked(Device);
+            }
+
+            return result;
+        }
+
+        public async Task<bool> CanLock()
+        {
+            bool result = false;
+
+            if (_connector != null)
+            {
+                result = await _connector.CanLockDevice(Device);
+            }
+
+            return result;
+        }
+
+        public async Task<bool> Lock()
+        {
+            bool result = false;
+
+            if (_connector != null)
+            {
+                result = await _connector.LockDevice(Device);
+            }
+
+            return result;
+        }
+
+        public async Task<bool> Unlock()
+        {
+            bool result = false;
+
+            if (_connector != null)
+            {
+                result = await _connector.UnlockDevice(Device);
+            }
+
+            return result;
         }
 
         #endregion
