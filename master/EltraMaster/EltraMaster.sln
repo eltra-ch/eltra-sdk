@@ -11,8 +11,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EltraCommon", "..\..\xterna
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EltraCloudContracts", "..\..\xternals\common\EltraCloudContracts\EltraCloudContracts.csproj", "{890544E3-C8C4-4510-93F5-EB4405A6F49E}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EltraResources", "..\..\xternals\common\EltraResources\EltraResources.csproj", "{135FE497-9902-40DB-8289-A7ED8D5FCC74}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -35,10 +33,6 @@ Global
 		{890544E3-C8C4-4510-93F5-EB4405A6F49E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{890544E3-C8C4-4510-93F5-EB4405A6F49E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{890544E3-C8C4-4510-93F5-EB4405A6F49E}.Release|Any CPU.Build.0 = Release|Any CPU
-		{135FE497-9902-40DB-8289-A7ED8D5FCC74}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{135FE497-9902-40DB-8289-A7ED8D5FCC74}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{135FE497-9902-40DB-8289-A7ED8D5FCC74}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{135FE497-9902-40DB-8289-A7ED8D5FCC74}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
