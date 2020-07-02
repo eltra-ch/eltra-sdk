@@ -28,7 +28,7 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\..\xternals\common\EltraCloudContracts\EltraCloudContracts.csproj" />
+      <ProjectReference Include="..\..\..\common\EltraCloudContracts\EltraCloudContracts.csproj" />
     </ItemGroup>
 
     <ItemGroup>
