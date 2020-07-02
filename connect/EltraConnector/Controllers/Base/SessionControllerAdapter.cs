@@ -5,7 +5,7 @@ using EltraCommon.Helpers;
 using EltraCommon.Logger;
 using EltraConnector.Events;
 using EltraConnector.Extensions;
-using EltraConnector.Ws;
+using EltraConnector.Transport.Ws;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;

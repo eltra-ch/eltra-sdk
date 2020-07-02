@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace EltraConnector.Ws
+namespace EltraConnector.Transport.Ws
 {
     class WsConnectionManager
     {

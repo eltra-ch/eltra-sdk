@@ -1,6 +1,6 @@
 ﻿using EltraConnector.Controllers;
 using EltraConnector.Events;
-using EltraConnector.Ws;
+using EltraConnector.Transport.Ws;
 using EltraConnector.Sessions;
 using EltraCommon.Threads;
 using System;

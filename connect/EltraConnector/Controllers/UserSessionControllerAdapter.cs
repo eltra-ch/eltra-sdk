@@ -9,7 +9,7 @@ using EltraCloudContracts.Contracts.Sessions;
 using EltraCloudContracts.Contracts.Users;
 using EltraCloudContracts.ObjectDictionary.Common.DeviceDescription.Profiles.Application.Parameters;
 using EltraCloudContracts.Contracts.Parameters;
-using EltraConnector.Ws;
+using EltraConnector.Transport.Ws;
 
 namespace EltraConnector.Controllers
 {

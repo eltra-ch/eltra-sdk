@@ -6,7 +6,7 @@ using EltraConnector.UserAgent.Events;
 using EltraCommon.Logger;
 using EltraCloudContracts.Contracts.CommandSets;
 using EltraCloudContracts.Contracts.Devices;
-using EltraConnector.Ws;
+using EltraConnector.Transport.Ws;
 using EltraCloudContracts.Contracts.Sessions;
 using EltraCommon.Threads;
 using Newtonsoft.Json;

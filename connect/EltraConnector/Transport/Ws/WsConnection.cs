@@ -7,7 +7,7 @@ using EltraCloudContracts.Contracts.Ws;
 using EltraCommon.Logger;
 using Newtonsoft.Json;
 
-namespace EltraConnector.Ws
+namespace EltraConnector.Transport.Ws
 {
     class WsConnection
     {

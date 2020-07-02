@@ -8,7 +8,7 @@ using EltraCommon.Logger;
 using EltraCommon.Threads;
 using EltraConnector.Controllers;
 using EltraConnector.Events;
-using EltraConnector.Ws;
+using EltraConnector.Transport.Ws;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 

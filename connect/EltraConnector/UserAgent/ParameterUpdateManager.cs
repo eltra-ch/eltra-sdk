@@ -1,9 +1,8 @@
 ﻿using System;
-using System.Threading;
 using System.Threading.Tasks;
 using EltraConnector.Controllers;
 using EltraCommon.Logger;
-using EltraConnector.Ws;
+using EltraConnector.Transport.Ws;
 using EltraCloudContracts.Contracts.Sessions;
 using EltraCloudContracts.ObjectDictionary.Common.DeviceDescription.Profiles.Application.Parameters.Events;
 using EltraCloudContracts.ObjectDictionary.Common.DeviceDescription.Profiles.Application.Parameters;
