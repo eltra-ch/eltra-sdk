@@ -35,7 +35,7 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\..\xternals\common\EltraCommon\EltraCommon.csproj" />
+      <ProjectReference Include="..\..\..\common\EltraCommon\EltraCommon.csproj" />
     </ItemGroup>
 
     <Target Name="PostBuild" AfterTargets="PostBuildEvent">
