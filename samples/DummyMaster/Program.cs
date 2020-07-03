@@ -1,10 +1,9 @@
 ﻿using System;
 using System.Threading.Tasks;
-using EltraMaster.Events;
-using EltraMaster.Status;
-using EltraMaster;
-using EltraCommon.Logger;
-using EltraCloudContracts.Contracts.Users;
+using EltraCommon.Contracts.Users;
+using EltraConnector.Master;
+using EltraConnector.Master.Events;
+using EltraConnector.Master.Status;
 
 namespace ConsoleApp1
 {

@@ -1,10 +1,10 @@
-﻿using EltraCloudContracts.ObjectDictionary.Common.DeviceDescription.Profiles.Application.Parameters;
-using EltraMaster.Device;
+﻿using EltraCommon.ObjectDictionary.Common.DeviceDescription.Profiles.Application.Parameters;
 using EltraMaster.DeviceManager.Events;
 using System;
 using System.Threading.Tasks;
-using EltraCloudContracts.Contracts.Devices;
+using EltraCommon.Contracts.Devices;
 using EltraCommon.Logger;
+using EltraConnector.Master.Device;
 
 namespace ConsoleApp1
 {

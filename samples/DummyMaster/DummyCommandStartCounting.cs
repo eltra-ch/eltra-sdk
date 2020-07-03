@@ -1,5 +1,5 @@
-﻿using EltraCloudContracts.Contracts.CommandSets;
-using EltraCloudContracts.Contracts.Devices;
+﻿using EltraCommon.Contracts.CommandSets;
+using EltraCommon.Contracts.Devices;
 using System;
 
 namespace ConsoleApp1

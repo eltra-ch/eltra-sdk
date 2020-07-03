@@ -1,4 +1,4 @@
-﻿using EltraMaster.Device;
+﻿using EltraConnector.Master.Device;
 
 namespace ConsoleApp1
 {
