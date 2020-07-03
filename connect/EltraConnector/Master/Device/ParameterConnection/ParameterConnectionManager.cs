@@ -2,10 +2,10 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using EltraCommon.Logger;
-using EltraCloudContracts.Contracts.Parameters;
-using EltraCloudContracts.ObjectDictionary.Common.DeviceDescription.Common;
-using EltraCloudContracts.ObjectDictionary.Common.DeviceDescription.Profiles.Application.Parameters;
-using EltraCloudContracts.Contracts.Sessions;
+using EltraCommon.Contracts.Parameters;
+using EltraCommon.ObjectDictionary.Common.DeviceDescription.Common;
+using EltraCommon.ObjectDictionary.Common.DeviceDescription.Profiles.Application.Parameters;
+using EltraCommon.Contracts.Sessions;
 using EltraCommon.Threads;
 using EltraConnector.Events;
 

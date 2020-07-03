@@ -1,7 +1,7 @@
-﻿using EltraCloudContracts.ObjectDictionary.Common.DeviceDescription.Profiles.Application.Parameters;
+﻿using EltraCommon.ObjectDictionary.Common.DeviceDescription.Profiles.Application.Parameters;
 using EltraMaster.DeviceManager.Events;
 using System;
-using EltraCloudContracts.Contracts.Devices;
+using EltraCommon.Contracts.Devices;
 
 namespace EltraConnector.Master.Device
 {

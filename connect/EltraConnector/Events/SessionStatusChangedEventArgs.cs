@@ -1,4 +1,4 @@
-﻿using EltraCloudContracts.Contracts.Sessions;
+﻿using EltraCommon.Contracts.Sessions;
 using System;
 
 namespace EltraConnector.Events

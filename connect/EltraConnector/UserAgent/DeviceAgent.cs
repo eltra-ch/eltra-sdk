@@ -2,11 +2,11 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-using EltraCloudContracts.Contracts.CommandSets;
-using EltraCloudContracts.Contracts.Devices;
-using EltraCloudContracts.Contracts.Parameters;
-using EltraCloudContracts.Contracts.Users;
-using EltraCloudContracts.ObjectDictionary.Common.DeviceDescription.Profiles.Application.Parameters;
+using EltraCommon.Contracts.CommandSets;
+using EltraCommon.Contracts.Devices;
+using EltraCommon.Contracts.Parameters;
+using EltraCommon.Contracts.Users;
+using EltraCommon.ObjectDictionary.Common.DeviceDescription.Profiles.Application.Parameters;
 using EltraConnector.SyncAgent;
 
 namespace EltraConnector.UserAgent

@@ -3,12 +3,12 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using EltraConnector.Controllers.Base;
 using EltraConnector.Events;
-using EltraCloudContracts.Contracts.Devices;
-using EltraCloudContracts.Contracts.Sessions;
-using EltraCloudContracts.Contracts.Users;
+using EltraCommon.Contracts.Devices;
+using EltraCommon.Contracts.Sessions;
+using EltraCommon.Contracts.Users;
 using EltraCommon.Logger;
 
-using EltraCloudContracts.Contracts.CommandSets;
+using EltraCommon.Contracts.CommandSets;
 
 namespace EltraConnector.Controllers
 {

@@ -1,7 +1,7 @@
-﻿using EltraCloudContracts.Contracts.Devices;
-using EltraCloudContracts.Contracts.Parameters;
-using EltraCloudContracts.ObjectDictionary.Common.DeviceDescription.Profiles.Application.Parameters;
-using EltraCloudContracts.ObjectDictionary.DeviceDescription;
+﻿using EltraCommon.Contracts.Devices;
+using EltraCommon.Contracts.Parameters;
+using EltraCommon.ObjectDictionary.Common.DeviceDescription.Profiles.Application.Parameters;
+using EltraCommon.ObjectDictionary.DeviceDescription;
 using EltraConnector.Master.Device.Commands;
 using EltraConnector.Master.Device.ParameterConnection;
 using EltraConnector.SyncAgent;

@@ -1,4 +1,4 @@
-﻿using EltraCloudContracts.Contracts.Devices;
+﻿using EltraCommon.Contracts.Devices;
 using EltraCommon.Logger;
 using EltraConnector.SyncAgent;
 using System;

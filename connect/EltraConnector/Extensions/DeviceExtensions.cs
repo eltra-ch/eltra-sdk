@@ -1,5 +1,5 @@
-﻿using EltraCloudContracts.Contracts.Devices;
-using EltraCloudContracts.ObjectDictionary.Common.DeviceDescription.Profiles.Application.Parameters;
+﻿using EltraCommon.Contracts.Devices;
+using EltraCommon.ObjectDictionary.Common.DeviceDescription.Profiles.Application.Parameters;
 using EltraConnector.Agent;
 
 namespace EltraConnector.Extensions

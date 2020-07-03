@@ -3,12 +3,12 @@ using System.Threading;
 using System.Threading.Tasks;
 
 using EltraConnector.Classes;
-using EltraCloudContracts.Contracts.CommandSets;
-using EltraCloudContracts.Contracts.Devices;
-using EltraCloudContracts.Contracts.Parameters;
-using EltraCloudContracts.Contracts.Users;
-using EltraCloudContracts.ObjectDictionary.Common.DeviceDescription.Profiles.Application.Parameters;
-using EltraCloudContracts.ObjectDictionary.Common.DeviceDescription.Profiles.Application.Parameters.Events;
+using EltraCommon.Contracts.CommandSets;
+using EltraCommon.Contracts.Devices;
+using EltraCommon.Contracts.Parameters;
+using EltraCommon.Contracts.Users;
+using EltraCommon.ObjectDictionary.Common.DeviceDescription.Profiles.Application.Parameters;
+using EltraCommon.ObjectDictionary.Common.DeviceDescription.Profiles.Application.Parameters.Events;
 using System.Collections.Generic;
 using EltraCommon.Logger;
 using System.Diagnostics;

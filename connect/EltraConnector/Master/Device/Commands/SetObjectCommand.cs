@@ -1,6 +1,6 @@
 ﻿using System;
-using EltraCloudContracts.Contracts.CommandSets;
-using EltraCloudContracts.Contracts.Devices;
+using EltraCommon.Contracts.CommandSets;
+using EltraCommon.Contracts.Devices;
 
 namespace EltraConnector.Master.Device.Commands
 {

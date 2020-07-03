@@ -5,12 +5,12 @@ using System.Web;
 using EltraConnector.Controllers.Base;
 using EltraConnector.Extensions;
 
-using EltraCloudContracts.Contracts.CommandSets;
-using EltraCloudContracts.Contracts.Sessions;
+using EltraCommon.Contracts.CommandSets;
+using EltraCommon.Contracts.Sessions;
 using EltraCommon.Logger;
 using Newtonsoft.Json;
 using EltraCommon.Helpers;
-using EltraCloudContracts.Contracts.Devices;
+using EltraCommon.Contracts.Devices;
 
 namespace EltraConnector.Controllers
 {

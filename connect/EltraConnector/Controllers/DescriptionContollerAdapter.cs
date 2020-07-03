@@ -1,4 +1,4 @@
-﻿using EltraCloudContracts.ObjectDictionary.DeviceDescription;
+﻿using EltraCommon.ObjectDictionary.DeviceDescription;
 using EltraCommon.Logger;
 using EltraConnector.Controllers.Base;
 using Newtonsoft.Json;
@@ -7,8 +7,8 @@ using System.Threading.Tasks;
 using System.Net;
 using System.Web;
 using EltraCommon.Helpers;
-using EltraCloudContracts.Contracts.Results;
-using EltraCloudContracts.Contracts.Devices;
+using EltraCommon.Contracts.Results;
+using EltraCommon.Contracts.Devices;
 
 namespace EltraConnector.Controllers
 {

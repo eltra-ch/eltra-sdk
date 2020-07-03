@@ -4,11 +4,11 @@ using EltraConnector.Transport.Ws;
 using EltraConnector.Sessions;
 using EltraCommon.Threads;
 using System;
-using EltraCloudContracts.Contracts.Sessions;
+using EltraCommon.Contracts.Sessions;
 using EltraCommon.Logger;
-using EltraCloudContracts.Contracts.Users;
+using EltraCommon.Contracts.Users;
 using System.Threading.Tasks;
-using EltraCloudContracts.Contracts.Devices;
+using EltraCommon.Contracts.Devices;
 using EltraConnector.Controllers.Base.Events;
 
 namespace EltraConnector.SyncAgent

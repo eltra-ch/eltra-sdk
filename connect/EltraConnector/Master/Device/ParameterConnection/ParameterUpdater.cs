@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using EltraCommon.Logger;
-using EltraCloudContracts.Contracts.Parameters;
-using EltraCloudContracts.ObjectDictionary.Common.DeviceDescription.Common;
-using EltraCloudContracts.ObjectDictionary.Common.DeviceDescription.Profiles.Application.Parameters;
+using EltraCommon.Contracts.Parameters;
+using EltraCommon.ObjectDictionary.Common.DeviceDescription.Common;
+using EltraCommon.ObjectDictionary.Common.DeviceDescription.Profiles.Application.Parameters;
 using EltraCommon.Threads;
 
 namespace EltraConnector.Master.Device.ParameterConnection

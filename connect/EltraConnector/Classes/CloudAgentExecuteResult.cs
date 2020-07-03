@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-using EltraCloudContracts.Contracts.CommandSets;
+using EltraCommon.Contracts.CommandSets;
 
 namespace EltraConnector.Classes
 {

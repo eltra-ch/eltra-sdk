@@ -1,9 +1,9 @@
-﻿using EltraCloudContracts.Contracts.CommandSets;
-using EltraCloudContracts.Contracts.Devices;
-using EltraCloudContracts.Contracts.Parameters;
-using EltraCloudContracts.Contracts.Sessions;
-using EltraCloudContracts.Contracts.Users;
-using EltraCloudContracts.ObjectDictionary.Common.DeviceDescription.Profiles.Application.Parameters;
+﻿using EltraCommon.Contracts.CommandSets;
+using EltraCommon.Contracts.Devices;
+using EltraCommon.Contracts.Parameters;
+using EltraCommon.Contracts.Sessions;
+using EltraCommon.Contracts.Users;
+using EltraCommon.ObjectDictionary.Common.DeviceDescription.Profiles.Application.Parameters;
 using EltraConnector.UserAgent;
 using EltraConnector.UserAgent.Vcs;
 using System;

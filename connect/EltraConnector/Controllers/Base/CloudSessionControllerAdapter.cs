@@ -1,4 +1,4 @@
-﻿using EltraCloudContracts.Contracts.Sessions;
+﻿using EltraCommon.Contracts.Sessions;
 
 namespace EltraConnector.Controllers.Base
 {

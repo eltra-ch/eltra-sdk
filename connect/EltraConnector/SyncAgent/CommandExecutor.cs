@@ -2,8 +2,8 @@
 using System.Collections.Generic;
 using System.Security.Cryptography;
 using System.Threading.Tasks;
-using EltraCloudContracts.Contracts.CommandSets;
-using EltraCloudContracts.Contracts.Sessions;
+using EltraCommon.Contracts.CommandSets;
+using EltraCommon.Contracts.Sessions;
 using EltraCommon.Logger;
 using EltraCommon.Threads;
 using EltraConnector.Controllers;

@@ -5,7 +5,7 @@ using System.Web;
 using EltraConnector.Controllers.Base;
 using EltraCommon.Helpers;
 using EltraCommon.Logger;
-using EltraCloudContracts.Contracts.Users;
+using EltraCommon.Contracts.Users;
 using Newtonsoft.Json;
 using System.Threading;
 

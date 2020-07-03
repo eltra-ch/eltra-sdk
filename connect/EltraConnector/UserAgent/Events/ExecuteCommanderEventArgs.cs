@@ -1,5 +1,5 @@
 ﻿using System;
-using EltraCloudContracts.Contracts.CommandSets;
+using EltraCommon.Contracts.CommandSets;
 
 namespace EltraConnector.UserAgent.Events
 {

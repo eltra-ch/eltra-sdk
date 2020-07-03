@@ -1,4 +1,4 @@
-﻿using EltraCloudContracts.GeoAdmin;
+﻿using EltraCommon.GeoAdmin;
 using EltraCommon.Logger;
 using EltraConnector.Transport;
 using System;

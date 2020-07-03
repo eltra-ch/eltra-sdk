@@ -1,6 +1,6 @@
 ﻿using System;
-using EltraCloudContracts.Contracts.Devices;
-using EltraCloudContracts.Contracts.Sessions;
+using EltraCommon.Contracts.Devices;
+using EltraCommon.Contracts.Sessions;
 
 namespace EltraConnector.Events
 {

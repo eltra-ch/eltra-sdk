@@ -1,6 +1,6 @@
 ﻿using System.Threading.Tasks;
 using EltraCommon.Logger;
-using EltraCloudContracts.Contracts.Users;
+using EltraCommon.Contracts.Users;
 using EltraConnector.Controllers;
 using System;
 using EltraConnector.Controllers.Base.Events;

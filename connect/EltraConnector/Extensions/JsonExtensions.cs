@@ -1,8 +1,8 @@
 ﻿using System;
 
-using EltraCloudContracts.Contracts.CommandSets;
-using EltraCloudContracts.Contracts.Sessions;
-using EltraCloudContracts.Contracts.Devices;
+using EltraCommon.Contracts.CommandSets;
+using EltraCommon.Contracts.Sessions;
+using EltraCommon.Contracts.Devices;
 using Newtonsoft.Json;
 
 namespace EltraConnector.Extensions

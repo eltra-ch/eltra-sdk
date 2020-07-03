@@ -1,5 +1,5 @@
 ﻿using System;
-using EltraCloudContracts.Contracts.CommandSets;
+using EltraCommon.Contracts.CommandSets;
 
 namespace EltraConnector.Master.Device.Commands
 {
@@ -9,7 +9,7 @@ namespace EltraConnector.Master.Device.Commands
         {
         }
 
-        public GetObjectCommand(EltraCloudContracts.Contracts.Devices.EltraDevice device)
+        public GetObjectCommand(EltraCommon.Contracts.Devices.EltraDevice device)
             : base(device)
         {
             Name = "GetObject";

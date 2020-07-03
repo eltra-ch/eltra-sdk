@@ -1,6 +1,6 @@
-﻿using EltraCloudContracts.Contracts.Results;
-using EltraCloudContracts.Contracts.Sessions;
-using EltraCloudContracts.Contracts.Users;
+﻿using EltraCommon.Contracts.Results;
+using EltraCommon.Contracts.Sessions;
+using EltraCommon.Contracts.Users;
 using EltraCommon.Helpers;
 using EltraCommon.Logger;
 using EltraConnector.Events;
