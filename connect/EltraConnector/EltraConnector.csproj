@@ -20,7 +20,7 @@
 		<Product>Eltra.Connector</Product>		
 		<Description>Eltra - CANOpen based IoT Framework - SDK</Description>
 		<PackageTags>CANOpen IoT Eltra OPCUA OPC</PackageTags>
-        <Version>1.0.6</Version>
+        <Version>1.0.7</Version>
     </PropertyGroup>
 
     <ItemGroup>
@@ -35,7 +35,7 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\..\..\common\EltraCommon\EltraCommon.csproj" />
+      <ProjectReference Include="..\..\xternals\common\EltraCommon\EltraCommon.csproj" />
     </ItemGroup>
 
     <Target Name="PostBuild" AfterTargets="PostBuildEvent">
