@@ -1,7 +1,7 @@
-﻿using EltraCloudContracts.Contracts.Users;
-using EltraCloudContracts.ObjectDictionary.Common.DeviceDescription.Profiles.Application.Parameters;
-using EltraCloudContracts.Contracts.Parameters;
-using EltraCloudContracts.ObjectDictionary.Common.DeviceDescription.Profiles.Application.Parameters.Events;
+﻿using EltraCommon.Contracts.Users;
+using EltraCommon.ObjectDictionary.Common.DeviceDescription.Profiles.Application.Parameters;
+using EltraCommon.Contracts.Parameters;
+using EltraCommon.ObjectDictionary.Common.DeviceDescription.Profiles.Application.Parameters.Events;
 using System;
 using System.Threading.Tasks;
 using EltraConnector.Agent;
