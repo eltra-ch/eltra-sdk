@@ -3,7 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.30204.135
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DummyMaster", "DummyMaster.csproj", "{A6B58520-EBA0-4CCF-BFA8-EF82174E075A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DummyMaster", "DummyMaster.csproj", "{A6B58520-EBA0-4CCF-BFA8-EF82174E075A}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EltraCommon", "..\..\xternals\common\EltraCommon\EltraCommon.csproj", "{07BFE03D-4ACF-49AB-B0A6-A972369F49FB}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EltraConnector", "..\..\connect\EltraConnector\EltraConnector.csproj", "{4EF67973-099E-4876-B288-63E3F26FDD88}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +19,14 @@ Global
 		{A6B58520-EBA0-4CCF-BFA8-EF82174E075A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A6B58520-EBA0-4CCF-BFA8-EF82174E075A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A6B58520-EBA0-4CCF-BFA8-EF82174E075A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{07BFE03D-4ACF-49AB-B0A6-A972369F49FB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{07BFE03D-4ACF-49AB-B0A6-A972369F49FB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{07BFE03D-4ACF-49AB-B0A6-A972369F49FB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{07BFE03D-4ACF-49AB-B0A6-A972369F49FB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4EF67973-099E-4876-B288-63E3F26FDD88}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4EF67973-099E-4876-B288-63E3F26FDD88}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4EF67973-099E-4876-B288-63E3F26FDD88}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4EF67973-099E-4876-B288-63E3F26FDD88}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

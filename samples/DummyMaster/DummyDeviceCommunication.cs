@@ -60,7 +60,7 @@ namespace ConsoleApp1
             //PARAM_Counter
             if (objectIndex == 0x3000)
             {
-                if (_controlWordParameter.GetValue(out byte[] v))
+                if (_counterParameter.GetValue(out byte[] v))
                 {
                     data = v;
                     result = true;

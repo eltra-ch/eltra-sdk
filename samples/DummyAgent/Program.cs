@@ -15,7 +15,9 @@ namespace DummyAgent
         {
             Console.WriteLine("Hello World!");
 
-            AgentConnector connector = new AgentConnector();
+            string[] urls = new string[] { "https://eltra.ch", "http://localhost:5001" };
+
+            AgentConnector connector = new AgentConnector() { Host = urls[1] };
             string paramUniqueId = string.Empty;
 
             var t = Task.Run(async ()=>
@@ -61,6 +63,10 @@ namespace DummyAgent
                     Console.WriteLine($"wait ...");
 
                     await Task.Delay(30000);
+
+                    command = await connector.GetDeviceCommand(device, "StopCounting");
+
+                    await connector.ExecuteCommand(command);
 
                     connector?.UnregisterParameterUpdate(device, paramUniqueId);
                 }
