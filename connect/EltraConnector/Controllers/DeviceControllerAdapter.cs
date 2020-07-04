@@ -42,7 +42,7 @@ namespace EltraConnector.Controllers
 
         #region Properties
 
-        private SessionDevices SessionDevices => _sessionDevices ?? (_sessionDevices = new SessionDevices { SessionUuid = Session.Uuid });
+        private SessionDevices SessionDevices => _sessionDevices ?? (_sessionDevices = new SessionDevices { Session = Session });
 
         public DeviceCommandsControllerAdapter DeviceCommandsAdapter => _deviceCommandsControllerAdapter ?? (_deviceCommandsControllerAdapter = CreateDeviceCommandsAdapter());
 
