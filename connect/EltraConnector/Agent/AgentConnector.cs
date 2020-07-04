@@ -52,36 +52,42 @@ namespace EltraConnector.Agent
             _vcsList.Clear();
             _deviceAgent = new DeviceAgent(Host, AuthData, _updateInterval, _timeout);
 
-            var sessionDevices = await _deviceAgent.GetDevices(deviceAuth);
+            var sessionsDevices = await _deviceAgent.GetDevices(deviceAuth);
 
-            foreach(var sessionDevice in sessionDevices)
+            foreach(var sessionDevice in sessionsDevices.SessionDevices)
             {
-                EltraDevice device = sessionDevice.Item2;
+                var session = sessionDevice.Session;
 
-                _vcsList.Add(new DeviceVcs(_deviceAgent, device));
+                foreach (var device in sessionDevice.Devices)
+                {
+                    _vcsList.Add(new DeviceVcs(_deviceAgent, device));
 
-                result.Add(sessionDevice.Item2);
+                    result.Add(device);
+                }
             }
 
             return result;
         }
 
-        public async Task<List<(Session, EltraDevice)>> GetSessionDevices(UserAuthData deviceAuth)
+        public async Task<SessionsDevices> GetSessionDevices(UserAuthData deviceAuth)
         {
-            var result = new List<(Session, EltraDevice)>();
+            var result = new SessionsDevices();
 
             _vcsList.Clear();
             _deviceAgent = new DeviceAgent(Host, AuthData, _updateInterval, _timeout);
 
-            var sessionDevices = await _deviceAgent.GetDevices(deviceAuth);
+            var sessionsDevices = await _deviceAgent.GetDevices(deviceAuth);
 
-            foreach (var sessionDevice in sessionDevices)
+            foreach (var sessionDevice in sessionsDevices.SessionDevices)
             {
-                EltraDevice device = sessionDevice.Item2;
+                Session session = sessionDevice.Session;
 
-                _vcsList.Add(new DeviceVcs(_deviceAgent, device));
+                foreach (var device in sessionDevice.Devices)
+                {
+                    _vcsList.Add(new DeviceVcs(_deviceAgent, device));
 
-                result.Add(sessionDevice);
+                    result.Add(sessionDevice);
+                }
             }
 
             return result;

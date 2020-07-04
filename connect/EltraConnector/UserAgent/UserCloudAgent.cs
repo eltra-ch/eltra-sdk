@@ -352,9 +352,9 @@ namespace EltraConnector.UserAgent
             return result;
         }
 
-        public async Task<List<(Session, EltraDevice)>> GetDevices(UserAuthData authData)
+        public async Task<SessionsDevices> GetDevices(UserAuthData authData)
         {
-            var result = new List<(Session,EltraDevice)>();
+            var result = new SessionsDevices();
 
             if (await EnsureAgentReady())
             {
@@ -364,15 +364,19 @@ namespace EltraConnector.UserAgent
                 {
                     foreach (var session in sessions)
                     {
+                        var sessionDevices = new SessionDevices();
+
                         var devices = await GetSessionDevices(session, authData);
 
                         if (devices != null)
                         {
                             foreach (var device in devices)
                             {
-                                result.Add((session, device));
+                                sessionDevices.AddDevice(device);
                             }
                         }
+
+                        result.Add(sessionDevices);
                     }
                 }
             }
