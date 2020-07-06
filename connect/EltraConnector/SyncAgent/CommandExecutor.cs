@@ -51,7 +51,7 @@ namespace EltraConnector.SyncAgent
         {
             if(_wsConnectionManager.IsConnected(commandExecUuid))
             {
-                var sessionIdent = new SessionIdentification() { Uuid = _sessionControllerAdapter.Session.Uuid };
+                var sessionIdent = new SessionIdentification() { Uuid = _sessionControllerAdapter.Session.Uuid, AuthData = _sessionControllerAdapter.User.AuthData };
                 
                 await _wsConnectionManager.Send(commandExecUuid, sessionIdent);
             }

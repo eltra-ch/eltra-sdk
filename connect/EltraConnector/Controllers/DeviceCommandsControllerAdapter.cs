@@ -48,9 +48,12 @@ namespace EltraConnector.Controllers
 
                     var commandSet = JsonConvert.DeserializeObject<DeviceCommandSet>(json);
 
-                    AssignDeviceToCommand(device, commandSet);
+                    if (commandSet != null)
+                    {
+                        AssignDeviceToCommand(device, commandSet);
 
-                    result = commandSet.Commands;
+                        result = commandSet.Commands;
+                    }
                 }
                 catch (Exception e)
                 {

@@ -45,6 +45,29 @@ namespace EltraConnector.Agent
 
         #region Methods
 
+        private DeviceVcs FindVcs(EltraDevice device)
+        {
+            DeviceVcs result = null;
+
+            if (device != null)
+            {
+                foreach (var vcs in _vcsList)
+                {
+                    var vcsIdent1 = vcs?.Device?.Identification;
+                    var vcsIdent2 = device?.Identification;
+
+                    if (vcsIdent1 !=null && vcsIdent2 != null &&
+                        vcsIdent1.SerialNumber == vcsIdent2.SerialNumber)
+                    {
+                        result = vcs;
+                        break;
+                    }
+                }
+            }
+
+            return result;
+        }
+
         public async Task<List<EltraDevice>> GetDevices(UserAuthData deviceAuth)
         {
             var result = new List<EltraDevice>();
@@ -54,13 +77,16 @@ namespace EltraConnector.Agent
 
             var sessionsDevices = await _deviceAgent.GetDevices(deviceAuth);
 
-            foreach(var sessionDevice in sessionsDevices.SessionDevices)
+            foreach (var sessionDevice in sessionsDevices.SessionDevices)
             {
                 var session = sessionDevice.Session;
 
                 foreach (var device in sessionDevice.Devices)
                 {
-                    _vcsList.Add(new DeviceVcs(_deviceAgent, device));
+                    if (FindVcs(device) == null)
+                    {
+                        _vcsList.Add(new DeviceVcs(_deviceAgent, device));
+                    }
 
                     result.Add(device);
                 }

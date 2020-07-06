@@ -364,7 +364,7 @@ namespace EltraConnector.UserAgent
                 {
                     foreach (var session in sessions)
                     {
-                        var sessionDevices = new SessionDevices();
+                        var sessionDevices = new SessionDevices() { Session = session };
 
                         var devices = await GetSessionDevices(session, authData);
 

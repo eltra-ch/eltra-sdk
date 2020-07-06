@@ -63,7 +63,7 @@ namespace EltraConnector.UserAgent
 
             if (_wsConnectionManager.IsConnected(commandExecUuid))
             {
-                var sessionIdent = new SessionIdentification() { Uuid = _sessionAdapter.Uuid };
+                var sessionIdent = new SessionIdentification() { Uuid = _sessionAdapter.Uuid, AuthData = _sessionAdapter.User.AuthData };
 
                 result = await _wsConnectionManager.Send(commandExecUuid, sessionIdent);
             }

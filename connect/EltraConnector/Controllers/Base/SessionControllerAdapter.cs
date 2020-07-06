@@ -70,7 +70,7 @@ namespace EltraConnector.Controllers.Base
 
         public WsConnectionManager WsConnectionManager { get; set; }
 
-        protected User User => _user;
+        public User User => _user;
 
         #endregion
 
@@ -231,7 +231,7 @@ namespace EltraConnector.Controllers.Base
 
             try
             {
-                var statusUpdate = new SessionStatusUpdate { SessionUuid = Session.Uuid, Status = status };
+                var statusUpdate = new SessionStatusUpdate { SessionUuid = Session.Uuid, Status = status, AuthData = _user.AuthData };
 
                 if (WsConnectionManager != null && WsConnectionManager.IsConnected(Session.Uuid))
                 {
