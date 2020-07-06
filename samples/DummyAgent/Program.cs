@@ -44,31 +44,40 @@ namespace DummyAgent
 
                     var commands = await connector.GetDeviceCommands(device);
 
-                    foreach(var cmd in commands)
+                    if (commands != null)
                     {
-                        Console.WriteLine($"command = {cmd.Name}");
+                        foreach (var cmd in commands)
+                        {
+                            Console.WriteLine($"command = {cmd.Name}");
+                        }
                     }
 
                     Console.WriteLine($"get command - start counting");
 
                     var command = await connector.GetDeviceCommand(device, "StartCounting");
 
-                    command.SetParameterValue("Step", 333);
-                    command.SetParameterValue("Delay", 50);
+                    if (command != null)
+                    {
+                        command.SetParameterValue("Step", 333);
+                        command.SetParameterValue("Delay", 50);
 
-                    Console.WriteLine($"execute command - start counting");
+                        Console.WriteLine($"execute command - start counting");
 
-                    await connector.ExecuteCommand(command);
+                        await connector.ExecuteCommand(command);
 
-                    Console.WriteLine($"wait ...");
+                        Console.WriteLine($"wait ...");
 
-                    await Task.Delay(30000);
+                        await Task.Delay(30000);
+                    }
 
                     command = await connector.GetDeviceCommand(device, "StopCounting");
 
-                    await connector.ExecuteCommand(command);
+                    if (command != null)
+                    {
+                        await connector.ExecuteCommand(command);
 
-                    connector?.UnregisterParameterUpdate(device, paramUniqueId);
+                        connector?.UnregisterParameterUpdate(device, paramUniqueId);
+                    }
                 }
 
             });
