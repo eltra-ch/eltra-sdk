@@ -299,11 +299,11 @@ namespace EltraConnector.Controllers
 
                                     clonedDeviceCommand.Sync(executeCommand.Command);
 
-                                    MsgLogger.WriteDebug($"{GetType().Name} - ExecuteCommand", $"Execute Command '{commandName}', session '{executeCommand.SessionUuid}'");
+                                    MsgLogger.WriteDebug($"{GetType().Name} - ExecuteCommand", $"Execute Command '{commandName}', session '{executeCommand.SourceSessionUuid}'");
 
                                     try
                                     {
-                                        result = clonedDeviceCommand.Execute(executeCommand.SessionUuid);
+                                        result = clonedDeviceCommand.Execute(executeCommand.SourceSessionUuid);
                                     }
                                     catch (Exception e)
                                     {
@@ -318,7 +318,8 @@ namespace EltraConnector.Controllers
 
                                         MsgLogger.WriteDebug($"{GetType().Name} - ExecuteCommand", $"Push Response for Command '{commandName}'");
 
-                                        executeCommand.SessionUuid = Session.Uuid;
+                                        executeCommand.SourceSessionUuid = Session.Uuid;
+                                        executeCommand.TargetSessionUuid = clonedDeviceCommand.Device.SessionUuid;
 
                                         result = await DeviceControllerAdapter.PushCommand(executeCommand, ExecCommandStatus.Executed);
 

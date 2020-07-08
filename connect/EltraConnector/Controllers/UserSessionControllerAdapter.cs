@@ -120,7 +120,7 @@ namespace EltraConnector.Controllers
         {
             var deviceCommandsAdapter = DeviceAdapter.DeviceCommandsAdapter;
 
-            return await deviceCommandsAdapter.PopCommands(device, status);
+            return await deviceCommandsAdapter.PullCommands(device, status);
         }
 
         public async Task<ExecuteCommand> PopCommand(string commandUuid, EltraDevice device, ExecCommandStatus status)

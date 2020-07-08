@@ -2,13 +2,15 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Web;
+using System.Net;
+using Newtonsoft.Json;
+
 using EltraConnector.Controllers.Base;
 using EltraConnector.Extensions;
 
 using EltraCommon.Contracts.CommandSets;
 using EltraCommon.Contracts.Sessions;
 using EltraCommon.Logger;
-using Newtonsoft.Json;
 using EltraCommon.Helpers;
 using EltraCommon.Contracts.Devices;
 
@@ -123,7 +125,7 @@ namespace EltraConnector.Controllers
 
                 var postResult = await Transporter.Post(Url, "api/command/push", execCommand.ToJson());
 
-                if (postResult.StatusCode == System.Net.HttpStatusCode.OK)
+                if (postResult.StatusCode == HttpStatusCode.OK)
                 {
                     result = true;
                 }
@@ -139,11 +141,15 @@ namespace EltraConnector.Controllers
         public async Task<bool> PushCommand(DeviceCommand command, string agentUuid, ExecCommandStatus status)
         {
             bool result = false;
-            var deviceIdent = command.Device?.Identification;
-
-            if (deviceIdent != null)
+            var device = command?.Device;
+            var identification = device?.Identification;
+            
+            if (identification != null)
             {
-                var execCommand = new ExecuteCommand { Command = command, SerialNumber = deviceIdent.SerialNumber, SessionUuid = agentUuid };
+                var execCommand = new ExecuteCommand { Command = command, 
+                                                       SerialNumber = identification.SerialNumber,
+                                                       TargetSessionUuid = device.SessionUuid,
+                                                       SourceSessionUuid = agentUuid };
 
                 command.Status = status;
 
@@ -163,7 +169,7 @@ namespace EltraConnector.Controllers
 
                 var postResult = await Transporter.Post(Url, "api/command/status", JsonConvert.SerializeObject(status));
 
-                if (postResult.StatusCode == System.Net.HttpStatusCode.OK)
+                if (postResult.StatusCode == HttpStatusCode.OK)
                 {
                     result = true;
                 }
@@ -183,7 +189,7 @@ namespace EltraConnector.Controllers
             return await SetCommandStatus(execCommandStatus);
         }
 
-        public async Task<List<ExecuteCommand>> PopCommands(EltraDevice device, ExecCommandStatus status)
+        public async Task<List<ExecuteCommand>> PullCommands(EltraDevice device, ExecCommandStatus status)
         {
             var result = new List<ExecuteCommand>();
 
@@ -193,11 +199,12 @@ namespace EltraConnector.Controllers
                 {
                     var query = HttpUtility.ParseQueryString(string.Empty);
 
-                    query["uuid"] = Session.Uuid;
+                    query["sourceSessionUuid"] = Session.Uuid;
+                    query["targetSessionUuid"] = $"{device.SessionUuid}";
                     query["serialNumber"] = $"{device.Identification.SerialNumber}";
                     query["status"] = $"{status}";
                     
-                    var url = UrlHelper.BuildUrl(Url, "api/command/pops", query);
+                    var url = UrlHelper.BuildUrl(Url, "api/command/pull", query);
 
                     var json = await Transporter.Get(url);
 
@@ -269,7 +276,6 @@ namespace EltraConnector.Controllers
                 var commandName = executeCommand.Command.Name;
                 var commandUuid = executeCommand.CommandUuid;
                 var serialNumber = executeCommand.SerialNumber;
-                var sessionUuid = executeCommand.SessionUuid;
 
                 MsgLogger.WriteLine($"get command status '{commandName}', device serial number=0x{serialNumber:X}");
 
@@ -277,7 +283,7 @@ namespace EltraConnector.Controllers
 
                 query["uuid"] = $"{uuid}";
                 query["commandUuid"] = $"{commandUuid}";
-                query["sessionUuid"] = $"{sessionUuid}";
+                query["sessionUuid"] = $"{executeCommand.SourceSessionUuid}";
                 query["serialNumber"] = $"{serialNumber}";
                 query["commandName"] = $"{commandName}";
 

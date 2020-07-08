@@ -17,13 +17,25 @@ namespace DummyAgent
 
             string[] urls = new string[] { "https://eltra.ch", "http://localhost:5001" };
 
-            AgentConnector connector = new AgentConnector() { Host = urls[1] };
+            int sessionId = 1;
+
+            if(args.Length>0)
+            {
+                if(int.TryParse(args[0], out int si))
+                {
+                    sessionId = si;
+                }
+            }
+
+            var agentAuth = new UserAuthData() { Login = $"agent{sessionId}@eltra.ch", Password = "1234" };
+
+            AgentConnector connector = new AgentConnector() { Host = urls[1], AuthData = agentAuth };
             string paramUniqueId = string.Empty;
 
             var t = Task.Run(async ()=>
             {
-                var deviceAuth = new UserAuthData() { Login = "dummy@eltra.ch", Password = "1234" };
-
+                var deviceAuth = new UserAuthData() { Login = $"dummy{sessionId}@eltra.ch", Password = "1234" };
+                
                 var devices = await connector.GetDevices(deviceAuth);
 
                 foreach(var device in devices)
@@ -31,6 +43,9 @@ namespace DummyAgent
                     Console.WriteLine($"device = {device.Name}");
 
                     var parameter = device.SearchParameter(connector, 0x3000, 0x00) as Parameter;
+
+                    if (parameter == null)
+                        break;
 
                     parameter.ParameterChanged += OnParameterChanged;
 
@@ -59,7 +74,7 @@ namespace DummyAgent
                     if (command != null)
                     {
                         command.SetParameterValue("Step", 333);
-                        command.SetParameterValue("Delay", 50);
+                        command.SetParameterValue("Delay", 1000);
 
                         Console.WriteLine($"execute command - start counting");
 

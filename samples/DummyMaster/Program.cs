@@ -12,27 +12,38 @@ namespace ConsoleApp1
         static void Main(string[] args)
         {
             var connector = new EltraMasterConnector();
-            const string ServiceName = "DUMMY#1";
+            int serviceId = 1;
+            string serviceName = "DUMMY#1";
+
+            if(args.Length>0)
+            {
+                if(int.TryParse(args[0], out int si))
+                {
+                    serviceId = si;
+                }
+            }
+
+            serviceName = $"DUMMY#{serviceId}";
 
             string filePath = "DUMMY_0100h_0000h_0000h_0000h.xdd";
 
             string[] urls = new string[] { "https://eltra.ch", "http://localhost:5001" };
 
-            Console.WriteLine($"Hello Dummy Eltra Master - {ServiceName}!");
+            Console.WriteLine($"Hello Dummy Eltra Master - {serviceName}!");
 
             var runner = Task.Run(() =>
             {
                 connector.Host = urls[1];
-                connector.AuthData = new UserAuthData() { Login= "dummy@eltra.ch", Name="Dummy", Password = "1234" };
+                connector.AuthData = new UserAuthData() { Login= $"dummy{serviceId}@eltra.ch", Name="Dummy", Password = "1234" };
                 
-                connector.StartService(ServiceName, new DummyDeviceManager(filePath));
+                connector.StartService(serviceName, new DummyDeviceManager(filePath));
             });
 
             connector.StatusChanged += Connector_StatusChanged; 
 
             Console.ReadKey();
 
-            connector.StopService(ServiceName);
+            connector.StopService(serviceName);
 
             runner.Wait();
         }

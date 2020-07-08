@@ -361,7 +361,7 @@ namespace EltraConnector.UserAgent
             const double timeout = 30; 
             DeviceCommand result = null;
 
-            var commandStatus = await GetCommandStatus(new ExecuteCommand {Command = command, SessionUuid = _sessionAdapter.Uuid});
+            var commandStatus = await GetCommandStatus(new ExecuteCommand {Command = command, SourceSessionUuid = _sessionAdapter.Uuid, TargetSessionUuid = command.Device.SessionUuid});
 
             if (commandStatus != null)
             {
