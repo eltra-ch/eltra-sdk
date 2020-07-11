@@ -35,7 +35,7 @@ namespace ConsoleApp1
         public override bool Execute(string source)
         {
             bool result = false;
-            var eposDevice = Device as DummyDevice;
+            var eposDevice = SessionDevice.Device as DummyDevice;
             var communication = eposDevice?.Communication;
             
             if (communication is DummyDeviceCommunication deviceCommunication)

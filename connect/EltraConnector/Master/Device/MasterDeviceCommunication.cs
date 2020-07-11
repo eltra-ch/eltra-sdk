@@ -19,7 +19,7 @@ namespace EltraConnector.Master.Device
         #region Constructors
 
         public MasterDeviceCommunication(MasterDevice device, uint updateInterval, uint timeout)
-        {
+        {            
             _device = device;
             _updateInterval = updateInterval;
             _timeout = timeout;

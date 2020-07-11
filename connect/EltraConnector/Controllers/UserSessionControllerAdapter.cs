@@ -90,19 +90,19 @@ namespace EltraConnector.Controllers
             return result;
         }
                         
-        public async Task<List<EltraDevice>> GetSessionDevices(Session session, UserAuthData authData)
+        public async Task<List<SessionDevice>> GetSessionDevices(Session session, UserAuthData authData)
         {
             return await DeviceAdapter.GetSessionDevices(session.Uuid, authData);
         }
         
-        public async Task<List<DeviceCommand>> GetDeviceCommands(EltraDevice device)
+        public async Task<List<DeviceCommand>> GetDeviceCommands(SessionDevice device)
         {
             var deviceCommandsAdapter = DeviceAdapter.DeviceCommandsAdapter;
 
             return await deviceCommandsAdapter.GetDeviceCommands(device);
         }
 
-        public async Task<DeviceCommand> GetDeviceCommand(EltraDevice device, string commandName)
+        public async Task<DeviceCommand> GetDeviceCommand(SessionDevice device, string commandName)
         {
             var deviceCommandsAdapter = DeviceAdapter.DeviceCommandsAdapter;
 
@@ -116,14 +116,14 @@ namespace EltraConnector.Controllers
             return await deviceCommandsAdapter.PushCommand(command, uuid, status);
         }
 
-        public async Task<List<ExecuteCommand>> PopCommands(EltraDevice device, ExecCommandStatus status)
+        public async Task<List<ExecuteCommand>> PopCommands(SessionDevice device, ExecCommandStatus status)
         {
             var deviceCommandsAdapter = DeviceAdapter.DeviceCommandsAdapter;
 
             return await deviceCommandsAdapter.PullCommands(device, status);
         }
 
-        public async Task<ExecuteCommand> PopCommand(string commandUuid, EltraDevice device, ExecCommandStatus status)
+        public async Task<ExecuteCommand> PopCommand(string commandUuid, SessionDevice device, ExecCommandStatus status)
         {
             var deviceCommandsAdapter = DeviceAdapter.DeviceCommandsAdapter;
 

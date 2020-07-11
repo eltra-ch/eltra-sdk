@@ -68,27 +68,29 @@ namespace EltraConnector.Agent
             return result;
         }
 
-        public async Task<List<EltraDevice>> GetDevices(UserAuthData deviceAuth)
+        public async Task<List<SessionDevice>> GetDevices(UserAuthData deviceAuth)
         {
-            var result = new List<EltraDevice>();
+            var result = new List<SessionDevice>();
 
             _vcsList.Clear();
             _deviceAgent = new DeviceAgent(Host, AuthData, _updateInterval, _timeout);
 
             var sessionsDevices = await _deviceAgent.GetDevices(deviceAuth);
 
-            foreach (var sessionDevice in sessionsDevices.SessionDevices)
+            foreach (var sessionDevices in sessionsDevices.SessionDevices)
             {
-                var session = sessionDevice.Session;
+                var session = sessionDevices.Session;
 
-                foreach (var device in sessionDevice.Devices)
+                foreach (var sessionDevice in sessionDevices.SessionDeviceList)
                 {
+                    var device = sessionDevice.Device;
+
                     if (FindVcs(device) == null)
                     {
-                        _vcsList.Add(new DeviceVcs(_deviceAgent, device));
+                        _vcsList.Add(new DeviceVcs(_deviceAgent, sessionDevice));
                     }
 
-                    result.Add(device);
+                    result.Add(sessionDevice);
                 }
             }
 
@@ -104,16 +106,16 @@ namespace EltraConnector.Agent
 
             var sessionsDevices = await _deviceAgent.GetDevices(deviceAuth);
 
-            foreach (var sessionDevice in sessionsDevices.SessionDevices)
+            foreach (var sessionDevices in sessionsDevices.SessionDevices)
             {
-                Session session = sessionDevice.Session;
-
-                foreach (var device in sessionDevice.Devices)
+                foreach (var sessionDevice in sessionDevices.SessionDeviceList)
                 {
-                    _vcsList.Add(new DeviceVcs(_deviceAgent, device));
+                    var device = sessionDevice.Device;
 
-                    result.Add(sessionDevice);
+                    _vcsList.Add(new DeviceVcs(_deviceAgent, sessionDevice));                    
                 }
+
+                result.Add(sessionDevices);
             }
 
             return result;
@@ -311,7 +313,7 @@ namespace EltraConnector.Agent
             }
         }
 
-        public async Task<DeviceCommand> GetDeviceCommand(EltraDevice device, string commandName)
+        public async Task<DeviceCommand> GetDeviceCommand(SessionDevice device, string commandName)
         {
             DeviceCommand result = null;
 
@@ -323,7 +325,7 @@ namespace EltraConnector.Agent
             return result;
         }
 
-        public async Task<List<DeviceCommand>> GetDeviceCommands(EltraDevice device)
+        public async Task<List<DeviceCommand>> GetDeviceCommands(SessionDevice device)
         {
             List<DeviceCommand> result = new List<DeviceCommand>();
 

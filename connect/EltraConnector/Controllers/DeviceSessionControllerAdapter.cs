@@ -18,7 +18,7 @@ namespace EltraConnector.Controllers
 
         private DeviceControllerAdapter _deviceControllerAdapter;
         private ParameterControllerAdapter _parameterControllerAdapter;
-        private List<EltraDevice> _devices;
+        private List<SessionDevice> _devices;
         
         #endregion
 
@@ -40,15 +40,15 @@ namespace EltraConnector.Controllers
         private ParameterControllerAdapter ParameterControllerAdapter =>
             _parameterControllerAdapter ?? (_parameterControllerAdapter = CreateParameterControllerAdapter());
 
-        private List<EltraDevice> Devices => _devices ?? (_devices = new List<EltraDevice>());
+        private List<SessionDevice> Devices => _devices ?? (_devices = new List<SessionDevice>());
 
         private readonly object _locker = new object();
 
-        private EltraDevice[] SafeDevicesArray
+        private SessionDevice[] SafeDevicesArray
         {
             get
             {
-                EltraDevice[] devices;
+                SessionDevice[] devices;
 
                 lock (_locker)
                 {
@@ -119,7 +119,7 @@ namespace EltraConnector.Controllers
             deviceControllerAdapter.RegistrationStateChanged += OnDeviceRegistrationStateChanged;
         }
 
-        public async Task<bool> RegisterDevice(EltraDevice device)
+        public async Task<bool> RegisterDevice(SessionDevice device)
         {
             bool result = true;
             
@@ -150,7 +150,7 @@ namespace EltraConnector.Controllers
             return result;
         }
 
-        private void AddDevice(EltraDevice device)
+        private void AddDevice(SessionDevice device)
         {
             lock (_locker)
             {
@@ -158,14 +158,14 @@ namespace EltraConnector.Controllers
             }
         }
 
-        public async Task UnregisterDevice(EltraDevice device)
+        public async Task UnregisterDevice(SessionDevice device)
         {
             await DeviceControllerAdapter.UnregisterSessionDevice(device);
 
             RemoveDevice(device);
         }
 
-        private void RemoveDevice(EltraDevice device)
+        private void RemoveDevice(SessionDevice device)
         {
             lock (_locker)
             {
@@ -179,9 +179,9 @@ namespace EltraConnector.Controllers
 
             try
             {
-                foreach (var device in SafeDevicesArray)
+                foreach (var sessionDevice in SafeDevicesArray)
                 {
-                    if (!await DeviceControllerAdapter.IsDeviceRegistered(Session.Uuid, device))
+                    if (!await DeviceControllerAdapter.IsDeviceRegistered(Session.Uuid, sessionDevice.Device))
                     {
                         result = true;
                         break;
@@ -319,7 +319,7 @@ namespace EltraConnector.Controllers
                                         MsgLogger.WriteDebug($"{GetType().Name} - ExecuteCommand", $"Push Response for Command '{commandName}'");
 
                                         executeCommand.SourceSessionUuid = Session.Uuid;
-                                        executeCommand.TargetSessionUuid = clonedDeviceCommand.Device.SessionUuid;
+                                        executeCommand.TargetSessionUuid = clonedDeviceCommand.SessionDevice.SessionUuid;
 
                                         result = await DeviceControllerAdapter.PushCommand(executeCommand, ExecCommandStatus.Executed);
 
@@ -388,13 +388,13 @@ namespace EltraConnector.Controllers
             {
                 int executedCommandCount = 0;
 
-                foreach (var device in SafeDevicesArray)
+                foreach (var sessionDevice in SafeDevicesArray)
                 {
-                    var executeCommands = await DeviceControllerAdapter.PopCommands(device, ExecCommandStatus.Waiting);
+                    var executeCommands = await DeviceControllerAdapter.PopCommands(sessionDevice, ExecCommandStatus.Waiting);
                                         
                     foreach (var executeCommand in executeCommands)
                     {
-                        if(await ExecuteCommand(device, executeCommand))
+                        if(await ExecuteCommand(sessionDevice.Device, executeCommand))
                         {
                             executedCommandCount++;
                         }
@@ -415,8 +415,10 @@ namespace EltraConnector.Controllers
         {
             EltraDevice result = null;
 
-            foreach (var device in SafeDevicesArray)
+            foreach (var sessionDevice in SafeDevicesArray)
             {
+                var device = sessionDevice.Device;
+                
                 if(device.Identification.SerialNumber == serialNumber)
                 {
                     result = device;

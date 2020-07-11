@@ -61,7 +61,7 @@ namespace EltraConnector.UserAgent
             Initialize(url, updateInterval, timeout, true);
         }
 
-        public UserCloudAgent(SyncCloudAgent masterAgent, EltraDevice device, uint updateInterval, uint timeout)
+        public UserCloudAgent(SyncCloudAgent masterAgent, SessionDevice device, uint updateInterval, uint timeout)
         {
             _authData = masterAgent.AuthData;
             _executedCommands = new List<DeviceCommand>();
@@ -324,7 +324,7 @@ namespace EltraConnector.UserAgent
             _executeCommander.RemoteSessionStatusChanged += OnRemoteSessionStatusChanged;
         }
 
-        private async Task<List<EltraDevice>> GetSessionDevices(Session session, UserAuthData authData)
+        private async Task<List<SessionDevice>> GetSessionDevices(Session session, UserAuthData authData)
         {
             await EnsureAgentReady();
 
@@ -366,13 +366,13 @@ namespace EltraConnector.UserAgent
                     {
                         var sessionDevices = new SessionDevices() { Session = session };
 
-                        var devices = await GetSessionDevices(session, authData);
+                        var sessionDeviceList = await GetSessionDevices(session, authData);
 
-                        if (devices != null)
+                        if (sessionDeviceList != null)
                         {
-                            foreach (var device in devices)
+                            foreach (var sessionDevice in sessionDeviceList)
                             {
-                                sessionDevices.AddDevice(device);
+                                sessionDevices.AddDevice(sessionDevice.Device);
                             }
                         }
 
@@ -412,7 +412,7 @@ namespace EltraConnector.UserAgent
             return await _sessionAdapter.UnlockDevice(device);
         }
         
-        public virtual async Task<DeviceCommand> GetDeviceCommand(EltraDevice device, string commandName)
+        public virtual async Task<DeviceCommand> GetDeviceCommand(SessionDevice device, string commandName)
         {
             await EnsureAgentReady();
 
@@ -421,7 +421,7 @@ namespace EltraConnector.UserAgent
             return result;
         }
 
-        public async Task<List<DeviceCommand>> GetDeviceCommands(EltraDevice device)
+        public async Task<List<DeviceCommand>> GetDeviceCommands(SessionDevice device)
         {
             await EnsureAgentReady();
 

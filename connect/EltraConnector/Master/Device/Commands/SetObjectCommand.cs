@@ -37,7 +37,7 @@ namespace EltraConnector.Master.Device.Commands
         public override bool Execute(string source)
         {
             bool result = false;
-            var device = Device as MasterDevice;
+            var device = SessionDevice.Device as MasterDevice;
             var communication = device?.Communication;
             ushort index = 0;
             byte subIndex = 0;

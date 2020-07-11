@@ -8,7 +8,6 @@ using EltraCommon.Contracts.Sessions;
 using EltraCommon.Logger;
 using EltraCommon.Contracts.Users;
 using System.Threading.Tasks;
-using EltraCommon.Contracts.Devices;
 using EltraConnector.Controllers.Base.Events;
 
 namespace EltraConnector.SyncAgent
@@ -109,6 +108,8 @@ namespace EltraConnector.SyncAgent
             }
         }
 
+        public string SessionUuid => _sessionControllerAdapter.Session.Uuid;
+
         #endregion
 
         #region Methods
@@ -146,12 +147,14 @@ namespace EltraConnector.SyncAgent
             return result;
         }
         
-        public async Task<bool> RegisterDevice(EltraDevice device)
+        public async Task<bool> RegisterDevice(SessionDevice sessionDevice)
         {
             bool result = false;
 
             try
             {
+                var device = sessionDevice.Device;
+
                 if (await RegisterSession())
                 {
                     MsgLogger.WriteLine(
@@ -161,7 +164,7 @@ namespace EltraConnector.SyncAgent
 
                     if (!registered)
                     {
-                        await _sessionControllerAdapter.RegisterDevice(device);
+                        await _sessionControllerAdapter.RegisterDevice(sessionDevice);
                     }
 
                     Start();
@@ -203,17 +206,19 @@ namespace EltraConnector.SyncAgent
             return Task.CompletedTask;
         }
         
-        public async Task UnregisterDevice(EltraDevice device)
+        public async Task UnregisterDevice(SessionDevice sessionDevice)
         {
             try
             {
+                var device = sessionDevice.Device;
+
                 var registered = await _sessionControllerAdapter.IsDeviceRegistered(device);
                 
                 if (registered)
                 {
                     MsgLogger.WriteLine($"unregister(-) device='{device.Family}', serial number=0x{device.Identification.SerialNumber:X}");
 
-                    await _sessionControllerAdapter.UnregisterDevice(device);
+                    await _sessionControllerAdapter.UnregisterDevice(sessionDevice);
                 }
             }
             catch (Exception e)

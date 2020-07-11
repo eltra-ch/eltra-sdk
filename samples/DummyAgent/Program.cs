@@ -36,10 +36,12 @@ namespace DummyAgent
             {
                 var deviceAuth = new UserAuthData() { Login = $"dummy{sessionId}@eltra.ch", Password = "1234" };
                 
-                var devices = await connector.GetDevices(deviceAuth);
+                var sessionDevices = await connector.GetDevices(deviceAuth);
 
-                foreach(var device in devices)
+                foreach(var sessionDevice in sessionDevices)
                 {
+                    var device = sessionDevice.Device;
+
                     Console.WriteLine($"device = {device.Name}");
 
                     var parameter = device.SearchParameter(connector, 0x3000, 0x00) as Parameter;
@@ -57,7 +59,7 @@ namespace DummyAgent
 
                     Console.WriteLine($"get all supported commands");
 
-                    var commands = await connector.GetDeviceCommands(device);
+                    var commands = await connector.GetDeviceCommands(sessionDevice);
 
                     if (commands != null)
                     {
@@ -69,7 +71,7 @@ namespace DummyAgent
 
                     Console.WriteLine($"get command - start counting");
 
-                    var command = await connector.GetDeviceCommand(device, "StartCounting");
+                    var command = await connector.GetDeviceCommand(sessionDevice, "StartCounting");
 
                     if (command != null)
                     {
@@ -85,7 +87,7 @@ namespace DummyAgent
                         await Task.Delay(30000);
                     }
 
-                    command = await connector.GetDeviceCommand(device, "StopCounting");
+                    command = await connector.GetDeviceCommand(sessionDevice, "StopCounting");
 
                     if (command != null)
                     {
