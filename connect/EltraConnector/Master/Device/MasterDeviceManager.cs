@@ -106,7 +106,7 @@ namespace EltraConnector.Master.Device
         {
             foreach (var device in DeviceList)
             {
-                MsgLogger.WriteLine($"Connected: device='{device.Family}', serial number=0x{device.Identification.SerialNumber:X}");
+                MsgLogger.WriteLine($"Connected: device='{device.Family}', node id = {device.NodeId}, serial number=0x{device.Identification.SerialNumber:X}");
 
                 device.Status = DeviceStatus.Ready;
 

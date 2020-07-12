@@ -412,7 +412,7 @@ namespace EltraConnector.Controllers
             return result;
         }
 
-        private EltraDevice FindDevice(ulong serialNumber)
+        private EltraDevice FindDevice(int nodeId)
         {
             EltraDevice result = null;
 
@@ -420,7 +420,7 @@ namespace EltraConnector.Controllers
             {
                 var device = deviceNode;
                 
-                if(device.Identification.SerialNumber == serialNumber)
+                if(device.NodeId == nodeId)
                 {
                     result = device;
                     break;
@@ -440,7 +440,7 @@ namespace EltraConnector.Controllers
                 
                 foreach (var executeCommand in executeCommands)
                 {
-                    var device = FindDevice(executeCommand.SerialNumber);
+                    var device = FindDevice(executeCommand.NodeId);
 
                     if(device!=null)
                     { 
@@ -451,7 +451,7 @@ namespace EltraConnector.Controllers
                     }
                     else
                     {
-                        MsgLogger.WriteError($"{GetType().Name} - ExecuteCommands", $"device with serial number = {executeCommand.SerialNumber} not found!");
+                        MsgLogger.WriteError($"{GetType().Name} - ExecuteCommands", $"device with node id = {executeCommand.NodeId} not found!");
                     }
                 }
                 
@@ -465,7 +465,7 @@ namespace EltraConnector.Controllers
             return result;
         }
         
-        public async Task<bool> IsDeviceRegistered(EltraDevice device)
+        public async Task<bool> IsDeviceRegistered(EltraDeviceNode device)
         {
             return await DeviceControllerAdapter.IsDeviceRegistered(Session.Uuid, device);
         }

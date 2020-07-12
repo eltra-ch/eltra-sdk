@@ -26,8 +26,6 @@ namespace EltraConnector.UserAgent.Vcs
         private const int DefaultTimeout = 30000;
         private EltraDeviceNode _sessionDevice;
         private List<RegisteredParameter> _registeredParameters;
-        private bool _isDeviceLocked;
-        private Stopwatch _deviceLockWatch = new Stopwatch();
 
         #endregion
 
@@ -191,9 +189,7 @@ namespace EltraConnector.UserAgent.Vcs
             {
                 if (Device.SearchParameter(uniqueId) is Parameter parameterEntry)
                 {
-                    var serialNumber = Device.Identification.SerialNumber;
-
-                    var parameterValue = await Agent.GetParameterValue(serialNumber,
+                    var parameterValue = await Agent.GetParameterValue(Device.NodeId,
                         parameterEntry.Index, parameterEntry.SubIndex);
 
                     result = parameterEntry.SetValue(parameterValue);
@@ -211,9 +207,7 @@ namespace EltraConnector.UserAgent.Vcs
             {
                 if (Device.SearchParameter(index, subIndex) is Parameter parameterEntry)
                 {
-                    var serialNumber = Device.Identification.SerialNumber;
-
-                    var parameterValue = await Agent.GetParameterValue(serialNumber, index, subIndex);
+                    var parameterValue = await Agent.GetParameterValue(Device.NodeId, index, subIndex);
 
                     result = parameterEntry.SetValue(parameterValue);
                 }
@@ -606,42 +600,6 @@ namespace EltraConnector.UserAgent.Vcs
             }
 
             return result;
-        }
-
-        public async Task<bool> LockDevice(EltraDevice device)
-        {
-            return await Agent.LockDevice(device);
-        }
-
-        public async Task<bool> UnlockDevice(EltraDevice device)
-        {
-            return await Agent.UnlockDevice(device);
-        }
-
-        public async Task<bool> CanLockDevice(EltraDevice device)
-        {
-            return await Agent.CanLockDevice(device);
-        }
-
-        public async Task<bool> IsDeviceLocked(EltraDevice device)
-        {
-            const long minUpdateInterval = 1000;
-            
-            if(!_deviceLockWatch.IsRunning || _deviceLockWatch.ElapsedMilliseconds > minUpdateInterval)
-            {
-                _isDeviceLocked = await Agent.IsDeviceLocked(device);
-
-                if (!_deviceLockWatch.IsRunning)
-                { 
-                    _deviceLockWatch.Start();
-                }
-                else
-                {
-                    _deviceLockWatch.Restart();
-                }
-            }
-
-            return _isDeviceLocked;
         }
 
         #endregion

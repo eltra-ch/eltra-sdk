@@ -46,7 +46,7 @@ namespace EltraConnector.Agent
 
         #region Methods
 
-        private DeviceVcs FindVcs(EltraDevice device)
+        private DeviceVcs FindVcs(EltraDeviceNode device)
         {
             DeviceVcs result = null;
 
@@ -54,11 +54,10 @@ namespace EltraConnector.Agent
             {
                 foreach (var vcs in _vcsList)
                 {
-                    var vcsIdent1 = vcs?.Device?.Identification;
-                    var vcsIdent2 = device?.Identification;
-
-                    if (vcsIdent1 !=null && vcsIdent2 != null &&
-                        vcsIdent1.SerialNumber == vcsIdent2.SerialNumber)
+                    var vcsDevice = vcs.Device;
+                    
+                    if (vcsDevice !=null &&
+                        vcsDevice.NodeId == device.NodeId)
                     {
                         result = vcs;
                         break;
@@ -209,62 +208,6 @@ namespace EltraConnector.Agent
             return result;
         }
 
-        public async Task<bool> IsDeviceLocked(EltraDevice device)
-        {
-            bool result = false;
-            
-            var vcs = SearchDeviceVcs(device);
-
-            if (vcs != null)
-            {
-                result = await vcs.IsDeviceLocked(device);
-            }
-
-            return result;
-        }
-
-        public async Task<bool> CanLockDevice(EltraDevice device)
-        {
-            bool result = false;
-
-            var vcs = SearchDeviceVcs(device);
-
-            if (vcs != null)
-            {
-                result = await vcs.CanLockDevice(device);
-            }
-
-            return result;
-        }
-
-        public async Task<bool> LockDevice(EltraDevice device)
-        {
-            bool result = false;
-
-            var vcs = SearchDeviceVcs(device);
-
-            if (vcs != null)
-            {
-                result = await vcs.LockDevice(device);
-            }
-
-            return result;
-        }
-
-        public async Task<bool> UnlockDevice(EltraDevice device)
-        {
-            bool result = false;
-
-            var vcs = SearchDeviceVcs(device);
-
-            if (vcs != null)
-            {
-                result = await vcs.UnlockDevice(device);
-            }
-
-            return result;
-        }
-
         public void RegisterParameterUpdate(EltraDevice device, string uniqueId, ParameterUpdatePriority priority = ParameterUpdatePriority.Low)
         {
             var vcs = SearchDeviceVcs(device);
@@ -339,25 +282,13 @@ namespace EltraConnector.Agent
             return result;
         }
 
-        public async Task<List<ParameterValue>> GetParameterHistory(EltraDevice device, string uniqueId, DateTime from, DateTime to)
+        public async Task<List<ParameterValue>> GetParameterHistory(EltraDeviceNode device, string uniqueId, DateTime from, DateTime to)
         {
             var result = new List<ParameterValue>();
             
             if (_deviceAgent!=null)
             {
                 result = await _deviceAgent.GetParameterHistory(device, uniqueId, from, to);
-            }
-
-            return result;
-        }
-
-        public async Task<List<ParameterUniqueIdValuePair>> GetParameterHistoryPair(EltraDevice device, string uniqueId1, string uniqueId2, DateTime from, DateTime to)
-        {
-            var result = new List<ParameterUniqueIdValuePair>();
-
-            if (_deviceAgent != null)
-            {
-                result = await _deviceAgent.GetParameterHistoryPair(device, uniqueId1, uniqueId2, from, to);
             }
 
             return result;

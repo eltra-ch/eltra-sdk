@@ -37,14 +37,14 @@ namespace EltraConnector.Controllers
 
             if (device != null)
             {
-                MsgLogger.WriteLine($"get device='{device.Family}', serial number=0x{device.Identification.SerialNumber:X} commands");
+                MsgLogger.WriteLine($"get device='{device.Family}', nodeId=0x{device.NodeId} commands");
 
                 try
                 {
                     var query = HttpUtility.ParseQueryString(string.Empty);
 
                     query["uuid"] = Session.Uuid;
-                    query["serialNumber"] = $"{device.Identification.SerialNumber}";
+                    query["nodeId"] = $"{device.NodeId}";
 
                     var url = UrlHelper.BuildUrl(Url, "api/command/commands", query);
 
@@ -75,14 +75,14 @@ namespace EltraConnector.Controllers
 
             if (device != null)
             {
-                MsgLogger.WriteLine($"get command '{commandName}' from device='{device.Family}', serial number=0x{device.Identification.SerialNumber:X}");
+                MsgLogger.WriteLine($"get command '{commandName}' from device='{device.Family}', node id={device.NodeId}");
 
                 try
                 {
                     var query = HttpUtility.ParseQueryString(string.Empty);
 
                     query["uuid"] = Session.Uuid;
-                    query["serialNumber"] = $"{device.Identification.SerialNumber}";
+                    query["nodeId"] = $"{device.NodeId}";
                     query["commandName"] = $"{commandName}";
 
                     var url = UrlHelper.BuildUrl(Url, "api/command/command", query);
@@ -129,7 +129,7 @@ namespace EltraConnector.Controllers
 
                 if (device != null)
                 {
-                    MsgLogger.WriteLine($"push command='{execCommand.Command.Name}' to device='{device.Family}':0x{execCommand.SerialNumber:X}");
+                    MsgLogger.WriteLine($"push command='{execCommand.Command.Name}' to device='{device.Family}':0x{device.NodeId}");
 
                     var postResult = await Transporter.Post(Url, "api/command/push", execCommand.ToJson());
 
@@ -150,15 +150,13 @@ namespace EltraConnector.Controllers
         public async Task<bool> PushCommand(DeviceCommand command, string agentUuid, ExecCommandStatus status)
         {
             bool result = false;
-            var deviceNode = command?.Device;
-            var device = deviceNode;
-            var identification = device?.Identification;
-            
-            if (identification != null)
+            var device = command?.Device;
+                        
+            if (device != null)
             {
                 var execCommand = new ExecuteCommand { Command = command, 
-                                                       SerialNumber = identification.SerialNumber,
-                                                       TargetSessionUuid = deviceNode.SessionUuid,
+                                                       NodeId = device.NodeId,
+                                                       TargetSessionUuid = device.SessionUuid,
                                                        SourceSessionUuid = agentUuid };
 
                 command.Status = status;
@@ -175,7 +173,7 @@ namespace EltraConnector.Controllers
 
             try
             {
-                MsgLogger.WriteLine($"set command='{status.CommandName}' status='{status.Status}' for device with serial number=0x{status.SerialNumber:X}");
+                MsgLogger.WriteLine($"set command='{status.CommandName}' status='{status.Status}' for device with nodeid={status.NodeId}");
 
                 var postResult = await Transporter.Post(Url, "api/command/status", JsonConvert.SerializeObject(status));
 
@@ -212,7 +210,7 @@ namespace EltraConnector.Controllers
 
                     query["sourceSessionUuid"] = Session.Uuid;
                     query["targetSessionUuid"] = $"{deviceNode.SessionUuid}";
-                    query["serialNumber"] = $"{device.Identification.SerialNumber}";
+                    query["nodeId"] = $"{device.NodeId}";
                     query["status"] = $"{status}";
                     
                     var url = UrlHelper.BuildUrl(Url, "api/command/pull", query);
@@ -256,7 +254,7 @@ namespace EltraConnector.Controllers
 
                     query["uuid"] = Session.Uuid;
                     query["commandUuid"] = $"{commandUuid}";
-                    query["serialNumber"] = $"{device.Identification.SerialNumber}";
+                    query["nodeId"] = $"{device.NodeId}";
                     query["status"] = $"{status}";
                     
                     var url = UrlHelper.BuildUrl(Url, "api/command/pop", query);
@@ -287,16 +285,16 @@ namespace EltraConnector.Controllers
             {
                 var commandName = executeCommand.Command.Name;
                 var commandUuid = executeCommand.CommandUuid;
-                var serialNumber = executeCommand.SerialNumber;
+                var nodeId = executeCommand.NodeId;
 
-                MsgLogger.WriteLine($"get command status '{commandName}', device serial number=0x{serialNumber:X}");
+                MsgLogger.WriteLine($"get command status '{commandName}', node id={nodeId}");
 
                 var query = HttpUtility.ParseQueryString(string.Empty);
 
                 query["uuid"] = $"{uuid}";
                 query["commandUuid"] = $"{commandUuid}";
                 query["sessionUuid"] = $"{executeCommand.SourceSessionUuid}";
-                query["serialNumber"] = $"{serialNumber}";
+                query["nodeId"] = $"{nodeId}";
                 query["commandName"] = $"{commandName}";
 
                 var url = UrlHelper.BuildUrl(Url, "api/command/status", query);
@@ -309,7 +307,7 @@ namespace EltraConnector.Controllers
                 {
                     result = executeCommandStatus;
 
-                    MsgLogger.WriteLine($"command '{commandName}', status '{executeCommandStatus.Status}', device serial number=0x{serialNumber:X}");
+                    MsgLogger.WriteLine($"command '{commandName}', status '{executeCommandStatus.Status}', device nodeId={nodeId}");
                 }
             }
             catch (Exception e)

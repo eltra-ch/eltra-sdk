@@ -154,54 +154,6 @@ namespace EltraConnector.Agent
             return result;
         }
 
-        public async Task<bool> IsLocked()
-        {
-            bool result = false;
-
-            if (_connector != null)
-            {
-                result = await _connector.IsDeviceLocked(Device);
-            }
-
-            return result;
-        }
-
-        public async Task<bool> CanLock()
-        {
-            bool result = false;
-
-            if (_connector != null)
-            {
-                result = await _connector.CanLockDevice(Device);
-            }
-
-            return result;
-        }
-
-        public async Task<bool> Lock()
-        {
-            bool result = false;
-
-            if (_connector != null)
-            {
-                result = await _connector.LockDevice(Device);
-            }
-
-            return result;
-        }
-
-        public async Task<bool> Unlock()
-        {
-            bool result = false;
-
-            if (_connector != null)
-            {
-                result = await _connector.UnlockDevice(Device);
-            }
-
-            return result;
-        }
-
         #endregion
     }
 }

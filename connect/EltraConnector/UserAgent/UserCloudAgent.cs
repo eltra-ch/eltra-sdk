@@ -384,34 +384,6 @@ namespace EltraConnector.UserAgent
 
             return result;
         }
-
-        public async Task<bool> CanLockDevice(EltraDevice device)
-        {
-            await EnsureAgentReady();
-
-            return await _sessionAdapter.CanLockDevice(device);
-        }
-
-        public async Task<bool> IsDeviceLocked(EltraDevice device)
-        {
-            await EnsureAgentReady();
-
-            return await _sessionAdapter.IsDeviceLocked(device);
-        }
-
-        public async Task<bool> LockDevice(EltraDevice device)
-        {
-            await EnsureAgentReady();
-
-            return await _sessionAdapter.LockDevice(device);
-        }
-
-        public async Task<bool> UnlockDevice(EltraDevice device)
-        {
-            await EnsureAgentReady();
-
-            return await _sessionAdapter.UnlockDevice(device);
-        }
         
         public virtual async Task<DeviceCommand> GetDeviceCommand(EltraDeviceNode device, string commandName)
         {
@@ -532,32 +504,25 @@ namespace EltraConnector.UserAgent
             return result;
         }
 
-        public async Task<Parameter> GetParameter(ulong serialNumber, ushort index, byte subIndex)
+        public async Task<Parameter> GetParameter(int nodeId, ushort index, byte subIndex)
         {
             await EnsureAgentReady();
 
-            return await _sessionAdapter.GetParameter(serialNumber, index, subIndex);
+            return await _sessionAdapter.GetParameter(nodeId, index, subIndex);
         }
 
-        public async Task<ParameterValue> GetParameterValue(ulong serialNumber, ushort index, byte subIndex)
+        public async Task<ParameterValue> GetParameterValue(int nodeId, ushort index, byte subIndex)
         {
             await EnsureAgentReady();
 
-            return await _sessionAdapter.GetParameterValue(serialNumber, index, subIndex);
+            return await _sessionAdapter.GetParameterValue(nodeId, index, subIndex);
         }
 
-        public async Task<List<ParameterValue>> GetParameterHistory(ulong serialNumber, string uniqueId, DateTime from, DateTime to)
+        public async Task<List<ParameterValue>> GetParameterHistory(int nodeId, string uniqueId, DateTime from, DateTime to)
         {
             await EnsureAgentReady();
 
-            return await _sessionAdapter.GetParameterHistory(serialNumber, uniqueId, from, to);
-        }
-
-        public async Task<List<ParameterUniqueIdValuePair>> GetParameterHistoryPair(ulong serialNumber, string uniqueId1, string uniqueId2, DateTime from, DateTime to)
-        {
-            await EnsureAgentReady();
-
-            return await _sessionAdapter.GetParameterHistoryPair(serialNumber, uniqueId1, uniqueId2, from, to);
+            return await _sessionAdapter.GetParameterHistory(nodeId, uniqueId, from, to);
         }
 
         public async Task<bool> SignOut()

@@ -152,45 +152,19 @@ namespace EltraConnector.Controllers
             return await deviceCommandsAdapter.GetCommandStatus(Uuid, executeCommand);
         }
 
-        public async Task<Parameter> GetParameter(ulong serialNumber, ushort index, byte subIndex)
+        public async Task<Parameter> GetParameter(int nodeId, ushort index, byte subIndex)
         {
-            return await DeviceAdapter.GetParameter(serialNumber, index, subIndex);
+            return await DeviceAdapter.GetParameter(nodeId, index, subIndex);
         }
 
-        public async Task<ParameterValue> GetParameterValue(ulong serialNumber, ushort index, byte subIndex)
+        public async Task<ParameterValue> GetParameterValue(int nodeId, ushort index, byte subIndex)
         {
-            return await DeviceAdapter.GetParameterValue(serialNumber, index, subIndex);
+            return await DeviceAdapter.GetParameterValue(nodeId, index, subIndex);
         }
         
-        public async Task<List<ParameterValue>> GetParameterHistory(ulong serialNumber, string uniqueId, DateTime from, DateTime to)
+        public async Task<List<ParameterValue>> GetParameterHistory(int nodeId, string uniqueId, DateTime from, DateTime to)
         {
-            return await DeviceAdapter.GetParameterHistory(serialNumber, uniqueId, from, to);
-        }
-
-        public async Task<List<ParameterUniqueIdValuePair>> GetParameterHistoryPair(ulong serialNumber, string uniqueId1, string uniqueId2, DateTime from, DateTime to)
-        {
-            return await DeviceAdapter.GetParameterHistoryPair(serialNumber, uniqueId1, uniqueId2, from, to);
-        }
-
-
-        public async Task<bool> LockDevice(EltraDevice device)
-        {
-            return await DeviceAdapter.LockDevice(Uuid, device);
-        }
-
-        public async Task<bool> UnlockDevice(EltraDevice device)
-        {
-            return await DeviceAdapter.UnlockDevice(Uuid, device);
-        }
-
-        public async Task<bool> CanLockDevice(EltraDevice device)
-        {
-            return await DeviceAdapter.CanLockDevice(Uuid, device);
-        }
-
-        public async Task<bool> IsDeviceLocked(EltraDevice device)
-        {
-            return await DeviceAdapter.IsDeviceLocked(Uuid, device);
+            return await DeviceAdapter.GetParameterHistory(nodeId, uniqueId, from, to);
         }
 
         #endregion

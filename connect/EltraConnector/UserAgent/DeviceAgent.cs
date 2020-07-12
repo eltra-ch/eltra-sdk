@@ -3,9 +3,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 
 using EltraCommon.Contracts.CommandSets;
-using EltraCommon.Contracts.Devices;
 using EltraCommon.Contracts.Node;
-using EltraCommon.Contracts.Parameters;
 using EltraCommon.Contracts.Users;
 using EltraCommon.ObjectDictionary.Common.DeviceDescription.Profiles.Application.Parameters;
 using EltraConnector.SyncAgent;
@@ -83,65 +81,37 @@ namespace EltraConnector.UserAgent
             return result;
         }
 
-        public async Task<Parameter> GetParameter(EltraDevice device, ushort index, byte subIndex)
+        public async Task<Parameter> GetParameter(EltraDeviceNode device, ushort index, byte subIndex)
         {
             Parameter result = null;
 
-            var identification = device?.Identification;
-
-            if (identification != null)
+            if (device != null)
             {
-                var serialNumber = identification.SerialNumber;
-
-                result = await GetParameter(serialNumber, index, subIndex);
+                result = await GetParameter(device.NodeId, index, subIndex);
             }
 
             return result;
         }
 
-        public async Task<ParameterValue> GetParameterValue(EltraDevice device, ushort index, byte subIndex)
+        public async Task<ParameterValue> GetParameterValue(EltraDeviceNode device, ushort index, byte subIndex)
         {
             ParameterValue result = null;
 
-            var identification = device?.Identification;
-
-            if (identification != null)
+            if (device != null)
             {
-                var serialNumber = identification.SerialNumber;
-
-                result = await GetParameterValue(serialNumber, index, subIndex);
+                result = await GetParameterValue(device.NodeId, index, subIndex);
             }
 
             return result;
         }
 
-        public async Task<List<ParameterValue>> GetParameterHistory(EltraDevice device, string uniqueId, DateTime from, DateTime to)
+        public async Task<List<ParameterValue>> GetParameterHistory(EltraDeviceNode device, string uniqueId, DateTime from, DateTime to)
         {
             List<ParameterValue> result = null;
 
-            var identification = device?.Identification;
-
-            if (identification != null)
+            if (device != null)
             {
-                var serialNumber = identification.SerialNumber;
-
-                result = await GetParameterHistory(serialNumber, uniqueId, from, to);
-            }
-
-            return result;
-        }
-
-        public async Task<List<ParameterUniqueIdValuePair>> GetParameterHistoryPair(EltraDevice device, string uniqueId1, string uniqueId2, DateTime from, DateTime to)
-        {
-            List<ParameterUniqueIdValuePair> result = null;
-
-            var identification = device?.Identification;
-
-            if (identification != null)
-            {
-                var serialNumber = identification.SerialNumber;
-
-                result = await GetParameterHistoryPair(serialNumber, uniqueId1, uniqueId2, from, to);
+                result = await GetParameterHistory(device.NodeId, uniqueId, from, to);
             }
 
             return result;

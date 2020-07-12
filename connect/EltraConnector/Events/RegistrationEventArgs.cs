@@ -1,5 +1,5 @@
 ﻿using System;
-using EltraCommon.Contracts.Devices;
+using EltraCommon.Contracts.Node;
 using EltraCommon.Contracts.Sessions;
 
 namespace EltraConnector.Events
@@ -9,7 +9,7 @@ namespace EltraConnector.Events
         private Exception _exception;
 
         public Session Session { get; set; }
-        public EltraDevice Device { get; set; }
+        public EltraDeviceNode Device { get; set; }
 
         public RegistrationState State { get; set; }
 

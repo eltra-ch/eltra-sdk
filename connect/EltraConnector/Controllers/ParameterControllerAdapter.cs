@@ -16,6 +16,7 @@ using EltraCommon.ObjectDictionary.Common.DeviceDescription.Profiles.Application
 using Newtonsoft.Json;
 using EltraCommon.Contracts.Devices;
 using System.Globalization;
+using EltraCommon.Contracts.Node;
 
 namespace EltraConnector.Controllers
 {
@@ -65,18 +66,18 @@ namespace EltraConnector.Controllers
 
         #region Methods
 
-        public async Task<Parameter> GetParameter(ulong serialNumber, ushort index, byte subIndex)
+        public async Task<Parameter> GetParameter(int nodeId, ushort index, byte subIndex)
         {
             Parameter result = null;
 
             try
             {
-                MsgLogger.WriteLine($"get parameter, index=0x{index:X4}, subindex=0x{subIndex:X4}, device serial number=0x{serialNumber:X}");
+                MsgLogger.WriteLine($"get parameter, index=0x{index:X4}, subindex=0x{subIndex:X4}, device node id={nodeId}");
 
                 var query = HttpUtility.ParseQueryString(string.Empty);
 
                 query["uuid"] = Session.Uuid;
-                query["serialNumber"] = $"{serialNumber}";
+                query["nodeId"] = $"{nodeId}";
                 query["index"] = $"{index}";
                 query["subIndex"] = $"{subIndex}";
 
@@ -90,7 +91,7 @@ namespace EltraConnector.Controllers
                 {
                     result = parameter;
 
-                    MsgLogger.WriteLine($"get parameter, index=0x{index:X4}, subindex=0x{subIndex:X4}, device serial number=0x{serialNumber:X} - success");
+                    MsgLogger.WriteLine($"get parameter, index=0x{index:X4}, subindex=0x{subIndex:X4}, device node id={nodeId} - success");
                 }
             }
             catch (Exception e)
@@ -101,32 +102,30 @@ namespace EltraConnector.Controllers
             return result;
         }
 
-        public async Task<ParameterValue> GetParameterValue(EltraDevice device, Parameter parameter)
+        public async Task<ParameterValue> GetParameterValue(EltraDeviceNode device, Parameter parameter)
         {
             ParameterValue result = null;
 
             if (device != null && device.Identification!=null && parameter!=null)
             {
-                var serialNumber = device.Identification.SerialNumber;
-
-                result = await GetParameterValue(serialNumber, parameter.Index, parameter.SubIndex);
+                result = await GetParameterValue(device.NodeId, parameter.Index, parameter.SubIndex);
             }
 
             return result;
         }
 
-        public async Task<ParameterValue> GetParameterValue(ulong serialNumber, ushort index, byte subIndex)
+        public async Task<ParameterValue> GetParameterValue(int nodeId, ushort index, byte subIndex)
         {
             ParameterValue result = null;
 
             try
             {
-                MsgLogger.WriteLine($"get parameter, index=0x{index:X4}, subindex=0x{subIndex:X4}, device serial number=0x{serialNumber:X}");
+                MsgLogger.WriteLine($"get parameter, index=0x{index:X4}, subindex=0x{subIndex:X4}, device node id={nodeId}");
 
                 var query = HttpUtility.ParseQueryString(string.Empty);
 
                 query["uuid"] = Session.Uuid;
-                query["serialNumber"] = $"{serialNumber}";
+                query["nodeId"] = $"{nodeId}";
                 query["index"] = $"{index}";
                 query["subIndex"] = $"{subIndex}";
 
@@ -140,7 +139,7 @@ namespace EltraConnector.Controllers
                 {
                     result = parameterValue;
 
-                    MsgLogger.WriteLine($"get parameter, index=0x{index:X4}, subindex=0x{subIndex:X4}, device serial number=0x{serialNumber:X} - success");
+                    MsgLogger.WriteLine($"get parameter, index=0x{index:X4}, subindex=0x{subIndex:X4}, device node id={nodeId} - success");
                 }
             }
             catch (Exception e)
@@ -151,10 +150,8 @@ namespace EltraConnector.Controllers
             return result;
         }
 
-        private async void StartUpdate(EltraDevice device)
+        private async void StartUpdate(EltraDeviceNode device)
         {
-            //int updateParametersInterval = 10;
-
             _running.Set();
 
             _stopped = new ManualResetEvent(false);
@@ -164,11 +161,7 @@ namespace EltraConnector.Controllers
                 RegisterEvents(device);
 
                 Wait();
-                /*while (ShouldRun())
-                {
-                    Thread.Sleep(updateParametersInterval);
-                }*/
-
+            
                 UnregisterEvents(device);
             }
 
@@ -180,7 +173,7 @@ namespace EltraConnector.Controllers
             return _stopped.WaitOne(0);
         }
 
-        public void RegisterDevice(EltraDevice device)
+        public void RegisterDevice(EltraDeviceNode device)
         {
             if(!_devices.Contains(device))
             { 
@@ -220,7 +213,7 @@ namespace EltraConnector.Controllers
             return base.Stop();
         }
 
-        private async Task<bool> UpdateParameter(EltraDevice device, Parameter parameter)
+        private async Task<bool> UpdateParameter(EltraDeviceNode device, Parameter parameter)
         {
             bool result = true;
 
@@ -229,7 +222,7 @@ namespace EltraConnector.Controllers
                 var parameterUpdate = new ParameterUpdate
                 {
                     SessionUuid = Session.Uuid,
-                    SerialNumber = device.Identification.SerialNumber,
+                    NodeId = device.NodeId,
                     Parameter = parameter
                 };
 
@@ -247,7 +240,7 @@ namespace EltraConnector.Controllers
             return result;
         }
 
-        private async Task<bool> UpdateParameters(EltraDevice device)
+        private async Task<bool> UpdateParameters(EltraDeviceNode device)
         {
             bool result = true;
             var parameters = device?.ObjectDictionary?.Parameters;
@@ -311,18 +304,18 @@ namespace EltraConnector.Controllers
             return result;
         }
 
-        public async Task<List<ParameterValue>> GetParameterHistory(ulong serialNumber, string uniqueId, DateTime from, DateTime to)
+        public async Task<List<ParameterValue>> GetParameterHistory(int nodeId, string uniqueId, DateTime from, DateTime to)
         {
             var result = new List<ParameterValue>();
 
             try
             {
-                MsgLogger.WriteLine($"get parameter history, device serial number=0x{serialNumber:X}");
+                MsgLogger.WriteLine($"get parameter history, device serial number={nodeId}");
 
                 var query = HttpUtility.ParseQueryString(string.Empty);
 
                 query["uuid"] = Session.Uuid;
-                query["serialNumber"] = $"{serialNumber}";
+                query["nodeId"] = $"{nodeId}";
                 query["uniqueId"] = $"{uniqueId}";
                 query["from"] = $"{from}";
                 query["to"] = $"{to}";
@@ -337,51 +330,12 @@ namespace EltraConnector.Controllers
                 {
                     result = parameterValues;
 
-                    MsgLogger.WriteLine($"get parameter, device serial number=0x{serialNumber:X} - success");
+                    MsgLogger.WriteLine($"get parameter, device serial number={nodeId} - success");
                 }
             }
             catch (Exception e)
             {
                 MsgLogger.Exception($"{GetType().Name} - GetParameterHistory", e);
-            }
-
-            return result;
-        }
-
-        public async Task<List<ParameterUniqueIdValuePair>> GetParameterHistoryPair(ulong serialNumber, string uniqueId1, string uniqueId2, DateTime from, DateTime to)
-        {
-            var result = new List<ParameterUniqueIdValuePair>();
-
-            try
-            {
-                MsgLogger.WriteLine($"get parameter history, device serial number=0x{serialNumber:X}");
-
-                var query = HttpUtility.ParseQueryString(string.Empty);
-
-                query["uuid"] = Session.Uuid;
-                query["serialNumber"] = $"{serialNumber}";
-                query["uniqueId1"] = $"{uniqueId1}";
-                query["uniqueId2"] = $"{uniqueId2}";
-                
-                query["from"] = from.ToString("s", CultureInfo.InvariantCulture);
-                query["to"] = to.ToString("s", CultureInfo.InvariantCulture);
-
-                var url = UrlHelper.BuildUrl(Url, "api/parameter/pair-history", query);
-
-                var json = await Transporter.Get(url);
-
-                var parameterValues = JsonConvert.DeserializeObject<List<ParameterUniqueIdValuePair>>(json);
-
-                if (parameterValues != null)
-                {
-                    result = parameterValues;
-
-                    MsgLogger.WriteLine($"get parameter, device serial number=0x{serialNumber:X} - success");
-                }
-            }
-            catch (Exception e)
-            {
-                MsgLogger.Exception($"{GetType().Name} - GetParameterHistoryPair", e);
             }
 
             return result;

@@ -130,7 +130,7 @@ namespace EltraConnector.Controllers
             var device = deviceNode;
             var query = HttpUtility.ParseQueryString(string.Empty);
 
-            var url = UrlHelper.BuildUrl(Url, $"api/device/remove/{Session.Uuid}/{device.Identification.SerialNumber}", query);
+            var url = UrlHelper.BuildUrl(Url, $"api/device/remove/{Session.Uuid}/{device.NodeId}", query);
 
             await Transporter.Delete(url);
 
@@ -272,7 +272,7 @@ namespace EltraConnector.Controllers
             return result;
         }
 
-        public async Task<bool> IsDeviceRegistered(string uuid, EltraDevice device)
+        public async Task<bool> IsDeviceRegistered(string uuid, EltraDeviceNode device)
         {
             bool result = false;
 
@@ -282,7 +282,7 @@ namespace EltraConnector.Controllers
 
                 query["Uuid"] = uuid;
                 query["SessionUuid"] = Session.Uuid;
-                query["SerialNumber"] = $"{device.Identification.SerialNumber}";
+                query["NodeId"] = $"{device.NodeId}";
 
                 var url = UrlHelper.BuildUrl(Url, "api/device/exists", query);
 
@@ -322,24 +322,19 @@ namespace EltraConnector.Controllers
             return result;
         }
 
-        public async Task<Parameter> GetParameter(ulong serialNumber, ushort index, byte subIndex)
+        public async Task<Parameter> GetParameter(int nodeId, ushort index, byte subIndex)
         {
-            return await ParameterAdapter.GetParameter(serialNumber, index, subIndex);
+            return await ParameterAdapter.GetParameter(nodeId, index, subIndex);
         }
 
-        public async Task<ParameterValue> GetParameterValue(ulong serialNumber, ushort index, byte subIndex)
+        public async Task<ParameterValue> GetParameterValue(int nodeId, ushort index, byte subIndex)
         {
-            return await ParameterAdapter.GetParameterValue(serialNumber, index, subIndex);
+            return await ParameterAdapter.GetParameterValue(nodeId, index, subIndex);
         }
 
-        public async Task<List<ParameterUniqueIdValuePair>> GetParameterHistoryPair(ulong serialNumber, string uniqueId1, string uniqueId2, DateTime from, DateTime to)
+        public async Task<List<ParameterValue>> GetParameterHistory(int nodeId, string uniqueId, DateTime from, DateTime to)
         {
-            return await ParameterAdapter.GetParameterHistoryPair(serialNumber, uniqueId1, uniqueId2, from, to);
-        }
-
-        public async Task<List<ParameterValue>> GetParameterHistory(ulong serialNumber, string uniqueId, DateTime from, DateTime to)
-        {
-            return await ParameterAdapter.GetParameterHistory(serialNumber, uniqueId, from, to);
+            return await ParameterAdapter.GetParameterHistory(nodeId, uniqueId, from, to);
         }
 
         public async Task<List<DeviceCommand>> GetDeviceCommands(EltraDeviceNode device)
@@ -427,112 +422,6 @@ namespace EltraConnector.Controllers
             return result;
         }
 
-        public async Task<bool> LockDevice(string agentUuid, EltraDevice eposDevice)
-        {
-            bool result = false;
-
-            try
-            {
-                var deviceLock = new DeviceLock { AgentUuid = agentUuid, SerialNumber = eposDevice.Identification.SerialNumber };
-
-                var path = "api/device/lock";
-                var postResult = await Transporter.Post(Url, path, JsonConvert.SerializeObject(deviceLock));
-
-                if (postResult.StatusCode == System.Net.HttpStatusCode.OK)
-                {
-                    var requestResult = JsonConvert.DeserializeObject<RequestResult>(postResult.Content);
-
-                    result = requestResult.Result;
-                }
-            }
-            catch (Exception e)
-            {
-                MsgLogger.Exception($"{GetType().Name} - LockDevice", e);
-            }
-
-            return result;
-        }
-
-        public async Task<bool> UnlockDevice(string agentUuid, EltraDevice eposDevice)
-        {
-            bool result = false;
-
-            try
-            {
-                var deviceLock = new DeviceLock { AgentUuid = agentUuid, SerialNumber = eposDevice.Identification.SerialNumber };
-
-                var path = "api/device/unlock";
-                var postResult = await Transporter.Post(Url, path, JsonConvert.SerializeObject(deviceLock));
-
-                if (postResult.StatusCode == System.Net.HttpStatusCode.OK)
-                {
-                    var requestResult = JsonConvert.DeserializeObject<RequestResult>(postResult.Content);
-
-                    result = requestResult.Result;
-                }
-            }
-            catch (Exception e)
-            {
-                MsgLogger.Exception($"{GetType().Name} - UnlockDevice", e);
-            }
-
-            return result;
-        }
-
-        public async Task<bool> CanLockDevice(string agentUuid, EltraDevice eposDevice)
-        {
-            bool result = false;
-
-            try
-            {
-                var deviceLock = new DeviceLock { AgentUuid = agentUuid, SerialNumber = eposDevice.Identification.SerialNumber };
-
-                var path = "api/device/can-agent-lock";
-                var postResult = await Transporter.Post(Url, path, JsonConvert.SerializeObject(deviceLock));
-
-                if (postResult.StatusCode == System.Net.HttpStatusCode.OK)
-                {
-                    var requestResult = JsonConvert.DeserializeObject<RequestResult>(postResult.Content);
-
-                    result = requestResult.Result;
-                }
-            }
-            catch (Exception e)
-            {
-                MsgLogger.Exception($"{GetType().Name} - CanLockDevice", e);
-            }
-
-            return result;
-        }
-
-        public async Task<bool> IsDeviceLocked(string agentUuid, EltraDevice eposDevice)
-        {
-            bool result = false;
-
-            try
-            {
-                var deviceLock = new DeviceLock { AgentUuid = agentUuid, SerialNumber = eposDevice.Identification.SerialNumber };
-
-                var path = "api/device/is-locked-by-agent";
-                var postResult = await Transporter.Post(Url, path, JsonConvert.SerializeObject(deviceLock));
-
-                if (postResult.StatusCode == System.Net.HttpStatusCode.OK)
-                {
-                    var requestResult = JsonConvert.DeserializeObject<RequestResult>(postResult.Content);
-
-                    result = requestResult.Result;
-                }
-            }
-            catch (Exception e)
-            {
-                MsgLogger.Exception($"{GetType().Name} - IsDeviceLocked", e);
-            }
-
-            return result;
-        }
-
-        #endregion
-
-        
+        #endregion        
     }
 }
