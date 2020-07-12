@@ -4,11 +4,9 @@ using System.Threading.Tasks;
 
 using EltraConnector.Controllers.Base;
 using EltraCommon.Contracts.CommandSets;
-using EltraCommon.Contracts.Devices;
 using EltraCommon.Contracts.Sessions;
 using EltraCommon.Contracts.Users;
 using EltraCommon.ObjectDictionary.Common.DeviceDescription.Profiles.Application.Parameters;
-using EltraCommon.Contracts.Parameters;
 using EltraConnector.Transport.Ws;
 using EltraCommon.Contracts.Node;
 

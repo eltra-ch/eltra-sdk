@@ -246,7 +246,7 @@ namespace EltraConnector.Controllers
             return result;
         }
 
-        private async Task<bool> UploadDeviceDescription(EltraDevice device)
+        private async Task<bool> UploadDeviceDescription(EltraDeviceNode device)
         {
             bool result;
             var deviceDescriptionPayload = new DeviceDescriptionPayload(device)

@@ -5,7 +5,6 @@ using EltraConnector.Controllers;
 using EltraConnector.UserAgent.Events;
 using EltraCommon.Logger;
 using EltraCommon.Contracts.CommandSets;
-using EltraCommon.Contracts.Devices;
 using EltraConnector.Transport.Ws;
 using EltraCommon.Contracts.Sessions;
 using EltraCommon.Threads;
@@ -25,7 +24,7 @@ namespace EltraConnector.UserAgent
         private readonly WsConnectionManager _wsConnectionManager;
         private string _commandExecUuid;
         private string _wsChannelName;
-
+        
         #endregion
 
         #region Constructors

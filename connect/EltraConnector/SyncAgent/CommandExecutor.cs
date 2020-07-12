@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Security.Cryptography;
 using System.Threading.Tasks;
 using EltraCommon.Contracts.CommandSets;
 using EltraCommon.Contracts.Sessions;
@@ -21,7 +20,7 @@ namespace EltraConnector.SyncAgent
         private readonly DeviceSessionControllerAdapter _sessionControllerAdapter;
         private readonly WsConnectionManager _wsConnectionManager;
         private bool _stopping;
-
+        
         #endregion
 
         #region Constructors

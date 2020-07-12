@@ -68,11 +68,12 @@ namespace EltraConnector.Agent
             return result;
         }
 
-        public async Task<List<EltraDeviceNode>> GetDevices(UserAuthData deviceAuth)
+        public async Task<List<EltraDeviceNode>> GetDevices(UserAuthData deviceAuth, int nodeId)
         {
             var result = new List<EltraDeviceNode>();
 
             _vcsList.Clear();
+
             _deviceAgent = new DeviceAgent(Host, AuthData, _updateInterval, _timeout);
 
             var sessionsDevices = await _deviceAgent.GetDevices(deviceAuth);
@@ -97,11 +98,12 @@ namespace EltraConnector.Agent
             return result;
         }
 
-        public async Task<List<EltraDeviceNodeList>> GetSessionDevices(UserAuthData deviceAuth)
+        public async Task<List<EltraDeviceNodeList>> GetSessionDevices(UserAuthData deviceAuth, int nodeId)
         {
             var result = new List<EltraDeviceNodeList>();
 
             _vcsList.Clear();
+
             _deviceAgent = new DeviceAgent(Host, AuthData, _updateInterval, _timeout);
 
             var sessionDeviceNodeList = await _deviceAgent.GetDevices(deviceAuth);
