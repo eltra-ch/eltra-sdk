@@ -137,7 +137,7 @@ namespace EltraConnector.Controllers
             SessionDevices.RemoveDevice(deviceNode);
         }
 
-        public async Task<List<EltraDeviceNode>> GetSessionDevices(string uuid, UserAuthData authData)
+        public async Task<List<EltraDeviceNode>> GetDeviceNodes(string uuid, UserAuthData authData)
         {
             var result = new List<EltraDeviceNode>();
 

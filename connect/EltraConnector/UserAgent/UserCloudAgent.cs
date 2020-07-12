@@ -325,11 +325,11 @@ namespace EltraConnector.UserAgent
             _executeCommander.RemoteSessionStatusChanged += OnRemoteSessionStatusChanged;
         }
 
-        private async Task<List<EltraDeviceNode>> GetSessionDevices(Session session, UserAuthData authData)
+        private async Task<List<EltraDeviceNode>> GetDeviceNodes(Session session, UserAuthData authData)
         {
             await EnsureAgentReady();
 
-            return await _sessionAdapter.GetSessionDevices(session, authData);
+            return await _sessionAdapter.GetDeviceNodes(session, authData);
         }
 
         private async Task<bool> EnsureAgentReady()
@@ -353,9 +353,9 @@ namespace EltraConnector.UserAgent
             return result;
         }
 
-        public async Task<EltraDeviceNodeSet> GetDevices(UserAuthData authData)
+        public async Task<List<EltraDeviceNodeList>> GetDevices(UserAuthData authData)
         {
-            var result = new EltraDeviceNodeSet();
+            var result = new List<EltraDeviceNodeList>();
 
             if (await EnsureAgentReady())
             {
@@ -365,19 +365,19 @@ namespace EltraConnector.UserAgent
                 {
                     foreach (var session in sessions)
                     {
-                        var deviceNodeSet = new EltraDeviceNodeList() { Session = session };
+                        var deviceNodeList = new EltraDeviceNodeList() { Session = session };
 
-                        var deviceNodeList = await GetSessionDevices(session, authData);
+                        var deviceNodes = await GetDeviceNodes(session, authData);
 
-                        if (deviceNodeList != null)
+                        if (deviceNodes != null)
                         {
-                            foreach (var deviceNode in deviceNodeList)
+                            foreach (var deviceNode in deviceNodes)
                             {
-                                deviceNodeSet.AddDevice(deviceNode);
+                                deviceNodeList.AddDevice(deviceNode);
                             }
                         }
 
-                        result.Add(deviceNodeSet);
+                        result.Add(deviceNodeList);
                     }
                 }
             }

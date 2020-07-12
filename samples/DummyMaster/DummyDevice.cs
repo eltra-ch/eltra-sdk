@@ -5,8 +5,8 @@ namespace ConsoleApp1
 {
     internal class DummyDevice : MasterDevice
     {
-        public DummyDevice(string deviceDescriptionFilePath) 
-            : base("DUMMY", deviceDescriptionFilePath)
+        public DummyDevice(string deviceDescriptionFilePath, int nodeId) 
+            : base("DUMMY", deviceDescriptionFilePath, nodeId)
         {
             Identification.SerialNumber = 0x102;
 

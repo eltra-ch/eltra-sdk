@@ -22,8 +22,9 @@ namespace EltraConnector.Master.Device
 
         #region Constructors
 
-        public MasterDevice(string family, string deviceDescriptionFilePath)
+        public MasterDevice(string family, string deviceDescriptionFilePath, int nodeId)
         {
+            NodeId = nodeId;
             Family = family;
             DeviceDescriptionFilePath = deviceDescriptionFilePath;
 

@@ -91,9 +91,9 @@ namespace EltraConnector.Controllers
             return result;
         }
                         
-        public async Task<List<EltraDeviceNode>> GetSessionDevices(Session session, UserAuthData authData)
+        public async Task<List<EltraDeviceNode>> GetDeviceNodes(Session session, UserAuthData authData)
         {
-            return await DeviceAdapter.GetSessionDevices(session.Uuid, authData);
+            return await DeviceAdapter.GetDeviceNodes(session.Uuid, authData);
         }
         
         public async Task<List<DeviceCommand>> GetDeviceCommands(EltraDeviceNode device)

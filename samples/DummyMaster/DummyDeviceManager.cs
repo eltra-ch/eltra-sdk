@@ -4,9 +4,11 @@ namespace ConsoleApp1
 {
     class DummyDeviceManager : MasterDeviceManager
     {
-        public DummyDeviceManager(string xdd)
+        public DummyDeviceManager(string deviceDescriptionFilePath)
         {
-            AddDevice(new DummyDevice(xdd));
+            int nodeId = 1;
+            
+            AddDevice(new DummyDevice(deviceDescriptionFilePath, nodeId));
         }
     }
 }
