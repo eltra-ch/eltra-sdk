@@ -97,9 +97,9 @@ namespace EltraConnector.Agent
             return result;
         }
 
-        public async Task<SessionsDevices> GetSessionDevices(UserAuthData deviceAuth)
+        public async Task<SessionDeviceSet> GetSessionDevices(UserAuthData deviceAuth)
         {
-            var result = new SessionsDevices();
+            var result = new SessionDeviceSet();
 
             _vcsList.Clear();
             _deviceAgent = new DeviceAgent(Host, AuthData, _updateInterval, _timeout);

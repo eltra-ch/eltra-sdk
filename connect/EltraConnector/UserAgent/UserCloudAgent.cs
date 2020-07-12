@@ -352,9 +352,9 @@ namespace EltraConnector.UserAgent
             return result;
         }
 
-        public async Task<SessionsDevices> GetDevices(UserAuthData authData)
+        public async Task<SessionDeviceSet> GetDevices(UserAuthData authData)
         {
-            var result = new SessionsDevices();
+            var result = new SessionDeviceSet();
 
             if (await EnsureAgentReady())
             {
