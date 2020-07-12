@@ -19,6 +19,7 @@ using EltraCommon.Contracts.Parameters;
 using EltraConnector.Sessions;
 using EltraConnector.SyncAgent;
 using EltraConnector.UserAgent.Definitions;
+using EltraCommon.Contracts.Node;
 
 namespace EltraConnector.UserAgent
 {
@@ -61,7 +62,7 @@ namespace EltraConnector.UserAgent
             Initialize(url, updateInterval, timeout, true);
         }
 
-        public UserCloudAgent(SyncCloudAgent masterAgent, SessionDevice device, uint updateInterval, uint timeout)
+        public UserCloudAgent(SyncCloudAgent masterAgent, EltraDeviceNode device, uint updateInterval, uint timeout)
         {
             _authData = masterAgent.AuthData;
             _executedCommands = new List<DeviceCommand>();
@@ -324,7 +325,7 @@ namespace EltraConnector.UserAgent
             _executeCommander.RemoteSessionStatusChanged += OnRemoteSessionStatusChanged;
         }
 
-        private async Task<List<SessionDevice>> GetSessionDevices(Session session, UserAuthData authData)
+        private async Task<List<EltraDeviceNode>> GetSessionDevices(Session session, UserAuthData authData)
         {
             await EnsureAgentReady();
 
@@ -352,9 +353,9 @@ namespace EltraConnector.UserAgent
             return result;
         }
 
-        public async Task<SessionDeviceSet> GetDevices(UserAuthData authData)
+        public async Task<EltraDeviceNodeSet> GetDevices(UserAuthData authData)
         {
-            var result = new SessionDeviceSet();
+            var result = new EltraDeviceNodeSet();
 
             if (await EnsureAgentReady())
             {
@@ -364,19 +365,19 @@ namespace EltraConnector.UserAgent
                 {
                     foreach (var session in sessions)
                     {
-                        var sessionDevices = new SessionDevices() { Session = session };
+                        var deviceNodeSet = new EltraDeviceNodeList() { Session = session };
 
-                        var sessionDeviceList = await GetSessionDevices(session, authData);
+                        var deviceNodeList = await GetSessionDevices(session, authData);
 
-                        if (sessionDeviceList != null)
+                        if (deviceNodeList != null)
                         {
-                            foreach (var sessionDevice in sessionDeviceList)
+                            foreach (var deviceNode in deviceNodeList)
                             {
-                                sessionDevices.AddDevice(sessionDevice.Device);
+                                deviceNodeSet.AddDevice(deviceNode);
                             }
                         }
 
-                        result.Add(sessionDevices);
+                        result.Add(deviceNodeSet);
                     }
                 }
             }
@@ -412,7 +413,7 @@ namespace EltraConnector.UserAgent
             return await _sessionAdapter.UnlockDevice(device);
         }
         
-        public virtual async Task<DeviceCommand> GetDeviceCommand(SessionDevice device, string commandName)
+        public virtual async Task<DeviceCommand> GetDeviceCommand(EltraDeviceNode device, string commandName)
         {
             await EnsureAgentReady();
 
@@ -421,7 +422,7 @@ namespace EltraConnector.UserAgent
             return result;
         }
 
-        public async Task<List<DeviceCommand>> GetDeviceCommands(SessionDevice device)
+        public async Task<List<DeviceCommand>> GetDeviceCommands(EltraDeviceNode device)
         {
             await EnsureAgentReady();
 

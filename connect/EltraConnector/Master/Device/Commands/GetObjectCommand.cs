@@ -1,5 +1,6 @@
 ﻿using System;
 using EltraCommon.Contracts.CommandSets;
+using EltraCommon.Contracts.Node;
 
 namespace EltraConnector.Master.Device.Commands
 {
@@ -9,7 +10,7 @@ namespace EltraConnector.Master.Device.Commands
         {
         }
 
-        public GetObjectCommand(EltraCommon.Contracts.Devices.EltraDevice device)
+        public GetObjectCommand(EltraDeviceNode device)
             : base(device)
         {
             Name = "GetObject";
@@ -36,7 +37,7 @@ namespace EltraConnector.Master.Device.Commands
         public override bool Execute(string source)
         {
             bool result = false;
-            var device = SessionDevice.Device as MasterDevice;
+            var device = Device as MasterDevice;
             var communication = device?.Communication;
             ushort index = 0;
             byte subIndex = 0;

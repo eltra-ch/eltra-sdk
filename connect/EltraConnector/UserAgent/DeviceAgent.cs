@@ -4,8 +4,8 @@ using System.Threading.Tasks;
 
 using EltraCommon.Contracts.CommandSets;
 using EltraCommon.Contracts.Devices;
+using EltraCommon.Contracts.Node;
 using EltraCommon.Contracts.Parameters;
-using EltraCommon.Contracts.Sessions;
 using EltraCommon.Contracts.Users;
 using EltraCommon.ObjectDictionary.Common.DeviceDescription.Profiles.Application.Parameters;
 using EltraConnector.SyncAgent;
@@ -32,7 +32,7 @@ namespace EltraConnector.UserAgent
         {
         }
 
-        public DeviceAgent(SyncCloudAgent masterAgent, SessionDevice device, uint updateInterval, uint timeout)
+        public DeviceAgent(SyncCloudAgent masterAgent, EltraDeviceNode device, uint updateInterval, uint timeout)
             : base(masterAgent, device, updateInterval, timeout)
         {
 
@@ -48,7 +48,7 @@ namespace EltraConnector.UserAgent
 
         #region Methods
 
-        public override async Task<DeviceCommand> GetDeviceCommand(SessionDevice device, string commandName)
+        public override async Task<DeviceCommand> GetDeviceCommand(EltraDeviceNode device, string commandName)
         {
             var result = await base.GetDeviceCommand(device, commandName);
 
@@ -70,7 +70,7 @@ namespace EltraConnector.UserAgent
             DeviceCommands.Clear();
         }
 
-        private async Task<List<DeviceCommand>> AddDeviceCommands(SessionDevice device)
+        private async Task<List<DeviceCommand>> AddDeviceCommands(EltraDeviceNode device)
         {
             var result = new List<DeviceCommand>();
             var commands = await GetDeviceCommands(device);

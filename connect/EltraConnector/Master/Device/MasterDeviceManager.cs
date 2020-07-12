@@ -1,5 +1,5 @@
 ﻿using EltraCommon.Contracts.Devices;
-using EltraCommon.Contracts.Sessions;
+using EltraCommon.Contracts.Node;
 using EltraCommon.Logger;
 using EltraConnector.SyncAgent;
 using System;
@@ -96,7 +96,7 @@ namespace EltraConnector.Master.Device
 
                 MsgLogger.WriteLine($"Disconnected: device = {device.Family} - Unregister");
 
-                await CloudAgent.UnregisterDevice(new SessionDevice() { Device = device });
+                await CloudAgent.UnregisterDevice(device);
 
                 device.Status = DeviceStatus.Unregistered;
             }
@@ -110,7 +110,7 @@ namespace EltraConnector.Master.Device
 
                 device.Status = DeviceStatus.Ready;
 
-                await CloudAgent.RegisterDevice(new SessionDevice() { Device = device });
+                await CloudAgent.RegisterDevice(device);
             }
         }
 

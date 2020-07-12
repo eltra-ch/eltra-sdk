@@ -12,6 +12,7 @@ using EltraCommon.Threads;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using EltraConnector.Events;
+using EltraCommon.Contracts.Node;
 
 namespace EltraConnector.UserAgent
 {
@@ -249,7 +250,7 @@ namespace EltraConnector.UserAgent
             return result;
         }
 
-        private async Task<ExecuteCommand> PopCommand(string commandUuid, SessionDevice device, ExecCommandStatus status)
+        private async Task<ExecuteCommand> PopCommand(string commandUuid, EltraDeviceNode device, ExecCommandStatus status)
         {
             return await _sessionAdapter.PopCommand(commandUuid, device, status);
         }
@@ -361,7 +362,7 @@ namespace EltraConnector.UserAgent
             const double timeout = 30; 
             DeviceCommand result = null;
 
-            var commandStatus = await GetCommandStatus(new ExecuteCommand {Command = command, SourceSessionUuid = _sessionAdapter.Uuid, TargetSessionUuid = command.SessionDevice.SessionUuid});
+            var commandStatus = await GetCommandStatus(new ExecuteCommand {Command = command, SourceSessionUuid = _sessionAdapter.Uuid, TargetSessionUuid = command.Device.SessionUuid});
 
             if (commandStatus != null)
             {
@@ -380,7 +381,7 @@ namespace EltraConnector.UserAgent
                     } break;
                     case ExecCommandStatus.Executed:
                     {
-                        var execCommand = await PopCommand(command.Uuid, command.SessionDevice, ExecCommandStatus.Executed);
+                        var execCommand = await PopCommand(command.Uuid, command.Device, ExecCommandStatus.Executed);
 
                         if (execCommand != null)
                         {

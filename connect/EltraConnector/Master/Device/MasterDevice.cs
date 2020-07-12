@@ -1,4 +1,5 @@
 ﻿using EltraCommon.Contracts.Devices;
+using EltraCommon.Contracts.Node;
 using EltraCommon.Contracts.Parameters;
 using EltraCommon.ObjectDictionary.Common.DeviceDescription.Profiles.Application.Parameters;
 using EltraCommon.ObjectDictionary.DeviceDescription;
@@ -11,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace EltraConnector.Master.Device
 {
-    public class MasterDevice : EltraDevice
+    public class MasterDevice : EltraDeviceNode
     {
         #region Private fields
 

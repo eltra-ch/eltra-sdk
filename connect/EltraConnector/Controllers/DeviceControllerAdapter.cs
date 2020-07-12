@@ -17,6 +17,7 @@ using EltraCommon.ObjectDictionary.DeviceDescription;
 using EltraCommon.ObjectDictionary.DeviceDescription.Factory;
 using EltraCommon.Contracts.Parameters;
 using EltraCommon.Contracts.Users;
+using EltraCommon.Contracts.Node;
 
 namespace EltraConnector.Controllers
 {
@@ -24,7 +25,7 @@ namespace EltraConnector.Controllers
     {
         #region Private fields
 
-        private SessionDevices _sessionDevices;
+        private EltraDeviceNodeList _sessionDevices;
         private DeviceCommandsControllerAdapter _deviceCommandsControllerAdapter;
         private ParameterControllerAdapter _parameterControllerAdapter;
         private DescriptionControllerAdapter _descriptionContollerAdapter;
@@ -42,7 +43,7 @@ namespace EltraConnector.Controllers
 
         #region Properties
 
-        private SessionDevices SessionDevices => _sessionDevices ?? (_sessionDevices = new SessionDevices { Session = Session });
+        private EltraDeviceNodeList SessionDevices => _sessionDevices ?? (_sessionDevices = new EltraDeviceNodeList { Session = Session });
 
         public DeviceCommandsControllerAdapter DeviceCommandsAdapter => _deviceCommandsControllerAdapter ?? (_deviceCommandsControllerAdapter = CreateDeviceCommandsAdapter());
 
@@ -124,21 +125,21 @@ namespace EltraConnector.Controllers
             return base.Stop();
         }
 
-        public async Task UnregisterSessionDevice(SessionDevice sessionDevice)
+        public async Task UnregisterSessionDevice(EltraDeviceNode deviceNode)
         {
-            var device = sessionDevice?.Device;
+            var device = deviceNode;
             var query = HttpUtility.ParseQueryString(string.Empty);
 
             var url = UrlHelper.BuildUrl(Url, $"api/device/remove/{Session.Uuid}/{device.Identification.SerialNumber}", query);
 
             await Transporter.Delete(url);
 
-            SessionDevices.RemoveDevice(sessionDevice);
+            SessionDevices.RemoveDevice(deviceNode);
         }
 
-        public async Task<List<SessionDevice>> GetSessionDevices(string uuid, UserAuthData authData)
+        public async Task<List<EltraDeviceNode>> GetSessionDevices(string uuid, UserAuthData authData)
         {
-            var result = new List<SessionDevice>();
+            var result = new List<EltraDeviceNode>();
 
             try
             {
@@ -151,13 +152,13 @@ namespace EltraConnector.Controllers
                 var url = UrlHelper.BuildUrl(Url, "api/session/devices", query);
                 var json = await Transporter.Get(url);
 
-                result = JsonConvert.DeserializeObject<List<SessionDevice>>(json);
+                result = JsonConvert.DeserializeObject<List<EltraDeviceNode>>(json);
 
                 if (result != null)
                 {
-                    foreach (var sessionDevice in result)
+                    foreach (var deviceNode in result)
                     {
-                        var device = sessionDevice.Device;
+                        var device = deviceNode;
                         var deviceDescriptionFile = DeviceDescriptionFactory.CreateDeviceDescriptionFile(device);
 
                         if (deviceDescriptionFile != null)
@@ -184,20 +185,20 @@ namespace EltraConnector.Controllers
             return result;
         }
         
-        public async Task<bool> RegisterDevice(SessionDevice sessionDevice)
+        public async Task<bool> RegisterDevice(EltraDeviceNode deviceNode)
         {
             bool result = false;
 
             try
             {
-                var device = sessionDevice?.Device;
+                var device = deviceNode;
 
                 if (await UploadDeviceDescription(device))
                 {
-                    sessionDevice.SessionUuid = Session.Uuid;
+                    deviceNode.SessionUuid = Session.Uuid;
 
                     var path = "api/device/add";
-                    var postResult = await Transporter.Post(Url, path, sessionDevice.ToJson());
+                    var postResult = await Transporter.Post(Url, path, deviceNode.ToJson());
 
                     if (postResult.StatusCode == System.Net.HttpStatusCode.OK)
                     {
@@ -236,7 +237,7 @@ namespace EltraConnector.Controllers
             catch (Exception e)
             {
                 OnRegistrationStateChanged(new RegistrationEventArgs { Session = Session, 
-                                                                       Device = sessionDevice.Device, 
+                                                                       Device = deviceNode, 
                                                                        Exception = e, 
                                                                        Reason = "exception",
                                                                        State = RegistrationState.Failed });
@@ -303,7 +304,7 @@ namespace EltraConnector.Controllers
 
             try
             {
-                foreach (var sessionDevice in SessionDevices.SessionDeviceList)
+                foreach (var sessionDevice in SessionDevices.DeviceNodeList)
                 {
                     result = await RegisterDevice(sessionDevice);
 
@@ -341,12 +342,12 @@ namespace EltraConnector.Controllers
             return await ParameterAdapter.GetParameterHistory(serialNumber, uniqueId, from, to);
         }
 
-        public async Task<List<DeviceCommand>> GetDeviceCommands(SessionDevice device)
+        public async Task<List<DeviceCommand>> GetDeviceCommands(EltraDeviceNode device)
         {
             return await DeviceCommandsAdapter.GetDeviceCommands(device);
         }
 
-        public async Task<DeviceCommand> GetDeviceCommand(SessionDevice device, string commandName)
+        public async Task<DeviceCommand> GetDeviceCommand(EltraDeviceNode device, string commandName)
         {
             return await DeviceCommandsAdapter.GetDeviceCommand(device, commandName);
         }
@@ -363,7 +364,7 @@ namespace EltraConnector.Controllers
                 {
                     command.Status = status;
 
-                    execCommand.TargetSessionUuid = command.SessionDevice.SessionUuid;
+                    execCommand.TargetSessionUuid = command.Device.SessionUuid;
                 }
 
                 execCommand.SourceSessionUuid = Session.Uuid;
@@ -410,7 +411,7 @@ namespace EltraConnector.Controllers
             return result;
         }
 
-        public async Task<List<ExecuteCommand>> PopCommands(SessionDevice device, ExecCommandStatus status)
+        public async Task<List<ExecuteCommand>> PopCommands(EltraDeviceNode device, ExecCommandStatus status)
         {
             var result = new List<ExecuteCommand>();
             

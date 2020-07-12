@@ -9,6 +9,7 @@ using EltraCommon.Logger;
 using EltraCommon.Contracts.Users;
 using System.Threading.Tasks;
 using EltraConnector.Controllers.Base.Events;
+using EltraCommon.Contracts.Node;
 
 namespace EltraConnector.SyncAgent
 {
@@ -147,13 +148,13 @@ namespace EltraConnector.SyncAgent
             return result;
         }
         
-        public async Task<bool> RegisterDevice(SessionDevice sessionDevice)
+        public async Task<bool> RegisterDevice(EltraDeviceNode deviceNode)
         {
             bool result = false;
 
             try
             {
-                var device = sessionDevice.Device;
+                var device = deviceNode;
 
                 if (await RegisterSession())
                 {
@@ -164,7 +165,7 @@ namespace EltraConnector.SyncAgent
 
                     if (!registered)
                     {
-                        await _sessionControllerAdapter.RegisterDevice(sessionDevice);
+                        await _sessionControllerAdapter.RegisterDevice(deviceNode);
                     }
 
                     Start();
@@ -206,11 +207,11 @@ namespace EltraConnector.SyncAgent
             return Task.CompletedTask;
         }
         
-        public async Task UnregisterDevice(SessionDevice sessionDevice)
+        public async Task UnregisterDevice(EltraDeviceNode deviceNode)
         {
             try
             {
-                var device = sessionDevice.Device;
+                var device = deviceNode;
 
                 var registered = await _sessionControllerAdapter.IsDeviceRegistered(device);
                 
@@ -218,7 +219,7 @@ namespace EltraConnector.SyncAgent
                 {
                     MsgLogger.WriteLine($"unregister(-) device='{device.Family}', serial number=0x{device.Identification.SerialNumber:X}");
 
-                    await _sessionControllerAdapter.UnregisterDevice(sessionDevice);
+                    await _sessionControllerAdapter.UnregisterDevice(deviceNode);
                 }
             }
             catch (Exception e)

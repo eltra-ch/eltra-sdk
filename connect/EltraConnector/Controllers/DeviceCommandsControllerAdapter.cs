@@ -13,6 +13,7 @@ using EltraCommon.Contracts.Sessions;
 using EltraCommon.Logger;
 using EltraCommon.Helpers;
 using EltraCommon.Contracts.Devices;
+using EltraCommon.Contracts.Node;
 
 namespace EltraConnector.Controllers
 {
@@ -29,10 +30,10 @@ namespace EltraConnector.Controllers
         
         #region Methods
 
-        public async Task<List<DeviceCommand>> GetDeviceCommands(SessionDevice sessionDevice)
+        public async Task<List<DeviceCommand>> GetDeviceCommands(EltraDeviceNode deviceNode)
         {
             List<DeviceCommand> result = null;
-            var device = sessionDevice?.Device;
+            var device = deviceNode;
 
             if (device != null)
             {
@@ -53,7 +54,7 @@ namespace EltraConnector.Controllers
 
                     if (commandSet != null)
                     {
-                        AssignDeviceToCommand(sessionDevice, commandSet);
+                        AssignDeviceToCommand(deviceNode, commandSet);
 
                         result = commandSet.Commands;
                     }
@@ -67,10 +68,10 @@ namespace EltraConnector.Controllers
             return result;
         }
 
-        public async Task<DeviceCommand> GetDeviceCommand(SessionDevice sessionDevice, string commandName)
+        public async Task<DeviceCommand> GetDeviceCommand(EltraDeviceNode deviceNode, string commandName)
         {
             DeviceCommand result = null;
-            var device = sessionDevice?.Device;
+            var device = deviceNode;
 
             if (device != null)
             {
@@ -92,7 +93,7 @@ namespace EltraConnector.Controllers
 
                     if (command != null)
                     {
-                        command.SessionDevice = sessionDevice;
+                        command.Device = deviceNode;
 
                         result = command;
                     }
@@ -106,13 +107,13 @@ namespace EltraConnector.Controllers
             return result;
         }
 
-        private static void AssignDeviceToCommand(SessionDevice device, DeviceCommandSet result)
+        private static void AssignDeviceToCommand(EltraDeviceNode device, DeviceCommandSet result)
         {
             if (result != null)
             {
                 foreach (var command in result.Commands)
                 {
-                    command.SessionDevice = device;
+                    command.Device = device;
                 }
             }
         }
@@ -123,8 +124,8 @@ namespace EltraConnector.Controllers
 
             try
             {
-                var sessionDevice = execCommand?.Command?.SessionDevice;
-                var device = sessionDevice?.Device;
+                var deviceNode = execCommand?.Command?.Device;
+                var device = deviceNode;
 
                 if (device != null)
                 {
@@ -149,15 +150,15 @@ namespace EltraConnector.Controllers
         public async Task<bool> PushCommand(DeviceCommand command, string agentUuid, ExecCommandStatus status)
         {
             bool result = false;
-            var sessionDevice = command?.SessionDevice;
-            var device = sessionDevice?.Device;
+            var deviceNode = command?.Device;
+            var device = deviceNode;
             var identification = device?.Identification;
             
             if (identification != null)
             {
                 var execCommand = new ExecuteCommand { Command = command, 
                                                        SerialNumber = identification.SerialNumber,
-                                                       TargetSessionUuid = sessionDevice.SessionUuid,
+                                                       TargetSessionUuid = deviceNode.SessionUuid,
                                                        SourceSessionUuid = agentUuid };
 
                 command.Status = status;
@@ -198,10 +199,10 @@ namespace EltraConnector.Controllers
             return await SetCommandStatus(execCommandStatus);
         }
 
-        public async Task<List<ExecuteCommand>> PullCommands(SessionDevice sessionDevice, ExecCommandStatus status)
+        public async Task<List<ExecuteCommand>> PullCommands(EltraDeviceNode deviceNode, ExecCommandStatus status)
         {
             var result = new List<ExecuteCommand>();
-            var device = sessionDevice?.Device;
+            var device = deviceNode;
 
             if (device != null)
             {
@@ -210,7 +211,7 @@ namespace EltraConnector.Controllers
                     var query = HttpUtility.ParseQueryString(string.Empty);
 
                     query["sourceSessionUuid"] = Session.Uuid;
-                    query["targetSessionUuid"] = $"{sessionDevice.SessionUuid}";
+                    query["targetSessionUuid"] = $"{deviceNode.SessionUuid}";
                     query["serialNumber"] = $"{device.Identification.SerialNumber}";
                     query["status"] = $"{status}";
                     
@@ -226,7 +227,7 @@ namespace EltraConnector.Controllers
                         {
                             if (executeCommand?.Command != null)
                             {
-                                executeCommand.Command.SessionDevice = sessionDevice;
+                                executeCommand.Command.Device = deviceNode;
                             }
                         }
 
@@ -242,10 +243,10 @@ namespace EltraConnector.Controllers
             return result;
         }
 
-        public async Task<ExecuteCommand> PopCommand(string commandUuid, SessionDevice sessionDevice, ExecCommandStatus status)
+        public async Task<ExecuteCommand> PopCommand(string commandUuid, EltraDeviceNode deviceNode, ExecCommandStatus status)
         {
             ExecuteCommand result = null;
-            var device = sessionDevice?.Device;
+            var device = deviceNode;
 
             if (device != null)
             {
@@ -266,7 +267,7 @@ namespace EltraConnector.Controllers
 
                     if (result?.Command != null)
                     {
-                        result.Command.SessionDevice = sessionDevice;
+                        result.Command.Device = deviceNode;
                     }
                 }
                 catch (Exception e)

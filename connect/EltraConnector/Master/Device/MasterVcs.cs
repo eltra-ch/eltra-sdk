@@ -1,4 +1,4 @@
-﻿using EltraCommon.Contracts.Sessions;
+﻿using EltraCommon.Contracts.Node;
 using EltraConnector.SyncAgent;
 using EltraConnector.UserAgent.Vcs;
 
@@ -12,10 +12,10 @@ namespace EltraConnector.Master.Device
             Device = device;
         }
 
-        public MasterVcs(SyncCloudAgent masterAgent, SessionDevice device, uint updateInterval, uint timeout)
+        public MasterVcs(SyncCloudAgent masterAgent, EltraDeviceNode device, uint updateInterval, uint timeout)
             : base(masterAgent.Url, device.SessionUuid, masterAgent.AuthData, updateInterval, timeout)
         {
-            Device = device.Device;
+            Device = device;
         }
     }
 }

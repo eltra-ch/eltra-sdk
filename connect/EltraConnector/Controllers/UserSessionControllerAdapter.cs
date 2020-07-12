@@ -10,6 +10,7 @@ using EltraCommon.Contracts.Users;
 using EltraCommon.ObjectDictionary.Common.DeviceDescription.Profiles.Application.Parameters;
 using EltraCommon.Contracts.Parameters;
 using EltraConnector.Transport.Ws;
+using EltraCommon.Contracts.Node;
 
 namespace EltraConnector.Controllers
 {
@@ -90,19 +91,19 @@ namespace EltraConnector.Controllers
             return result;
         }
                         
-        public async Task<List<SessionDevice>> GetSessionDevices(Session session, UserAuthData authData)
+        public async Task<List<EltraDeviceNode>> GetSessionDevices(Session session, UserAuthData authData)
         {
             return await DeviceAdapter.GetSessionDevices(session.Uuid, authData);
         }
         
-        public async Task<List<DeviceCommand>> GetDeviceCommands(SessionDevice device)
+        public async Task<List<DeviceCommand>> GetDeviceCommands(EltraDeviceNode device)
         {
             var deviceCommandsAdapter = DeviceAdapter.DeviceCommandsAdapter;
 
             return await deviceCommandsAdapter.GetDeviceCommands(device);
         }
 
-        public async Task<DeviceCommand> GetDeviceCommand(SessionDevice device, string commandName)
+        public async Task<DeviceCommand> GetDeviceCommand(EltraDeviceNode device, string commandName)
         {
             var deviceCommandsAdapter = DeviceAdapter.DeviceCommandsAdapter;
 
@@ -116,14 +117,14 @@ namespace EltraConnector.Controllers
             return await deviceCommandsAdapter.PushCommand(command, uuid, status);
         }
 
-        public async Task<List<ExecuteCommand>> PopCommands(SessionDevice device, ExecCommandStatus status)
+        public async Task<List<ExecuteCommand>> PopCommands(EltraDeviceNode device, ExecCommandStatus status)
         {
             var deviceCommandsAdapter = DeviceAdapter.DeviceCommandsAdapter;
 
             return await deviceCommandsAdapter.PullCommands(device, status);
         }
 
-        public async Task<ExecuteCommand> PopCommand(string commandUuid, SessionDevice device, ExecCommandStatus status)
+        public async Task<ExecuteCommand> PopCommand(string commandUuid, EltraDeviceNode device, ExecCommandStatus status)
         {
             var deviceCommandsAdapter = DeviceAdapter.DeviceCommandsAdapter;
 

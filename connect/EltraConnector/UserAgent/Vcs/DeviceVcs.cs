@@ -13,7 +13,7 @@ using System.Collections.Generic;
 using EltraCommon.Logger;
 using System.Diagnostics;
 using EltraConnector.SyncAgent;
-using EltraCommon.Contracts.Sessions;
+using EltraCommon.Contracts.Node;
 
 namespace EltraConnector.UserAgent.Vcs
 {
@@ -24,7 +24,7 @@ namespace EltraConnector.UserAgent.Vcs
         private static object _registeredParameterLocker = new object();
 
         private const int DefaultTimeout = 30000;
-        private SessionDevice _sessionDevice;
+        private EltraDeviceNode _sessionDevice;
         private List<RegisteredParameter> _registeredParameters;
         private bool _isDeviceLocked;
         private Stopwatch _deviceLockWatch = new Stopwatch();
@@ -35,7 +35,7 @@ namespace EltraConnector.UserAgent.Vcs
 
         public DeviceVcs(string url, string uuid, UserAuthData authData, uint updateInterval, uint timeout)
         {
-            _sessionDevice = new SessionDevice() { SessionUuid = uuid };
+            _sessionDevice = new EltraDeviceNode() { SessionUuid = uuid };
 
             Timeout = DefaultTimeout;
 
@@ -44,7 +44,7 @@ namespace EltraConnector.UserAgent.Vcs
             Agent.ParameterChanged += OnParameterChanged;
         }
 
-        internal DeviceVcs(SyncCloudAgent masterAgent, SessionDevice sessionDevice, uint updateInterval, uint timeout)
+        internal DeviceVcs(SyncCloudAgent masterAgent, EltraDeviceNode sessionDevice, uint updateInterval, uint timeout)
         {
             _sessionDevice = sessionDevice;
 
@@ -55,7 +55,7 @@ namespace EltraConnector.UserAgent.Vcs
             Agent.ParameterChanged += OnParameterChanged;
         }
 
-        internal DeviceVcs(DeviceAgent agent, SessionDevice sessionDevice)
+        internal DeviceVcs(DeviceAgent agent, EltraDeviceNode sessionDevice)
         {
             Timeout = DefaultTimeout;
 
@@ -70,12 +70,12 @@ namespace EltraConnector.UserAgent.Vcs
 
         #region Properties
 
-        public EltraDevice Device
+        public EltraDeviceNode Device
         {
-            get => _sessionDevice.Device;
+            get => _sessionDevice;
             set
             {
-                _sessionDevice.Device = value;
+                _sessionDevice = value;
                 OnDeviceChanged();
             }
         }
@@ -144,8 +144,8 @@ namespace EltraConnector.UserAgent.Vcs
             {
                 result = await Agent.GetDeviceCommand(_sessionDevice, commandName);
 
-                var sessionDevice = result?.SessionDevice;
-                var device = sessionDevice?.Device;
+                var deviceNode = result?.Device;
+                var device = deviceNode;
 
                 if (device != null && device.ObjectDictionary == null)
                 {
@@ -516,7 +516,7 @@ namespace EltraConnector.UserAgent.Vcs
             uint lastErrorCode = 0;
             var command = await GetVcsCommand("GetObject");
 
-            var objectDictionary = command?.SessionDevice?.Device.ObjectDictionary;
+            var objectDictionary = command?.Device?.ObjectDictionary;
 
             if (objectDictionary != null)
             {

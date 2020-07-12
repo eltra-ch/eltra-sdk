@@ -1,5 +1,5 @@
 ﻿using EltraCommon.Contracts.CommandSets;
-using EltraCommon.Contracts.Devices;
+using EltraCommon.Contracts.Node;
 using System;
 
 namespace ConsoleApp1
@@ -19,7 +19,7 @@ namespace ConsoleApp1
             AddParameter("ErrorCode", TypeCode.UInt32, ParameterType.Out);
         }
 
-        public StartCountingCommand(EltraDevice device)
+        public StartCountingCommand(EltraDeviceNode device)
             : base(device)
         {
             Name = "StartCounting";
@@ -43,7 +43,7 @@ namespace ConsoleApp1
         public override bool Execute(string source)
         {
             bool result = false;
-            var eposDevice = SessionDevice.Device as DummyDevice;
+            var eposDevice = Device as DummyDevice;
             var communication = eposDevice?.Communication;
             int delay = 0;
             int step = 0;

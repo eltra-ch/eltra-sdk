@@ -4,6 +4,7 @@ using EltraCommon.Contracts.CommandSets;
 using EltraCommon.Contracts.Sessions;
 using EltraCommon.Contracts.Devices;
 using Newtonsoft.Json;
+using EltraCommon.Contracts.Node;
 
 namespace EltraConnector.Extensions
 {
@@ -33,19 +34,19 @@ namespace EltraConnector.Extensions
             session = JsonConvert.DeserializeObject<Session>(json);
         }
 
-        public static string ToJson(this SessionDevices sessionDevices)
+        public static string ToJson(this EltraDeviceNodeList sessionDevices)
         {
             return JsonConvert.SerializeObject(sessionDevices);
         }
 
-        public static void FromJson(this SessionDevices sessionDevices, string json)
+        public static void FromJson(this EltraDeviceNodeList sessionDevices, string json)
         {
             if (sessionDevices == null) throw new ArgumentNullException(nameof(sessionDevices));
 
-            sessionDevices = JsonConvert.DeserializeObject<SessionDevices>(json);
+            sessionDevices = JsonConvert.DeserializeObject<EltraDeviceNodeList>(json);
         }
 
-        public static string ToJson(this SessionDevice sessionDevice)
+        public static string ToJson(this EltraDeviceNode sessionDevice)
         {
             return JsonConvert.SerializeObject(sessionDevice);
         }
@@ -55,11 +56,11 @@ namespace EltraConnector.Extensions
             return JsonConvert.SerializeObject(execCommand);
         }
 
-        public static void FromJson(this SessionDevice sessionDevice, string json)
+        public static void FromJson(this EltraDeviceNode sessionDevice, string json)
         {
             if (sessionDevice == null) throw new ArgumentNullException(nameof(sessionDevice));
 
-            sessionDevice = JsonConvert.DeserializeObject<SessionDevice>(json);
+            sessionDevice = JsonConvert.DeserializeObject<EltraDeviceNode>(json);
         }
     }
 }
