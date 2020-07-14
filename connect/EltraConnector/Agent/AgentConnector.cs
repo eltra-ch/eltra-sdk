@@ -68,7 +68,7 @@ namespace EltraConnector.Agent
             return result;
         }
 
-        public async Task<List<EltraDeviceNode>> GetDevices(UserAuthData deviceAuth, int nodeId)
+        public async Task<List<EltraDeviceNode>> GetDevices(UserAuthData deviceAuth)
         {
             var result = new List<EltraDeviceNode>();
 
@@ -98,7 +98,7 @@ namespace EltraConnector.Agent
             return result;
         }
 
-        public async Task<List<EltraDeviceNodeList>> GetSessionDevices(UserAuthData deviceAuth, int nodeId)
+        public async Task<List<EltraDeviceNodeList>> GetDeviceNodes(UserAuthData deviceAuth)
         {
             var result = new List<EltraDeviceNodeList>();
 
