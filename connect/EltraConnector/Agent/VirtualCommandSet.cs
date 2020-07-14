@@ -1,4 +1,5 @@
 ﻿using EltraCommon.Contracts.Devices;
+using EltraCommon.Contracts.Node;
 using EltraCommon.Contracts.Parameters;
 using EltraCommon.ObjectDictionary.Common.DeviceDescription.Profiles.Application.Parameters;
 using System;
@@ -11,13 +12,13 @@ namespace EltraConnector.Agent
         #region Private fields
 
         private AgentConnector _connector;
-        private EltraDevice _device;
+        private EltraDeviceNode _device;
 
         #endregion
 
         #region Constructors
 
-        public VirtualCommandSet(AgentConnector connector, EltraDevice device)
+        public VirtualCommandSet(AgentConnector connector, EltraDeviceNode device)
         {
             _connector = connector;
             _device = device;
@@ -48,7 +49,7 @@ namespace EltraConnector.Agent
 
         protected AgentConnector Connector => _connector;
         
-        public EltraDevice Device
+        public EltraDeviceNode Device
         {
             get => _device;
             set
