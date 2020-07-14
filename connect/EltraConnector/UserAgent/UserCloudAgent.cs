@@ -502,25 +502,25 @@ namespace EltraConnector.UserAgent
             return result;
         }
 
-        public async Task<Parameter> GetParameter(int nodeId, ushort index, byte subIndex)
+        public async Task<Parameter> GetParameter(string sessionUuid, int nodeId, ushort index, byte subIndex)
         {
             await EnsureAgentReady();
 
-            return await _sessionAdapter.GetParameter(nodeId, index, subIndex);
+            return await _sessionAdapter.GetParameter(sessionUuid, nodeId, index, subIndex);
         }
 
-        public async Task<ParameterValue> GetParameterValue(int nodeId, ushort index, byte subIndex)
+        public async Task<ParameterValue> GetParameterValue(string sessionUuid, int nodeId, ushort index, byte subIndex)
         {
             await EnsureAgentReady();
 
-            return await _sessionAdapter.GetParameterValue(nodeId, index, subIndex);
+            return await _sessionAdapter.GetParameterValue(sessionUuid, nodeId, index, subIndex);
         }
 
-        public async Task<List<ParameterValue>> GetParameterHistory(int nodeId, string uniqueId, DateTime from, DateTime to)
+        public async Task<List<ParameterValue>> GetParameterHistory(string sessionUuid, int nodeId, string uniqueId, DateTime from, DateTime to)
         {
             await EnsureAgentReady();
 
-            return await _sessionAdapter.GetParameterHistory(nodeId, uniqueId, from, to);
+            return await _sessionAdapter.GetParameterHistory(sessionUuid, nodeId, uniqueId, from, to);
         }
 
         public async Task<bool> SignOut()

@@ -87,7 +87,7 @@ namespace EltraConnector.UserAgent
 
             if (device != null)
             {
-                result = await GetParameter(device.NodeId, index, subIndex);
+                result = await GetParameter(device.SessionUuid, device.NodeId, index, subIndex);
             }
 
             return result;
@@ -99,7 +99,7 @@ namespace EltraConnector.UserAgent
 
             if (device != null)
             {
-                result = await GetParameterValue(device.NodeId, index, subIndex);
+                result = await GetParameterValue(device.SessionUuid, device.NodeId, index, subIndex);
             }
 
             return result;
@@ -111,7 +111,7 @@ namespace EltraConnector.UserAgent
 
             if (device != null)
             {
-                result = await GetParameterHistory(device.NodeId, uniqueId, from, to);
+                result = await GetParameterHistory(device.SessionUuid, device.NodeId, uniqueId, from, to);
             }
 
             return result;
