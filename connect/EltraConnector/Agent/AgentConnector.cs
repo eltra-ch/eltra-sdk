@@ -21,6 +21,8 @@ namespace EltraConnector.Agent
         private uint _updateInterval;
         private uint _timeout;
         private readonly List<DeviceVcs> _vcsList = new List<DeviceVcs>();
+        private string _host;
+        private UserAuthData _authData;
 
         #endregion
 
@@ -38,13 +40,61 @@ namespace EltraConnector.Agent
 
         #region Properties
 
-        public string Host { get; set; }
+        public string Host 
+        { 
+            get => _host;
+            set
+            {
+                if (_host != value)
+                {
+                    _host = value;
+                    OnHostChanged();
+                }
+            } 
+        }
 
-        public UserAuthData AuthData { get; set; }
+        public UserAuthData AuthData 
+        { 
+            get => _authData;
+            set 
+            {
+                if(_authData != value)
+                {
+                    _authData = value;
+                    OnAuthDataChanged();
+                }
+            } 
+        }
 
         #endregion
 
         #region Methods
+
+        private void OnHostChanged()
+        {
+            if(!string.IsNullOrEmpty(Host) && AuthData != null)
+            {
+                if(_deviceAgent!=null)
+                {
+                    _deviceAgent.Dispose();
+                }
+
+                _deviceAgent = new DeviceAgent(Host, AuthData, _updateInterval, _timeout);
+            }
+        }
+
+        private void OnAuthDataChanged()
+        {
+            if (!string.IsNullOrEmpty(Host) && AuthData != null)
+            {
+                if (_deviceAgent != null)
+                {
+                    _deviceAgent.Dispose();
+                }
+
+                _deviceAgent = new DeviceAgent(Host, AuthData, _updateInterval, _timeout);
+            }
+        }
 
         private DeviceVcs FindVcs(EltraDeviceNode device)
         {
@@ -74,24 +124,25 @@ namespace EltraConnector.Agent
 
             _vcsList.Clear();
 
-            _deviceAgent = new DeviceAgent(Host, AuthData, _updateInterval, _timeout);
-
-            var sessionsDevices = await _deviceAgent.GetDevices(deviceAuth);
-
-            foreach (var sessionDevices in sessionsDevices)
+            if (_deviceAgent != null)
             {
-                var session = sessionDevices.Session;
+                var sessionsDevices = await _deviceAgent.GetDevices(deviceAuth);
 
-                foreach (var deviceNode in sessionDevices.DeviceNodeList)
+                foreach (var sessionDevices in sessionsDevices)
                 {
-                    var device = deviceNode;
+                    var session = sessionDevices.Session;
 
-                    if (FindVcs(device) == null)
+                    foreach (var deviceNode in sessionDevices.DeviceNodeList)
                     {
-                        _vcsList.Add(new DeviceVcs(_deviceAgent, deviceNode));
-                    }
+                        var device = deviceNode;
 
-                    result.Add(deviceNode);
+                        if (FindVcs(device) == null)
+                        {
+                            _vcsList.Add(new DeviceVcs(_deviceAgent, deviceNode));
+                        }
+
+                        result.Add(deviceNode);
+                    }
                 }
             }
 
@@ -104,21 +155,22 @@ namespace EltraConnector.Agent
 
             _vcsList.Clear();
 
-            _deviceAgent = new DeviceAgent(Host, AuthData, _updateInterval, _timeout);
-
-            var sessionDeviceNodeList = await _deviceAgent.GetDevices(deviceAuth);
-
-            if (sessionDeviceNodeList != null)
+            if (_deviceAgent != null)
             {
-                foreach (var deviceNodeList in sessionDeviceNodeList)
-                {
-                    foreach (var deviceNode in deviceNodeList.DeviceNodeList)
-                    {
-                        _vcsList.Add(new DeviceVcs(_deviceAgent, deviceNode));
-                    }
-                }
+                var sessionDeviceNodeList = await _deviceAgent.GetDevices(deviceAuth);
 
-                result = sessionDeviceNodeList;
+                if (sessionDeviceNodeList != null)
+                {
+                    foreach (var deviceNodeList in sessionDeviceNodeList)
+                    {
+                        foreach (var deviceNode in deviceNodeList.DeviceNodeList)
+                        {
+                            _vcsList.Add(new DeviceVcs(_deviceAgent, deviceNode));
+                        }
+                    }
+
+                    result = sessionDeviceNodeList;
+                }
             }
 
             return result;

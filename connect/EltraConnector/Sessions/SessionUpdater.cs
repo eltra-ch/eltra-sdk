@@ -4,6 +4,8 @@ using EltraCommon.Logger;
 using System;
 using EltraCommon.Threads;
 using EltraConnector.Controllers.Base;
+using EltraConnector.Events;
+using EltraCommon.Contracts.Sessions;
 
 namespace EltraConnector.Sessions
 {
@@ -14,6 +16,8 @@ namespace EltraConnector.Sessions
         private readonly SessionControllerAdapter _sessionControllerAdapter;
         private readonly uint _updateInterval;
         private readonly uint _timeout;
+        private SessionStatus _status = SessionStatus.Offline;
+        private string _uuid;
 
         #endregion
 
@@ -24,6 +28,35 @@ namespace EltraConnector.Sessions
             _updateInterval = updateInterval;
             _timeout = timeout;
             _sessionControllerAdapter = sessionControllerAdapter;            
+        }
+
+        #endregion
+
+        #region Properties
+
+        public SessionStatus Status
+        {
+            get => _status;
+            set
+            {
+                if (_status != value)
+                {
+                    _status = value;
+
+                    OnStatusChanged();
+                }
+            }
+        }
+
+        #endregion
+
+        #region Events
+
+        public event EventHandler<SessionStatusChangedEventArgs> StatusChanged;
+
+        private void OnStatusChanged()
+        {
+            StatusChanged?.Invoke(this, new SessionStatusChangedEventArgs() { Status = _status, Uuid = _uuid });
         }
 
         #endregion
@@ -45,20 +78,24 @@ namespace EltraConnector.Sessions
                 await wsConnectionManager.Connect(sessionUuid, wsChannelName);
             }
 
+            _uuid = _sessionControllerAdapter.Session.Uuid;
+
             while (ShouldRun())
             {
                 MsgLogger.Write($"{GetType().Name} - Execute", $"Updating session id = '{sessionUuid}'...");
 
                 var updateResult = await _sessionControllerAdapter.Update();
 
+                Status = updateResult ? SessionStatus.Online : SessionStatus.Offline;
+
                 if (!updateResult)
                 {
                     MsgLogger.WriteError($"{GetType().Name} - Execute", $"Update session '{sessionUuid}' failed!");
 
-                    /*if(wsConnectionManager.IsConnected(sessionUuid))
+                    if(wsConnectionManager.IsConnected(sessionUuid))
                     {
                         await wsConnectionManager.Disconnect(sessionUuid);
-                    }*/
+                    }
                 }
                 
                 var waitWatch = new Stopwatch();
@@ -85,7 +122,9 @@ namespace EltraConnector.Sessions
                 {
                     if (await wsConnectionManager.Connect(sessionUuid, wsChannelName))
                     {
-                        await _sessionControllerAdapter.Update();
+                        updateResult = await _sessionControllerAdapter.Update();
+
+                        Status = updateResult ? SessionStatus.Online : SessionStatus.Offline;
                     }
                 }
             }

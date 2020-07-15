@@ -134,6 +134,14 @@ namespace EltraConnector.UserAgent
             }
         }
 
+        private void OnSessionStatusChanged(object sender, SessionStatusChangedEventArgs e)
+        {
+            if(State == UserCloudAgentState.Starting && e.Status == SessionStatus.Online)
+            {
+                State = UserCloudAgentState.Started;
+            }    
+        }
+
         #endregion
 
         #region Properties
@@ -153,6 +161,8 @@ namespace EltraConnector.UserAgent
             if (useSessionUpdater)
             {
                 _sessionUpdater = new SessionUpdater(_sessionAdapter, updateInterval, timeout);
+
+                _sessionUpdater.StatusChanged += OnSessionStatusChanged;
             }
 
             _executeCommander = new ExecuteCommander(_sessionAdapter);
@@ -188,7 +198,7 @@ namespace EltraConnector.UserAgent
             const int minWaitTime = 100;
             bool result = false;
 
-            do
+            while (!token.IsCancellationRequested)
             {
                 if (await RegisterSession())
                 {
@@ -197,21 +207,27 @@ namespace EltraConnector.UserAgent
                 }
 
                 await Task.Delay(minWaitTime);
-
-            } while (!token.IsCancellationRequested);
+            }
 
             return result;
         }
 
-        private void StartSession()
+        private bool StartSession(CancellationToken token)
         {
-            _sessionUpdater?.Start();
-            _executeCommander?.Start();
-            _parameterUpdateManager?.Start();
+            bool result = false;
 
-            RegisterParameterUpdateManagerEvents();
+            if (!token.IsCancellationRequested)
+            {
+                _sessionUpdater?.Start();
+                _executeCommander?.Start();
+                _parameterUpdateManager?.Start();
 
-            State = UserCloudAgentState.Started;
+                RegisterParameterUpdateManagerEvents();
+
+                result = true;
+            }
+
+            return result;
         }
 
         private async Task StopSession()
@@ -233,11 +249,12 @@ namespace EltraConnector.UserAgent
 
             if(await RegisterSession(token))
             {
-                StartSession();
-                
-                await SessionLoop(token);
+                if (StartSession(token))
+                {
+                    await SessionLoop(token);
 
-                await StopSession();
+                    await StopSession();
+                }
             }
 
             MsgLogger.WriteLine($"Sync agent working thread finished successfully!");
