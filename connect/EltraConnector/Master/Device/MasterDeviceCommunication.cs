@@ -9,24 +9,19 @@ namespace EltraConnector.Master.Device
     {
         #region Private fields
 
-        private readonly MasterDevice _device;
         private MasterVcs _vcs;
-        private uint _updateInterval;
-        private uint _timeout;
-
+        
         #endregion
 
         #region Constructors
 
-        public MasterDeviceCommunication(MasterDevice device, uint updateInterval, uint timeout)
+        public MasterDeviceCommunication(MasterDevice device)
         {            
-            _device = device;
-            _updateInterval = updateInterval;
-            _timeout = timeout;
+            Device = device;
 
-            if (_device != null)
+            if (Device != null)
             {
-                _device.StatusChanged += OnDeviceStatusChanged;
+                Device.StatusChanged += OnDeviceStatusChanged;
             }
         }
 
@@ -36,13 +31,13 @@ namespace EltraConnector.Master.Device
 
         public uint LastErrorCode { get; set; }
 
-        protected MasterDevice Device => _device;
+        protected MasterDevice Device { get; }
 
         protected MasterVcs Vcs
         {
             get
             {
-                return _vcs ?? (_vcs = new MasterVcs(Device, _updateInterval, _timeout)); ;
+                return _vcs ?? (_vcs = new MasterVcs(Device));
             }
         }
 
@@ -65,7 +60,7 @@ namespace EltraConnector.Master.Device
 
         private void OnDeviceStatusChanged(object sender, EventArgs e)
         {
-            if (_device.Status == DeviceStatus.Registered)
+            if (Device.Status == DeviceStatus.Registered)
             {
                 OnInitialized();
             }
@@ -94,7 +89,7 @@ namespace EltraConnector.Master.Device
         {
             bool result = false;
 
-            if (_device?.SearchParameter(objectIndex, objectSubindex) is Parameter parameter)
+            if (Device?.SearchParameter(objectIndex, objectSubindex) is Parameter parameter)
             {
                 result = parameter.SetValue(newValue);
             }
