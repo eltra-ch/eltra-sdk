@@ -31,19 +31,18 @@ namespace DummyAgent
 
             AgentConnector connector = new AgentConnector() { Host = urls[1], AuthData = agentAuth };
             string paramUniqueId = string.Empty;
-            int nodeId = 1;
-
+            
             var t = Task.Run(async ()=>
             {
                 var deviceAuth = new UserAuthData() { Login = $"dummy{sessionId}@eltra.ch", Password = "1234" };
                 
-                var deviceNodeList = await connector.GetDevices(deviceAuth, nodeId);
+                var deviceNodeList = await connector.GetDevices(deviceAuth);
 
                 foreach(var deviceNode in deviceNodeList)
                 {
                     var device = deviceNode;
 
-                    Console.WriteLine($"device = {device.Name}");
+                    Console.WriteLine($"device = {device.Name}, node id = {device.NodeId}");
 
                     var parameter = device.SearchParameter(connector, 0x3000, 0x00) as Parameter;
 
