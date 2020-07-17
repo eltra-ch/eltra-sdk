@@ -17,8 +17,8 @@ namespace ConsoleApp1
         private Parameter _controlWordParameter;
         private int _counterValue;
 
-        public DummyDeviceCommunication(MasterDevice device, uint updateInterval, uint timeout)
-            : base(device, updateInterval, timeout)
+        public DummyDeviceCommunication(MasterDevice device)
+            : base(device)
         {
         }
 

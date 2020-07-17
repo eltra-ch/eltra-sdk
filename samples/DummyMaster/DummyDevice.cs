@@ -23,7 +23,7 @@ namespace ConsoleApp1
 
         protected override void CreateCommunication()
         {
-            var communication = new DummyDeviceCommunication(this, 30, 60);
+            var communication = new DummyDeviceCommunication(this);
 
             Communication = communication;
         }
