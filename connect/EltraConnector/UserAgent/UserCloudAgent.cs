@@ -134,6 +134,14 @@ namespace EltraConnector.UserAgent
             }
         }
 
+        private void OnSessionStatusChanged(object sender, SessionStatusChangedEventArgs e)
+        {
+            if(State == UserCloudAgentState.Starting && e.Status == SessionStatus.Online)
+            {
+                State = UserCloudAgentState.Started;
+            }    
+        }
+
         #endregion
 
         #region Properties
@@ -153,6 +161,8 @@ namespace EltraConnector.UserAgent
             if (useSessionUpdater)
             {
                 _sessionUpdater = new SessionUpdater(_sessionAdapter, updateInterval, timeout);
+
+                _sessionUpdater.StatusChanged += OnSessionStatusChanged;
             }
 
             _executeCommander = new ExecuteCommander(_sessionAdapter);
@@ -188,7 +198,7 @@ namespace EltraConnector.UserAgent
             const int minWaitTime = 100;
             bool result = false;
 
-            do
+            while (!token.IsCancellationRequested)
             {
                 if (await RegisterSession())
                 {
@@ -197,21 +207,27 @@ namespace EltraConnector.UserAgent
                 }
 
                 await Task.Delay(minWaitTime);
-
-            } while (!token.IsCancellationRequested);
+            }
 
             return result;
         }
 
-        private void StartSession()
+        private bool StartSession(CancellationToken token)
         {
-            _sessionUpdater?.Start();
-            _executeCommander?.Start();
-            _parameterUpdateManager?.Start();
+            bool result = false;
 
-            RegisterParameterUpdateManagerEvents();
+            if (!token.IsCancellationRequested)
+            {
+                _sessionUpdater?.Start();
+                _executeCommander?.Start();
+                _parameterUpdateManager?.Start();
 
-            State = UserCloudAgentState.Started;
+                RegisterParameterUpdateManagerEvents();
+
+                result = true;
+            }
+
+            return result;
         }
 
         private async Task StopSession()
@@ -233,11 +249,12 @@ namespace EltraConnector.UserAgent
 
             if(await RegisterSession(token))
             {
-                StartSession();
-                
-                await SessionLoop(token);
+                if (StartSession(token))
+                {
+                    await SessionLoop(token);
 
-                await StopSession();
+                    await StopSession();
+                }
             }
 
             MsgLogger.WriteLine($"Sync agent working thread finished successfully!");
@@ -502,25 +519,25 @@ namespace EltraConnector.UserAgent
             return result;
         }
 
-        public async Task<Parameter> GetParameter(int nodeId, ushort index, byte subIndex)
+        public async Task<Parameter> GetParameter(string sessionUuid, int nodeId, ushort index, byte subIndex)
         {
             await EnsureAgentReady();
 
-            return await _sessionAdapter.GetParameter(nodeId, index, subIndex);
+            return await _sessionAdapter.GetParameter(sessionUuid, nodeId, index, subIndex);
         }
 
-        public async Task<ParameterValue> GetParameterValue(int nodeId, ushort index, byte subIndex)
+        public async Task<ParameterValue> GetParameterValue(string sessionUuid, int nodeId, ushort index, byte subIndex)
         {
             await EnsureAgentReady();
 
-            return await _sessionAdapter.GetParameterValue(nodeId, index, subIndex);
+            return await _sessionAdapter.GetParameterValue(sessionUuid, nodeId, index, subIndex);
         }
 
-        public async Task<List<ParameterValue>> GetParameterHistory(int nodeId, string uniqueId, DateTime from, DateTime to)
+        public async Task<List<ParameterValue>> GetParameterHistory(string sessionUuid, int nodeId, string uniqueId, DateTime from, DateTime to)
         {
             await EnsureAgentReady();
 
-            return await _sessionAdapter.GetParameterHistory(nodeId, uniqueId, from, to);
+            return await _sessionAdapter.GetParameterHistory(sessionUuid, nodeId, uniqueId, from, to);
         }
 
         public async Task<bool> SignOut()

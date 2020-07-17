@@ -81,7 +81,7 @@ namespace EltraConnector.Controllers
                 {
                     var query = HttpUtility.ParseQueryString(string.Empty);
 
-                    query["uuid"] = Session.Uuid;
+                    query["uuid"] = device.SessionUuid;
                     query["nodeId"] = $"{device.NodeId}";
                     query["commandName"] = $"{commandName}";
 

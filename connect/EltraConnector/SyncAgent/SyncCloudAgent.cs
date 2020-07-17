@@ -33,7 +33,9 @@ namespace EltraConnector.SyncAgent
         {
             Url = url;
             AuthData = authData;
-
+            UpdateInterval = updateInterval;
+            Timeout = timeout; 
+            
             _good = true;
             _authentication = new Authentication(url);
             _wsConnectionManager = new WsConnectionManager() { HostUrl = url };
@@ -94,6 +96,10 @@ namespace EltraConnector.SyncAgent
         public string Url { get; }
 
         public UserAuthData AuthData { get; }
+
+        public uint UpdateInterval { get; set; }
+
+        public uint Timeout { get; set; }
 
         public bool Good
         {

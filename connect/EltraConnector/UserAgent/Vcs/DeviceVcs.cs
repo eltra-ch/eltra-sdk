@@ -189,7 +189,7 @@ namespace EltraConnector.UserAgent.Vcs
             {
                 if (Device.SearchParameter(uniqueId) is Parameter parameterEntry)
                 {
-                    var parameterValue = await Agent.GetParameterValue(Device.NodeId,
+                    var parameterValue = await Agent.GetParameterValue(Device.SessionUuid, Device.NodeId,
                         parameterEntry.Index, parameterEntry.SubIndex);
 
                     result = parameterEntry.SetValue(parameterValue);
@@ -207,7 +207,7 @@ namespace EltraConnector.UserAgent.Vcs
             {
                 if (Device.SearchParameter(index, subIndex) is Parameter parameterEntry)
                 {
-                    var parameterValue = await Agent.GetParameterValue(Device.NodeId, index, subIndex);
+                    var parameterValue = await Agent.GetParameterValue(Device.SessionUuid, Device.NodeId, index, subIndex);
 
                     result = parameterEntry.SetValue(parameterValue);
                 }

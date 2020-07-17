@@ -66,7 +66,7 @@ namespace EltraConnector.Controllers
 
         #region Methods
 
-        public async Task<Parameter> GetParameter(int nodeId, ushort index, byte subIndex)
+        public async Task<Parameter> GetParameter(string sessionUuid, int nodeId, ushort index, byte subIndex)
         {
             Parameter result = null;
 
@@ -76,7 +76,7 @@ namespace EltraConnector.Controllers
 
                 var query = HttpUtility.ParseQueryString(string.Empty);
 
-                query["uuid"] = Session.Uuid;
+                query["uuid"] = sessionUuid;
                 query["nodeId"] = $"{nodeId}";
                 query["index"] = $"{index}";
                 query["subIndex"] = $"{subIndex}";
@@ -108,13 +108,13 @@ namespace EltraConnector.Controllers
 
             if (device != null && device.Identification!=null && parameter!=null)
             {
-                result = await GetParameterValue(device.NodeId, parameter.Index, parameter.SubIndex);
+                result = await GetParameterValue(device.SessionUuid, device.NodeId, parameter.Index, parameter.SubIndex);
             }
 
             return result;
         }
 
-        public async Task<ParameterValue> GetParameterValue(int nodeId, ushort index, byte subIndex)
+        public async Task<ParameterValue> GetParameterValue(string sessionUuid, int nodeId, ushort index, byte subIndex)
         {
             ParameterValue result = null;
 
@@ -124,7 +124,7 @@ namespace EltraConnector.Controllers
 
                 var query = HttpUtility.ParseQueryString(string.Empty);
 
-                query["uuid"] = Session.Uuid;
+                query["uuid"] = sessionUuid;
                 query["nodeId"] = $"{nodeId}";
                 query["index"] = $"{index}";
                 query["subIndex"] = $"{subIndex}";
@@ -304,7 +304,7 @@ namespace EltraConnector.Controllers
             return result;
         }
 
-        public async Task<List<ParameterValue>> GetParameterHistory(int nodeId, string uniqueId, DateTime from, DateTime to)
+        public async Task<List<ParameterValue>> GetParameterHistory(string sessionUuid, int nodeId, string uniqueId, DateTime from, DateTime to)
         {
             var result = new List<ParameterValue>();
 
@@ -314,7 +314,7 @@ namespace EltraConnector.Controllers
 
                 var query = HttpUtility.ParseQueryString(string.Empty);
 
-                query["uuid"] = Session.Uuid;
+                query["uuid"] = sessionUuid;
                 query["nodeId"] = $"{nodeId}";
                 query["uniqueId"] = $"{uniqueId}";
                 query["from"] = $"{from}";

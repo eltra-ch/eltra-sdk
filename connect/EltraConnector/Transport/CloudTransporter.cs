@@ -94,7 +94,7 @@ namespace EltraConnector.Transport
             {
                 await Task.Delay(MaxRetryTimeout);
             }
-            else
+            else if(e != null)
             {
                 MsgLogger.Exception($"{GetType().Name} - ExceptionHandling", e);
             }

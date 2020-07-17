@@ -386,7 +386,7 @@ namespace EltraConnector.Transport.Ws
             }
             catch (WebSocketException e)
             {
-                MsgLogger.Exception($"{GetType().Name} - ReadMessage", e.InnerException);
+                MsgLogger.Exception($"{GetType().Name} - ReadMessage", e.InnerException != null ? e.InnerException : e);
             }
             catch (Exception e)
             {

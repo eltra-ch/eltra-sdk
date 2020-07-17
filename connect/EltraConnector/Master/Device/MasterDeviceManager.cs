@@ -1,5 +1,4 @@
 ﻿using EltraCommon.Contracts.Devices;
-using EltraCommon.Contracts.Node;
 using EltraCommon.Logger;
 using EltraConnector.SyncAgent;
 using System;

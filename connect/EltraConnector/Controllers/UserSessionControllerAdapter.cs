@@ -150,19 +150,19 @@ namespace EltraConnector.Controllers
             return await deviceCommandsAdapter.GetCommandStatus(Uuid, executeCommand);
         }
 
-        public async Task<Parameter> GetParameter(int nodeId, ushort index, byte subIndex)
+        public async Task<Parameter> GetParameter(string sessionUuid, int nodeId, ushort index, byte subIndex)
         {
-            return await DeviceAdapter.GetParameter(nodeId, index, subIndex);
+            return await DeviceAdapter.GetParameter(sessionUuid, nodeId, index, subIndex);
         }
 
-        public async Task<ParameterValue> GetParameterValue(int nodeId, ushort index, byte subIndex)
+        public async Task<ParameterValue> GetParameterValue(string sessionUuid, int nodeId, ushort index, byte subIndex)
         {
-            return await DeviceAdapter.GetParameterValue(nodeId, index, subIndex);
+            return await DeviceAdapter.GetParameterValue(sessionUuid, nodeId, index, subIndex);
         }
         
-        public async Task<List<ParameterValue>> GetParameterHistory(int nodeId, string uniqueId, DateTime from, DateTime to)
+        public async Task<List<ParameterValue>> GetParameterHistory(string sessionUuid, int nodeId, string uniqueId, DateTime from, DateTime to)
         {
-            return await DeviceAdapter.GetParameterHistory(nodeId, uniqueId, from, to);
+            return await DeviceAdapter.GetParameterHistory(sessionUuid, nodeId, uniqueId, from, to);
         }
 
         #endregion

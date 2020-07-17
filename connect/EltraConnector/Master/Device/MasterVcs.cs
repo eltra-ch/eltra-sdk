@@ -17,5 +17,11 @@ namespace EltraConnector.Master.Device
         {
             Device = device;
         }
+
+        public MasterVcs(MasterDevice device)
+            : base(device.CloudAgent.Url, device.SessionUuid, device.CloudAgent.AuthData, device.CloudAgent.UpdateInterval, device.CloudAgent.Timeout)
+        {
+            Device = device;
+        }
     }
 }
