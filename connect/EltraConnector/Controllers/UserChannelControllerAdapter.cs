@@ -37,7 +37,7 @@ namespace EltraConnector.Controllers
 
         #region Properties
 
-        public string Uuid => Channel.Id;
+        public string Id => Channel.Id;
 
         private DeviceControllerAdapter DeviceAdapter => _deviceControllerAdapter ?? (_deviceControllerAdapter = CreateDeviceController());
 
@@ -89,9 +89,9 @@ namespace EltraConnector.Controllers
             return result;
         }
                         
-        public async Task<List<EltraDeviceNode>> GetDeviceNodes(Channel session, UserData authData)
+        public async Task<List<EltraDeviceNode>> GetDeviceNodes(Channel channel, UserData authData)
         {
-            return await DeviceAdapter.GetDeviceNodes(session.Id, authData);
+            return await DeviceAdapter.GetDeviceNodes(channel.Id, authData);
         }
         
         public async Task<List<DeviceCommand>> GetDeviceCommands(EltraDeviceNode device)
@@ -147,7 +147,7 @@ namespace EltraConnector.Controllers
         {
             var deviceCommandsAdapter = DeviceAdapter.DeviceCommandsAdapter;
 
-            return await deviceCommandsAdapter.GetCommandStatus(Uuid, executeCommand);
+            return await deviceCommandsAdapter.GetCommandStatus(Id, executeCommand);
         }
 
         public async Task<Parameter> GetParameter(string sessionUuid, int nodeId, ushort index, byte subIndex)

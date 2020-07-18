@@ -29,7 +29,7 @@ namespace EltraConnector.Controllers
 
             try
             {
-                var path = "api/auth/sign-in";
+                var path = "api/user/sign-in";
 
                 var json = JsonConvert.SerializeObject(authData);
 
@@ -61,7 +61,7 @@ namespace EltraConnector.Controllers
             {
                 var query = HttpUtility.ParseQueryString(string.Empty);
 
-                var url = UrlHelper.BuildUrl(Url, "api/auth/sign-out", query);
+                var url = UrlHelper.BuildUrl(Url, "api/user/sign-out", query);
                 var cancellationTokenSource = new CancellationTokenSource();
 
                 result = await Transporter.Get(url, cancellationTokenSource.Token);
@@ -80,7 +80,7 @@ namespace EltraConnector.Controllers
 
             try
             {
-                var path = "api/auth/sign-up";
+                var path = "api/user/sign-up";
 
                 var json = JsonConvert.SerializeObject(authData);
 

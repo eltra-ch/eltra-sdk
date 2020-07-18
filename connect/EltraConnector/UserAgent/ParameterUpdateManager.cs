@@ -31,7 +31,7 @@ namespace EltraConnector.UserAgent
             _wsConnectionManager = new WsConnectionManager() { HostUrl = sessionAdapter.Url };
 
             _sessionAdapter = sessionAdapter;
-            _commandExecUuid = _sessionAdapter.Uuid + "_ParameterUpdate";
+            _commandExecUuid = _sessionAdapter.Id + "_ParameterUpdate";
             _wsChannelName = "ParameterUpdate";
         }
 
@@ -63,7 +63,7 @@ namespace EltraConnector.UserAgent
 
             if (_wsConnectionManager.IsConnected(commandExecUuid))
             {
-                var sessionIdent = new ChannelIdentification() { Id = _sessionAdapter.Uuid, UserData = _sessionAdapter.User.UserData };
+                var sessionIdent = new ChannelIdentification() { Id = _sessionAdapter.Id, UserData = _sessionAdapter.User.UserData };
 
                 result = await _wsConnectionManager.Send(commandExecUuid, sessionIdent);
             }

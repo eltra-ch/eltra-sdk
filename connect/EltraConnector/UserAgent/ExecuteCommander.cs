@@ -36,7 +36,7 @@ namespace EltraConnector.UserAgent
             _wsConnectionManager = new WsConnectionManager() { HostUrl = sessionAdapter.Url };
 
             _sessionAdapter = sessionAdapter;
-            _commandExecUuid = _sessionAdapter.Uuid + "_ExecCommander";
+            _commandExecUuid = _sessionAdapter.Id + "_ExecCommander";
             _wsChannelName = "ExecuteCommander";
         }
 
@@ -82,7 +82,7 @@ namespace EltraConnector.UserAgent
         {
             if (_wsConnectionManager.IsConnected(commandExecUuid))
             {
-                var sessionIdent = new ChannelIdentification() { Id = _sessionAdapter.Uuid, UserData = _sessionAdapter.User.UserData };
+                var sessionIdent = new ChannelIdentification() { Id = _sessionAdapter.Id, UserData = _sessionAdapter.User.UserData };
 
                 await _wsConnectionManager.Send(commandExecUuid, sessionIdent);
             }
@@ -161,7 +161,7 @@ namespace EltraConnector.UserAgent
 
                                         if (channelStatusUpdate != null)
                                         {
-                                            if (channelStatusUpdate.ChannelId != _sessionAdapter.Uuid)
+                                            if (channelStatusUpdate.ChannelId != _sessionAdapter.Id)
                                             {
                                                 MsgLogger.WriteDebug($"{GetType().Name} - Execute", $"session {channelStatusUpdate.ChannelId}, status changed to {channelStatusUpdate.Status}");
 
@@ -361,7 +361,7 @@ namespace EltraConnector.UserAgent
             const double timeout = 30; 
             DeviceCommand result = null;
 
-            var commandStatus = await GetCommandStatus(new ExecuteCommand {Command = command, SourceChannelId = _sessionAdapter.Uuid, TargetChannelId = command.Device.ChannelId});
+            var commandStatus = await GetCommandStatus(new ExecuteCommand {Command = command, SourceChannelId = _sessionAdapter.Id, TargetChannelId = command.Device.ChannelId});
 
             if (commandStatus != null)
             {

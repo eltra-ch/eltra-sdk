@@ -27,7 +27,7 @@ namespace EltraConnector.UserAgent
 
         private readonly List<DeviceCommand> _executedCommands;
         private readonly UserData _authData;
-        private readonly UserChannelControllerAdapter _sessionAdapter;
+        private readonly UserChannelControllerAdapter _channelAdapter;
 
         private Task _agentTask;
         private CancellationTokenSource _agentCancelationTokenSource;
@@ -46,7 +46,7 @@ namespace EltraConnector.UserAgent
         {
             _authData = authData;
             _executedCommands = new List<DeviceCommand>();
-            _sessionAdapter = new UserChannelControllerAdapter(url, authData, updateInterval, timeout) { UseWebSockets = true };
+            _channelAdapter = new UserChannelControllerAdapter(url, authData, updateInterval, timeout) { UseWebSockets = true };
 
             Initialize(url, updateInterval, timeout, true);
         }
@@ -55,7 +55,7 @@ namespace EltraConnector.UserAgent
         {
             _authData = authData;
             _executedCommands = new List<DeviceCommand>();
-            _sessionAdapter = new UserChannelControllerAdapter(url, uuid, authData, updateInterval, timeout) { UseWebSockets = true };
+            _channelAdapter = new UserChannelControllerAdapter(url, uuid, authData, updateInterval, timeout) { UseWebSockets = true };
 
             Initialize(url, updateInterval, timeout, true);
         }
@@ -64,7 +64,7 @@ namespace EltraConnector.UserAgent
         {
             _authData = masterAgent.AuthData;
             _executedCommands = new List<DeviceCommand>();
-            _sessionAdapter = new UserChannelControllerAdapter(masterAgent.Url, device.ChannelId, masterAgent.AuthData, updateInterval, timeout) { UseWebSockets = true };
+            _channelAdapter = new UserChannelControllerAdapter(masterAgent.Url, device.ChannelId, masterAgent.AuthData, updateInterval, timeout) { UseWebSockets = true };
 
             Initialize(masterAgent.Url, updateInterval, timeout, false);
         }
@@ -111,11 +111,11 @@ namespace EltraConnector.UserAgent
 
         private void RecoverSession()
         {
-            if (_deviceAuthData != null && _sessionAdapter != null)
+            if (_deviceAuthData != null && _channelAdapter != null)
             {
                 Task.Run(async () =>
                 {
-                    await GetSessions(_sessionAdapter.Uuid, _deviceAuthData);
+                    await GetChannels(_channelAdapter.Id, _deviceAuthData);
                 });
             }
         }
@@ -146,7 +146,7 @@ namespace EltraConnector.UserAgent
 
         #region Properties
 
-        public string Uuid => _sessionAdapter.Uuid;
+        public string Uuid => _channelAdapter.Id;
 
         public UserCloudAgentState State { get; set; } = UserCloudAgentState.Undefined;
 
@@ -160,13 +160,13 @@ namespace EltraConnector.UserAgent
 
             if (useSessionUpdater)
             {
-                _sessionUpdater = new ChannelHeartbeat(_sessionAdapter, updateInterval, timeout);
+                _sessionUpdater = new ChannelHeartbeat(_channelAdapter, updateInterval, timeout);
 
                 _sessionUpdater.StatusChanged += OnChannelStatusChanged;
             }
 
-            _executeCommander = new ExecuteCommander(_sessionAdapter);
-            _parameterUpdateManager = new ParameterUpdateManager(_sessionAdapter);
+            _executeCommander = new ExecuteCommander(_channelAdapter);
+            _parameterUpdateManager = new ParameterUpdateManager(_channelAdapter);
 
             RegisterEvents();
 
@@ -289,7 +289,7 @@ namespace EltraConnector.UserAgent
 
         private async Task<bool> UpdateSession()
         {
-            return await _sessionAdapter.Update();
+            return await _channelAdapter.Update();
         }
 
         private async Task<bool> RegisterSession()
@@ -317,34 +317,34 @@ namespace EltraConnector.UserAgent
 
             if (_sessionUpdater != null)
             {
-                result = await _sessionAdapter.UnregisterChannel();
+                result = await _channelAdapter.UnregisterChannel();
             }
 
             return result;
         }
 
-        public async Task<List<Channel>> GetSessions(string uuid, UserData authData)
+        public async Task<List<Channel>> GetChannels(string uuid, UserData authData)
         {
             _deviceAuthData = authData;
 
-            var result = await _sessionAdapter.GetChannels(uuid, authData);
+            var result = await _channelAdapter.GetChannels(uuid, authData);
 
             return result;
         }
 
         private void RegisterEvents()
         {
-            _sessionAdapter.SessionRegistered += OnChannelRegistered;
+            _channelAdapter.SessionRegistered += OnChannelRegistered;
 
             _executeCommander.CommandExecuted += OnCommandExecuted;
             _executeCommander.RemoteChannelStatusChanged += OnRemoteChannelStatusChanged;
         }
 
-        private async Task<List<EltraDeviceNode>> GetDeviceNodes(Channel session, UserData authData)
+        private async Task<List<EltraDeviceNode>> GetDeviceNodes(Channel channel, UserData authData)
         {
             await EnsureAgentReady();
 
-            return await _sessionAdapter.GetDeviceNodes(session, authData);
+            return await _channelAdapter.GetDeviceNodes(channel, authData);
         }
 
         private async Task<bool> EnsureAgentReady()
@@ -368,21 +368,21 @@ namespace EltraConnector.UserAgent
             return result;
         }
 
-        public async Task<List<EltraDeviceNodeList>> GetDevices(UserData authData)
+        public async Task<List<EltraDeviceNodeList>> GetChannelDeviceNodes(UserData authData)
         {
             var result = new List<EltraDeviceNodeList>();
 
             if (await EnsureAgentReady())
             {
-                var sessions = await GetSessions(_sessionAdapter.Uuid, authData);
+                var channels = await GetChannels(_channelAdapter.Id, authData);
 
-                if (sessions != null)
+                if (channels != null)
                 {
-                    foreach (var session in sessions)
+                    foreach (var channel in channels)
                     {
-                        var deviceNodeList = new EltraDeviceNodeList() { Session = session };
+                        var deviceNodeList = new EltraDeviceNodeList() { Channel = channel };
 
-                        var deviceNodes = await GetDeviceNodes(session, authData);
+                        var deviceNodes = await GetDeviceNodes(channel, authData);
 
                         if (deviceNodes != null)
                         {
@@ -404,7 +404,7 @@ namespace EltraConnector.UserAgent
         {
             await EnsureAgentReady();
 
-            var result = await _sessionAdapter.GetDeviceCommand(device, commandName);
+            var result = await _channelAdapter.GetDeviceCommand(device, commandName);
             
             return result;
         }
@@ -413,7 +413,7 @@ namespace EltraConnector.UserAgent
         {
             await EnsureAgentReady();
 
-            return await _sessionAdapter.GetDeviceCommands(device);
+            return await _channelAdapter.GetDeviceCommands(device);
         }
 
         public async Task<bool> PushCommand(DeviceCommand command, ExecCommandStatus status)
@@ -422,7 +422,7 @@ namespace EltraConnector.UserAgent
 
             command.Id = Guid.NewGuid().ToString();
 
-            return await _sessionAdapter.PushCommand(command, Uuid, status);
+            return await _channelAdapter.PushCommand(command, Uuid, status);
         }
 
         private void AddCommandToExecuted(DeviceCommand command)
@@ -523,21 +523,21 @@ namespace EltraConnector.UserAgent
         {
             await EnsureAgentReady();
 
-            return await _sessionAdapter.GetParameter(sessionUuid, nodeId, index, subIndex);
+            return await _channelAdapter.GetParameter(sessionUuid, nodeId, index, subIndex);
         }
 
         public async Task<ParameterValue> GetParameterValue(string sessionUuid, int nodeId, ushort index, byte subIndex)
         {
             await EnsureAgentReady();
 
-            return await _sessionAdapter.GetParameterValue(sessionUuid, nodeId, index, subIndex);
+            return await _channelAdapter.GetParameterValue(sessionUuid, nodeId, index, subIndex);
         }
 
         public async Task<List<ParameterValue>> GetParameterHistory(string sessionUuid, int nodeId, string uniqueId, DateTime from, DateTime to)
         {
             await EnsureAgentReady();
 
-            return await _sessionAdapter.GetParameterHistory(sessionUuid, nodeId, uniqueId, from, to);
+            return await _channelAdapter.GetParameterHistory(sessionUuid, nodeId, uniqueId, from, to);
         }
 
         public async Task<bool> SignOut()

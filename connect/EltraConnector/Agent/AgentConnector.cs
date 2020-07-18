@@ -117,7 +117,7 @@ namespace EltraConnector.Agent
             return result;
         }
 
-        public async Task<List<EltraDeviceNode>> GetDevices(UserData deviceAuth)
+        public async Task<List<EltraDeviceNode>> GetDeviceNodes(UserData deviceAuth)
         {
             var result = new List<EltraDeviceNode>();
 
@@ -125,13 +125,13 @@ namespace EltraConnector.Agent
 
             if (_deviceAgent != null)
             {
-                var sessionsDevices = await _deviceAgent.GetDevices(deviceAuth);
+                var channelDeviceNodes = await _deviceAgent.GetChannelDeviceNodes(deviceAuth);
 
-                foreach (var sessionDevices in sessionsDevices)
+                foreach (var channelDevice in channelDeviceNodes)
                 {
-                    var session = sessionDevices.Session;
+                    var session = channelDevice.Channel;
 
-                    foreach (var deviceNode in sessionDevices.DeviceNodeList)
+                    foreach (var deviceNode in channelDevice.DeviceNodeList)
                     {
                         var device = deviceNode;
 
@@ -148,7 +148,7 @@ namespace EltraConnector.Agent
             return result;
         }
 
-        public async Task<List<EltraDeviceNodeList>> GetDeviceNodes(UserData deviceAuth)
+        protected async Task<List<EltraDeviceNodeList>> GetDeviceNodeList(UserData deviceAuth)
         {
             var result = new List<EltraDeviceNodeList>();
 
@@ -156,11 +156,11 @@ namespace EltraConnector.Agent
 
             if (_deviceAgent != null)
             {
-                var sessionDeviceNodeList = await _deviceAgent.GetDevices(deviceAuth);
+                var channelDeviceNodeList = await _deviceAgent.GetChannelDeviceNodes(deviceAuth);
 
-                if (sessionDeviceNodeList != null)
+                if (channelDeviceNodeList != null)
                 {
-                    foreach (var deviceNodeList in sessionDeviceNodeList)
+                    foreach (var deviceNodeList in channelDeviceNodeList)
                     {
                         foreach (var deviceNode in deviceNodeList.DeviceNodeList)
                         {
@@ -168,7 +168,7 @@ namespace EltraConnector.Agent
                         }
                     }
 
-                    result = sessionDeviceNodeList;
+                    result = channelDeviceNodeList;
                 }
             }
 

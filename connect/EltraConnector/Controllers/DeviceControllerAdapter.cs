@@ -43,7 +43,7 @@ namespace EltraConnector.Controllers
 
         #region Properties
 
-        private EltraDeviceNodeList SessionDevices => _sessionDevices ?? (_sessionDevices = new EltraDeviceNodeList { Session = Channel });
+        private EltraDeviceNodeList SessionDevices => _sessionDevices ?? (_sessionDevices = new EltraDeviceNodeList { Channel = Channel });
 
         public DeviceCommandsControllerAdapter DeviceCommandsAdapter => _deviceCommandsControllerAdapter ?? (_deviceCommandsControllerAdapter = CreateDeviceCommandsAdapter());
 
@@ -137,7 +137,7 @@ namespace EltraConnector.Controllers
             SessionDevices.RemoveDevice(deviceNode);
         }
 
-        public async Task<List<EltraDeviceNode>> GetDeviceNodes(string uuid, UserData authData)
+        public async Task<List<EltraDeviceNode>> GetDeviceNodes(string channelId, UserData authData)
         {
             var result = new List<EltraDeviceNode>();
 
@@ -145,11 +145,11 @@ namespace EltraConnector.Controllers
             {
                 var query = HttpUtility.ParseQueryString(string.Empty);
 
-                query["channelId"] = uuid;
+                query["channelId"] = channelId;
                 query["login"] = authData.Login;
                 query["password"] = authData.Password;
 
-                var url = UrlHelper.BuildUrl(Url, "api/session/devices", query);
+                var url = UrlHelper.BuildUrl(Url, "api/channel/devices", query);
                 var json = await Transporter.Get(url);
 
                 result = JsonConvert.DeserializeObject<List<EltraDeviceNode>>(json);
