@@ -27,16 +27,16 @@ namespace DummyAgent
                 }
             }
 
-            var agentAuth = new UserAuthData() { Login = $"agent{sessionId}@eltra.ch", Password = "1234" };
+            var agentAuth = new UserData() { Login = $"agent{sessionId}@eltra.ch", Password = "1234" };
 
             AgentConnector connector = new AgentConnector() { Host = urls[1], AuthData = agentAuth };
             string paramUniqueId = string.Empty;
             
             var t = Task.Run(async ()=>
             {
-                var deviceAuth = new UserAuthData() { Login = $"dummy{sessionId}@eltra.ch", Password = "1234" };
+                var deviceAuth = new UserData() { Login = $"dummy{sessionId}@eltra.ch", Password = "1234" };
                 
-                var deviceNodeList = await connector.GetDevices(deviceAuth);
+                var deviceNodeList = await connector.GetDeviceNodes(deviceAuth);
 
                 foreach(var deviceNode in deviceNodeList)
                 {
