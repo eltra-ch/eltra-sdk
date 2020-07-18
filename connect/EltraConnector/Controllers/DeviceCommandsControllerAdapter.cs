@@ -17,7 +17,7 @@ using EltraCommon.Contracts.Node;
 
 namespace EltraConnector.Controllers
 {
-    public class DeviceCommandsControllerAdapter : CloudSessionControllerAdapter
+    public class DeviceCommandsControllerAdapter : CloudChannelControllerAdapter
     {
         #region Constructors
 

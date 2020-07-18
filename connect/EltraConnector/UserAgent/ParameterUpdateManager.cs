@@ -17,7 +17,7 @@ namespace EltraConnector.UserAgent
     {
         #region Private fields
 
-        private readonly UserSessionControllerAdapter _sessionAdapter;        
+        private readonly UserChannelControllerAdapter _sessionAdapter;        
         private readonly WsConnectionManager _wsConnectionManager;
         private string _wsChannelName;
         private string _commandExecUuid;
@@ -26,7 +26,7 @@ namespace EltraConnector.UserAgent
 
         #region Constructors
 
-        public ParameterUpdateManager(UserSessionControllerAdapter sessionAdapter)
+        public ParameterUpdateManager(UserChannelControllerAdapter sessionAdapter)
         {
             _wsConnectionManager = new WsConnectionManager() { HostUrl = sessionAdapter.Url };
 

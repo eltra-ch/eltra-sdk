@@ -3,7 +3,7 @@ using EltraCommon.Contracts.Channels;
 
 namespace EltraConnector.Events
 {
-    public class SessionRegistrationEventArgs : EventArgs
+    public class ChannelRegistrationEventArgs : EventArgs
     {
         public Channel Channel { get; set; }
 

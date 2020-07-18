@@ -12,7 +12,7 @@ using EltraCommon.Contracts.Node;
 
 namespace EltraConnector.Controllers
 {
-    class UserSessionControllerAdapter : SessionControllerAdapter
+    class UserChannelControllerAdapter : ChannelControllerAdapter
     {
         #region Private fields
 
@@ -23,12 +23,12 @@ namespace EltraConnector.Controllers
 
         #region Constructors
 
-        public UserSessionControllerAdapter(string url, UserData authData, uint updateInterval, uint timeout)
+        public UserChannelControllerAdapter(string url, UserData authData, uint updateInterval, uint timeout)
             : base(url, authData, updateInterval, timeout)
         {   
         }
 
-        public UserSessionControllerAdapter(string url, string uuid, UserData authData, uint updateInterval, uint timeout)
+        public UserChannelControllerAdapter(string url, string uuid, UserData authData, uint updateInterval, uint timeout)
             : base(url, uuid, authData, updateInterval, timeout)
         {   
         }

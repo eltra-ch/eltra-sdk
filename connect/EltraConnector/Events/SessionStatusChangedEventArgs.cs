@@ -3,9 +3,9 @@ using System;
 
 namespace EltraConnector.Events
 {
-    public class SessionStatusChangedEventArgs : EventArgs
+    public class ChannelStatusChangedEventArgs : EventArgs
     {
-        public string Uuid { get; set; }
+        public string Id { get; set; }
         public ChannelStatus Status { get; set; }
     }
 }

@@ -19,7 +19,7 @@ namespace EltraConnector.UserAgent
     {
         #region Private fields
 
-        private readonly UserSessionControllerAdapter _sessionAdapter;
+        private readonly UserChannelControllerAdapter _sessionAdapter;
         private readonly List<DeviceCommand> _deviceCommands;
         private readonly WsConnectionManager _wsConnectionManager;
         private string _commandExecUuid;
@@ -29,7 +29,7 @@ namespace EltraConnector.UserAgent
 
         #region Constructors
 
-        public ExecuteCommander(UserSessionControllerAdapter sessionAdapter)
+        public ExecuteCommander(UserChannelControllerAdapter sessionAdapter)
         {
             _deviceCommands = new List<DeviceCommand>();
 
@@ -46,16 +46,16 @@ namespace EltraConnector.UserAgent
 
         public event EventHandler<ExecuteCommanderEventArgs> CommandExecuted;
 
-        public event EventHandler<SessionStatusChangedEventArgs> RemoteSessionStatusChanged;
+        public event EventHandler<ChannelStatusChangedEventArgs> RemoteChannelStatusChanged;
 
         protected virtual void OnCommandExecuted(ExecuteCommanderEventArgs e)
         {
             CommandExecuted?.Invoke(this, e);
         }
 
-        protected virtual void OnRemoteSessionStatusChanged(SessionStatusChangedEventArgs args)
+        protected virtual void OnRemoteChannelStatusChanged(ChannelStatusChangedEventArgs args)
         {
-            RemoteSessionStatusChanged?.Invoke(this, args);
+            RemoteChannelStatusChanged?.Invoke(this, args);
         }
 
         #endregion
@@ -154,18 +154,18 @@ namespace EltraConnector.UserAgent
                                     }
                                     else
                                     {
-                                        var sessionStatusUpdate = JsonConvert.DeserializeObject<ChannelStatusUpdate>(json, new JsonSerializerSettings
+                                        var channelStatusUpdate = JsonConvert.DeserializeObject<ChannelStatusUpdate>(json, new JsonSerializerSettings
                                         {
                                             Error = HandleDeserializationError
                                         });
 
-                                        if (sessionStatusUpdate != null)
+                                        if (channelStatusUpdate != null)
                                         {
-                                            if (sessionStatusUpdate.ChannelId != _sessionAdapter.Uuid)
+                                            if (channelStatusUpdate.ChannelId != _sessionAdapter.Uuid)
                                             {
-                                                MsgLogger.WriteDebug($"{GetType().Name} - Execute", $"session {sessionStatusUpdate.ChannelId}, status changed to {sessionStatusUpdate.Status}");
+                                                MsgLogger.WriteDebug($"{GetType().Name} - Execute", $"session {channelStatusUpdate.ChannelId}, status changed to {channelStatusUpdate.Status}");
 
-                                                OnRemoteSessionStatusChanged(new SessionStatusChangedEventArgs() { Uuid = sessionStatusUpdate.ChannelId, Status = sessionStatusUpdate.Status } );
+                                                OnRemoteChannelStatusChanged(new ChannelStatusChangedEventArgs() { Id = channelStatusUpdate.ChannelId, Status = channelStatusUpdate.Status } );
                                             }
                                         }
                                         else

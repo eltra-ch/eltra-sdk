@@ -20,7 +20,7 @@ using EltraCommon.Contracts.Node;
 
 namespace EltraConnector.Controllers
 {
-    public class ParameterControllerAdapter : CloudSessionControllerAdapter
+    public class ParameterControllerAdapter : CloudChannelControllerAdapter
     {
         #region Private fields
         

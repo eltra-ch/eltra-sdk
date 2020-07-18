@@ -27,15 +27,15 @@ namespace EltraConnector.UserAgent
 
         private readonly List<DeviceCommand> _executedCommands;
         private readonly UserData _authData;
-        private readonly UserSessionControllerAdapter _sessionAdapter;
+        private readonly UserChannelControllerAdapter _sessionAdapter;
 
         private Task _agentTask;
         private CancellationTokenSource _agentCancelationTokenSource;
-        private SessionUpdater _sessionUpdater;
+        private ChannelHeartbeat _sessionUpdater;
         private ExecuteCommander _executeCommander;
         private ParameterUpdateManager _parameterUpdateManager;        
         private Authentication _authentication;
-        private Channel _session;
+        private Channel _channel;
         private UserData _deviceAuthData;
 
         #endregion
@@ -46,7 +46,7 @@ namespace EltraConnector.UserAgent
         {
             _authData = authData;
             _executedCommands = new List<DeviceCommand>();
-            _sessionAdapter = new UserSessionControllerAdapter(url, authData, updateInterval, timeout) { UseWebSockets = true };
+            _sessionAdapter = new UserChannelControllerAdapter(url, authData, updateInterval, timeout) { UseWebSockets = true };
 
             Initialize(url, updateInterval, timeout, true);
         }
@@ -55,7 +55,7 @@ namespace EltraConnector.UserAgent
         {
             _authData = authData;
             _executedCommands = new List<DeviceCommand>();
-            _sessionAdapter = new UserSessionControllerAdapter(url, uuid, authData, updateInterval, timeout) { UseWebSockets = true };
+            _sessionAdapter = new UserChannelControllerAdapter(url, uuid, authData, updateInterval, timeout) { UseWebSockets = true };
 
             Initialize(url, updateInterval, timeout, true);
         }
@@ -64,7 +64,7 @@ namespace EltraConnector.UserAgent
         {
             _authData = masterAgent.AuthData;
             _executedCommands = new List<DeviceCommand>();
-            _sessionAdapter = new UserSessionControllerAdapter(masterAgent.Url, device.ChannelId, masterAgent.AuthData, updateInterval, timeout) { UseWebSockets = true };
+            _sessionAdapter = new UserChannelControllerAdapter(masterAgent.Url, device.ChannelId, masterAgent.AuthData, updateInterval, timeout) { UseWebSockets = true };
 
             Initialize(masterAgent.Url, updateInterval, timeout, false);
         }
@@ -75,7 +75,7 @@ namespace EltraConnector.UserAgent
 
         public event EventHandler<ParameterChangedEventArgs> ParameterChanged;
 
-        public event EventHandler<SessionStatusChangedEventArgs> RemoteSessionStatusChanged;
+        public event EventHandler<ChannelStatusChangedEventArgs> RemoteChannelStatusChanged;
 
         #endregion
 
@@ -86,27 +86,27 @@ namespace EltraConnector.UserAgent
             ParameterChanged?.Invoke(sender, e);
         }
 
-        private void OnSessionRegistered(object sender, SessionRegistrationEventArgs e)
+        private void OnChannelRegistered(object sender, ChannelRegistrationEventArgs e)
         {
-            _session = e.Channel;
+            _channel = e.Channel;
 
             if (e.Success)
             {
-                _session.Status = ChannelStatus.Online;
+                _channel.Status = ChannelStatus.Online;
             }
             else
             {
-                MsgLogger.WriteError($"{GetType().Name} - OnSessionRegistered", $"Session uuid='{_session.Id}' registration failed!");
+                MsgLogger.WriteError($"{GetType().Name} - OnChannelRegistered", $"Session uuid='{_channel.Id}' registration failed!");
             }
         }
-        private void OnRemoteSessionStatusChanged(object sender, SessionStatusChangedEventArgs e)
+        private void OnRemoteChannelStatusChanged(object sender, ChannelStatusChangedEventArgs e)
         {
             if(e.Status == ChannelStatus.Online)
             {
                 RecoverSession();
             }
 
-            RemoteSessionStatusChanged?.Invoke(sender, e);
+            RemoteChannelStatusChanged?.Invoke(sender, e);
         }
 
         private void RecoverSession()
@@ -134,7 +134,7 @@ namespace EltraConnector.UserAgent
             }
         }
 
-        private void OnSessionStatusChanged(object sender, SessionStatusChangedEventArgs e)
+        private void OnChannelStatusChanged(object sender, ChannelStatusChangedEventArgs e)
         {
             if(State == UserCloudAgentState.Starting && e.Status == ChannelStatus.Online)
             {
@@ -160,9 +160,9 @@ namespace EltraConnector.UserAgent
 
             if (useSessionUpdater)
             {
-                _sessionUpdater = new SessionUpdater(_sessionAdapter, updateInterval, timeout);
+                _sessionUpdater = new ChannelHeartbeat(_sessionAdapter, updateInterval, timeout);
 
-                _sessionUpdater.StatusChanged += OnSessionStatusChanged;
+                _sessionUpdater.StatusChanged += OnChannelStatusChanged;
             }
 
             _executeCommander = new ExecuteCommander(_sessionAdapter);
@@ -334,10 +334,10 @@ namespace EltraConnector.UserAgent
 
         private void RegisterEvents()
         {
-            _sessionAdapter.SessionRegistered += OnSessionRegistered;
+            _sessionAdapter.SessionRegistered += OnChannelRegistered;
 
             _executeCommander.CommandExecuted += OnCommandExecuted;
-            _executeCommander.RemoteSessionStatusChanged += OnRemoteSessionStatusChanged;
+            _executeCommander.RemoteChannelStatusChanged += OnRemoteChannelStatusChanged;
         }
 
         private async Task<List<EltraDeviceNode>> GetDeviceNodes(Channel session, UserData authData)

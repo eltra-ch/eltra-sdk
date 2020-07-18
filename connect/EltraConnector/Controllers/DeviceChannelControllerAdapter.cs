@@ -13,7 +13,7 @@ using EltraCommon.Contracts.Node;
 
 namespace EltraConnector.Controllers
 {
-    class DeviceSessionControllerAdapter : SessionControllerAdapter
+    class DeviceChannelControllerAdapter : ChannelControllerAdapter
     {
         #region Private fields
 
@@ -25,7 +25,7 @@ namespace EltraConnector.Controllers
 
         #region Constructors
 
-        public DeviceSessionControllerAdapter(string url, UserData authData, uint updateInterval, uint timeout)
+        public DeviceChannelControllerAdapter(string url, UserData authData, uint updateInterval, uint timeout)
             : base(url, authData, updateInterval, timeout)
         {   
         }
@@ -221,7 +221,7 @@ namespace EltraConnector.Controllers
 
                     MsgLogger.Write($"{GetType().Name} - Update", $"Updating session='{Channel.Id}' status...");
 
-                    result = await SetSessionStatus(ChannelStatus.Online);
+                    result = await SetChannelStatus(ChannelStatus.Online);
                 }
                 else
                 {
@@ -231,7 +231,7 @@ namespace EltraConnector.Controllers
                     {
                         MsgLogger.Write($"{GetType().Name} - Update", $"updating session='{Channel.Id}' status ...");
 
-                        result = await SetSessionStatus(ChannelStatus.Online);
+                        result = await SetChannelStatus(ChannelStatus.Online);
 
                         if (result)
                         {

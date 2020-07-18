@@ -15,7 +15,7 @@ using System.Web;
 
 namespace EltraConnector.Controllers.Base
 {
-    class SessionControllerAdapter : CloudControllerAdapter
+    class ChannelControllerAdapter : CloudControllerAdapter
     {
         #region Private fields
 
@@ -29,7 +29,7 @@ namespace EltraConnector.Controllers.Base
 
         #region Constructors
 
-        public SessionControllerAdapter(string url, UserData authData, uint updateInterval, uint timeout)
+        public ChannelControllerAdapter(string url, UserData authData, uint updateInterval, uint timeout)
             : base(url)
         {
             _timeout = timeout;
@@ -38,7 +38,7 @@ namespace EltraConnector.Controllers.Base
             _user = new User(authData) { Status = UserStatus.Unlocked };
         }
 
-        public SessionControllerAdapter(string url, string uuid, UserData authData, uint updateInterval, uint timeout)
+        public ChannelControllerAdapter(string url, string uuid, UserData authData, uint updateInterval, uint timeout)
             : base(url)
         {
             _timeout = timeout;
@@ -51,13 +51,13 @@ namespace EltraConnector.Controllers.Base
 
         #region Events
 
-        public event EventHandler<SessionRegistrationEventArgs> SessionRegistered;
+        public event EventHandler<ChannelRegistrationEventArgs> SessionRegistered;
 
         #endregion
 
         #region Events handling
 
-        protected virtual void OnChannelRegistered(SessionRegistrationEventArgs e)
+        protected virtual void OnChannelRegistered(ChannelRegistrationEventArgs e)
         {
             SessionRegistered?.Invoke(this, e);
         }
@@ -82,13 +82,13 @@ namespace EltraConnector.Controllers.Base
 
             if (await IsChannelRegistered(Channel.Id))
             {
-                result = await SetSessionStatus(ChannelStatus.Online);
+                result = await SetChannelStatus(ChannelStatus.Online);
             }
             else
             {
                 if (await RegisterChannel())
                 {
-                    result = await SetSessionStatus(ChannelStatus.Online);
+                    result = await SetChannelStatus(ChannelStatus.Online);
                 }
             }
 
@@ -163,13 +163,13 @@ namespace EltraConnector.Controllers.Base
                     result = requestResult.Result;
                 }
 
-                OnChannelRegistered(new SessionRegistrationEventArgs { Channel = Channel, Success = result, Exception = postResult.Exception });
+                OnChannelRegistered(new ChannelRegistrationEventArgs { Channel = Channel, Success = result, Exception = postResult.Exception });
             }
             catch (Exception e)
             {
                 MsgLogger.Exception($"{GetType().Name} - RegisterChannel", e);
 
-                OnChannelRegistered(new SessionRegistrationEventArgs { Channel = Channel, Success = false, Exception = e });
+                OnChannelRegistered(new ChannelRegistrationEventArgs { Channel = Channel, Success = false, Exception = e });
             }
 
             return result;
@@ -181,7 +181,7 @@ namespace EltraConnector.Controllers.Base
 
             if (await IsChannelRegistered())
             {
-                result = await SetSessionStatus(ChannelStatus.Offline);
+                result = await SetChannelStatus(ChannelStatus.Offline);
             }
 
             return result;
@@ -225,7 +225,7 @@ namespace EltraConnector.Controllers.Base
         }
 
 
-        protected async Task<bool> SetSessionStatus(ChannelStatus status)
+        protected async Task<bool> SetChannelStatus(ChannelStatus status)
         {
             bool result = false;
 

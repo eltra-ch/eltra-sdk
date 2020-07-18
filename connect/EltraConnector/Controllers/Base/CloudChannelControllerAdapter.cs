@@ -2,14 +2,14 @@
 
 namespace EltraConnector.Controllers.Base
 {
-    public class CloudSessionControllerAdapter : CloudControllerAdapter
+    public class CloudChannelControllerAdapter : CloudControllerAdapter
     {
         #region Constructors
 
-        public CloudSessionControllerAdapter(string url, Channel session)
+        public CloudChannelControllerAdapter(string url, Channel channel)
             :base(url)
         {
-            Channel = session;
+            Channel = channel;
         }
 
         #endregion

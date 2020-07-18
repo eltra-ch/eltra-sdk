@@ -9,11 +9,11 @@ using EltraCommon.Contracts.Channels;
 
 namespace EltraConnector.Sessions
 {
-    class SessionUpdater : EltraThread
+    class ChannelHeartbeat : EltraThread
     {
         #region Private fields
 
-        private readonly SessionControllerAdapter _sessionControllerAdapter;
+        private readonly ChannelControllerAdapter _sessionControllerAdapter;
         private readonly uint _updateInterval;
         private readonly uint _timeout;
         private ChannelStatus _status = ChannelStatus.Offline;
@@ -23,7 +23,7 @@ namespace EltraConnector.Sessions
 
         #region Constructors
 
-        public SessionUpdater(SessionControllerAdapter sessionControllerAdapter, uint updateInterval, uint timeout)
+        public ChannelHeartbeat(ChannelControllerAdapter sessionControllerAdapter, uint updateInterval, uint timeout)
         {
             _updateInterval = updateInterval;
             _timeout = timeout;
@@ -52,11 +52,11 @@ namespace EltraConnector.Sessions
 
         #region Events
 
-        public event EventHandler<SessionStatusChangedEventArgs> StatusChanged;
+        public event EventHandler<ChannelStatusChangedEventArgs> StatusChanged;
 
         private void OnStatusChanged()
         {
-            StatusChanged?.Invoke(this, new SessionStatusChangedEventArgs() { Status = _status, Uuid = _uuid });
+            StatusChanged?.Invoke(this, new ChannelStatusChangedEventArgs() { Status = _status, Id = _uuid });
         }
 
         #endregion

@@ -17,9 +17,9 @@ namespace EltraConnector.SyncAgent
     {
         #region Private fields
 
-        private readonly DeviceSessionControllerAdapter _sessionControllerAdapter;
+        private readonly DeviceChannelControllerAdapter _sessionControllerAdapter;
         
-        private readonly SessionUpdater _sessionUpdater;
+        private readonly ChannelHeartbeat _sessionUpdater;
         private readonly CommandExecutor _commandExecutor;
         private readonly WsConnectionManager _wsConnectionManager;
         private readonly Authentication _authentication;
@@ -40,9 +40,9 @@ namespace EltraConnector.SyncAgent
             _authentication = new Authentication(url);
             _wsConnectionManager = new WsConnectionManager() { HostUrl = url };
 
-            _sessionControllerAdapter = new DeviceSessionControllerAdapter(url, authData, updateInterval, timeout) { WsConnectionManager = _wsConnectionManager };
+            _sessionControllerAdapter = new DeviceChannelControllerAdapter(url, authData, updateInterval, timeout) { WsConnectionManager = _wsConnectionManager };
 
-            _sessionUpdater = new SessionUpdater(_sessionControllerAdapter, updateInterval, timeout);
+            _sessionUpdater = new ChannelHeartbeat(_sessionControllerAdapter, updateInterval, timeout);
             _commandExecutor = new CommandExecutor(_sessionControllerAdapter);
 
             RegisterEvents();
@@ -52,7 +52,7 @@ namespace EltraConnector.SyncAgent
 
         #region Events
 
-        public event EventHandler<SessionStatusChangedEventArgs> RemoteSessionStatusChanged;
+        public event EventHandler<ChannelStatusChangedEventArgs> RemoteChannelStatusChanged;
 
         public event EventHandler<GoodChangedEventArgs> GoodChanged;
 
@@ -70,23 +70,23 @@ namespace EltraConnector.SyncAgent
             GoodChanged?.Invoke(this, new GoodChangedEventArgs() { Good = Good });
         }
 
-        private void OnSessionRegistered(object sender, SessionRegistrationEventArgs e)
+        private void OnChannelRegistered(object sender, ChannelRegistrationEventArgs e)
         {
-            var session = e.Channel;
+            var channel = e.Channel;
 
             if (e.Success)
             {
-                session.Status = ChannelStatus.Online;
+                channel.Status = ChannelStatus.Online;
             }
             else
             {
-                MsgLogger.WriteError($"{GetType().Name} - OnSessionRegistered", $"Session ({session.Id}) registration failed!");
+                MsgLogger.WriteError($"{GetType().Name} - OnChannelRegistered", $"Session ({channel.Id}) registration failed!");
             }
         }
 
-        protected virtual void OnRemoteSessionStatusChanged(object sender, SessionStatusChangedEventArgs e)
+        protected virtual void OnRemoteChannelStatusChanged(object sender, ChannelStatusChangedEventArgs e)
         {
-            RemoteSessionStatusChanged?.Invoke(sender, e);
+            RemoteChannelStatusChanged?.Invoke(sender, e);
         }
 
         #endregion
@@ -123,8 +123,8 @@ namespace EltraConnector.SyncAgent
 
         private void RegisterEvents()
         {
-            _sessionControllerAdapter.SessionRegistered += OnSessionRegistered;
-            _commandExecutor.RemoteSessionStatusChanged += OnRemoteSessionStatusChanged;
+            _sessionControllerAdapter.SessionRegistered += OnChannelRegistered;
+            _commandExecutor.RemoteChannelStatusChanged += OnRemoteChannelStatusChanged;
 
             _sessionControllerAdapter.GoodChanged += OnAdapterGoodChanged;
             _authentication.GoodChanged += OnAdapterGoodChanged;

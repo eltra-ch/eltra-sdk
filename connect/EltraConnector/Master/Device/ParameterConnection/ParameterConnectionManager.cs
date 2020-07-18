@@ -52,11 +52,11 @@ namespace EltraConnector.Master.Device.ParameterConnection
 
         #region Events handling
 
-        private void OnRemoteSessionStatusChanged(object sender, SessionStatusChangedEventArgs e)
+        private void OnRemoteChannelStatusChanged(object sender, ChannelStatusChangedEventArgs e)
         {
             if (e.Status == ChannelStatus.Offline)
             {
-                SourceSessionGoingOffline(e.Uuid);
+                SourceChannelGoingOffline(e.Id);
             }
         }
 
@@ -161,7 +161,7 @@ namespace EltraConnector.Master.Device.ParameterConnection
 
             if (agent != null)
             {
-                agent.RemoteSessionStatusChanged += OnRemoteSessionStatusChanged;
+                agent.RemoteChannelStatusChanged += OnRemoteChannelStatusChanged;
             }
         }
 
@@ -225,7 +225,7 @@ namespace EltraConnector.Master.Device.ParameterConnection
             }
         }
         
-        private void SourceSessionGoingOffline(string source)
+        private void SourceChannelGoingOffline(string source)
         {
             var parameters = _parameterUpdater.GetParametersFromSource(source);
 
