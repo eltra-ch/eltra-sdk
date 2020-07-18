@@ -4,7 +4,7 @@ using EltraConnector.Transport.Ws;
 using EltraConnector.Sessions;
 using EltraCommon.Threads;
 using System;
-using EltraCommon.Contracts.Sessions;
+using EltraCommon.Contracts.Channels;
 using EltraCommon.Logger;
 using EltraCommon.Contracts.Users;
 using System.Threading.Tasks;
@@ -29,7 +29,7 @@ namespace EltraConnector.SyncAgent
 
         #region Constructors
 
-        public SyncCloudAgent(string url, UserAuthData authData, uint updateInterval, uint timeout)
+        public SyncCloudAgent(string url, UserData authData, uint updateInterval, uint timeout)
         {
             Url = url;
             AuthData = authData;
@@ -72,15 +72,15 @@ namespace EltraConnector.SyncAgent
 
         private void OnSessionRegistered(object sender, SessionRegistrationEventArgs e)
         {
-            var session = e.Session;
+            var session = e.Channel;
 
             if (e.Success)
             {
-                session.Status = SessionStatus.Online;
+                session.Status = ChannelStatus.Online;
             }
             else
             {
-                MsgLogger.WriteError($"{GetType().Name} - OnSessionRegistered", $"Session ({session.Uuid}) registration failed!");
+                MsgLogger.WriteError($"{GetType().Name} - OnSessionRegistered", $"Session ({session.Id}) registration failed!");
             }
         }
 
@@ -95,7 +95,7 @@ namespace EltraConnector.SyncAgent
 
         public string Url { get; }
 
-        public UserAuthData AuthData { get; }
+        public UserData AuthData { get; }
 
         public uint UpdateInterval { get; set; }
 
@@ -115,7 +115,7 @@ namespace EltraConnector.SyncAgent
             }
         }
 
-        public string SessionUuid => _sessionControllerAdapter.Session.Uuid;
+        public string SessionUuid => _sessionControllerAdapter.Channel.Id;
 
         #endregion
 
@@ -134,16 +134,16 @@ namespace EltraConnector.SyncAgent
         {
             bool result = false;
 
-            if (!await _sessionControllerAdapter.IsSessionRegistered())
+            if (!await _sessionControllerAdapter.IsChannelRegistered())
             {
-                if (await _sessionControllerAdapter.RegisterSession())
+                if (await _sessionControllerAdapter.RegisterChannel())
                 {
-                    MsgLogger.WriteLine($"register session='{_sessionControllerAdapter.Session.Uuid}' success");
+                    MsgLogger.WriteLine($"register session='{_sessionControllerAdapter.Channel.Id}' success");
                     result = true;
                 }
                 else
                 {
-                    MsgLogger.WriteError($"{GetType().Name} - RegisterSession", $"register session='{_sessionControllerAdapter.Session.Uuid}' failed!");
+                    MsgLogger.WriteError($"{GetType().Name} - RegisterSession", $"register session='{_sessionControllerAdapter.Channel.Id}' failed!");
                 }
             }
             else
@@ -234,13 +234,13 @@ namespace EltraConnector.SyncAgent
             }
         }
 
-        public async Task<Session> GetSession(string uuid, UserAuthData authData)
+        public async Task<Channel> GetSession(string uuid, UserData authData)
         {
-            Session result = null;
+            Channel result = null;
 
             try
             {
-                result = await _sessionControllerAdapter.GetSession(uuid, authData);
+                result = await _sessionControllerAdapter.GetChannel(uuid, authData);
             }
             catch (Exception e)
             {
@@ -250,7 +250,7 @@ namespace EltraConnector.SyncAgent
             return result;
         }
 
-        public async Task<bool> SignIn(UserAuthData authData)
+        public async Task<bool> SignIn(UserData authData)
         {
             bool result = await _authentication.SignIn(authData);
 
@@ -264,7 +264,7 @@ namespace EltraConnector.SyncAgent
             return result;
         }
 
-        public async Task<bool> SignUp(UserAuthData authData)
+        public async Task<bool> SignUp(UserData authData)
         {
             bool result = await _authentication.SignUp(authData);
 

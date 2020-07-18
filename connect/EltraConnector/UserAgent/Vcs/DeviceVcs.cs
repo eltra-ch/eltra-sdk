@@ -31,9 +31,9 @@ namespace EltraConnector.UserAgent.Vcs
 
         #region Constructors
 
-        public DeviceVcs(string url, string uuid, UserAuthData authData, uint updateInterval, uint timeout)
+        public DeviceVcs(string url, string uuid, UserData authData, uint updateInterval, uint timeout)
         {
-            _sessionDevice = new EltraDeviceNode() { SessionUuid = uuid };
+            _sessionDevice = new EltraDeviceNode() { ChannelId = uuid };
 
             Timeout = DefaultTimeout;
 
@@ -189,7 +189,7 @@ namespace EltraConnector.UserAgent.Vcs
             {
                 if (Device.SearchParameter(uniqueId) is Parameter parameterEntry)
                 {
-                    var parameterValue = await Agent.GetParameterValue(Device.SessionUuid, Device.NodeId,
+                    var parameterValue = await Agent.GetParameterValue(Device.ChannelId, Device.NodeId,
                         parameterEntry.Index, parameterEntry.SubIndex);
 
                     result = parameterEntry.SetValue(parameterValue);
@@ -207,7 +207,7 @@ namespace EltraConnector.UserAgent.Vcs
             {
                 if (Device.SearchParameter(index, subIndex) is Parameter parameterEntry)
                 {
-                    var parameterValue = await Agent.GetParameterValue(Device.SessionUuid, Device.NodeId, index, subIndex);
+                    var parameterValue = await Agent.GetParameterValue(Device.ChannelId, Device.NodeId, index, subIndex);
 
                     result = parameterEntry.SetValue(parameterValue);
                 }

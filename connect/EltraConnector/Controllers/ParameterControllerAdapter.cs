@@ -9,7 +9,7 @@ using EltraConnector.Controllers.Base;
 using EltraCommon.Helpers;
 
 using EltraCommon.Contracts.Parameters;
-using EltraCommon.Contracts.Sessions;
+using EltraCommon.Contracts.Channels;
 using EltraCommon.Logger;
 using EltraCommon.ObjectDictionary.Common.DeviceDescription.Profiles.Application.Parameters;
 using EltraCommon.ObjectDictionary.Common.DeviceDescription.Profiles.Application.Parameters.Events;
@@ -33,7 +33,7 @@ namespace EltraConnector.Controllers
 
         #region Constructors
 
-        public ParameterControllerAdapter(string url, Session session)
+        public ParameterControllerAdapter(string url, Channel session)
             :base(url, session)
         {
             _stopRequestEvent = new ManualResetEvent(false);
@@ -76,7 +76,7 @@ namespace EltraConnector.Controllers
 
                 var query = HttpUtility.ParseQueryString(string.Empty);
 
-                query["uuid"] = sessionUuid;
+                query["callerId"] = sessionUuid;
                 query["nodeId"] = $"{nodeId}";
                 query["index"] = $"{index}";
                 query["subIndex"] = $"{subIndex}";
@@ -108,7 +108,7 @@ namespace EltraConnector.Controllers
 
             if (device != null && device.Identification!=null && parameter!=null)
             {
-                result = await GetParameterValue(device.SessionUuid, device.NodeId, parameter.Index, parameter.SubIndex);
+                result = await GetParameterValue(device.ChannelId, device.NodeId, parameter.Index, parameter.SubIndex);
             }
 
             return result;
@@ -124,7 +124,7 @@ namespace EltraConnector.Controllers
 
                 var query = HttpUtility.ParseQueryString(string.Empty);
 
-                query["uuid"] = sessionUuid;
+                query["callerId"] = sessionUuid;
                 query["nodeId"] = $"{nodeId}";
                 query["index"] = $"{index}";
                 query["subIndex"] = $"{subIndex}";
@@ -221,7 +221,7 @@ namespace EltraConnector.Controllers
             {
                 var parameterUpdate = new ParameterUpdate
                 {
-                    SessionUuid = Session.Uuid,
+                    ChannelId = Channel.Id,
                     NodeId = device.NodeId,
                     Parameter = parameter
                 };
@@ -304,7 +304,7 @@ namespace EltraConnector.Controllers
             return result;
         }
 
-        public async Task<List<ParameterValue>> GetParameterHistory(string sessionUuid, int nodeId, string uniqueId, DateTime from, DateTime to)
+        public async Task<List<ParameterValue>> GetParameterHistory(string callerId, int nodeId, string uniqueId, DateTime from, DateTime to)
         {
             var result = new List<ParameterValue>();
 
@@ -314,7 +314,7 @@ namespace EltraConnector.Controllers
 
                 var query = HttpUtility.ParseQueryString(string.Empty);
 
-                query["uuid"] = sessionUuid;
+                query["callerId"] = callerId;
                 query["nodeId"] = $"{nodeId}";
                 query["uniqueId"] = $"{uniqueId}";
                 query["from"] = $"{from}";

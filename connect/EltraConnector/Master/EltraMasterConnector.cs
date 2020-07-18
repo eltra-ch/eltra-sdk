@@ -28,7 +28,7 @@ namespace EltraConnector.Master
             _cancellationTokenSource = new CancellationTokenSource();
 
             Host = "https://eltra.ch";
-            AuthData = new UserAuthData() { Login = "", Password = "", Name = "" };
+            AuthData = new UserData() { Login = "", Password = "", Name = "" };
             ConnectionSettings = new ConnectionSettings();
         }
 
@@ -36,7 +36,7 @@ namespace EltraConnector.Master
 
         #region Properties
 
-        public UserAuthData AuthData { get; set; }
+        public UserData AuthData { get; set; }
 
         public string Host { get; set; }
 

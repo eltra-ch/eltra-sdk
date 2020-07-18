@@ -5,7 +5,7 @@ using EltraCommon.Logger;
 using EltraCommon.Contracts.Parameters;
 using EltraCommon.ObjectDictionary.Common.DeviceDescription.Common;
 using EltraCommon.ObjectDictionary.Common.DeviceDescription.Profiles.Application.Parameters;
-using EltraCommon.Contracts.Sessions;
+using EltraCommon.Contracts.Channels;
 using EltraCommon.Threads;
 using EltraConnector.Events;
 
@@ -54,7 +54,7 @@ namespace EltraConnector.Master.Device.ParameterConnection
 
         private void OnRemoteSessionStatusChanged(object sender, SessionStatusChangedEventArgs e)
         {
-            if (e.Status == SessionStatus.Offline)
+            if (e.Status == ChannelStatus.Offline)
             {
                 SourceSessionGoingOffline(e.Uuid);
             }

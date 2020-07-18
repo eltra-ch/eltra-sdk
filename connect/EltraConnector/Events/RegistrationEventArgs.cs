@@ -1,6 +1,6 @@
 ﻿using System;
 using EltraCommon.Contracts.Node;
-using EltraCommon.Contracts.Sessions;
+using EltraCommon.Contracts.Channels;
 
 namespace EltraConnector.Events
 {
@@ -8,7 +8,7 @@ namespace EltraConnector.Events
     {
         private Exception _exception;
 
-        public Session Session { get; set; }
+        public Channel Session { get; set; }
         public EltraDeviceNode Device { get; set; }
 
         public RegistrationState State { get; set; }

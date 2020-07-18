@@ -5,7 +5,7 @@ using System;
 using EltraCommon.Threads;
 using EltraConnector.Controllers.Base;
 using EltraConnector.Events;
-using EltraCommon.Contracts.Sessions;
+using EltraCommon.Contracts.Channels;
 
 namespace EltraConnector.Sessions
 {
@@ -16,7 +16,7 @@ namespace EltraConnector.Sessions
         private readonly SessionControllerAdapter _sessionControllerAdapter;
         private readonly uint _updateInterval;
         private readonly uint _timeout;
-        private SessionStatus _status = SessionStatus.Offline;
+        private ChannelStatus _status = ChannelStatus.Offline;
         private string _uuid;
 
         #endregion
@@ -34,7 +34,7 @@ namespace EltraConnector.Sessions
 
         #region Properties
 
-        public SessionStatus Status
+        public ChannelStatus Status
         {
             get => _status;
             set
@@ -68,7 +68,7 @@ namespace EltraConnector.Sessions
             const int minWaitTime = 10;
             const int reconnectTimeout = 3;
                        
-            var sessionUuid = _sessionControllerAdapter.Session.Uuid;
+            var sessionUuid = _sessionControllerAdapter.Channel.Id;
             var wsConnectionManager = _sessionControllerAdapter.WsConnectionManager;
             string wsChannelName = "SessionUpdate";
             uint updateIntervalInSec = _updateInterval;
@@ -78,7 +78,7 @@ namespace EltraConnector.Sessions
                 await wsConnectionManager.Connect(sessionUuid, wsChannelName);
             }
 
-            _uuid = _sessionControllerAdapter.Session.Uuid;
+            _uuid = _sessionControllerAdapter.Channel.Id;
 
             while (ShouldRun())
             {
@@ -86,7 +86,7 @@ namespace EltraConnector.Sessions
 
                 var updateResult = await _sessionControllerAdapter.Update();
 
-                Status = updateResult ? SessionStatus.Online : SessionStatus.Offline;
+                Status = updateResult ? ChannelStatus.Online : ChannelStatus.Offline;
 
                 if (!updateResult)
                 {
@@ -124,7 +124,7 @@ namespace EltraConnector.Sessions
                     {
                         updateResult = await _sessionControllerAdapter.Update();
 
-                        Status = updateResult ? SessionStatus.Online : SessionStatus.Offline;
+                        Status = updateResult ? ChannelStatus.Online : ChannelStatus.Offline;
                     }
                 }
             }

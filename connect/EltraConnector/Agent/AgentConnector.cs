@@ -2,7 +2,6 @@
 using EltraCommon.Contracts.Devices;
 using EltraCommon.Contracts.Node;
 using EltraCommon.Contracts.Parameters;
-using EltraCommon.Contracts.Sessions;
 using EltraCommon.Contracts.Users;
 using EltraCommon.ObjectDictionary.Common.DeviceDescription.Profiles.Application.Parameters;
 using EltraConnector.UserAgent;
@@ -22,7 +21,7 @@ namespace EltraConnector.Agent
         private uint _timeout;
         private readonly List<DeviceVcs> _vcsList = new List<DeviceVcs>();
         private string _host;
-        private UserAuthData _authData;
+        private UserData _authData;
 
         #endregion
 
@@ -31,7 +30,7 @@ namespace EltraConnector.Agent
         public AgentConnector()
         {
             Host = "https://eltra.ch";
-            AuthData = new UserAuthData() { Login = "agent@eltra.ch", Password = "1234" };
+            AuthData = new UserData() { Login = "agent@eltra.ch", Password = "1234" };
             _updateInterval = 60;
             _timeout = 180;
         }
@@ -53,7 +52,7 @@ namespace EltraConnector.Agent
             } 
         }
 
-        public UserAuthData AuthData 
+        public UserData AuthData 
         { 
             get => _authData;
             set 
@@ -118,7 +117,7 @@ namespace EltraConnector.Agent
             return result;
         }
 
-        public async Task<List<EltraDeviceNode>> GetDevices(UserAuthData deviceAuth)
+        public async Task<List<EltraDeviceNode>> GetDevices(UserData deviceAuth)
         {
             var result = new List<EltraDeviceNode>();
 
@@ -149,7 +148,7 @@ namespace EltraConnector.Agent
             return result;
         }
 
-        public async Task<List<EltraDeviceNodeList>> GetDeviceNodes(UserAuthData deviceAuth)
+        public async Task<List<EltraDeviceNodeList>> GetDeviceNodes(UserData deviceAuth)
         {
             var result = new List<EltraDeviceNodeList>();
 
@@ -326,7 +325,7 @@ namespace EltraConnector.Agent
 
         public async Task<List<DeviceCommand>> GetDeviceCommands(EltraDeviceNode device)
         {
-            List<DeviceCommand> result = new List<DeviceCommand>();
+            var result = new List<DeviceCommand>();
 
             if (_deviceAgent != null)
             {

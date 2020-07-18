@@ -10,7 +10,7 @@ using EltraConnector.UserAgent.Events;
 using EltraCommon.Logger;
 
 using EltraCommon.Contracts.CommandSets;
-using EltraCommon.Contracts.Sessions;
+using EltraCommon.Contracts.Channels;
 using EltraCommon.Contracts.Users;
 using EltraCommon.ObjectDictionary.Common.DeviceDescription.Profiles.Application.Parameters;
 using EltraCommon.ObjectDictionary.Common.DeviceDescription.Profiles.Application.Parameters.Events;
@@ -26,7 +26,7 @@ namespace EltraConnector.UserAgent
         #region Private fields
 
         private readonly List<DeviceCommand> _executedCommands;
-        private readonly UserAuthData _authData;
+        private readonly UserData _authData;
         private readonly UserSessionControllerAdapter _sessionAdapter;
 
         private Task _agentTask;
@@ -35,14 +35,14 @@ namespace EltraConnector.UserAgent
         private ExecuteCommander _executeCommander;
         private ParameterUpdateManager _parameterUpdateManager;        
         private Authentication _authentication;
-        private Session _session;
-        private UserAuthData _deviceAuthData;
+        private Channel _session;
+        private UserData _deviceAuthData;
 
         #endregion
 
         #region Constructors
 
-        public UserCloudAgent(string url, UserAuthData authData, uint updateInterval, uint timeout)
+        public UserCloudAgent(string url, UserData authData, uint updateInterval, uint timeout)
         {
             _authData = authData;
             _executedCommands = new List<DeviceCommand>();
@@ -51,7 +51,7 @@ namespace EltraConnector.UserAgent
             Initialize(url, updateInterval, timeout, true);
         }
 
-        public UserCloudAgent(string url, string uuid, UserAuthData authData, uint updateInterval, uint timeout)
+        public UserCloudAgent(string url, string uuid, UserData authData, uint updateInterval, uint timeout)
         {
             _authData = authData;
             _executedCommands = new List<DeviceCommand>();
@@ -64,7 +64,7 @@ namespace EltraConnector.UserAgent
         {
             _authData = masterAgent.AuthData;
             _executedCommands = new List<DeviceCommand>();
-            _sessionAdapter = new UserSessionControllerAdapter(masterAgent.Url, device.SessionUuid, masterAgent.AuthData, updateInterval, timeout) { UseWebSockets = true };
+            _sessionAdapter = new UserSessionControllerAdapter(masterAgent.Url, device.ChannelId, masterAgent.AuthData, updateInterval, timeout) { UseWebSockets = true };
 
             Initialize(masterAgent.Url, updateInterval, timeout, false);
         }
@@ -88,20 +88,20 @@ namespace EltraConnector.UserAgent
 
         private void OnSessionRegistered(object sender, SessionRegistrationEventArgs e)
         {
-            _session = e.Session;
+            _session = e.Channel;
 
             if (e.Success)
             {
-                _session.Status = SessionStatus.Online;
+                _session.Status = ChannelStatus.Online;
             }
             else
             {
-                MsgLogger.WriteError($"{GetType().Name} - OnSessionRegistered", $"Session uuid='{_session.Uuid}' registration failed!");
+                MsgLogger.WriteError($"{GetType().Name} - OnSessionRegistered", $"Session uuid='{_session.Id}' registration failed!");
             }
         }
         private void OnRemoteSessionStatusChanged(object sender, SessionStatusChangedEventArgs e)
         {
-            if(e.Status == SessionStatus.Online)
+            if(e.Status == ChannelStatus.Online)
             {
                 RecoverSession();
             }
@@ -136,7 +136,7 @@ namespace EltraConnector.UserAgent
 
         private void OnSessionStatusChanged(object sender, SessionStatusChangedEventArgs e)
         {
-            if(State == UserCloudAgentState.Starting && e.Status == SessionStatus.Online)
+            if(State == UserCloudAgentState.Starting && e.Status == ChannelStatus.Online)
             {
                 State = UserCloudAgentState.Started;
             }    
@@ -317,17 +317,17 @@ namespace EltraConnector.UserAgent
 
             if (_sessionUpdater != null)
             {
-                result = await _sessionAdapter.UnregisterSession();
+                result = await _sessionAdapter.UnregisterChannel();
             }
 
             return result;
         }
 
-        public async Task<List<Session>> GetSessions(string uuid, UserAuthData authData)
+        public async Task<List<Channel>> GetSessions(string uuid, UserData authData)
         {
             _deviceAuthData = authData;
 
-            var result = await _sessionAdapter.GetSessions(uuid, authData);
+            var result = await _sessionAdapter.GetChannels(uuid, authData);
 
             return result;
         }
@@ -340,7 +340,7 @@ namespace EltraConnector.UserAgent
             _executeCommander.RemoteSessionStatusChanged += OnRemoteSessionStatusChanged;
         }
 
-        private async Task<List<EltraDeviceNode>> GetDeviceNodes(Session session, UserAuthData authData)
+        private async Task<List<EltraDeviceNode>> GetDeviceNodes(Channel session, UserData authData)
         {
             await EnsureAgentReady();
 
@@ -368,7 +368,7 @@ namespace EltraConnector.UserAgent
             return result;
         }
 
-        public async Task<List<EltraDeviceNodeList>> GetDevices(UserAuthData authData)
+        public async Task<List<EltraDeviceNodeList>> GetDevices(UserData authData)
         {
             var result = new List<EltraDeviceNodeList>();
 
@@ -420,7 +420,7 @@ namespace EltraConnector.UserAgent
         {
             await EnsureAgentReady();
 
-            command.Uuid = Guid.NewGuid().ToString();
+            command.Id = Guid.NewGuid().ToString();
 
             return await _sessionAdapter.PushCommand(command, Uuid, status);
         }
@@ -441,7 +441,7 @@ namespace EltraConnector.UserAgent
             {
                 foreach (var command in _executedCommands)
                 {
-                    if (deviceCommand.Uuid == command.Uuid)
+                    if (deviceCommand.Id == command.Id)
                     {
                         result = command;
                         break;
@@ -491,7 +491,7 @@ namespace EltraConnector.UserAgent
                 }
                 else
                 {
-                    MsgLogger.WriteError($"{GetType().Name} - ExecuteCommand", $"command '{command.Uuid}' timeout, status = {command.Status}");
+                    MsgLogger.WriteError($"{GetType().Name} - ExecuteCommand", $"command '{command.Id}' timeout, status = {command.Status}");
                 }
 
                 if(result!=null)
@@ -545,12 +545,12 @@ namespace EltraConnector.UserAgent
             return await _authentication.SignOut();
         }
 
-        public async Task<bool> SignUp(UserAuthData authData)
+        public async Task<bool> SignUp(UserData authData)
         {
             return await _authentication.SignUp(authData);
         }
 
-        public async Task<bool> SignIn(UserAuthData authData)
+        public async Task<bool> SignIn(UserData authData)
         {
             return await _authentication.SignIn(authData);
         }

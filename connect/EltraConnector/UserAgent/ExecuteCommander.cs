@@ -6,7 +6,7 @@ using EltraConnector.UserAgent.Events;
 using EltraCommon.Logger;
 using EltraCommon.Contracts.CommandSets;
 using EltraConnector.Transport.Ws;
-using EltraCommon.Contracts.Sessions;
+using EltraCommon.Contracts.Channels;
 using EltraCommon.Threads;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
@@ -82,7 +82,7 @@ namespace EltraConnector.UserAgent
         {
             if (_wsConnectionManager.IsConnected(commandExecUuid))
             {
-                var sessionIdent = new SessionIdentification() { Uuid = _sessionAdapter.Uuid, AuthData = _sessionAdapter.User.AuthData };
+                var sessionIdent = new ChannelIdentification() { Id = _sessionAdapter.Uuid, UserData = _sessionAdapter.User.UserData };
 
                 await _wsConnectionManager.Send(commandExecUuid, sessionIdent);
             }
@@ -154,18 +154,18 @@ namespace EltraConnector.UserAgent
                                     }
                                     else
                                     {
-                                        var sessionStatusUpdate = JsonConvert.DeserializeObject<SessionStatusUpdate>(json, new JsonSerializerSettings
+                                        var sessionStatusUpdate = JsonConvert.DeserializeObject<ChannelStatusUpdate>(json, new JsonSerializerSettings
                                         {
                                             Error = HandleDeserializationError
                                         });
 
                                         if (sessionStatusUpdate != null)
                                         {
-                                            if (sessionStatusUpdate.SessionUuid != _sessionAdapter.Uuid)
+                                            if (sessionStatusUpdate.ChannelId != _sessionAdapter.Uuid)
                                             {
-                                                MsgLogger.WriteDebug($"{GetType().Name} - Execute", $"session {sessionStatusUpdate.SessionUuid}, status changed to {sessionStatusUpdate.Status}");
+                                                MsgLogger.WriteDebug($"{GetType().Name} - Execute", $"session {sessionStatusUpdate.ChannelId}, status changed to {sessionStatusUpdate.Status}");
 
-                                                OnRemoteSessionStatusChanged(new SessionStatusChangedEventArgs() { Uuid = sessionStatusUpdate.SessionUuid, Status = sessionStatusUpdate.Status } );
+                                                OnRemoteSessionStatusChanged(new SessionStatusChangedEventArgs() { Uuid = sessionStatusUpdate.ChannelId, Status = sessionStatusUpdate.Status } );
                                             }
                                         }
                                         else
@@ -275,7 +275,7 @@ namespace EltraConnector.UserAgent
 
             if(deviceCommand!=null)
             {
-                var followedCommand = FindDeviceCommand(deviceCommand.Uuid);
+                var followedCommand = FindDeviceCommand(deviceCommand.Id);
 
                 switch (deviceCommand.Status)
                 {
@@ -285,28 +285,28 @@ namespace EltraConnector.UserAgent
 
                         OnCommandExecuted(new ExecuteCommanderEventArgs
                         {
-                            CommandUuid = deviceCommand.Uuid,
+                            CommandUuid = deviceCommand.Id,
                             Status = ExecCommandStatus.Executed,
                             Command = deviceCommand
                         });
 
-                        RemoveDeviceCommand(deviceCommand.Uuid);
+                        RemoveDeviceCommand(deviceCommand.Id);
 
                     } break;
                     case ExecCommandStatus.Failed:
                     case ExecCommandStatus.Refused:
                         {
                         MsgLogger.WriteError($"{GetType().Name} - WsPopCommand",
-                            $"Command {deviceCommand.Name} (uuid='{deviceCommand.Uuid}') execution failed!, status={deviceCommand.Status}");
+                            $"Command {deviceCommand.Name} (uuid='{deviceCommand.Id}') execution failed!, status={deviceCommand.Status}");
 
                             OnCommandExecuted(new ExecuteCommanderEventArgs
                             {
-                                CommandUuid = deviceCommand.Uuid,
+                                CommandUuid = deviceCommand.Id,
                                 Status = ExecCommandStatus.Failed,
                                 Command = deviceCommand
                             });
 
-                            RemoveDeviceCommand(deviceCommand.Uuid);
+                            RemoveDeviceCommand(deviceCommand.Id);
                     } break;
                     
                 }
@@ -330,26 +330,26 @@ namespace EltraConnector.UserAgent
 
                             if (await SetCommandStatus(execCommandStatus))
                             {
-                                RemoveDeviceCommand(execCommandStatus.CommandUuid);
+                                RemoveDeviceCommand(execCommandStatus.CommandId);
 
-                                OnCommandExecuted(new ExecuteCommanderEventArgs { CommandUuid = execCommandStatus.CommandUuid, Status = execCommandStatus.Status });
+                                OnCommandExecuted(new ExecuteCommanderEventArgs { CommandUuid = execCommandStatus.CommandId, Status = execCommandStatus.Status });
                             }
                         }
                         break;
                     case ExecCommandStatus.Failed:
                         {
-                            RemoveDeviceCommand(execCommandStatus.CommandUuid);
+                            RemoveDeviceCommand(execCommandStatus.CommandId);
 
                             MsgLogger.WriteError($"{GetType().Name} - WsPopCommand",
-                                $"Command {execCommandStatus.CommandName} (uuid='{execCommandStatus.CommandUuid}') execution failed!");
+                                $"Command {execCommandStatus.CommandName} (uuid='{execCommandStatus.CommandId}') execution failed!");
                         }
                         break;
                     case ExecCommandStatus.Refused:
                         {
-                            RemoveDeviceCommand(execCommandStatus.CommandUuid);
+                            RemoveDeviceCommand(execCommandStatus.CommandId);
 
                             MsgLogger.WriteError($"{GetType().Name} - WsPopCommand",
-                                $"Command {execCommandStatus.CommandName} (uuid='{execCommandStatus.CommandUuid}') execution refused!");
+                                $"Command {execCommandStatus.CommandName} (uuid='{execCommandStatus.CommandId}') execution refused!");
                         }
                         break;
                 }
@@ -361,7 +361,7 @@ namespace EltraConnector.UserAgent
             const double timeout = 30; 
             DeviceCommand result = null;
 
-            var commandStatus = await GetCommandStatus(new ExecuteCommand {Command = command, SourceSessionUuid = _sessionAdapter.Uuid, TargetSessionUuid = command.Device.SessionUuid});
+            var commandStatus = await GetCommandStatus(new ExecuteCommand {Command = command, SourceChannelId = _sessionAdapter.Uuid, TargetChannelId = command.Device.ChannelId});
 
             if (commandStatus != null)
             {
@@ -371,42 +371,42 @@ namespace EltraConnector.UserAgent
                     {
                         if((DateTime.Now - commandStatus.Modified).TotalSeconds > timeout)
                         {
-                            RemoveDeviceCommand(command.Uuid);
+                            RemoveDeviceCommand(command.Id);
                         }
                     } break;
                     case ExecCommandStatus.Complete:
                     {
-                        RemoveDeviceCommand(command.Uuid);
+                        RemoveDeviceCommand(command.Id);
                     } break;
                     case ExecCommandStatus.Executed:
                     {
-                        var execCommand = await PopCommand(command.Uuid, command.Device, ExecCommandStatus.Executed);
+                        var execCommand = await PopCommand(command.Id, command.Device, ExecCommandStatus.Executed);
 
                         if (execCommand != null)
                         {
                             if (await SetCommandStatus(execCommand, ExecCommandStatus.Complete))
                             {
-                                RemoveDeviceCommand(command.Uuid);
+                                RemoveDeviceCommand(command.Id);
 
                                 result = execCommand.Command;
 
-                                OnCommandExecuted(new ExecuteCommanderEventArgs { CommandUuid = command.Uuid, Command = command, Status = ExecCommandStatus.Complete });
+                                OnCommandExecuted(new ExecuteCommanderEventArgs { CommandUuid = command.Id, Command = command, Status = ExecCommandStatus.Complete });
                             }
                         }
                     } break;
                     case ExecCommandStatus.Failed:
                     {
-                        RemoveDeviceCommand(command.Uuid);
+                        RemoveDeviceCommand(command.Id);
 
                         MsgLogger.WriteError($"{GetType().Name} - PopCommand",
-                            $"Command {command.Name} (uuid='{command.Uuid}') execution failed!");
+                            $"Command {command.Name} (uuid='{command.Id}') execution failed!");
                     } break;
                     case ExecCommandStatus.Refused:
                     {
-                        RemoveDeviceCommand(command.Uuid);
+                        RemoveDeviceCommand(command.Id);
 
                         MsgLogger.WriteError($"{GetType().Name} - PopCommand",
-                            $"Command {command.Name} (uuid='{command.Uuid}') execution refused!");
+                            $"Command {command.Name} (uuid='{command.Id}') execution refused!");
                     } break;
                 }
             }
@@ -422,7 +422,7 @@ namespace EltraConnector.UserAgent
             {
                 foreach (var command in _deviceCommands)
                 {
-                    if (command.Uuid == uuid)
+                    if (command.Id == uuid)
                     {
                         result = command;
                         break;

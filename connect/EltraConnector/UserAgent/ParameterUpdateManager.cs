@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 using EltraConnector.Controllers;
 using EltraCommon.Logger;
 using EltraConnector.Transport.Ws;
-using EltraCommon.Contracts.Sessions;
+using EltraCommon.Contracts.Channels;
 using EltraCommon.ObjectDictionary.Common.DeviceDescription.Profiles.Application.Parameters.Events;
 using EltraCommon.ObjectDictionary.Common.DeviceDescription.Profiles.Application.Parameters;
 using EltraCommon.Threads;
@@ -63,7 +63,7 @@ namespace EltraConnector.UserAgent
 
             if (_wsConnectionManager.IsConnected(commandExecUuid))
             {
-                var sessionIdent = new SessionIdentification() { Uuid = _sessionAdapter.Uuid, AuthData = _sessionAdapter.User.AuthData };
+                var sessionIdent = new ChannelIdentification() { Id = _sessionAdapter.Uuid, UserData = _sessionAdapter.User.UserData };
 
                 result = await _wsConnectionManager.Send(commandExecUuid, sessionIdent);
             }

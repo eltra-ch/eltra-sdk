@@ -1,12 +1,11 @@
 ﻿using System;
-
-using EltraCommon.Contracts.Sessions;
+using EltraCommon.Contracts.Channels;
 
 namespace EltraConnector.Events
 {
     public class SessionRegistrationEventArgs : EventArgs
     {
-        public Session Session { get; set; }
+        public Channel Channel { get; set; }
 
         public bool Success { get; set; }
 

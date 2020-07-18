@@ -51,7 +51,7 @@ namespace EltraConnector.Controllers
             {
                 var query = HttpUtility.ParseQueryString(string.Empty);
 
-                query["uuid"] = deviceDescription.CallerUuid;
+                query["callerId"] = deviceDescription.CallerId;
                 query["nodeId"] = $"{deviceDescription.NodeId}";
                 query["hashCode"] = deviceDescription.HashCode;
 

@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 
 using EltraConnector.Controllers.Base;
 using EltraCommon.Contracts.CommandSets;
-using EltraCommon.Contracts.Sessions;
+using EltraCommon.Contracts.Channels;
 using EltraCommon.Contracts.Users;
 using EltraCommon.ObjectDictionary.Common.DeviceDescription.Profiles.Application.Parameters;
 using EltraConnector.Transport.Ws;
@@ -23,12 +23,12 @@ namespace EltraConnector.Controllers
 
         #region Constructors
 
-        public UserSessionControllerAdapter(string url, UserAuthData authData, uint updateInterval, uint timeout)
+        public UserSessionControllerAdapter(string url, UserData authData, uint updateInterval, uint timeout)
             : base(url, authData, updateInterval, timeout)
         {   
         }
 
-        public UserSessionControllerAdapter(string url, string uuid, UserAuthData authData, uint updateInterval, uint timeout)
+        public UserSessionControllerAdapter(string url, string uuid, UserData authData, uint updateInterval, uint timeout)
             : base(url, uuid, authData, updateInterval, timeout)
         {   
         }
@@ -37,7 +37,7 @@ namespace EltraConnector.Controllers
 
         #region Properties
 
-        public string Uuid => Session.Uuid;
+        public string Uuid => Channel.Id;
 
         private DeviceControllerAdapter DeviceAdapter => _deviceControllerAdapter ?? (_deviceControllerAdapter = CreateDeviceController());
 
@@ -84,14 +84,14 @@ namespace EltraConnector.Controllers
 
         private DeviceControllerAdapter CreateDeviceController()
         {
-            DeviceControllerAdapter result = new DeviceControllerAdapter(Url, Session);
+            DeviceControllerAdapter result = new DeviceControllerAdapter(Url, Channel);
             
             return result;
         }
                         
-        public async Task<List<EltraDeviceNode>> GetDeviceNodes(Session session, UserAuthData authData)
+        public async Task<List<EltraDeviceNode>> GetDeviceNodes(Channel session, UserData authData)
         {
-            return await DeviceAdapter.GetDeviceNodes(session.Uuid, authData);
+            return await DeviceAdapter.GetDeviceNodes(session.Id, authData);
         }
         
         public async Task<List<DeviceCommand>> GetDeviceCommands(EltraDeviceNode device)

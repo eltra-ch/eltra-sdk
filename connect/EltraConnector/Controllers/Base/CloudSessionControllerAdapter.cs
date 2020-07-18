@@ -1,4 +1,4 @@
-﻿using EltraCommon.Contracts.Sessions;
+﻿using EltraCommon.Contracts.Channels;
 
 namespace EltraConnector.Controllers.Base
 {
@@ -6,17 +6,17 @@ namespace EltraConnector.Controllers.Base
     {
         #region Constructors
 
-        public CloudSessionControllerAdapter(string url, Session session)
+        public CloudSessionControllerAdapter(string url, Channel session)
             :base(url)
         {
-            Session = session;
+            Channel = session;
         }
 
         #endregion
 
         #region Properties
         
-        protected Session Session { get; }
+        protected Channel Channel { get; }
 
         #endregion
     }

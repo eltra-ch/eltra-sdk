@@ -5,7 +5,7 @@ using System.Web;
 using EltraConnector.Controllers.Base;
 using EltraConnector.Events;
 using EltraCommon.Contracts.CommandSets;
-using EltraCommon.Contracts.Sessions;
+using EltraCommon.Contracts.Channels;
 using EltraCommon.Logger;
 using Newtonsoft.Json;
 using EltraCommon.Contracts.Devices;
@@ -34,7 +34,7 @@ namespace EltraConnector.Controllers
 
         #region Constructors
 
-        public DeviceControllerAdapter(string url, Session session)
+        public DeviceControllerAdapter(string url, Channel session)
             : base(url, session)
         {
         }
@@ -43,7 +43,7 @@ namespace EltraConnector.Controllers
 
         #region Properties
 
-        private EltraDeviceNodeList SessionDevices => _sessionDevices ?? (_sessionDevices = new EltraDeviceNodeList { Session = Session });
+        private EltraDeviceNodeList SessionDevices => _sessionDevices ?? (_sessionDevices = new EltraDeviceNodeList { Session = Channel });
 
         public DeviceCommandsControllerAdapter DeviceCommandsAdapter => _deviceCommandsControllerAdapter ?? (_deviceCommandsControllerAdapter = CreateDeviceCommandsAdapter());
 
@@ -92,7 +92,7 @@ namespace EltraConnector.Controllers
 
         private DeviceCommandsControllerAdapter CreateDeviceCommandsAdapter()
         {
-            var adapter = new DeviceCommandsControllerAdapter(Url, Session);
+            var adapter = new DeviceCommandsControllerAdapter(Url, Channel);
 
            AddChild(adapter);
 
@@ -101,7 +101,7 @@ namespace EltraConnector.Controllers
 
         private ParameterControllerAdapter CreateParameterAdapter()
         {
-            var adapter = new ParameterControllerAdapter(Url, Session);
+            var adapter = new ParameterControllerAdapter(Url, Channel);
 
             AddChild(adapter);
 
@@ -130,14 +130,14 @@ namespace EltraConnector.Controllers
             var device = deviceNode;
             var query = HttpUtility.ParseQueryString(string.Empty);
 
-            var url = UrlHelper.BuildUrl(Url, $"api/device/remove/{Session.Uuid}/{device.NodeId}", query);
+            var url = UrlHelper.BuildUrl(Url, $"api/device/unregister/{Channel.Id}/{device.NodeId}", query);
 
             await Transporter.Delete(url);
 
             SessionDevices.RemoveDevice(deviceNode);
         }
 
-        public async Task<List<EltraDeviceNode>> GetDeviceNodes(string uuid, UserAuthData authData)
+        public async Task<List<EltraDeviceNode>> GetDeviceNodes(string uuid, UserData authData)
         {
             var result = new List<EltraDeviceNode>();
 
@@ -145,7 +145,7 @@ namespace EltraConnector.Controllers
             {
                 var query = HttpUtility.ParseQueryString(string.Empty);
 
-                query["uuid"] = uuid;
+                query["channelId"] = uuid;
                 query["login"] = authData.Login;
                 query["password"] = authData.Password;
 
@@ -195,9 +195,9 @@ namespace EltraConnector.Controllers
 
                 if (await UploadDeviceDescription(device))
                 {
-                    deviceNode.SessionUuid = Session.Uuid;
+                    deviceNode.ChannelId = Channel.Id;
 
-                    var path = "api/device/add";
+                    var path = "api/device/register";
                     var postResult = await Transporter.Post(Url, path, deviceNode.ToJson());
 
                     if (postResult.StatusCode == System.Net.HttpStatusCode.OK)
@@ -209,13 +209,13 @@ namespace EltraConnector.Controllers
                     {
                         SessionDevices.AddDevice(device);
 
-                        OnRegistrationStateChanged(new RegistrationEventArgs { Session = Session, Device = device, State = RegistrationState.Registered });
+                        OnRegistrationStateChanged(new RegistrationEventArgs { Session = Channel, Device = device, State = RegistrationState.Registered });
                     }
                     else
                     {
                         OnRegistrationStateChanged(new RegistrationEventArgs
                         {
-                            Session = Session,
+                            Session = Channel,
                             Device = device,
                             Exception = postResult.Exception,
                             Reason = $"post failed, status code = {postResult.StatusCode}",
@@ -227,7 +227,7 @@ namespace EltraConnector.Controllers
                 {
                     OnRegistrationStateChanged(new RegistrationEventArgs
                     {
-                        Session = Session,
+                        Session = Channel,
                         Device = device,                        
                         State = RegistrationState.Failed,
                         Reason = "upload device description failed",
@@ -236,7 +236,7 @@ namespace EltraConnector.Controllers
             }
             catch (Exception e)
             {
-                OnRegistrationStateChanged(new RegistrationEventArgs { Session = Session, 
+                OnRegistrationStateChanged(new RegistrationEventArgs { Session = Channel, 
                                                                        Device = deviceNode, 
                                                                        Exception = e, 
                                                                        Reason = "exception",
@@ -251,7 +251,7 @@ namespace EltraConnector.Controllers
             bool result;
             var deviceDescriptionPayload = new DeviceDescriptionPayload(device)
             {
-                CallerUuid = Session.Uuid
+                CallerId = Channel.Id
             };
 
             if (!await DescriptionContollerAdapter.Exists(deviceDescriptionPayload))
@@ -280,9 +280,9 @@ namespace EltraConnector.Controllers
             {
                 var query = HttpUtility.ParseQueryString(string.Empty);
 
-                query["Uuid"] = uuid;
-                query["SessionUuid"] = Session.Uuid;
-                query["NodeId"] = $"{device.NodeId}";
+                query["callerId"] = uuid;
+                query["channelId"] = Channel.Id;
+                query["nodeId"] = $"{device.NodeId}";
 
                 var url = UrlHelper.BuildUrl(Url, "api/device/exists", query);
 
@@ -359,10 +359,10 @@ namespace EltraConnector.Controllers
                 {
                     command.Status = status;
 
-                    execCommand.TargetSessionUuid = command.Device.SessionUuid;
+                    execCommand.TargetChannelId = command.Device.ChannelId;
                 }
 
-                execCommand.SourceSessionUuid = Session.Uuid;
+                execCommand.SourceChannelId = Channel.Id;
 
                 result = await DeviceCommandsAdapter.PushCommand(execCommand);
             }
@@ -376,14 +376,14 @@ namespace EltraConnector.Controllers
 
         public async Task<bool> PushCommand(ExecuteCommand execCommand)
         {
-            execCommand.SourceSessionUuid = Session.Uuid;
+            execCommand.SourceChannelId = Channel.Id;
 
             return await DeviceCommandsAdapter.PushCommand(execCommand);
         }
 
         public async Task<bool> SetCommandStatus(ExecuteCommandStatus status)
         {
-            status.SessionUuid = Session.Uuid;
+            status.ChannelId = Channel.Id;
 
             return await DeviceCommandsAdapter.SetCommandStatus(status);
         }
@@ -394,7 +394,7 @@ namespace EltraConnector.Controllers
 
             try
             {
-                var commandStatus = new ExecuteCommandStatus(Session.Uuid, command) { Status = status };
+                var commandStatus = new ExecuteCommandStatus(Channel.Id, command) { Status = status };
 
                 result = await DeviceCommandsAdapter.SetCommandStatus(commandStatus);
             }

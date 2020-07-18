@@ -1,5 +1,5 @@
 ﻿using EltraCommon.Contracts.Results;
-using EltraCommon.Contracts.Sessions;
+using EltraCommon.Contracts.Channels;
 using EltraCommon.Contracts.Users;
 using EltraCommon.Helpers;
 using EltraCommon.Logger;
@@ -19,7 +19,7 @@ namespace EltraConnector.Controllers.Base
     {
         #region Private fields
 
-        private Session _session;
+        private Channel _session;
         private readonly User _user;
         private readonly string _uuid;
         private readonly uint _timeout;
@@ -29,7 +29,7 @@ namespace EltraConnector.Controllers.Base
 
         #region Constructors
 
-        public SessionControllerAdapter(string url, UserAuthData authData, uint updateInterval, uint timeout)
+        public SessionControllerAdapter(string url, UserData authData, uint updateInterval, uint timeout)
             : base(url)
         {
             _timeout = timeout;
@@ -38,7 +38,7 @@ namespace EltraConnector.Controllers.Base
             _user = new User(authData) { Status = UserStatus.Unlocked };
         }
 
-        public SessionControllerAdapter(string url, string uuid, UserAuthData authData, uint updateInterval, uint timeout)
+        public SessionControllerAdapter(string url, string uuid, UserData authData, uint updateInterval, uint timeout)
             : base(url)
         {
             _timeout = timeout;
@@ -57,7 +57,7 @@ namespace EltraConnector.Controllers.Base
 
         #region Events handling
 
-        protected virtual void OnSessionRegistered(SessionRegistrationEventArgs e)
+        protected virtual void OnChannelRegistered(SessionRegistrationEventArgs e)
         {
             SessionRegistered?.Invoke(this, e);
         }
@@ -66,7 +66,7 @@ namespace EltraConnector.Controllers.Base
 
         #region Properties
 
-        public Session Session => _session ?? (_session = new Session { Uuid = _uuid, User = _user, Timeout = _timeout, UpdateInterval = _updateInterval });
+        public Channel Channel => _session ?? (_session = new Channel { Id = _uuid, User = _user, Timeout = _timeout, UpdateInterval = _updateInterval });
 
         public WsConnectionManager WsConnectionManager { get; set; }
 
@@ -80,81 +80,81 @@ namespace EltraConnector.Controllers.Base
         {
             bool result = false;
 
-            if (await IsSessionRegistered(Session.Uuid))
+            if (await IsChannelRegistered(Channel.Id))
             {
-                result = await SetSessionStatus(SessionStatus.Online);
+                result = await SetSessionStatus(ChannelStatus.Online);
             }
             else
             {
-                if (await RegisterSession())
+                if (await RegisterChannel())
                 {
-                    result = await SetSessionStatus(SessionStatus.Online);
+                    result = await SetSessionStatus(ChannelStatus.Online);
                 }
             }
 
             return result;
         }
 
-        public async Task<Session> GetSession(string uuid, UserAuthData authData)
+        public async Task<Channel> GetChannel(string uuid, UserData authData)
         {
-            Session result = null;
+            Channel result = null;
 
             try
             {
                 var query = HttpUtility.ParseQueryString(string.Empty);
 
-                query["uuid"] = uuid;
+                query["callerId"] = uuid;
                 query["login"] = authData.Login;
                 query["password"] = authData.Password;
 
-                var url = UrlHelper.BuildUrl(Url, "api/session/session", query);
+                var url = UrlHelper.BuildUrl(Url, "api/channel/channel", query);
 
                 var json = await Transporter.Get(url);
 
-                result = JsonConvert.DeserializeObject<Session>(json);
+                result = JsonConvert.DeserializeObject<Channel>(json);
             }
             catch (Exception e)
             {
-                MsgLogger.Exception($"{GetType().Name} - GetSession", e);
+                MsgLogger.Exception($"{GetType().Name} - GetChannel", e);
             }
 
             return result;
         }
 
-        public async Task<List<Session>> GetSessions(string uuid, UserAuthData authData)
+        public async Task<List<Channel>> GetChannels(string uuid, UserData authData)
         {
-            var result = new List<Session>();
+            var result = new List<Channel>();
 
             try
             {
                 var query = HttpUtility.ParseQueryString(string.Empty);
 
-                query["uuid"] = uuid;
+                query["callerId"] = uuid;
                 query["login"] = authData.Login;
                 query["password"] = authData.Password;
 
-                var url = UrlHelper.BuildUrl(Url, "api/session/sessions", query);
+                var url = UrlHelper.BuildUrl(Url, "api/channel/channels", query);
 
                 var json = await Transporter.Get(url);
 
-                result = JsonConvert.DeserializeObject<List<Session>>(json);
+                result = JsonConvert.DeserializeObject<List<Channel>>(json);
             }
             catch (Exception e)
             {
-                MsgLogger.Exception($"{GetType().Name} - GetSessions", e);
+                MsgLogger.Exception($"{GetType().Name} - GetChannels", e);
             }
 
             return result;
         }
 
-        public async Task<bool> RegisterSession()
+        public async Task<bool> RegisterChannel()
         {
             bool result = false;
 
             try
             {
-                var path = "api/session/add";
-                var postResult = await Transporter.Post(Url, path, Session.ToJson());
+                var path = "api/channel/register";
+                var postResult = await Transporter.Post(Url, path, Channel.ToJson());
 
                 if (postResult.StatusCode == HttpStatusCode.OK)
                 {
@@ -163,38 +163,38 @@ namespace EltraConnector.Controllers.Base
                     result = requestResult.Result;
                 }
 
-                OnSessionRegistered(new SessionRegistrationEventArgs { Session = Session, Success = result, Exception = postResult.Exception });
+                OnChannelRegistered(new SessionRegistrationEventArgs { Channel = Channel, Success = result, Exception = postResult.Exception });
             }
             catch (Exception e)
             {
-                MsgLogger.Exception($"{GetType().Name} - RegisterSession", e);
+                MsgLogger.Exception($"{GetType().Name} - RegisterChannel", e);
 
-                OnSessionRegistered(new SessionRegistrationEventArgs { Session = Session, Success = false, Exception = e });
+                OnChannelRegistered(new SessionRegistrationEventArgs { Channel = Channel, Success = false, Exception = e });
             }
 
             return result;
         }
 
-        public async Task<bool> UnregisterSession()
+        public async Task<bool> UnregisterChannel()
         {
             bool result = false;
 
-            if (await IsSessionRegistered())
+            if (await IsChannelRegistered())
             {
-                result = await SetSessionStatus(SessionStatus.Offline);
+                result = await SetSessionStatus(ChannelStatus.Offline);
             }
 
             return result;
         }
 
-        public async Task<bool> IsSessionRegistered()
+        public async Task<bool> IsChannelRegistered()
         {
-            bool result = await IsSessionRegistered(Session.Uuid);
+            bool result = await IsChannelRegistered(Channel.Id);
 
             return result;
         }
 
-        public async Task<bool> IsSessionRegistered(string sessionUuid)
+        public async Task<bool> IsChannelRegistered(string channelId)
         {
             bool result = false;
 
@@ -202,10 +202,10 @@ namespace EltraConnector.Controllers.Base
             {
                 var query = HttpUtility.ParseQueryString(string.Empty);
 
-                query["uuid"] = Session.Uuid;
-                query["SessionUuid"] = sessionUuid;
+                query["callerId"] = Channel.Id;
+                query["channelId"] = channelId;
 
-                var url = UrlHelper.BuildUrl(Url, "api/session/exists", query);
+                var url = UrlHelper.BuildUrl(Url, "api/channel/exists", query);
 
                 var json = await Transporter.Get(url);
 
@@ -218,26 +218,26 @@ namespace EltraConnector.Controllers.Base
             }
             catch (Exception e)
             {
-                MsgLogger.Exception($"{GetType().Name} - IsSessionRegistered", e);
+                MsgLogger.Exception($"{GetType().Name} - IsChannelRegistered", e);
             }
 
             return result;
         }
 
 
-        protected async Task<bool> SetSessionStatus(SessionStatus status)
+        protected async Task<bool> SetSessionStatus(ChannelStatus status)
         {
             bool result = false;
 
             try
             {
-                var statusUpdate = new SessionStatusUpdate { SessionUuid = Session.Uuid, Status = status, AuthData = _user.AuthData };
+                var statusUpdate = new ChannelStatusUpdate { ChannelId = Channel.Id, Status = status, UserData = _user.UserData };
 
-                if (WsConnectionManager != null && WsConnectionManager.IsConnected(Session.Uuid))
+                if (WsConnectionManager != null && WsConnectionManager.IsConnected(Channel.Id))
                 {
-                    if (await WsConnectionManager.Send(Session.Uuid, statusUpdate))
+                    if (await WsConnectionManager.Send(Channel.Id, statusUpdate))
                     {
-                        var requestResult = await WsConnectionManager.Receive<RequestResult>(Session.Uuid);
+                        var requestResult = await WsConnectionManager.Receive<RequestResult>(Channel.Id);
 
                         if (requestResult != null)
                         {
@@ -247,7 +247,7 @@ namespace EltraConnector.Controllers.Base
                 }
                 else
                 {
-                    var path = "api/session/status";
+                    var path = "api/channel/status";
 
                     var json = JsonConvert.SerializeObject(statusUpdate);
 

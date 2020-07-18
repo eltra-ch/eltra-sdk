@@ -1,7 +1,7 @@
 ﻿using System;
 
 using EltraCommon.Contracts.CommandSets;
-using EltraCommon.Contracts.Sessions;
+using EltraCommon.Contracts.Channels;
 using EltraCommon.Contracts.Devices;
 using Newtonsoft.Json;
 using EltraCommon.Contracts.Node;
@@ -22,16 +22,16 @@ namespace EltraConnector.Extensions
             device = JsonConvert.DeserializeObject<EltraDevice>(json);
         }
 
-        public static string ToJson(this Session session)
+        public static string ToJson(this Channel session)
         {
             return JsonConvert.SerializeObject(session);
         }
 
-        public static void FromJson(this Session session, string json)
+        public static void FromJson(this Channel session, string json)
         {
             if (session == null) throw new ArgumentNullException(nameof(session));
 
-            session = JsonConvert.DeserializeObject<Session>(json);
+            session = JsonConvert.DeserializeObject<Channel>(json);
         }
 
         public static string ToJson(this EltraDeviceNodeList sessionDevices)

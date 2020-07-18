@@ -13,7 +13,7 @@ namespace EltraConnector.SyncAgent
 
         private readonly AuthControllerAdapter _authControllerAdapter;
 
-        private UserAuthData _authData;
+        private UserData _authData;
         private bool _good;
 
         #endregion
@@ -67,7 +67,7 @@ namespace EltraConnector.SyncAgent
 
         #region Methods
 
-        public async Task<bool> SignIn(UserAuthData authData)
+        public async Task<bool> SignIn(UserData authData)
         {
             bool result = false;
 
@@ -101,7 +101,7 @@ namespace EltraConnector.SyncAgent
             return result;
         }
 
-        public async Task<bool> SignUp(UserAuthData authData)
+        public async Task<bool> SignUp(UserData authData)
         {
             bool result = false;
 

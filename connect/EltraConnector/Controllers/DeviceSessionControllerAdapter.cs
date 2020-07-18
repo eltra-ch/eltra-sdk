@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 using EltraConnector.Controllers.Base;
 using EltraConnector.Events;
 using EltraCommon.Contracts.Devices;
-using EltraCommon.Contracts.Sessions;
+using EltraCommon.Contracts.Channels;
 using EltraCommon.Contracts.Users;
 using EltraCommon.Logger;
 
@@ -25,7 +25,7 @@ namespace EltraConnector.Controllers
 
         #region Constructors
 
-        public DeviceSessionControllerAdapter(string url, UserAuthData authData, uint updateInterval, uint timeout)
+        public DeviceSessionControllerAdapter(string url, UserData authData, uint updateInterval, uint timeout)
             : base(url, authData, updateInterval, timeout)
         {   
         }
@@ -97,7 +97,7 @@ namespace EltraConnector.Controllers
 
         private ParameterControllerAdapter CreateParameterControllerAdapter()
         {
-            var adapter = new ParameterControllerAdapter(Url, Session);
+            var adapter = new ParameterControllerAdapter(Url, Channel);
 
             AddChild(adapter);
 
@@ -106,7 +106,7 @@ namespace EltraConnector.Controllers
 
         private DeviceControllerAdapter CreateDeviceController()
         {
-            var adapter = new DeviceControllerAdapter(Url, Session);
+            var adapter = new DeviceControllerAdapter(Url, Channel);
 
             AddChild(adapter);
 
@@ -124,15 +124,15 @@ namespace EltraConnector.Controllers
         {
             bool result = true;
             
-            if (!await IsSessionRegistered())
+            if (!await IsChannelRegistered())
             {
-                if (await RegisterSession())
+                if (await RegisterChannel())
                 {
-                    MsgLogger.WriteLine($"register session='{Session.Uuid}' success");
+                    MsgLogger.WriteLine($"register session='{Channel.Id}' success");
                 }
                 else
                 {
-                    MsgLogger.WriteError($"{GetType().Name} - RegisterDevice", $"register session='{Session.Uuid}' failed!");
+                    MsgLogger.WriteError($"{GetType().Name} - RegisterDevice", $"register session='{Channel.Id}' failed!");
 
                     result = false;
                 }
@@ -182,7 +182,7 @@ namespace EltraConnector.Controllers
             {
                 foreach (var deviceNode in SafeDevicesArray)
                 {
-                    if (!await DeviceControllerAdapter.IsDeviceRegistered(Session.Uuid, deviceNode))
+                    if (!await DeviceControllerAdapter.IsDeviceRegistered(Channel.Id, deviceNode))
                     {
                         result = true;
                         break;
@@ -203,63 +203,63 @@ namespace EltraConnector.Controllers
 
             try
             {
-                MsgLogger.WriteDebug($"{GetType().Name} - Update", $"Is session='{Session.Uuid}' registered...");
+                MsgLogger.WriteDebug($"{GetType().Name} - Update", $"Is session='{Channel.Id}' registered...");
 
-                if (await IsSessionRegistered())
+                if (await IsChannelRegistered())
                 {
-                    MsgLogger.WriteDebug($"{GetType().Name} - Update", $"Is any session='{Session.Uuid}' device not registered...");
+                    MsgLogger.WriteDebug($"{GetType().Name} - Update", $"Is any session='{Channel.Id}' device not registered...");
 
                     if (await AnyDeviceUnRegistered())
                     {
-                        MsgLogger.WriteLine($"re-register session='{Session.Uuid}' devices");
+                        MsgLogger.WriteLine($"re-register session='{Channel.Id}' devices");
 
                         if (!await DeviceControllerAdapter.RegisterDevices())
                         {
-                            MsgLogger.WriteError($"{GetType().Name} - Update", $"register session='{Session.Uuid}' devices failed!");
+                            MsgLogger.WriteError($"{GetType().Name} - Update", $"register session='{Channel.Id}' devices failed!");
                         }
                     }
 
-                    MsgLogger.Write($"{GetType().Name} - Update", $"Updating session='{Session.Uuid}' status...");
+                    MsgLogger.Write($"{GetType().Name} - Update", $"Updating session='{Channel.Id}' status...");
 
-                    result = await SetSessionStatus(SessionStatus.Online);
+                    result = await SetSessionStatus(ChannelStatus.Online);
                 }
                 else
                 {
-                    MsgLogger.WriteLine($"Registering session='{Session.Uuid}' ...");
+                    MsgLogger.WriteLine($"Registering session='{Channel.Id}' ...");
 
-                    if (await RegisterSession())
+                    if (await RegisterChannel())
                     {
-                        MsgLogger.Write($"{GetType().Name} - Update", $"updating session='{Session.Uuid}' status ...");
+                        MsgLogger.Write($"{GetType().Name} - Update", $"updating session='{Channel.Id}' status ...");
 
-                        result = await SetSessionStatus(SessionStatus.Online);
+                        result = await SetSessionStatus(ChannelStatus.Online);
 
                         if (result)
                         {
-                            MsgLogger.WriteLine($"update session='{Session.Uuid}' status success");
+                            MsgLogger.WriteLine($"update session='{Channel.Id}' status success");
                         }
                         else
                         {
-                            MsgLogger.WriteError($"{GetType().Name} - Update", $"update session='{Session.Uuid}' status failed!");   
+                            MsgLogger.WriteError($"{GetType().Name} - Update", $"update session='{Channel.Id}' status failed!");   
                         }
                     }
                     else
                     {
-                        MsgLogger.WriteError($"{GetType().Name} - Update", $"register session='{Session.Uuid}' failed!");
+                        MsgLogger.WriteError($"{GetType().Name} - Update", $"register session='{Channel.Id}' failed!");
                     }
 
                     if (result)
                     {
-                        MsgLogger.WriteLine($"Registering devices='{Session.Uuid}' ...");
+                        MsgLogger.WriteLine($"Registering devices='{Channel.Id}' ...");
                         
                         result = await DeviceControllerAdapter.RegisterDevices();
 
                         if (result)
                         {
-                            MsgLogger.WriteLine($"register session='{Session.Uuid}' devices success");
+                            MsgLogger.WriteLine($"register session='{Channel.Id}' devices success");
                         }
                         else
                         {
-                            MsgLogger.WriteError($"{GetType().Name} - Update", $"register session='{Session.Uuid}' devices failed!");   
+                            MsgLogger.WriteError($"{GetType().Name} - Update", $"register session='{Channel.Id}' devices failed!");   
                         }
                     }
                 }
@@ -300,11 +300,11 @@ namespace EltraConnector.Controllers
 
                                     clonedDeviceCommand.Sync(executeCommand.Command);
 
-                                    MsgLogger.WriteDebug($"{GetType().Name} - ExecuteCommand", $"Execute Command '{commandName}', session '{executeCommand.SourceSessionUuid}'");
+                                    MsgLogger.WriteDebug($"{GetType().Name} - ExecuteCommand", $"Execute Command '{commandName}', session '{executeCommand.SourceChannelId}'");
 
                                     try
                                     {
-                                        result = clonedDeviceCommand.Execute(executeCommand.SourceSessionUuid);
+                                        result = clonedDeviceCommand.Execute(executeCommand.SourceChannelId);
                                     }
                                     catch (Exception e)
                                     {
@@ -319,8 +319,8 @@ namespace EltraConnector.Controllers
 
                                         MsgLogger.WriteDebug($"{GetType().Name} - ExecuteCommand", $"Push Response for Command '{commandName}'");
 
-                                        executeCommand.SourceSessionUuid = Session.Uuid;
-                                        executeCommand.TargetSessionUuid = clonedDeviceCommand.Device.SessionUuid;
+                                        executeCommand.SourceChannelId = Channel.Id;
+                                        executeCommand.TargetChannelId = clonedDeviceCommand.Device.ChannelId;
 
                                         result = await DeviceControllerAdapter.PushCommand(executeCommand, ExecCommandStatus.Executed);
 
@@ -339,8 +339,8 @@ namespace EltraConnector.Controllers
 
                                         MsgLogger.WriteError($"{GetType().Name} - ExecuteCommand",
                                             command != null
-                                                ? $"Command '{command.Name}' uuid '{executeCommand.CommandUuid}' execution failed!"
-                                                : $"Command '?' uuid '{executeCommand.CommandUuid}' execution failed!");
+                                                ? $"Command '{command.Name}' uuid '{executeCommand.CommandId}' execution failed!"
+                                                : $"Command '?' uuid '{executeCommand.CommandId}' execution failed!");
 
                                         await DeviceControllerAdapter.SetCommandStatus(executeCommand,
                                             ExecCommandStatus.Failed);
@@ -467,7 +467,7 @@ namespace EltraConnector.Controllers
         
         public async Task<bool> IsDeviceRegistered(EltraDeviceNode device)
         {
-            return await DeviceControllerAdapter.IsDeviceRegistered(Session.Uuid, device);
+            return await DeviceControllerAdapter.IsDeviceRegistered(Channel.Id, device);
         }
 
         public override bool Stop()
@@ -475,7 +475,7 @@ namespace EltraConnector.Controllers
             _deviceControllerAdapter?.Stop();
             _parameterControllerAdapter?.Stop();
 
-            Task.Run( ()=> UnregisterSession()).GetAwaiter().GetResult();
+            Task.Run( ()=> UnregisterChannel()).GetAwaiter().GetResult();
 
             return base.Stop();
         }

@@ -13,13 +13,13 @@ namespace EltraConnector.Master.Device
         }
 
         public MasterVcs(SyncCloudAgent masterAgent, EltraDeviceNode device, uint updateInterval, uint timeout)
-            : base(masterAgent.Url, device.SessionUuid, masterAgent.AuthData, updateInterval, timeout)
+            : base(masterAgent.Url, device.ChannelId, masterAgent.AuthData, updateInterval, timeout)
         {
             Device = device;
         }
 
         public MasterVcs(MasterDevice device)
-            : base(device.CloudAgent.Url, device.SessionUuid, device.CloudAgent.AuthData, device.CloudAgent.UpdateInterval, device.CloudAgent.Timeout)
+            : base(device.CloudAgent.Url, device.ChannelId, device.CloudAgent.AuthData, device.CloudAgent.UpdateInterval, device.CloudAgent.Timeout)
         {
             Device = device;
         }

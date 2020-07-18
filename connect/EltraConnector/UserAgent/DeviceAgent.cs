@@ -20,12 +20,12 @@ namespace EltraConnector.UserAgent
 
         #region Constructors
 
-        public DeviceAgent(string url, UserAuthData authData, uint updateInterval, uint timeout)
+        public DeviceAgent(string url, UserData authData, uint updateInterval, uint timeout)
             : base(url, authData, updateInterval, timeout)
         {
         }
 
-        public DeviceAgent(string url, string uuid, UserAuthData authData, uint updateInterval, uint timeout)
+        public DeviceAgent(string url, string uuid, UserData authData, uint updateInterval, uint timeout)
             : base(url, uuid, authData, updateInterval, timeout)
         {
         }
@@ -87,7 +87,7 @@ namespace EltraConnector.UserAgent
 
             if (device != null)
             {
-                result = await GetParameter(device.SessionUuid, device.NodeId, index, subIndex);
+                result = await GetParameter(device.ChannelId, device.NodeId, index, subIndex);
             }
 
             return result;
@@ -99,7 +99,7 @@ namespace EltraConnector.UserAgent
 
             if (device != null)
             {
-                result = await GetParameterValue(device.SessionUuid, device.NodeId, index, subIndex);
+                result = await GetParameterValue(device.ChannelId, device.NodeId, index, subIndex);
             }
 
             return result;
@@ -111,7 +111,7 @@ namespace EltraConnector.UserAgent
 
             if (device != null)
             {
-                result = await GetParameterHistory(device.SessionUuid, device.NodeId, uniqueId, from, to);
+                result = await GetParameterHistory(device.ChannelId, device.NodeId, uniqueId, from, to);
             }
 
             return result;

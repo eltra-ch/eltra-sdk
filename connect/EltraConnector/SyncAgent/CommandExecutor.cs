@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using EltraCommon.Contracts.CommandSets;
-using EltraCommon.Contracts.Sessions;
+using EltraCommon.Contracts.Channels;
 using EltraCommon.Logger;
 using EltraCommon.Threads;
 using EltraConnector.Controllers;
@@ -50,7 +50,7 @@ namespace EltraConnector.SyncAgent
         {
             if(_wsConnectionManager.IsConnected(commandExecUuid))
             {
-                var sessionIdent = new SessionIdentification() { Uuid = _sessionControllerAdapter.Session.Uuid, AuthData = _sessionControllerAdapter.User.AuthData };
+                var sessionIdent = new ChannelIdentification() { Id = _sessionControllerAdapter.Channel.Id, UserData = _sessionControllerAdapter.User.UserData };
                 
                 await _wsConnectionManager.Send(commandExecUuid, sessionIdent);
             }
@@ -81,7 +81,7 @@ namespace EltraConnector.SyncAgent
 
         protected override async Task Execute()
         {
-            var sessionUuid = _sessionControllerAdapter.Session.Uuid + "_CommandExec";
+            var sessionUuid = _sessionControllerAdapter.Channel.Id + "_CommandExec";
             string channelName = "CommandsExecution";
 
             await Connect(sessionUuid, channelName);
@@ -122,18 +122,18 @@ namespace EltraConnector.SyncAgent
                     }
                     else
                     {
-                        var sessionStatusUpdate = JsonConvert.DeserializeObject<SessionStatusUpdate>(json, new JsonSerializerSettings
+                        var sessionStatusUpdate = JsonConvert.DeserializeObject<ChannelStatusUpdate>(json, new JsonSerializerSettings
                         {
                             Error = HandleDeserializationError
                         });
 
                         if (sessionStatusUpdate != null)
                         {
-                            if (sessionStatusUpdate.SessionUuid != _sessionControllerAdapter.Session.Uuid)
+                            if (sessionStatusUpdate.ChannelId != _sessionControllerAdapter.Channel.Id)
                             {
-                                MsgLogger.WriteDebug($"{GetType().Name} - Execute", $"session {sessionStatusUpdate.SessionUuid}, status changed to {sessionStatusUpdate.Status}");
+                                MsgLogger.WriteDebug($"{GetType().Name} - Execute", $"session {sessionStatusUpdate.ChannelId}, status changed to {sessionStatusUpdate.Status}");
 
-                                OnRemoteSessionStatusChanged(new SessionStatusChangedEventArgs() { Uuid = sessionStatusUpdate.SessionUuid, Status = sessionStatusUpdate.Status });
+                                OnRemoteSessionStatusChanged(new SessionStatusChangedEventArgs() { Uuid = sessionStatusUpdate.ChannelId, Status = sessionStatusUpdate.Status });
                             }
                         }
                         else

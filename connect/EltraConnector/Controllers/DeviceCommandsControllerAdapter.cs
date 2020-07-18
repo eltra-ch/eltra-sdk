@@ -9,7 +9,7 @@ using EltraConnector.Controllers.Base;
 using EltraConnector.Extensions;
 
 using EltraCommon.Contracts.CommandSets;
-using EltraCommon.Contracts.Sessions;
+using EltraCommon.Contracts.Channels;
 using EltraCommon.Logger;
 using EltraCommon.Helpers;
 using EltraCommon.Contracts.Devices;
@@ -21,7 +21,7 @@ namespace EltraConnector.Controllers
     {
         #region Constructors
 
-        public DeviceCommandsControllerAdapter(string url, Session session)
+        public DeviceCommandsControllerAdapter(string url, Channel session)
             : base(url, session)
         {
         }
@@ -43,7 +43,7 @@ namespace EltraConnector.Controllers
                 {
                     var query = HttpUtility.ParseQueryString(string.Empty);
 
-                    query["uuid"] = Session.Uuid;
+                    query["callerId"] = Channel.Id;
                     query["nodeId"] = $"{device.NodeId}";
 
                     var url = UrlHelper.BuildUrl(Url, "api/command/commands", query);
@@ -81,7 +81,7 @@ namespace EltraConnector.Controllers
                 {
                     var query = HttpUtility.ParseQueryString(string.Empty);
 
-                    query["uuid"] = device.SessionUuid;
+                    query["callerId"] = device.ChannelId;
                     query["nodeId"] = $"{device.NodeId}";
                     query["commandName"] = $"{commandName}";
 
@@ -156,8 +156,8 @@ namespace EltraConnector.Controllers
             {
                 var execCommand = new ExecuteCommand { Command = command, 
                                                        NodeId = device.NodeId,
-                                                       TargetSessionUuid = device.SessionUuid,
-                                                       SourceSessionUuid = agentUuid };
+                                                       TargetChannelId = device.ChannelId,
+                                                       SourceChannelId = agentUuid };
 
                 command.Status = status;
 
@@ -192,7 +192,7 @@ namespace EltraConnector.Controllers
 
         public async Task<bool> SetCommandStatus(ExecuteCommand executeCommand, ExecCommandStatus status)
         {
-            var execCommandStatus = new ExecuteCommandStatus(Session.Uuid, executeCommand) { Status = status };
+            var execCommandStatus = new ExecuteCommandStatus(Channel.Id, executeCommand) { Status = status };
 
             return await SetCommandStatus(execCommandStatus);
         }
@@ -208,8 +208,8 @@ namespace EltraConnector.Controllers
                 {
                     var query = HttpUtility.ParseQueryString(string.Empty);
 
-                    query["sourceSessionUuid"] = Session.Uuid;
-                    query["targetSessionUuid"] = $"{deviceNode.SessionUuid}";
+                    query["sourceChannelId"] = Channel.Id;
+                    query["targetChannelId"] = $"{deviceNode.ChannelId}";
                     query["nodeId"] = $"{device.NodeId}";
                     query["status"] = $"{status}";
                     
@@ -252,8 +252,8 @@ namespace EltraConnector.Controllers
                 {
                     var query = HttpUtility.ParseQueryString(string.Empty);
 
-                    query["uuid"] = Session.Uuid;
-                    query["commandUuid"] = $"{commandUuid}";
+                    query["callerId"] = Channel.Id;
+                    query["commandId"] = $"{commandUuid}";
                     query["nodeId"] = $"{device.NodeId}";
                     query["status"] = $"{status}";
                     
@@ -284,16 +284,16 @@ namespace EltraConnector.Controllers
             try
             {
                 var commandName = executeCommand.Command.Name;
-                var commandUuid = executeCommand.CommandUuid;
+                var commandUuid = executeCommand.CommandId;
                 var nodeId = executeCommand.NodeId;
 
                 MsgLogger.WriteLine($"get command status '{commandName}', node id={nodeId}");
 
                 var query = HttpUtility.ParseQueryString(string.Empty);
 
-                query["uuid"] = $"{uuid}";
-                query["commandUuid"] = $"{commandUuid}";
-                query["sessionUuid"] = $"{executeCommand.SourceSessionUuid}";
+                query["callerId"] = $"{uuid}";
+                query["commandId"] = $"{commandUuid}";
+                query["channelId"] = $"{executeCommand.SourceChannelId}";
                 query["nodeId"] = $"{nodeId}";
                 query["commandName"] = $"{commandName}";
 
