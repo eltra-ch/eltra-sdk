@@ -148,7 +148,7 @@ namespace EltraConnector.Agent
             return result;
         }
 
-        protected async Task<List<EltraDeviceNodeList>> GetDeviceNodeList(UserData deviceAuth)
+        public async Task<List<EltraDeviceNodeList>> GetChannelDeviceNodes(UserData deviceAuth)
         {
             var result = new List<EltraDeviceNodeList>();
 
