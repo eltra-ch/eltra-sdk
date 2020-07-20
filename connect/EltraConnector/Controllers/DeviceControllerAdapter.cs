@@ -251,7 +251,7 @@ namespace EltraConnector.Controllers
             bool result;
             var deviceDescriptionPayload = new DeviceDescriptionPayload(device)
             {
-                CallerId = Channel.Id
+                ChannelId = Channel.Id
             };
 
             if (!await DescriptionContollerAdapter.Exists(deviceDescriptionPayload))
