@@ -29,7 +29,7 @@ namespace DummyAgent
 
             var agentAuth = new UserData() { Login = $"agent{sessionId}@eltra.ch", Password = "1234" };
 
-            AgentConnector connector = new AgentConnector() { Host = urls[0], AuthData = agentAuth };
+            AgentConnector connector = new AgentConnector() { Host = urls[1], AuthData = agentAuth };
             string paramUniqueId = string.Empty;
             
             var t = Task.Run(async ()=>

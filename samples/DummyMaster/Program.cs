@@ -33,7 +33,7 @@ namespace ConsoleApp1
 
             var runner = Task.Run(() =>
             {
-                connector.Host = urls[0];
+                connector.Host = urls[1];
                 connector.AuthData = new UserData() { Login= $"dummy{serviceId}@eltra.ch", Name="Dummy", Password = "1234" };
                 
                 connector.StartService(serviceName, new DummyDeviceManager(filePath));
