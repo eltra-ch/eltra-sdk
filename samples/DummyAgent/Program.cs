@@ -6,6 +6,7 @@ using System;
 using System.Threading.Tasks;
 using EltraConnector.Agent;
 using EltraConnector.Extensions;
+using EltraConnector.Events;
 
 namespace DummyAgent
 {
@@ -29,7 +30,11 @@ namespace DummyAgent
 
             var agentAuth = new UserData() { Login = $"agent{sessionId}@eltra.ch", Password = "1234" };
 
-            AgentConnector connector = new AgentConnector() { Host = urls[1], AuthData = agentAuth };
+            AgentConnector connector = new AgentConnector() { Host = urls[0], AuthData = agentAuth };
+
+            connector.ChannelStatusChanged += ChannelStatusChanged;
+            connector.RemoteChannelStatusChanged += RemoteChannelStatusChanged;
+
             string paramUniqueId = string.Empty;
             
             var t = Task.Run(async ()=>
@@ -120,6 +125,16 @@ namespace DummyAgent
             {
                 Console.WriteLine(e.Message);
             }
+        }
+
+        private static void RemoteChannelStatusChanged(object sender, ChannelStatusChangedEventArgs e)
+        {
+            Console.WriteLine($"remote channel {e.Id} status changed {e.Status}");
+        }
+
+        private static void ChannelStatusChanged(object sender, ChannelStatusChangedEventArgs e)
+        {
+            Console.WriteLine($"my channel {e.Id} status changed {e.Status}");
         }
     }
 }
