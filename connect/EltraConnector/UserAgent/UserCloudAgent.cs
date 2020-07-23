@@ -31,12 +31,13 @@ namespace EltraConnector.UserAgent
 
         private Task _agentTask;
         private CancellationTokenSource _agentCancelationTokenSource;
-        private ChannelHeartbeat _sessionUpdater;
+        private ChannelHeartbeat _channelHeartbeat;
         private ExecuteCommander _executeCommander;
         private ParameterUpdateManager _parameterUpdateManager;        
         private Authentication _authentication;
         private Channel _channel;
         private UserData _deviceAuthData;
+        private AgentStatus _status;
 
         #endregion
 
@@ -44,6 +45,7 @@ namespace EltraConnector.UserAgent
 
         public UserCloudAgent(string url, UserData authData, uint updateInterval, uint timeout)
         {
+            _status = AgentStatus.Undefined;
             _authData = authData;
             _executedCommands = new List<DeviceCommand>();
             _channelAdapter = new UserChannelControllerAdapter(url, authData, updateInterval, timeout) { UseWebSockets = true };
@@ -53,6 +55,7 @@ namespace EltraConnector.UserAgent
 
         public UserCloudAgent(string url, string uuid, UserData authData, uint updateInterval, uint timeout)
         {
+            _status = AgentStatus.Undefined;
             _authData = authData;
             _executedCommands = new List<DeviceCommand>();
             _channelAdapter = new UserChannelControllerAdapter(url, uuid, authData, updateInterval, timeout) { UseWebSockets = true };
@@ -62,6 +65,7 @@ namespace EltraConnector.UserAgent
 
         public UserCloudAgent(SyncCloudAgent masterAgent, EltraDeviceNode device, uint updateInterval, uint timeout)
         {
+            _status = AgentStatus.Undefined;
             _authData = masterAgent.AuthData;
             _executedCommands = new List<DeviceCommand>();
             _channelAdapter = new UserChannelControllerAdapter(masterAgent.Url, device.ChannelId, masterAgent.AuthData, updateInterval, timeout) { UseWebSockets = true };
@@ -73,13 +77,22 @@ namespace EltraConnector.UserAgent
 
         #region Events
 
+        public event EventHandler<AgentStatusEventArgs> StatusChanged;
+
         public event EventHandler<ParameterChangedEventArgs> ParameterChanged;
 
         public event EventHandler<ChannelStatusChangedEventArgs> RemoteChannelStatusChanged;
 
+        public event EventHandler<ChannelStatusChangedEventArgs> AgentChannelStatusChanged;
+
         #endregion
 
         #region Events handling
+
+        private void OnStatusChanged()
+        {
+            StatusChanged?.Invoke(this, new AgentStatusEventArgs() { Status = Status });
+        }
 
         private void OnParameterChanged(object sender, ParameterChangedEventArgs e)
         {
@@ -136,10 +149,12 @@ namespace EltraConnector.UserAgent
 
         private void OnChannelStatusChanged(object sender, ChannelStatusChangedEventArgs e)
         {
-            if(State == UserCloudAgentState.Starting && e.Status == ChannelStatus.Online)
+            if(Status == AgentStatus.Starting && e.Status == ChannelStatus.Online)
             {
-                State = UserCloudAgentState.Started;
-            }    
+                Status = AgentStatus.Started;
+            }
+
+            AgentChannelStatusChanged?.Invoke(this, e);
         }
 
         #endregion
@@ -148,21 +163,33 @@ namespace EltraConnector.UserAgent
 
         public string Uuid => _channelAdapter.Id;
 
-        public UserCloudAgentState State { get; set; } = UserCloudAgentState.Undefined;
+        public AgentStatus Status 
+        { 
+            get => _status;
+            set 
+            {
+                if (_status != value)
+                {
+                    _status = value;
+
+                    OnStatusChanged();
+                }
+            }
+        }
 
         #endregion
 
         #region Methods
 
-        private void Initialize(string url, uint updateInterval, uint timeout, bool useSessionUpdater)
+        private void Initialize(string url, uint updateInterval, uint timeout, bool useHeartbeat)
         {
             _authentication = new Authentication(url);
 
-            if (useSessionUpdater)
+            if (useHeartbeat)
             {
-                _sessionUpdater = new ChannelHeartbeat(_channelAdapter, updateInterval, timeout);
+                _channelHeartbeat = new ChannelHeartbeat(_channelAdapter, updateInterval, timeout);
 
-                _sessionUpdater.StatusChanged += OnChannelStatusChanged;
+                _channelHeartbeat.StatusChanged += OnChannelStatusChanged;
             }
 
             _executeCommander = new ExecuteCommander(_channelAdapter);
@@ -218,7 +245,7 @@ namespace EltraConnector.UserAgent
 
             if (!token.IsCancellationRequested)
             {
-                _sessionUpdater?.Start();
+                _channelHeartbeat?.Start();
                 _executeCommander?.Start();
                 _parameterUpdateManager?.Start();
 
@@ -236,7 +263,7 @@ namespace EltraConnector.UserAgent
            
             await UnregisterSession();
 
-            _sessionUpdater?.Stop();
+            _channelHeartbeat?.Stop();
 
             UnregisterParameterUpdateManagerEvents();
 
@@ -245,7 +272,7 @@ namespace EltraConnector.UserAgent
 
         private async Task Run(CancellationToken token)
         {
-            State = UserCloudAgentState.Starting;
+            Status = AgentStatus.Starting;
 
             if(await RegisterSession(token))
             {
@@ -259,7 +286,7 @@ namespace EltraConnector.UserAgent
 
             MsgLogger.WriteLine($"Sync agent working thread finished successfully!");
             
-            State = UserCloudAgentState.Stopped;
+            Status = AgentStatus.Stopped;
         }
 
         private static async Task SessionLoop(CancellationToken token)
@@ -315,7 +342,7 @@ namespace EltraConnector.UserAgent
         {
             bool result = false;
 
-            if (_sessionUpdater != null)
+            if (_channelHeartbeat != null)
             {
                 result = await _channelAdapter.UnregisterChannel();
             }
@@ -334,7 +361,7 @@ namespace EltraConnector.UserAgent
 
         private void RegisterEvents()
         {
-            _channelAdapter.SessionRegistered += OnChannelRegistered;
+            _channelAdapter.ChannelRegistered += OnChannelRegistered;
 
             _executeCommander.CommandExecuted += OnCommandExecuted;
             _executeCommander.RemoteChannelStatusChanged += OnRemoteChannelStatusChanged;
@@ -351,16 +378,16 @@ namespace EltraConnector.UserAgent
         {
             bool result = false;
 
-            if (State == UserCloudAgentState.Starting)
+            if (Status == AgentStatus.Starting)
             {
                 do
                 {
                     await Task.Delay(10);
-                } while (State != UserCloudAgentState.Started);
+                } while (Status != AgentStatus.Started);
 
                 result = true;
             }
-            else if(State == UserCloudAgentState.Started)
+            else if(Status == AgentStatus.Started)
             {
                 result = true;
             }

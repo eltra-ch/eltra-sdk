@@ -4,6 +4,8 @@ using EltraCommon.Contracts.Node;
 using EltraCommon.Contracts.Parameters;
 using EltraCommon.Contracts.Users;
 using EltraCommon.ObjectDictionary.Common.DeviceDescription.Profiles.Application.Parameters;
+using EltraConnector.Agent.Events;
+using EltraConnector.Events;
 using EltraConnector.UserAgent;
 using EltraConnector.UserAgent.Vcs;
 using System;
@@ -67,18 +69,25 @@ namespace EltraConnector.Agent
 
         #endregion
 
-        #region Methods
+        #region Events
+
+        public event EventHandler<ChannelStatusChangedEventArgs> RemoteChannelStatusChanged;
+        public event EventHandler<ChannelStatusChangedEventArgs> ChannelStatusChanged;
+        public event EventHandler<AgentStatusEventArgs> AgentStatusChanged;
+        public event EventHandler<DeviceFoundEventArgs> DeviceFound;
 
         private void OnHostChanged()
         {
-            if(!string.IsNullOrEmpty(Host) && AuthData != null)
+            if (!string.IsNullOrEmpty(Host) && AuthData != null)
             {
-                if(_deviceAgent!=null)
+                if (_deviceAgent != null)
                 {
                     _deviceAgent.Dispose();
                 }
 
                 _deviceAgent = new DeviceAgent(Host, AuthData, _updateInterval, _timeout);
+
+                RegisterEvents();
             }
         }
 
@@ -92,6 +101,33 @@ namespace EltraConnector.Agent
                 }
 
                 _deviceAgent = new DeviceAgent(Host, AuthData, _updateInterval, _timeout);
+
+                RegisterEvents();
+            }
+        }
+
+        #endregion
+
+        #region Methods
+
+        private void RegisterEvents()
+        {
+            if (_deviceAgent != null)
+            {
+                _deviceAgent.StatusChanged += (sender, args) => 
+                {
+                    AgentStatusChanged?.Invoke(this, args);
+                };
+
+                _deviceAgent.AgentChannelStatusChanged += (sender, args) =>
+                {
+                    ChannelStatusChanged?.Invoke(this, args);
+                };
+
+                _deviceAgent.RemoteChannelStatusChanged += (sender, args) =>
+                {
+                    RemoteChannelStatusChanged?.Invoke(this, args);
+                };
             }
         }
 
@@ -137,7 +173,11 @@ namespace EltraConnector.Agent
 
                         if (FindVcs(device) == null)
                         {
-                            _vcsList.Add(new DeviceVcs(_deviceAgent, deviceNode));
+                            var vcs = new DeviceVcs(_deviceAgent, deviceNode);
+
+                            vcs.DeviceChanged += (sender, args) => { DeviceFound?.Invoke(this, new DeviceFoundEventArgs() { Device = deviceNode }); };
+
+                            _vcsList.Add(vcs);
                         }
 
                         result.Add(deviceNode);
@@ -164,7 +204,11 @@ namespace EltraConnector.Agent
                     {
                         foreach (var deviceNode in deviceNodeList.DeviceNodeList)
                         {
-                            _vcsList.Add(new DeviceVcs(_deviceAgent, deviceNode));
+                            var vcs = new DeviceVcs(_deviceAgent, deviceNode);
+
+                            vcs.DeviceChanged += (sender, args) => { DeviceFound?.Invoke(this, new DeviceFoundEventArgs() { Device = deviceNode }); };
+
+                            _vcsList.Add(vcs);
                         }
                     }
 

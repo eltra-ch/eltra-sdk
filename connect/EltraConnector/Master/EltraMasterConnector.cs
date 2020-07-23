@@ -4,11 +4,12 @@ using EltraConnector.SyncAgent;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
-using EltraConnector.Master.Status;
 using EltraConnector.Master.Events;
 using EltraConnector.Master.Device;
 using EltraCommon.Ipc;
 using EltraConnector.Master.Device.Connection;
+using EltraConnector.Master.Definitions;
+using EltraConnector.Events;
 
 namespace EltraConnector.Master
 {
@@ -57,6 +58,8 @@ namespace EltraConnector.Master
         #region Events
 
         public event EventHandler<MasterStatusEventArgs> StatusChanged;
+        public event EventHandler<ChannelStatusChangedEventArgs> RemoteChannelStatusChanged;
+        public event EventHandler<ChannelStatusChangedEventArgs> ChannelStatusChanged;
 
         #endregion
 
@@ -76,6 +79,19 @@ namespace EltraConnector.Master
 
         #region Methods
 
+        private void RegisterEvents(SyncCloudAgent agent)
+        {
+            agent.ChannelStatusChanged += (sender, args) =>
+            {
+                ChannelStatusChanged?.Invoke(sender, args);
+            };
+
+            agent.RemoteChannelStatusChanged += (sender, args) => 
+            {
+                RemoteChannelStatusChanged?.Invoke(sender, args);
+            };
+        }
+
         public async Task Start(MasterDeviceManager deviceManager)
         {
             if (Status != MasterStatus.Stopped && Status != MasterStatus.Undefined)
@@ -91,6 +107,8 @@ namespace EltraConnector.Master
                 try
                 {
                     var agent = new SyncCloudAgent(Host, AuthData, ConnectionSettings.UpdateInterval, ConnectionSettings.Timeout);
+
+                    RegisterEvents(agent);
 
                     bool repeat = false;
 

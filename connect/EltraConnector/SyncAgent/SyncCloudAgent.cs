@@ -17,9 +17,9 @@ namespace EltraConnector.SyncAgent
     {
         #region Private fields
 
-        private readonly DeviceChannelControllerAdapter _sessionControllerAdapter;
+        private readonly DeviceChannelControllerAdapter _channelControllerAdapter;
         
-        private readonly ChannelHeartbeat _sessionUpdater;
+        private readonly ChannelHeartbeat _channelHeartbeat;
         private readonly CommandExecutor _commandExecutor;
         private readonly WsConnectionManager _wsConnectionManager;
         private readonly Authentication _authentication;
@@ -40,10 +40,10 @@ namespace EltraConnector.SyncAgent
             _authentication = new Authentication(url);
             _wsConnectionManager = new WsConnectionManager() { HostUrl = url };
 
-            _sessionControllerAdapter = new DeviceChannelControllerAdapter(url, authData, updateInterval, timeout) { WsConnectionManager = _wsConnectionManager };
+            _channelControllerAdapter = new DeviceChannelControllerAdapter(url, authData, updateInterval, timeout) { WsConnectionManager = _wsConnectionManager };
 
-            _sessionUpdater = new ChannelHeartbeat(_sessionControllerAdapter, updateInterval, timeout);
-            _commandExecutor = new CommandExecutor(_sessionControllerAdapter);
+            _channelHeartbeat = new ChannelHeartbeat(_channelControllerAdapter, updateInterval, timeout);
+            _commandExecutor = new CommandExecutor(_channelControllerAdapter);
 
             RegisterEvents();
         }
@@ -53,6 +53,7 @@ namespace EltraConnector.SyncAgent
         #region Events
 
         public event EventHandler<ChannelStatusChangedEventArgs> RemoteChannelStatusChanged;
+        public event EventHandler<ChannelStatusChangedEventArgs> ChannelStatusChanged;
 
         public event EventHandler<GoodChangedEventArgs> GoodChanged;
 
@@ -62,7 +63,7 @@ namespace EltraConnector.SyncAgent
 
         private void OnAdapterGoodChanged(object sender, GoodChangedEventArgs e)
         {
-            Good = _sessionControllerAdapter.Good && _authentication.Good;
+            Good = _channelControllerAdapter.Good && _authentication.Good;
         }
 
         private void OnGoodChanged()
@@ -87,6 +88,10 @@ namespace EltraConnector.SyncAgent
         protected virtual void OnRemoteChannelStatusChanged(object sender, ChannelStatusChangedEventArgs e)
         {
             RemoteChannelStatusChanged?.Invoke(sender, e);
+        }
+        protected virtual void OnChannelStatusChanged(object sender, ChannelStatusChangedEventArgs e)
+        {
+            ChannelStatusChanged?.Invoke(sender, e);
         }
 
         #endregion
@@ -115,7 +120,7 @@ namespace EltraConnector.SyncAgent
             }
         }
 
-        public string SessionUuid => _sessionControllerAdapter.Channel.Id;
+        public string ChannelId => _channelControllerAdapter.Channel.Id;
 
         #endregion
 
@@ -123,10 +128,12 @@ namespace EltraConnector.SyncAgent
 
         private void RegisterEvents()
         {
-            _sessionControllerAdapter.SessionRegistered += OnChannelRegistered;
+            _channelHeartbeat.StatusChanged += OnChannelStatusChanged;
+
+            _channelControllerAdapter.ChannelRegistered += OnChannelRegistered;
             _commandExecutor.RemoteChannelStatusChanged += OnRemoteChannelStatusChanged;
 
-            _sessionControllerAdapter.GoodChanged += OnAdapterGoodChanged;
+            _channelControllerAdapter.GoodChanged += OnAdapterGoodChanged;
             _authentication.GoodChanged += OnAdapterGoodChanged;
         }
 
@@ -134,16 +141,16 @@ namespace EltraConnector.SyncAgent
         {
             bool result = false;
 
-            if (!await _sessionControllerAdapter.IsChannelRegistered())
+            if (!await _channelControllerAdapter.IsChannelRegistered())
             {
-                if (await _sessionControllerAdapter.RegisterChannel())
+                if (await _channelControllerAdapter.RegisterChannel())
                 {
-                    MsgLogger.WriteLine($"register session='{_sessionControllerAdapter.Channel.Id}' success");
+                    MsgLogger.WriteLine($"register session='{_channelControllerAdapter.Channel.Id}' success");
                     result = true;
                 }
                 else
                 {
-                    MsgLogger.WriteError($"{GetType().Name} - RegisterSession", $"register session='{_sessionControllerAdapter.Channel.Id}' failed!");
+                    MsgLogger.WriteError($"{GetType().Name} - RegisterSession", $"register session='{_channelControllerAdapter.Channel.Id}' failed!");
                 }
             }
             else
@@ -167,11 +174,11 @@ namespace EltraConnector.SyncAgent
                     MsgLogger.WriteLine(
                         $"register(+) device='{device.Family}', node id = {device.NodeId}, serial number=0x{device.Identification.SerialNumber:X}");
 
-                    var registered = await _sessionControllerAdapter.IsDeviceRegistered(device);
+                    var registered = await _channelControllerAdapter.IsDeviceRegistered(device);
 
                     if (!registered)
                     {
-                        await _sessionControllerAdapter.RegisterDevice(deviceNode);
+                        await _channelControllerAdapter.RegisterDevice(deviceNode);
                     }
 
                     Start();
@@ -189,22 +196,15 @@ namespace EltraConnector.SyncAgent
         
         protected override Task Execute()
         {
-            //int minWaitTime = 10;
-
             SetRunning();
 
-            _sessionUpdater.Start();
+            _channelHeartbeat.Start();
             _commandExecutor.Start();
 
             Wait();
 
-            /*while (ShouldRun())
-            {
-                await Task.Delay(minWaitTime);
-            }*/
-
             _commandExecutor.Stop();
-            _sessionUpdater.Stop();
+            _channelHeartbeat.Stop();
             
             MsgLogger.WriteLine($"Sync agent working thread finished successfully!");
 
@@ -219,13 +219,13 @@ namespace EltraConnector.SyncAgent
             {
                 var device = deviceNode;
 
-                var registered = await _sessionControllerAdapter.IsDeviceRegistered(device);
+                var registered = await _channelControllerAdapter.IsDeviceRegistered(device);
                 
                 if (registered)
                 {
                     MsgLogger.WriteLine($"unregister(-) device='{device.Family}', node id = {device.NodeId}, serial number=0x{device.Identification.SerialNumber:X}");
 
-                    await _sessionControllerAdapter.UnregisterDevice(deviceNode);
+                    await _channelControllerAdapter.UnregisterDevice(deviceNode);
                 }
             }
             catch (Exception e)
@@ -240,7 +240,7 @@ namespace EltraConnector.SyncAgent
 
             try
             {
-                result = await _sessionControllerAdapter.GetChannel(uuid, authData);
+                result = await _channelControllerAdapter.GetChannel(uuid, authData);
             }
             catch (Exception e)
             {
@@ -279,11 +279,11 @@ namespace EltraConnector.SyncAgent
 
             MsgLogger.WriteDebug($"{GetType().Name} - Stop", "Command executor stopped 1/4");
 
-            _sessionUpdater?.Stop();
+            _channelHeartbeat?.Stop();
 
             MsgLogger.WriteDebug($"{GetType().Name} - Stop", "Session updater stopped 2/4");
 
-            _sessionControllerAdapter?.Stop();
+            _channelControllerAdapter?.Stop();
 
             MsgLogger.WriteDebug($"{GetType().Name} - Stop", "Session controller stopped 3/4");
 

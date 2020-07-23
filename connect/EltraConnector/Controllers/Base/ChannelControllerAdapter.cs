@@ -51,7 +51,7 @@ namespace EltraConnector.Controllers.Base
 
         #region Events
 
-        public event EventHandler<ChannelRegistrationEventArgs> SessionRegistered;
+        public event EventHandler<ChannelRegistrationEventArgs> ChannelRegistered;
 
         #endregion
 
@@ -59,7 +59,7 @@ namespace EltraConnector.Controllers.Base
 
         protected virtual void OnChannelRegistered(ChannelRegistrationEventArgs e)
         {
-            SessionRegistered?.Invoke(this, e);
+            ChannelRegistered?.Invoke(this, e);
         }
 
         #endregion
