@@ -137,7 +137,7 @@ namespace EltraConnector.Controllers
             SessionDevices.RemoveDevice(deviceNode);
         }
 
-        public async Task<List<EltraDeviceNode>> GetDeviceNodes(string channelId, UserData authData)
+        public async Task<List<EltraDeviceNode>> GetDeviceNodes(string channelId)
         {
             var result = new List<EltraDeviceNode>();
 
@@ -146,8 +146,6 @@ namespace EltraConnector.Controllers
                 var query = HttpUtility.ParseQueryString(string.Empty);
 
                 query["channelId"] = channelId;
-                query["login"] = authData.Login;
-                query["password"] = authData.Password;
 
                 var url = UrlHelper.BuildUrl(Url, "api/channel/devices", query);
                 var json = await Transporter.Get(url);

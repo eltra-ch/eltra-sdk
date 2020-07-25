@@ -12,6 +12,7 @@ using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
 using System.Web;
+using System.Threading;
 
 namespace EltraConnector.Controllers.Base
 {
@@ -121,9 +122,9 @@ namespace EltraConnector.Controllers.Base
             return result;
         }
 
-        public async Task<List<Channel>> GetChannels(string uuid, UserData authData)
+        public async Task<bool> BindChannels(string uuid, UserData authData)
         {
-            var result = new List<Channel>();
+            bool result = false;
 
             try
             {
@@ -133,11 +134,34 @@ namespace EltraConnector.Controllers.Base
                 query["login"] = authData.Login;
                 query["password"] = authData.Password;
 
+                var url = UrlHelper.BuildUrl(Url, "api/channel/bind", query);
+
+                result = await Transporter.Get(url, CancellationToken.None);
+            }
+            catch (Exception e)
+            {
+                MsgLogger.Exception($"{GetType().Name} - BindChannels", e);
+            }
+
+            return result;
+        }
+
+        public async Task<List<Channel>> GetChannels()
+        {
+            var result = new List<Channel>();
+
+            try
+            {
+                var query = HttpUtility.ParseQueryString(string.Empty);
+
                 var url = UrlHelper.BuildUrl(Url, "api/channel/channels", query);
 
                 var json = await Transporter.Get(url);
 
-                result = JsonConvert.DeserializeObject<List<Channel>>(json);
+                if(!string.IsNullOrEmpty(json))
+                {
+                    result = JsonConvert.DeserializeObject<List<Channel>>(json);
+                }
             }
             catch (Exception e)
             {

@@ -14,7 +14,7 @@ using System.Threading.Tasks;
 
 namespace EltraConnector.Agent
 {
-    public class AgentConnector
+    public class AgentConnector : IDisposable
     {
         #region Private fields
 
@@ -24,6 +24,7 @@ namespace EltraConnector.Agent
         private readonly List<DeviceVcs> _vcsList = new List<DeviceVcs>();
         private string _host;
         private UserData _authData;
+        private bool disposedValue;
 
         #endregion
 
@@ -401,6 +402,30 @@ namespace EltraConnector.Agent
             }
 
             return result;
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!disposedValue)
+            {
+                if (disposing)
+                {
+                    if (_deviceAgent != null)
+                    {
+                        _deviceAgent.Dispose();
+                        _deviceAgent = null;
+                    }
+                }
+
+                disposedValue = true;
+            }
+        }
+
+        public void Dispose()
+        {
+            Dispose(disposing: true);
+
+            GC.SuppressFinalize(this);
         }
 
         #endregion

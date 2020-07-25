@@ -128,7 +128,7 @@ namespace EltraConnector.UserAgent
             {
                 Task.Run(async () =>
                 {
-                    await GetChannels(_channelAdapter.Id, _deviceAuthData);
+                    await BindChannels(_channelAdapter.Id, _deviceAuthData);
                 });
             }
         }
@@ -350,11 +350,18 @@ namespace EltraConnector.UserAgent
             return result;
         }
 
-        public async Task<List<Channel>> GetChannels(string uuid, UserData authData)
+        public async Task<bool> BindChannels(string uuid, UserData authData)
         {
             _deviceAuthData = authData;
 
-            var result = await _channelAdapter.GetChannels(uuid, authData);
+            var result = await _channelAdapter.BindChannels(uuid, authData);
+
+            return result;
+        }
+
+        public async Task<List<Channel>> GetChannels()
+        {
+            var result = await _channelAdapter.GetChannels();
 
             return result;
         }
@@ -367,11 +374,11 @@ namespace EltraConnector.UserAgent
             _executeCommander.RemoteChannelStatusChanged += OnRemoteChannelStatusChanged;
         }
 
-        private async Task<List<EltraDeviceNode>> GetDeviceNodes(Channel channel, UserData authData)
+        private async Task<List<EltraDeviceNode>> GetDeviceNodes(Channel channel)
         {
             await EnsureAgentReady();
 
-            return await _channelAdapter.GetDeviceNodes(channel, authData);
+            return await _channelAdapter.GetDeviceNodes(channel);
         }
 
         private async Task<bool> EnsureAgentReady()
@@ -401,15 +408,15 @@ namespace EltraConnector.UserAgent
 
             if (await EnsureAgentReady())
             {
-                var channels = await GetChannels(_channelAdapter.Id, authData);
-
-                if (channels != null)
+                if (await BindChannels(_channelAdapter.Id, authData))
                 {
+                    var channels = await GetChannels();
+
                     foreach (var channel in channels)
                     {
                         var deviceNodeList = new EltraDeviceNodeList() { Channel = channel };
 
-                        var deviceNodes = await GetDeviceNodes(channel, authData);
+                        var deviceNodes = await GetDeviceNodes(channel);
 
                         if (deviceNodes != null)
                         {

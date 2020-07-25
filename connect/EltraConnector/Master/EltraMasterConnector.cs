@@ -13,13 +13,14 @@ using EltraConnector.Events;
 
 namespace EltraConnector.Master
 {
-    public class EltraMasterConnector
+    public class EltraMasterConnector : IDisposable
     {
         #region Constructors
 
         private MasterStatus _status = MasterStatus.Undefined;
         private CancellationTokenSource _cancellationTokenSource;
-        
+        private bool disposedValue;
+
         #endregion
 
         #region Constructors
@@ -273,6 +274,26 @@ namespace EltraConnector.Master
             }
 
             return result;
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!disposedValue)
+            {
+                if (disposing)
+                {
+                    _cancellationTokenSource?.Cancel();
+                }
+
+                disposedValue = true;
+            }
+        }
+
+        public void Dispose()
+        {
+            Dispose(disposing: true);
+
+            GC.SuppressFinalize(this);
         }
 
         #endregion

@@ -89,9 +89,9 @@ namespace EltraConnector.Controllers
             return result;
         }
                         
-        public async Task<List<EltraDeviceNode>> GetDeviceNodes(Channel channel, UserData authData)
+        public async Task<List<EltraDeviceNode>> GetDeviceNodes(Channel channel)
         {
-            return await DeviceAdapter.GetDeviceNodes(channel.Id, authData);
+            return await DeviceAdapter.GetDeviceNodes(channel.Id);
         }
         
         public async Task<List<DeviceCommand>> GetDeviceCommands(EltraDeviceNode device)
