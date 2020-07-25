@@ -189,6 +189,18 @@ namespace EltraConnector.Agent
             return result;
         }
 
+        public async Task<bool> BindChannels(UserData deviceAuth)
+        {
+            bool result = false;
+
+            if (_deviceAgent != null)
+            {
+                result = await _deviceAgent.BindChannels(deviceAuth);
+            }
+
+            return result;
+        }
+
         public async Task<List<EltraDeviceNodeList>> GetChannelDeviceNodes(UserData deviceAuth)
         {
             var result = new List<EltraDeviceNodeList>();

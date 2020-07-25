@@ -359,6 +359,15 @@ namespace EltraConnector.UserAgent
             return result;
         }
 
+        public async Task<bool> BindChannels(UserData authData)
+        {
+            _deviceAuthData = authData;
+
+            var result = await _channelAdapter.BindChannels(_channelAdapter.Id, authData);
+
+            return result;
+        }
+
         public async Task<List<Channel>> GetChannels()
         {
             var result = await _channelAdapter.GetChannels();
@@ -408,7 +417,7 @@ namespace EltraConnector.UserAgent
 
             if (await EnsureAgentReady())
             {
-                if (await BindChannels(_channelAdapter.Id, authData))
+                if (await BindChannels(authData))
                 {
                     var channels = await GetChannels();
 
