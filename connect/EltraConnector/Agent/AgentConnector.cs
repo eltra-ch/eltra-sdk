@@ -245,6 +245,17 @@ namespace EltraConnector.Agent
                 }
             }
 
+            if(result == null && device is EltraDeviceNode deviceNode)
+            {
+                var vcs = new DeviceVcs(_deviceAgent, deviceNode);
+
+                vcs.DeviceChanged += (sender, args) => { DeviceFound?.Invoke(this, new DeviceFoundEventArgs() { Device = deviceNode }); };
+
+                _vcsList.Add(vcs);
+
+                result = vcs;
+            }
+
             return result;
         }
 
