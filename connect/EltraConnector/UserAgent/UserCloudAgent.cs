@@ -37,7 +37,10 @@ namespace EltraConnector.UserAgent
         private Authentication _authentication;
         private Channel _channel;
         private UserData _deviceAuthData;
-        private AgentStatus _status;
+        private AgentStatus _status = AgentStatus.Undefined;
+        private ChannelStatus _channelStatus = ChannelStatus.Undefined;
+        private ChannelStatus _remoteChannelStatus = ChannelStatus.Undefined;
+        private string _remoteChannelId;
 
         #endregion
 
@@ -112,16 +115,7 @@ namespace EltraConnector.UserAgent
                 MsgLogger.WriteError($"{GetType().Name} - OnChannelRegistered", $"Session uuid='{_channel.Id}' registration failed!");
             }
         }
-        private void OnRemoteChannelStatusChanged(object sender, ChannelStatusChangedEventArgs e)
-        {
-            if(e.Status == ChannelStatus.Online)
-            {
-                RecoverSession();
-            }
-
-            RemoteChannelStatusChanged?.Invoke(sender, e);
-        }
-
+        
         private void RecoverSession()
         {
             if (_deviceAuthData != null && _channelAdapter != null)
@@ -147,21 +141,45 @@ namespace EltraConnector.UserAgent
             }
         }
 
+        private void OnChannelStatusChanged()
+        {
+            AgentChannelStatusChanged?.Invoke(this, new ChannelStatusChangedEventArgs() {  Status = ChannelStatus, Id = ChannelId });
+
+        }
+
         private void OnChannelStatusChanged(object sender, ChannelStatusChangedEventArgs e)
         {
-            if(Status == AgentStatus.Starting && e.Status == ChannelStatus.Online)
+            if (Status == AgentStatus.Starting && e.Status == ChannelStatus.Online)
             {
                 Status = AgentStatus.Started;
             }
 
-            AgentChannelStatusChanged?.Invoke(this, e);
+            ChannelStatus = e.Status;
+        }
+
+        private void OnRemoteChannelStatusChanged()
+        {
+            RemoteChannelStatusChanged?.Invoke(this, new ChannelStatusChangedEventArgs() { Status = RemoteChannelStatus, Id = _remoteChannelId });
+        }
+
+        private void OnRemoteChannelStatusChanged(object sender, ChannelStatusChangedEventArgs e)
+        {
+            _remoteChannelId = e.Id;
+            RemoteChannelStatus = e.Status;
+
+            if (e.Status == ChannelStatus.Online)
+            {
+                RecoverSession();
+            }
         }
 
         #endregion
 
         #region Properties
 
-        public string Uuid => _channelAdapter.Id;
+        public string ChannelId => _channelAdapter.Id;
+
+        public string RemoteChannelId => _remoteChannelId;
 
         public AgentStatus Status 
         { 
@@ -173,6 +191,34 @@ namespace EltraConnector.UserAgent
                     _status = value;
 
                     OnStatusChanged();
+                }
+            }
+        }
+
+        public ChannelStatus ChannelStatus
+        {
+            get => _channelStatus;
+            set
+            {
+                if(_channelStatus != value)
+                {
+                    _channelStatus = value;
+
+                    OnChannelStatusChanged();
+                }
+            }   
+        }
+
+        public ChannelStatus RemoteChannelStatus
+        {
+            get => _remoteChannelStatus;
+            set
+            {
+                if(_remoteChannelStatus != value)
+                {
+                    _remoteChannelStatus = value;
+
+                    OnRemoteChannelStatusChanged();
                 }
             }
         }
@@ -465,7 +511,7 @@ namespace EltraConnector.UserAgent
 
             command.Id = Guid.NewGuid().ToString();
 
-            return await _channelAdapter.PushCommand(command, Uuid, status);
+            return await _channelAdapter.PushCommand(command, ChannelId, status);
         }
 
         private void AddCommandToExecuted(DeviceCommand command)

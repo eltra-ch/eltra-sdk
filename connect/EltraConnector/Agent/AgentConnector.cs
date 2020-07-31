@@ -11,6 +11,8 @@ using EltraConnector.UserAgent.Vcs;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using EltraCommon.Contracts.Channels;
+using EltraConnector.UserAgent.Definitions;
 
 namespace EltraConnector.Agent
 {
@@ -25,6 +27,8 @@ namespace EltraConnector.Agent
         private string _host;
         private UserData _authData;
         private bool disposedValue;
+        private ChannelStatus _channelStatus;
+        private AgentStatus _status;
 
         #endregion
 
@@ -68,13 +72,25 @@ namespace EltraConnector.Agent
             } 
         }
 
+        public ChannelStatus ChannelStatus 
+        { 
+            get => _channelStatus; 
+            set => _channelStatus = value;
+        }
+        
+        public AgentStatus Status
+        {
+            get => _status;
+            set => _status = value;
+        }
+
         #endregion
 
         #region Events
 
         public event EventHandler<ChannelStatusChangedEventArgs> RemoteChannelStatusChanged;
         public event EventHandler<ChannelStatusChangedEventArgs> ChannelStatusChanged;
-        public event EventHandler<AgentStatusEventArgs> AgentStatusChanged;
+        public event EventHandler<AgentStatusEventArgs> StatusChanged;
         public event EventHandler<DeviceFoundEventArgs> DeviceFound;
 
         private void OnHostChanged()
@@ -117,11 +133,15 @@ namespace EltraConnector.Agent
             {
                 _deviceAgent.StatusChanged += (sender, args) => 
                 {
-                    AgentStatusChanged?.Invoke(this, args);
+                    Status = args.Status;
+
+                    StatusChanged?.Invoke(this, args);
                 };
 
                 _deviceAgent.AgentChannelStatusChanged += (sender, args) =>
                 {
+                    ChannelStatus = args.Status;
+
                     ChannelStatusChanged?.Invoke(this, args);
                 };
 
