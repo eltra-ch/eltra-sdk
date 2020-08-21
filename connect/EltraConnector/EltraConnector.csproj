@@ -1,0 +1,49 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>netstandard2.0</TargetFramework>
+        <LangVersion>7.1</LangVersion>
+		<Company>eltra.ch</Company>
+		<Authors>Dawid Sienkiewicz</Authors>
+		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+		<PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
+		<Copyright>Dawid Sienkiewicz, (c) 2020</Copyright>
+		<PackageLicenseFile>LICENSE</PackageLicenseFile>
+		<PackageProjectUrl>www.eltra.ch</PackageProjectUrl>
+		<RepositoryUrl>https://github.com/eltra-ch/eltra-sdk</RepositoryUrl>
+		<RepositoryType>GIT</RepositoryType>
+		<dependencies>
+		  <dependency id="Newtonsoft.Json" version="12.0.3" />
+		  <dependency id="Eltra.Contracts" version="1.0.0" />
+		</dependencies>
+		<PackageId>Eltra.Connector</PackageId>
+		<Product>Eltra.Connector</Product>		
+		<Description>Eltra - CANOpen based IoT Framework - SDK</Description>
+		<PackageTags>CANOpen IoT Eltra OPCUA OPC</PackageTags>
+        <Version>1.3.8</Version>
+    </PropertyGroup>
+
+    <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+      <DocumentationFile>EltraConnector.xml</DocumentationFile>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <None Include="..\..\LICENSE">
+        <Pack>True</Pack>
+        <PackagePath></PackagePath>
+      </None>
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\..\xternals\common\EltraCommon\EltraCommon.csproj" />
+    </ItemGroup>
+
+    <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+      
+    </Target>
+
+</Project>

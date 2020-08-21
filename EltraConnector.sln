@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.28803.156
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EltraConnector", "connect\EltraConnector\EltraConnector.csproj", "{A9E7EF16-7713-4CA3-8C4F-2915C579194F}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EltraCommon", "xternals\common\EltraCommon\EltraCommon.csproj", "{88B5F3CF-1924-455B-AFB3-A6A0618B3D42}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{A9E7EF16-7713-4CA3-8C4F-2915C579194F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A9E7EF16-7713-4CA3-8C4F-2915C579194F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A9E7EF16-7713-4CA3-8C4F-2915C579194F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A9E7EF16-7713-4CA3-8C4F-2915C579194F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{88B5F3CF-1924-455B-AFB3-A6A0618B3D42}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{88B5F3CF-1924-455B-AFB3-A6A0618B3D42}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{88B5F3CF-1924-455B-AFB3-A6A0618B3D42}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{88B5F3CF-1924-455B-AFB3-A6A0618B3D42}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {3F78AC7E-CC0B-4FA9-93A8-9D1F9CB30945}
+	EndGlobalSection
+EndGlobal
