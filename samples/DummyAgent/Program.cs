@@ -9,7 +9,8 @@ namespace DummyAgent
         {
             Console.WriteLine("Hello Dummy Agent!");
 
-            //Get initial parameters, cloud service host name and optional sessionId (in case you would like to start multiple processes)
+            // Get initial parameters, sessionId has default value 1
+            // (in case you would like to start multiple processes on the same workstation)
             GetStartParameters(args, out int sessionId);
 
             //run demo async mode

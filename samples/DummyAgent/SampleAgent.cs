@@ -27,13 +27,11 @@ namespace DummyAgent
             var parameterValue = args.NewValue;
             int val = 0;
 
-            Console.WriteLine($"parameter value changed {args.Parameter.UniqueId}, {args.Parameter.Index:X4}:{args.Parameter.SubIndex:X4}");
-
             try
             {
                 if (parameterValue.GetValue(ref val))
                 {
-                    Console.WriteLine($"{val}");
+                    Console.WriteLine($"parameter value changed {args.Parameter.UniqueId}, 0x{args.Parameter.Index:X4}:0x{args.Parameter.SubIndex:X2}, new value = {val}");
                 }
             }
             catch (Exception e)
@@ -96,7 +94,7 @@ namespace DummyAgent
         {
             bool result = false;
 
-            Console.WriteLine($"device = {device.Name}, node id = {device.NodeId}");
+            Console.WriteLine($"device = {device.Name}, node id = {device.NodeId}, version = {device.Version}, serial number = {device.Identification.SerialNumber:X8}");
 
             //0x3000, 0x00 is address of the counter parameter in object dictionary
             var counterParameter = device.SearchParameter(0x3000, 0x00) as Parameter;
@@ -107,27 +105,29 @@ namespace DummyAgent
                 const ushort readyFlag = 1;
                 const ushort sleepingFlag = 0;
 
+                //let's get the current value stored in local object dictionary (can be outdated)
+                controlWordParameter.GetValue(out ushort controlWord);
+
+                // force parameter update, ok, now we are sure that the value is synchronized with master object dictionary
+                await controlWordParameter.ReadValue();
+
                 //control word is defined as UINT16 - RW, let's modify value of this parameter in local object dictionary
                 controlWordParameter.SetValue(readyFlag);
 
                 //synchronize value with master object dictionary
                 await controlWordParameter.Write();
 
-                //let's get the current value stored in local object dictionary (can be outdated)
-                controlWordParameter.GetValue(out ushort controlWord);
-
-                // force parameter update, ok, now we are sure that the value is synchronized with master object dictionary
-                await controlWordParameter.ReadValue();
-                
-                // this method is reliable, but to keep the local object dictionary up-to-data not effective
-                // your agent usually, doesn't need the current value information about all parameters each time
+                // this method is reliable, but to keep the local object dictionary up-to-date not quiete effective
+                // (object dictionary can contain more than 100 parameters)   
+                // your agent usually, doesn't need the current value information about all parameters
                 // to limit the read requests, you can specify explicite the parameters you are interested in
-                Console.WriteLine($"register parameter {counterParameter.Index:X4}:{counterParameter.SubIndex:X4} for updates");
+                Console.WriteLine($"register parameter 0x{counterParameter.Index:X4}:0x{counterParameter.SubIndex:X2} for updates");
 
                 //we would like to be informed each time the parameter is changed
                 counterParameter.ParameterChanged += OnParameterChanged;
                 
-                //to activate this feature, call RegisterUpdate
+                // to activate this feature, call RegisterUpdate
+                // priority is transfered to the master and is up to master to decide what low, high or medium priority is
                 counterParameter.RegisterUpdate(ParameterUpdatePriority.High);
                 //from now on, our local object dictionary will be actualized each time the {counterParameter} is changed by remote party
 
@@ -141,6 +141,9 @@ namespace DummyAgent
 
                 //we don't need the notifications at this point
                 counterParameter?.UnregisterUpdate();
+
+                //remove events handling
+                counterParameter.ParameterChanged -= OnParameterChanged;
 
                 //in case our parameter is supporting <backup> flag, we can grab some historic data
                 await PlayWithParameterStatistics(device);
