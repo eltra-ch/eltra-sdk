@@ -13,8 +13,11 @@ namespace DummyAgent
             // (in case you would like to start multiple processes on the same workstation)
             GetStartParameters(args, out int sessionId);
 
+            string host = "https://eltra.ch";
+            //string host = "http://localhost:5001";
+
             //run demo async mode
-            var demoTask = StartDemoAsync("https://eltra.ch", sessionId);
+            var demoTask = StartDemoAsync(host, sessionId);
 
             demoTask.Wait();
         }

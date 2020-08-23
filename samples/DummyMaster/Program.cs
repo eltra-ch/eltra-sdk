@@ -33,10 +33,11 @@ namespace ConsoleApp1
             var runner = Task.Run(async () =>
             {
                 connector.Host = "https://eltra.ch";
+                //connector.Host = "http://localhost:5001";
 
                 Console.WriteLine("Sign-in ...");
 
-                if (await connector.SignIn(new UserIdentity() { Login = $"dummy{serviceId}master@eltra.ch", Name = "Dummy", Password = "1234" }, true))
+                if (await connector.SignIn(new UserIdentity() { Login = $"tst{serviceId}master@eltra.ch", Name = "Dummy", Password = "1234", Level="USR_Internal" }, true))
                 {
                     var predefinedAlias = new UserIdentity() { Login = "abcd1@eltra.ch", Password = "1234", Name = "dummy", Level = "USR_Expert" };
 
@@ -78,12 +79,7 @@ namespace ConsoleApp1
 
             connector.StopService(serviceName);
 
-            Task.Run(async () =>
-            {
-                Console.WriteLine("Sign-out ...");
-
-                await connector.SignOut();
-            }).ContinueWith((t)=> { runner.Wait(); });
+            runner.Wait();
         }
 
         private static void OnRemotePartyChannelStatusChanged(object sender, AgentChannelStatusChangedEventArgs e)

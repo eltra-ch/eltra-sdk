@@ -28,7 +28,7 @@ namespace DummyAgent
             }
         }
 
-        private async Task CallStartCountingCommand(int step = 1, int delay = 500)
+        private async Task CallStartCountingCommand(int step = 3, int delay = 250)
         {
             var command = await _device.GetCommand("StartCounting");
 
