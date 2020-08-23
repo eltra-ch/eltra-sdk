@@ -6,9 +6,10 @@ using System.Net.Sockets;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-
+using System.Web;
 using EltraCommon.Logger;
-using EltraConnector.Transport.Events;
+using EltraCommon.Transport;
+using EltraCommon.Transport.Events;
 
 namespace EltraConnector.Transport
 {
@@ -16,6 +17,7 @@ namespace EltraConnector.Transport
     {
         #region Private fields
 
+        private const int DefaultMaxRedirectCount = 3;
         private const int DefaultMaxRetryCount = 1;
         private const int DefaultMaxWaitTimeInSec = 15;
         private const int DefaultRetryTimeout = 100;
@@ -33,6 +35,7 @@ namespace EltraConnector.Transport
             MaxRetryTimeout = DefaultRetryTimeout;
             MaxRetryCount = DefaultMaxRetryCount;
             MaxWaitTimeInSec = DefaultMaxWaitTimeInSec;
+            MaxRedirectCount = DefaultMaxRedirectCount;
 
             SocketError = SocketError.Success;
         }
@@ -41,12 +44,22 @@ namespace EltraConnector.Transport
 
         #region Properties
 
+        /// <summary>
+        /// MaxRetryCount
+        /// </summary>
         public int MaxRetryCount { get; set; }
+        public int MaxRedirectCount { get; set; }
         public int MaxRetryTimeout { get; set; }
+        /// <summary>
+        /// MaxWaitTimeInSec
+        /// </summary>
         public int MaxWaitTimeInSec { get; set; }
 
         private HttpClient Client => _client ?? (_client = CreateHttpClient());
 
+        /// <summary>
+        /// SocketError
+        /// </summary>
         public SocketError SocketError 
         { 
             get => _socketError;
@@ -61,6 +74,9 @@ namespace EltraConnector.Transport
 
         #region Events
 
+        /// <summary>
+        /// SocketErrorChanged
+        /// </summary>
         public event EventHandler<SocketErrorChangedEventAgs> SocketErrorChanged;
 
         #endregion
@@ -114,11 +130,20 @@ namespace EltraConnector.Transport
             }
         }
 
-        public async Task<TransporterResponse> Post(string url, string path, string json)
+        /// <summary>
+        /// Post
+        /// </summary>
+        /// <param name="url"></param>
+        /// <param name="path"></param>
+        /// <param name="json"></param>
+        /// <param name="apiVersion"></param>
+        /// <returns></returns>
+        public async Task<TransporterResponse> Post(string url, string path, string json, string apiVersion = "1")
         {
             TransporterResponse result = new TransporterResponse();
             
             int tryCount = 0;
+            int redirectCount = 0;
 
             ResetSocketError();
 
@@ -133,6 +158,15 @@ namespace EltraConnector.Transport
 
                     MsgLogger.WriteDebug($"{GetType().Name} - Post", $"post - url ='{url}' try count = {tryCount}/{MaxRetryCount}");
                     
+                    if (apiVersion != "1")
+                    {
+                        var query = HttpUtility.ParseQueryString(string.Empty);
+
+                        query["api-version"] = apiVersion;
+                        
+                        builder.Query = query.ToString();
+                    }
+                    
                     var postResult = await Client.PostAsync(builder.ToString(), message);
 
                     result.StatusCode = postResult.StatusCode;
@@ -144,17 +178,20 @@ namespace EltraConnector.Transport
                     }
                     else if(postResult.StatusCode == HttpStatusCode.Redirect)
                     {
-                        MsgLogger.WriteDebug($"{GetType().Name} - Post", $"get - url ='{url}' 302 - redirect!");
                         tryCount = 0;
+                        redirectCount++;
+
+                        MsgLogger.WriteDebug($"{GetType().Name} - Get", $"post - url ='{url}' redirection, count = {redirectCount}!");
                     }
                     else if(postResult.StatusCode == HttpStatusCode.Unauthorized)
                     {
-                        MsgLogger.WriteDebug($"{GetType().Name} - Post", $"get - url ='{url}' 401 - unautorized!");
+                        MsgLogger.WriteDebug($"{GetType().Name} - Post", $"post - url ='{url}' 401 - unautorized!");
                         tryCount = MaxRetryCount;
                     }
                     else
                     {
                         MsgLogger.WriteError($"{GetType().Name} - Post", $"post - url ='{url}' failed! response = {postResult.IsSuccessStatusCode}");
+						tryCount = MaxRetryCount;
                     }
                 }
                 catch (HttpRequestException e)
@@ -176,33 +213,51 @@ namespace EltraConnector.Transport
         public async Task<bool> Get(string url, CancellationToken cancelationToken)
         {
             bool result = false;
-
+            
             ResetSocketError();
 
             try
             {
                 MsgLogger.WriteDebug($"{GetType().Name} - Get", $"get - url ='{url}'");
                 int tryCount = 0;
+                int redirectCount = 0;
 
                 do
                 {
                     using (var response = await Client.GetAsync(url, cancelationToken))
                     {
-                        if (response.StatusCode == HttpStatusCode.Redirect)
-                        {
-                            tryCount = 0;
-                            MsgLogger.WriteDebug($"{GetType().Name} - Get", $"get - url ='{url}' redirection!");
-                        }
-                        else if(response.StatusCode == HttpStatusCode.OK)
+                        if(response.StatusCode == HttpStatusCode.OK)
                         {
                             tryCount = MaxRetryCount;
                             result = true;
+                        }
+                        else if (response.StatusCode == HttpStatusCode.Redirect)
+                        {
+                            tryCount = 0;
+                            redirectCount++;
+
+                            MsgLogger.WriteDebug($"{GetType().Name} - Get", $"get - url ='{url}' redirection, count = {redirectCount}!");
+                        }
+                        else if (response.StatusCode == HttpStatusCode.NotFound)
+                        {
+                            MsgLogger.WriteDebug($"{GetType().Name} - Get", $"get - url ='{url}' not found!");
+                            tryCount = MaxRetryCount;
+                        }
+                        else if (response.StatusCode == HttpStatusCode.Unauthorized)
+                        {
+                            MsgLogger.WriteDebug($"{GetType().Name} - Get", $"get - url ='{url}' 401 - unautorized!");
+                            tryCount = MaxRetryCount;
+                        }
+                        else
+                        {
+                            MsgLogger.WriteError($"{GetType().Name} - Get", $"get - url ='{url}' failed! response = {response.IsSuccessStatusCode}");
+                            tryCount = MaxRetryCount;
                         }
                     }
 
                     tryCount++;
 
-                } while (tryCount < MaxRetryCount);
+                } while (tryCount < MaxRetryCount && redirectCount < MaxRedirectCount);
             }
             catch (HttpRequestException e)
             {
@@ -220,6 +275,7 @@ namespace EltraConnector.Transport
         {
             string result = string.Empty;
             int tryCount = 0;
+            int redirectCount = 0;
 
             ResetSocketError();
             
@@ -247,7 +303,9 @@ namespace EltraConnector.Transport
                         else if(response.StatusCode == HttpStatusCode.Redirect)
                         {
                             tryCount = 0;
-                            MsgLogger.WriteDebug($"{GetType().Name} - Get", $"get - url ='{url}' redirection!");
+                            redirectCount++;
+                            
+                            MsgLogger.WriteDebug($"{GetType().Name} - Get", $"get - url ='{url}' redirection, count = {redirectCount}!");
                         }
                         else if(response.StatusCode == HttpStatusCode.NotFound)
                         {
@@ -273,7 +331,7 @@ namespace EltraConnector.Transport
                 {
                     await ExceptionHandling(tryCount, e);
                 }
-            } while (tryCount < MaxRetryCount);
+            } while (tryCount < MaxRetryCount && redirectCount < MaxRetryCount);
 
             return result;
         }
@@ -283,6 +341,7 @@ namespace EltraConnector.Transport
             string result = string.Empty;
 
             int tryCount = 0;
+            int redirectCount = 0;
 
             ResetSocketError();
 
@@ -303,8 +362,10 @@ namespace EltraConnector.Transport
                     }
                     else if(deleteResult.StatusCode == HttpStatusCode.Redirect)
                     {
-                        MsgLogger.WriteDebug($"{GetType().Name} - Get", $"get - url ='{url}' redirection!");
                         tryCount = 0;
+                        redirectCount++;
+
+                        MsgLogger.WriteDebug($"{GetType().Name} - Delete", $"get - url ='{url}' redirection, count = {redirectCount}!");
                     }
                     else
                     {
@@ -319,7 +380,7 @@ namespace EltraConnector.Transport
                 {
                     await ExceptionHandling(tryCount, e);
                 }
-            } while (tryCount < MaxRetryCount);
+            } while (tryCount < MaxRetryCount && redirectCount < MaxRedirectCount);
 
             return result;
         }
@@ -329,6 +390,7 @@ namespace EltraConnector.Transport
             bool result = false;
 
             int tryCount = 0;
+            int redirectCount = 0;
 
             ResetSocketError();
 
@@ -349,8 +411,10 @@ namespace EltraConnector.Transport
                     }
                     else if (deleteResult.StatusCode == HttpStatusCode.Redirect)
                     {
-                        MsgLogger.WriteDebug($"{GetType().Name} - Get", $"get - url ='{url}' redirection!");
                         tryCount = 0;
+                        redirectCount++;
+
+                        MsgLogger.WriteDebug($"{GetType().Name} - Delete", $"get - url ='{url}' redirection, count = {redirectCount}!");
                     }
                     else
                     {
@@ -365,15 +429,24 @@ namespace EltraConnector.Transport
                 {
                     await ExceptionHandling(tryCount, e);
                 }
-            } while (tryCount < MaxRetryCount);
+            } while (tryCount < MaxRetryCount && redirectCount < MaxRedirectCount);
 
             return result;
         }
 
-        public async Task<TransporterResponse> Put(string url, string path, string json)
+        /// <summary>
+        /// Put
+        /// </summary>
+        /// <param name="url"></param>
+        /// <param name="path"></param>
+        /// <param name="json"></param>
+        /// <param name="apiVersion"></param>
+        /// <returns></returns>
+        public async Task<TransporterResponse> Put(string url, string path, string json, string apiVersion = "1")
         {
             var result = new TransporterResponse();
             int tryCount = 0;
+            int redirectCount = 0;
 
             ResetSocketError();
 
@@ -383,6 +456,15 @@ namespace EltraConnector.Transport
                 {
                     var message = new StringContent(json, Encoding.UTF8, "application/json");
                     var builder = new UriBuilder(url) { Path = path };
+					
+                    if (apiVersion != "1")
+                    {
+                        var query = HttpUtility.ParseQueryString(string.Empty);
+
+                        query["api-version"] = apiVersion;
+
+                        builder.Query = query.ToString();
+                    }
 
                     tryCount++;
                     
@@ -397,8 +479,10 @@ namespace EltraConnector.Transport
                     }
                     else if (postResult.StatusCode == HttpStatusCode.Redirect)
                     {
-                        MsgLogger.WriteDebug($"{GetType().Name} - Get", $"get - url ='{url}' redirection!");
                         tryCount = 0;
+                        redirectCount++;
+
+                        MsgLogger.WriteDebug($"{GetType().Name} - Get", $"put - url ='{url}' redirection, count = {redirectCount}!");
                     }
                     else if(postResult.StatusCode == HttpStatusCode.Unauthorized)
                     {
@@ -408,6 +492,7 @@ namespace EltraConnector.Transport
                     else
                     {
                         MsgLogger.WriteError($"{GetType().Name} - Put", $"put - url ='{url}' failed! response = {postResult.IsSuccessStatusCode}");
+						tryCount = MaxRetryCount;
                     }
                 }
                 catch (HttpRequestException e)

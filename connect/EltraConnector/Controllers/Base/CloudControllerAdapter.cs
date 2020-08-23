@@ -1,8 +1,9 @@
-﻿using EltraConnector.Transport;
+﻿using EltraCommon.Transport;
 using System;
 using System.Net.Sockets;
 using EltraConnector.Controllers.Base.Events;
 using System.Collections.Generic;
+using EltraCommon.Transport.Events;
 
 namespace EltraConnector.Controllers.Base
 {
@@ -61,7 +62,7 @@ namespace EltraConnector.Controllers.Base
 
         #region Events handling
 
-        private void OnSocketErrorChanged(object sender, Transport.Events.SocketErrorChangedEventAgs e)
+        private void OnSocketErrorChanged(object sender, SocketErrorChangedEventAgs e)
         {
             Good = e.SocketError == SocketError.Success;
         }
