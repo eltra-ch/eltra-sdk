@@ -301,7 +301,7 @@ namespace EltraConnector.Agent
 
             if (Identity==null)
             {
-                throw new Exception("AuthData property not specified!");
+                throw new Exception("Identity property not specified!");
             }
 
             _vcsList.Clear();
@@ -314,8 +314,6 @@ namespace EltraConnector.Agent
                 {
                     foreach (var device in channel.Devices)
                     {
-                        device.CloudConnector = _deviceAgent;
-
                         if (FindVcs(device) == null)
                         {
                             var vcs = new DeviceVcs(_deviceAgent, device);

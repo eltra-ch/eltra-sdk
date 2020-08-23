@@ -9,6 +9,7 @@ using EltraCommon.ObjectDictionary.Common.DeviceDescription.Profiles.Application
 using EltraConnector.Transport.Ws;
 using EltraCommon.Contracts.History;
 using EltraCommon.Contracts.Devices;
+using EltraCommon.ObjectDictionary.DeviceDescription;
 
 namespace EltraConnector.Controllers
 {
@@ -148,9 +149,14 @@ namespace EltraConnector.Controllers
             return await deviceCommandsAdapter.GetCommandStatus(ChannelId, executeCommand);
         }
 
-        public async Task<Parameter> GetParameter(string sessionUuid, int nodeId, ushort index, byte subIndex)
+        public Task<DeviceDescriptionPayload> DownloadDeviceDescription(string channelId, DeviceVersion deviceVersion)
         {
-            return await DeviceAdapter.GetParameter(sessionUuid, nodeId, index, subIndex);
+            return DeviceAdapter.DownloadDeviceDescription(channelId, deviceVersion);
+        }
+
+        public Task<Parameter> GetParameter(string sessionUuid, int nodeId, ushort index, byte subIndex)
+        {
+            return DeviceAdapter.GetParameter(sessionUuid, nodeId, index, subIndex);
         }
 
         public async Task<ParameterValue> GetParameterValue(string sessionUuid, int nodeId, ushort index, byte subIndex)

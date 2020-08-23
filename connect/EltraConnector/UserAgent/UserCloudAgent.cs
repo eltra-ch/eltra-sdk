@@ -20,6 +20,7 @@ using EltraCommon.Contracts.History;
 using EltraCommon.Contracts.Devices;
 using EltraCommon.ObjectDictionary.DeviceDescription.Factory;
 using EltraCommon.Contracts.Parameters.Events;
+using EltraCommon.ObjectDictionary.DeviceDescription;
 
 namespace EltraConnector.UserAgent
 {
@@ -461,7 +462,7 @@ namespace EltraConnector.UserAgent
             return await _channelAdapter.GetDeviceNodes(channel);
         }
 
-        private async Task UpdateDeviceDescriptionFile(EltraDevice device)
+        protected virtual async Task UpdateDeviceDescriptionFile(EltraDevice device)
         {
             if (device != null && device.ObjectDictionary == null)
             {
@@ -470,7 +471,7 @@ namespace EltraConnector.UserAgent
                 if (deviceDescriptionFile != null)
                 {
                     deviceDescriptionFile.Url = _url;
-
+                    
                     if (!await device.ReadDeviceDescriptionFile(deviceDescriptionFile))
                     {
                         MsgLogger.WriteError($"{GetType().Name} - GetChannels", "read device description file failed!");
@@ -607,6 +608,11 @@ namespace EltraConnector.UserAgent
             return result;
         }
 
+        public async Task<DeviceDescriptionPayload> DownloadDeviceDescription(DeviceVersion deviceVersion)
+        {
+            return await _channelAdapter.DownloadDeviceDescription(_channelAdapter.ChannelId, deviceVersion);
+        }
+
         public async Task<Parameter> GetParameter(string channelId, int nodeId, ushort index, byte subIndex)
         {
             return await _channelAdapter.GetParameter(channelId, nodeId, index, subIndex);
@@ -641,6 +647,8 @@ namespace EltraConnector.UserAgent
         {
             return await _authentication.SignIn(identity);
         }
+
+
 
         #endregion
     }

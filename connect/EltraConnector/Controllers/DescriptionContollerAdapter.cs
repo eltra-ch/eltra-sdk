@@ -77,7 +77,7 @@ namespace EltraConnector.Controllers
             return result;
         }
 
-        public async Task<DeviceDescriptionPayload> Download(DeviceVersion deviceVersion)
+        public async Task<DeviceDescriptionPayload> Download(string channelId, DeviceVersion deviceVersion)
         {
             DeviceDescriptionPayload result = null;
 
@@ -85,6 +85,7 @@ namespace EltraConnector.Controllers
             {
                 var query = HttpUtility.ParseQueryString(string.Empty);
 
+                query["callerId"] = channelId;
                 query["hardwareVersion"] = $"{deviceVersion.HardwareVersion}";
                 query["softwareVersion"] = $"{deviceVersion.SoftwareVersion}";
                 query["applicationNumber"] = $"{deviceVersion.ApplicationNumber}";

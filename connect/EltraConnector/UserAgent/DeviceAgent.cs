@@ -1,17 +1,20 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-
+using System.Web;
 using EltraCommon.Contracts.CommandSets;
 using EltraCommon.Contracts.Devices;
 using EltraCommon.Contracts.History;
 using EltraCommon.Contracts.Interfaces;
 using EltraCommon.Contracts.Parameters;
 using EltraCommon.Contracts.Users;
+using EltraCommon.Helpers;
 using EltraCommon.Logger;
 using EltraCommon.ObjectDictionary.Common.DeviceDescription.Profiles.Application.Parameters;
+using EltraCommon.ObjectDictionary.DeviceDescription;
 using EltraConnector.Classes;
 using EltraConnector.SyncAgent;
+using Newtonsoft.Json;
 
 namespace EltraConnector.UserAgent
 {
@@ -415,6 +418,18 @@ namespace EltraConnector.UserAgent
             }
 
             return result;
+        }
+
+        /// <summary>
+        /// UpdateDeviceDescriptionFile
+        /// </summary>
+        /// <param name="device"></param>
+        /// <returns></returns>
+        protected override Task UpdateDeviceDescriptionFile(EltraDevice device)
+        {
+            device.CloudConnector = this;
+
+            return base.UpdateDeviceDescriptionFile(device);
         }
 
         #endregion
