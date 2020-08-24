@@ -1,20 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using System.Web;
 using EltraCommon.Contracts.CommandSets;
 using EltraCommon.Contracts.Devices;
 using EltraCommon.Contracts.History;
 using EltraCommon.Contracts.Interfaces;
 using EltraCommon.Contracts.Parameters;
 using EltraCommon.Contracts.Users;
-using EltraCommon.Helpers;
 using EltraCommon.Logger;
 using EltraCommon.ObjectDictionary.Common.DeviceDescription.Profiles.Application.Parameters;
-using EltraCommon.ObjectDictionary.DeviceDescription;
 using EltraConnector.Classes;
 using EltraConnector.SyncAgent;
-using Newtonsoft.Json;
 
 namespace EltraConnector.UserAgent
 {
@@ -155,6 +151,11 @@ namespace EltraConnector.UserAgent
             if (device != null)
             {
                 result = await GetParameter(device.ChannelId, device.NodeId, index, subIndex);
+
+                if (result != null)
+                {
+                    result.Device = device;
+                }
             }
 
             return result;
@@ -175,6 +176,11 @@ namespace EltraConnector.UserAgent
                 else
                 {
                     result = await GetParameter(device.ChannelId, device.NodeId, parameterBase.Index, 0x0);
+                }
+
+                if (result != null)
+                {
+                    result.Device = device;
                 }
             }
 
