@@ -150,9 +150,24 @@ namespace EltraConnector.UserAgent
 
             if (device != null)
             {
-                result = await GetParameter(device.ChannelId, device.NodeId, index, subIndex);
+                if (device.SearchParameter(index, subIndex) is Parameter parameterEntry)
+                {
+                    var parameterValue = await GetParameterValue(device, parameterEntry.Index, parameterEntry.SubIndex);
 
-                if (result != null)
+                    if (parameterValue != null)
+                    {
+                        if (parameterEntry.SetValue(parameterValue))
+                        {
+                            result = parameterEntry;
+                        }
+                    }
+                }
+                else
+                {
+                    result = await GetParameter(device.ChannelId, device.NodeId, index, subIndex);
+                }
+
+                if (result != null && result.Device == null)
                 {
                     result.Device = device;
                 }
