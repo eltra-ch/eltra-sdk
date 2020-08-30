@@ -117,13 +117,13 @@ namespace EltraConnector.SyncAgent
             return result;
         }
 
-        internal async Task<UserIdentity> CreateAlias(string level)
+        internal async Task<UserIdentity> CreateAlias(string role)
         {
             UserIdentity result = null;
 
             try
             {
-                result = await _authControllerAdapter.CreateAlias(level);
+                result = await _authControllerAdapter.CreateAlias(role);
             }
             catch (Exception e)
             {

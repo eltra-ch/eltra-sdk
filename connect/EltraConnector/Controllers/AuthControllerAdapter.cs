@@ -99,7 +99,7 @@ namespace EltraConnector.Controllers
             return result;
         }
 
-        internal async Task<UserIdentity> CreateAlias(string level)
+        internal async Task<UserIdentity> CreateAlias(string role)
         {
             UserIdentity result = null;
 
@@ -107,7 +107,7 @@ namespace EltraConnector.Controllers
             {
                 var query = HttpUtility.ParseQueryString(string.Empty);
 
-                query["level"] = level;
+                query["role"] = role;
 
                 var url = UrlHelper.BuildUrl(Url, "api/user/create-alias", query);
                 

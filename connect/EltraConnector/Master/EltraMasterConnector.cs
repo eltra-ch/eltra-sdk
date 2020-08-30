@@ -166,16 +166,16 @@ namespace EltraConnector.Master
         /// <summary>
         /// Create unique device user alias.
         /// </summary>
-        /// <param name="level">User level</param>
+        /// <param name="role">User role</param>
         /// <returns></returns>
-        public async Task<UserIdentity> CreateAlias(string level)
+        public async Task<UserIdentity> CreateAlias(string role)
         {
             UserIdentity result = null;
             var authentication = new Authentication(Host);
 
             if (authentication != null)
             {
-                result = await authentication.CreateAlias(level);
+                result = await authentication.CreateAlias(role);
             }
 
             return result;
