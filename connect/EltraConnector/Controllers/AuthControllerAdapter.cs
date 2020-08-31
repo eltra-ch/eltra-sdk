@@ -74,6 +74,27 @@ namespace EltraConnector.Controllers
             return result;
         }
 
+        public async Task<bool> SignOff()
+        {
+            bool result = false;
+
+            try
+            {
+                var query = HttpUtility.ParseQueryString(string.Empty);
+
+                var url = UrlHelper.BuildUrl(Url, "api/user/remove", query);
+                var cancellationTokenSource = new CancellationTokenSource();
+
+                result = await Transporter.Get(url, cancellationTokenSource.Token);
+            }
+            catch (Exception e)
+            {
+                MsgLogger.Exception($"{GetType().Name} - SignOff", e);
+            }
+
+            return result;
+        }
+
         public async Task<bool> SignUp(UserIdentity identity)
         {
             bool result = false;

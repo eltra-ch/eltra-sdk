@@ -28,6 +28,12 @@
     </PropertyGroup>
 
     <ItemGroup>
+      <Compile Remove="TestEltraConnector\**" />
+      <EmbeddedResource Remove="TestEltraConnector\**" />
+      <None Remove="TestEltraConnector\**" />
+    </ItemGroup>
+
+    <ItemGroup>
       <Compile Remove="Transport\CloudTransporter.cs" />
     </ItemGroup>
 

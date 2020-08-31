@@ -29,6 +29,7 @@ namespace EltraConnector.Agent
         private UserIdentity _identity;
         private bool disposedValue;
         private AgentStatus _status;
+        private Authentication _authentication;
 
         #endregion
 
@@ -104,6 +105,8 @@ namespace EltraConnector.Agent
             get => _timeout;
             set => _timeout = value;
         }
+
+        private Authentication Authentication => _authentication ?? (_authentication = CreateAuthentication());
 
         #endregion
 
@@ -226,24 +229,20 @@ namespace EltraConnector.Agent
         public async Task<bool> SignIn(UserIdentity identity, bool createAccount = false)
         {
             bool result = false;
-            var authentication = new Authentication(Host);
-
-            if (authentication != null)
+            
+            if (await Authentication.SignIn(identity))
             {
-                if (await authentication.SignIn(identity))
+                Identity = identity;
+                result = true;
+            }
+            else if (createAccount)
+            {
+                if (await Authentication.SignUp(identity))
                 {
-                    Identity = identity;
-                    result = true;
-                }
-                else if (createAccount)
-                {
-                    if (await authentication.SignUp(identity))
+                    if (await Authentication.SignIn(identity))
                     {
-                        if (await authentication.SignIn(identity))
-                        {
-                            Identity = identity;
-                            result = true;
-                        }
+                        Identity = identity;
+                        result = true;
                     }
                 }
             }
@@ -257,13 +256,18 @@ namespace EltraConnector.Agent
         /// <returns>true on success</returns>
         public async Task<bool> SignOut()
         {
-            bool result = false;
-            var authentication = new Authentication(Host);
+            bool result = await Authentication.SignOut();
+            
+            return result;
+        }
 
-            if (authentication != null)
-            {
-                result = await authentication.SignOut();
-            }
+        /// <summary>
+        /// Sign-off - removes the account.
+        /// </summary>
+        /// <returns>true of success</returns>
+        public async Task<bool> SignOff()
+        {
+            bool result = await Authentication.SignOff();
 
             return result;
         }
@@ -275,13 +279,7 @@ namespace EltraConnector.Agent
         /// <returns>true on success</returns>
         public async Task<bool> SignUp(UserIdentity identity)
         {
-            bool result = false;
-            var authentication = new Authentication(Host);
-
-            if (authentication != null)
-            {
-                result = await authentication.SignUp(identity);
-            }
+            bool result = await Authentication.SignUp(identity);
 
             return result;
         }
@@ -553,6 +551,11 @@ namespace EltraConnector.Agent
             }
 
             return result;
+        }
+
+        internal virtual Authentication CreateAuthentication()
+        {
+            return new Authentication(Host);
         }
 
         #endregion

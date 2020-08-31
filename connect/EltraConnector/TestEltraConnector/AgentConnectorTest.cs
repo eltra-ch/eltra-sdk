@@ -6,22 +6,67 @@ using System;
 
 namespace TestEltraConnector
 {
-    public class AgentConnectorTest
+    public class AgentConnectorTest : IDisposable
     {
-        [Fact]
-        public async Task Test1()
+        private AgentConnector _connector;
+        private UserIdentity _identity;
+
+        public AgentConnectorTest()
         {
-            var identity = new UserIdentity() { Login = Guid.NewGuid().ToString(), Password = "123456", Name = "Unit test user", Role = "developer" };
+            _connector = new AgentConnector() { Host = "https://eltra.ch" };
 
+            _identity = new UserIdentity()
+            {
+                Login = Guid.NewGuid().ToString(),
+                Password = "123456",
+                Name = "Unit test user",
+                Role = "developer"
+            };
+        }
+
+        [Fact]
+        public async Task Authentication_SignInShouldSucceed()
+        {
             //Arrange
-            var connector = new AgentConnector() { Host = "https://eltra.ch" };
-
+            
             //Act
-            var signInResult = await connector.SignIn(identity, true);
-
-            //connector.SignOff();
+            var result = await _connector.SignIn(_identity, true);
 
             //Assert
+            Assert.True(result);            
+        }
+
+        [Fact]
+        public async Task Authentication_SignOutShouldSucceed()
+        {
+            //Arrange
+            await _connector.SignIn(_identity, true);
+
+            //Act
+            var result = await _connector.SignOut();
+
+            //Assert
+            Assert.True(result);
+        }
+
+        public void Dispose()
+        {
+            Dispose(true);
+
+            GC.SuppressFinalize(this);
+        }
+
+        protected virtual void Dispose(bool release)
+        {
+            //Cleanup
+            var t = Task.Run(async ()=>
+            {
+                await _connector.SignOff();
+            });
+
+            t.Wait();
+
+            _connector.Dispose();
         }
     }
 }

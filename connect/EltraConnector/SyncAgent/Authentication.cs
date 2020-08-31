@@ -101,6 +101,22 @@ namespace EltraConnector.SyncAgent
             return result;
         }
 
+        public async Task<bool> SignOff()
+        {
+            bool result = false;
+
+            try
+            {
+                result = await _authControllerAdapter.SignOff();
+            }
+            catch (Exception e)
+            {
+                MsgLogger.Exception($"{GetType().Name} - SignOff", e);
+            }
+
+            return result;
+        }
+
         public async Task<bool> SignUp(UserIdentity identity)
         {
             bool result = false;

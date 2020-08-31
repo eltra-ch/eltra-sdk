@@ -32,14 +32,14 @@ namespace ConsoleApp1
 
             var runner = Task.Run(async () =>
             {
-                connector.Host = "https://eltra.ch";
-                //connector.Host = "http://localhost:5001";
+                //connector.Host = "https://eltra.ch";
+                connector.Host = "http://localhost:5001";
 
                 Console.WriteLine("Sign-in ...");
 
-                if (await connector.SignIn(new UserIdentity() { Login = $"tst{serviceId}master@eltra.ch", Name = "Dummy", Password = "1234", Level="USR_Internal" }, true))
+                if (await connector.SignIn(new UserIdentity() { Login = $"tst{serviceId}master@eltra.ch", Name = "Dummy", Password = "1234", Role="developer" }, true))
                 {
-                    var predefinedAlias = new UserIdentity() { Login = "abcd1@eltra.ch", Password = "1234", Name = "dummy", Level = "USR_Expert" };
+                    var predefinedAlias = new UserIdentity() { Login = "abcd1@eltra.ch", Password = "1234", Name = "dummy", Role = "engineer" };
 
                     if (await connector.CreateAlias(predefinedAlias))
                     {
@@ -50,7 +50,7 @@ namespace ConsoleApp1
                         Console.WriteLine("ERROR: user defined alias not created!");
                     }
 
-                    var alias = await connector.CreateAlias("USR_Internal");
+                    var alias = await connector.CreateAlias("operator");
 
                     if(alias!=null)
                     {

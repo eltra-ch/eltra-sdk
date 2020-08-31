@@ -99,6 +99,7 @@ namespace DummyAgent
             //0x3000, 0x00 is address of the counter parameter in object dictionary
             var counterParameter = device.SearchParameter(0x3000, 0x00) as Parameter;
             var controlWordParameter = device.SearchParameter(0x6040, 0x00) as Parameter;
+            var cp = await device.GetParameter(0x3000, 0x00) as Parameter;
 
             if (counterParameter != null && controlWordParameter != null)
             {
