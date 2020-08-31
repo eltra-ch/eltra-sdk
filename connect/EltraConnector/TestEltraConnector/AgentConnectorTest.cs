@@ -13,7 +13,9 @@ namespace TestEltraConnector
 
         public AgentConnectorTest()
         {
-            _connector = new AgentConnector() { Host = "https://eltra.ch" };
+            //_connector = new AgentConnector() { Host = "https://eltra.ch" };
+            
+            _connector = new AgentConnector() { Host = "http://localhost:5001" };
 
             _identity = new UserIdentity()
             {
@@ -25,7 +27,7 @@ namespace TestEltraConnector
         }
 
         [Fact]
-        public async Task Authentication_SignInShouldSucceed()
+        public async Task Authentication_SignInWithAccountCreationShouldSucceed()
         {
             //Arrange
             
@@ -34,6 +36,52 @@ namespace TestEltraConnector
 
             //Assert
             Assert.True(result);            
+        }
+
+        [Fact]
+        public async Task Authentication_SignInWithoutAccountCreationShouldFail()
+        {
+            //Arrange
+
+            //Act
+            var result = await _connector.SignIn(_identity);
+
+            //Assert
+            Assert.False(result);
+        }
+
+        [Fact]
+        public async Task Authentication_ConnectToTestMasterShouldSucceed()
+        {
+            //Arrange
+            bool signInResult = await _connector.SignIn(_identity, true);
+
+            //Act
+            var result = await _connector.Connect();
+
+            //Assert
+            Assert.True(result, "Connect failed.");
+            Assert.True(signInResult, "Sign-in failed.");
+
+            await _connector.SignOut();
+        }
+
+        [Fact]
+        public async Task Authentication_ConnectAndBindToTestMasterShouldSucceed()
+        {
+            //Arrange
+            bool signInResult = await _connector.SignIn(_identity, true);
+            
+            var deviceIdentity = new UserIdentity() { Login = "test@eltra.ch", Password = "1234" };
+
+            //Act
+            var result = await _connector.Connect(deviceIdentity);
+
+            //Assert
+            Assert.True(signInResult, "Sign-in failed.");
+            Assert.True(result, "Connect failed.");
+            
+            await _connector.SignOut();
         }
 
         [Fact]
