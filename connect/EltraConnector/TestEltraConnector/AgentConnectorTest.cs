@@ -73,7 +73,7 @@ namespace TestEltraConnector
             //Arrange
             bool signInResult = await _connector.SignIn(_identity, true);
             
-            var deviceIdentity = new UserIdentity() { Login = "test@eltra.ch", Password = "1234" };
+            var deviceIdentity = new UserIdentity() { Login = "test.master@eltra.ch", Password = "1234" };
 
             //Act
             var result = await _connector.Connect(deviceIdentity);
@@ -82,6 +82,93 @@ namespace TestEltraConnector
             Assert.True(signInResult, "Sign-in failed.");
             Assert.True(result, "Connect failed.");
             
+            await _connector.SignOut();
+        }
+
+        [Fact]
+        public async Task Authentication_ConnectAndBindToTestMasterUsingAliasShouldSucceed()
+        {
+            //Arrange
+            bool signInResult = await _connector.SignIn(_identity, true);
+
+            var deviceIdentity = new UserIdentity() { Login = "test@eltra.ch", Password = "1234" };
+
+            //Act
+            var result = await _connector.Connect(deviceIdentity);
+
+            //Assert
+            Assert.True(signInResult, "Sign-in failed.");
+            Assert.True(result, "Connect failed.");
+
+            await _connector.SignOut();
+        }
+
+        [Fact]
+        public async Task Channels_GetChannelsUsingAliasShouldSucceed()
+        {
+            //Arrange
+            bool signInResult = await _connector.SignIn(_identity, true);
+            var deviceIdentity = new UserIdentity() { Login = "test@eltra.ch", Password = "1234" };
+            var connectResult = await _connector.Connect(deviceIdentity);
+
+            //Act
+            var channels = await _connector.GetChannels();
+
+            //Assert
+            Assert.True(signInResult, "Sign-in failed.");
+            Assert.True(connectResult, "Connect failed.");
+            Assert.True(channels.Count > 0, "Get channels failed.");
+
+            await _connector.SignOut();
+        }
+
+        [Fact]
+        public async Task Channels_GetChannelLocationCountryCodeUsingAliasShouldSucceed()
+        {
+            //Arrange
+            bool signInResult = await _connector.SignIn(_identity, true);
+            var deviceIdentity = new UserIdentity() { Login = "test@eltra.ch", Password = "1234" };
+            var connectResult = await _connector.Connect(deviceIdentity);
+            var channels = await _connector.GetChannels();
+
+            //Act
+            string countryCode = string.Empty;
+            foreach(var channel in channels)
+            {
+                countryCode = channel.Location.CountryCode;
+            }
+
+            //Assert
+            Assert.True(signInResult, "Sign-in failed.");
+            Assert.True(connectResult, "Connect failed.");
+            Assert.True(channels.Count > 0, "Get channels failed.");
+            Assert.False(string.IsNullOrEmpty(countryCode), "Get country code failed.");
+
+            await _connector.SignOut();
+        }
+
+        [Fact]
+        public async Task Channels_GetChannelOwnerUserNameUsingAliasShouldSucceed()
+        {
+            //Arrange
+            bool signInResult = await _connector.SignIn(_identity, true);
+            var deviceIdentity = new UserIdentity() { Login = "test@eltra.ch", Password = "1234" };
+            var connectResult = await _connector.Connect(deviceIdentity);
+            var channels = await _connector.GetChannels();
+
+            //Act
+            string channelOwnerUserName = string.Empty;
+            foreach (var channel in channels)
+            {
+                channelOwnerUserName = channel.UserName;
+            }
+
+            //Assert
+            Assert.True(signInResult, "Sign-in failed.");
+            Assert.True(connectResult, "Connect failed.");
+            Assert.True(channels.Count > 0, "Get channels failed.");
+            Assert.False(string.IsNullOrEmpty(channelOwnerUserName), "Get country code failed.");
+
             await _connector.SignOut();
         }
 
