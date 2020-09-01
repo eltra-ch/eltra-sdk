@@ -11,13 +11,14 @@ using EltraCommon.Contracts.Channels;
 using EltraConnector.UserAgent.Definitions;
 using EltraConnector.SyncAgent;
 using System.Diagnostics;
+using EltraConnector.Interfaces;
 
 namespace EltraConnector.Agent
 {
     /// <summary>
     /// End-User Connector used by ELTRA IoT clients to communicate with Cloud Service
     /// </summary>
-    public class AgentConnector : IDisposable
+    public class AgentConnector : IDisposable, IAgentConnector
     {
         #region Private fields
 
@@ -94,7 +95,7 @@ namespace EltraConnector.Agent
         public AgentStatus Status
         {
             get => _status;
-            set => _status = value;
+            private set => _status = value;
         }
 
         /// <summary>
@@ -285,9 +286,9 @@ namespace EltraConnector.Agent
         }
 
         /// <summary>
-        /// GetDeviceNodes - Get list of device nodes
+        /// GetChannels - Get list of device nodes
         /// </summary>
-        /// <returns>List of {EltraDeviceNode}</returns>
+        /// <returns>List of {EltraDevice}</returns>
         public async Task<List<Channel>> GetChannels()
         {
             var result = new List<Channel>();
