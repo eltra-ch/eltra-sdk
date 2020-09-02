@@ -4,7 +4,7 @@
 		<ProfileHeader>
 			<ProfileIdentification>ELTRA Device Profile</ProfileIdentification>
 			<ProfileRevision>1</ProfileRevision>
-			<ProfileName>Dummy</ProfileName>
+			<ProfileName>UnitTest</ProfileName>
 			<ProfileSource>eltra.ch</ProfileSource>
 			<ProfileClassID>Device</ProfileClassID>
 			<SecurityCode/>
@@ -13,22 +13,22 @@
 			<DeviceIdentity>
 				<vendorName readOnly="true">eltra.ch</vendorName>
 				<deviceFamily readOnly="true">
-					<label lang="en-TT">Dummy Controller</label>
+					<label lang="en-TT">Unit Test Controller</label>
 				</deviceFamily>
 				<productFamily readOnly="true">PHOTO</productFamily>
-				<productName readOnly="true">Dummy rev.1</productName>
+				<productName readOnly="true">Unit test rev.1</productName>
 				<productText readOnly="true">
-					<label lang="en-TT">Dummy rev. 1 is ...</label>
+					<label lang="en-TT">Unit test rev. 1 is ...</label>
 				</productText>
 				<productUrl readOnly="true">
 					<label lang="en-TT">http://www.eltra.ch</label>
 				</productUrl>
 				<productPicture readOnly="true">data:image/png;base64,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</productPicture>
 				<orderNumber readOnly="true">000000</orderNumber>
-				<version versionType="SW" readOnly="true">0x0110</version>
-				<version versionType="HW" readOnly="true">0x0614</version>
+				<version versionType="SW" readOnly="true">0x0120</version>
+				<version versionType="HW" readOnly="true">0x0615</version>
 				<version versionType="APPNB" readOnly="true">0x0000</version>
-				<version versionType="APPVER" readOnly="true">0x0001</version>
+				<version versionType="APPVER" readOnly="true">0x0000</version>
 			</DeviceIdentity>
 			<DeviceManager>
 				<userLevelList>
@@ -53,7 +53,7 @@
 			<DeviceHardware/>
 			<DeviceInteraction>
 				<DeviceTools>
-					<DeviceTool Uuid="EF90E3A5-4474-4F90-BAB6-1E1A17C1B7AC" Name="DummyTool" Status="Enabled"/>
+					<DeviceTool Uuid="C8BE7D40-2277-400D-946E-ED3A657EB8FA" Name="UnitTestTool" Status="Enabled"/>
 				</DeviceTools>
 			</DeviceInteraction>
 			<ApplicationProcess>
@@ -124,6 +124,247 @@
 						<label lang="en-TT">Counter</label>
 						<dataType>
 							<type>INTEGER32</type>
+						</dataType>
+						<flagsIDRef uniqueIDRef="AT_RW" />
+						<defaultValue>0</defaultValue>
+						<userLevels>
+							<userLevelIDRef uniqueIDRef="USR_Standard" />
+							<userLevelIDRef uniqueIDRef="USR_Expert" />
+							<userLevelIDRef uniqueIDRef="USR_Internal" />
+						</userLevels>
+						<displayFormat>dec</displayFormat>
+					</parameter>
+					<!-- Diverse data types -->
+					<structuredParameter uniqueID="PARAM_DiverseDataTypes">
+						<index>0x4000</index>
+						<label lang="en-TT">Diverse data types</label>
+					</structuredParameter>
+					<parameter uniqueID="PARAM_DiverseDataTypesMaxSubIdx">
+						<index>0x4000</index>
+						<subIndex>0x00</subIndex>
+						<label lang="en-TT">Highest sub-index supported</label>
+						<dataType>
+							<type>UNSIGNED8</type>
+						</dataType>
+						<flagsIDRef uniqueIDRef="AT_RO" />
+						<defaultValue>1</defaultValue>
+						<userLevels />
+					</parameter>
+					<parameter uniqueID="PARAM_UNSIGNED8">
+						<index>0x4000</index>
+						<subIndex>0x01</subIndex>
+						<label lang="en-TT">Byte</label>
+						<dataType>
+							<type>UNSIGNED8</type>
+						</dataType>
+						<flagsIDRef uniqueIDRef="AT_RW" />
+						<defaultValue>0</defaultValue>
+						<userLevels>
+							<userLevelIDRef uniqueIDRef="USR_Standard" />
+							<userLevelIDRef uniqueIDRef="USR_Expert" />
+							<userLevelIDRef uniqueIDRef="USR_Internal" />
+						</userLevels>
+						<displayFormat>dec</displayFormat>
+					</parameter>
+					<parameter uniqueID="PARAM_UNSIGNED16">
+						<index>0x4000</index>
+						<subIndex>0x02</subIndex>
+						<label lang="en-TT">UInt16</label>
+						<dataType>
+							<type>UNSIGNED8</type>
+						</dataType>
+						<flagsIDRef uniqueIDRef="AT_RW" />
+						<defaultValue>0</defaultValue>
+						<userLevels>
+							<userLevelIDRef uniqueIDRef="USR_Standard" />
+							<userLevelIDRef uniqueIDRef="USR_Expert" />
+							<userLevelIDRef uniqueIDRef="USR_Internal" />
+						</userLevels>
+						<displayFormat>dec</displayFormat>
+					</parameter>
+					<parameter uniqueID="PARAM_UNSIGNED32">
+						<index>0x4000</index>
+						<subIndex>0x03</subIndex>
+						<label lang="en-TT">UInt32</label>
+						<dataType>
+							<type>UNSIGNED32</type>
+						</dataType>
+						<flagsIDRef uniqueIDRef="AT_RW" />
+						<defaultValue>0</defaultValue>
+						<userLevels>
+							<userLevelIDRef uniqueIDRef="USR_Standard" />
+							<userLevelIDRef uniqueIDRef="USR_Expert" />
+							<userLevelIDRef uniqueIDRef="USR_Internal" />
+						</userLevels>
+						<displayFormat>dec</displayFormat>
+					</parameter>
+					<parameter uniqueID="PARAM_UNSIGNED64">
+						<index>0x4000</index>
+						<subIndex>0x04</subIndex>
+						<label lang="en-TT">UInt64</label>
+						<dataType>
+							<type>UNSIGNED64</type>
+						</dataType>
+						<flagsIDRef uniqueIDRef="AT_RW" />
+						<defaultValue>0</defaultValue>
+						<userLevels>
+							<userLevelIDRef uniqueIDRef="USR_Standard" />
+							<userLevelIDRef uniqueIDRef="USR_Expert" />
+							<userLevelIDRef uniqueIDRef="USR_Internal" />
+						</userLevels>
+						<displayFormat>dec</displayFormat>
+					</parameter>
+					<parameter uniqueID="PARAM_INTEGER8">
+						<index>0x4000</index>
+						<subIndex>0x05</subIndex>
+						<label lang="en-TT">SByte</label>
+						<dataType>
+							<type>INTEGER8</type>
+						</dataType>
+						<flagsIDRef uniqueIDRef="AT_RW" />
+						<defaultValue>0</defaultValue>
+						<userLevels>
+							<userLevelIDRef uniqueIDRef="USR_Standard" />
+							<userLevelIDRef uniqueIDRef="USR_Expert" />
+							<userLevelIDRef uniqueIDRef="USR_Internal" />
+						</userLevels>
+						<displayFormat>dec</displayFormat>
+					</parameter>
+					<parameter uniqueID="PARAM_INTEGER16">
+						<index>0x4000</index>
+						<subIndex>0x06</subIndex>
+						<label lang="en-TT">Int16</label>
+						<dataType>
+							<type>INTEGER16</type>
+						</dataType>
+						<flagsIDRef uniqueIDRef="AT_RW" />
+						<defaultValue>0</defaultValue>
+						<userLevels>
+							<userLevelIDRef uniqueIDRef="USR_Standard" />
+							<userLevelIDRef uniqueIDRef="USR_Expert" />
+							<userLevelIDRef uniqueIDRef="USR_Internal" />
+						</userLevels>
+						<displayFormat>dec</displayFormat>
+					</parameter>
+					<parameter uniqueID="PARAM_INTEGER32">
+						<index>0x4000</index>
+						<subIndex>0x07</subIndex>
+						<label lang="en-TT">Int32</label>
+						<dataType>
+							<type>INTEGER32</type>
+						</dataType>
+						<flagsIDRef uniqueIDRef="AT_RW" />
+						<defaultValue>0</defaultValue>
+						<userLevels>
+							<userLevelIDRef uniqueIDRef="USR_Standard" />
+							<userLevelIDRef uniqueIDRef="USR_Expert" />
+							<userLevelIDRef uniqueIDRef="USR_Internal" />
+						</userLevels>
+						<displayFormat>dec</displayFormat>
+					</parameter>
+					<parameter uniqueID="PARAM_INTEGER64">
+						<index>0x4000</index>
+						<subIndex>0x08</subIndex>
+						<label lang="en-TT">Int64</label>
+						<dataType>
+							<type>INTEGER64</type>
+						</dataType>
+						<flagsIDRef uniqueIDRef="AT_RW" />
+						<defaultValue>0</defaultValue>
+						<userLevels>
+							<userLevelIDRef uniqueIDRef="USR_Standard" />
+							<userLevelIDRef uniqueIDRef="USR_Expert" />
+							<userLevelIDRef uniqueIDRef="USR_Internal" />
+						</userLevels>
+						<displayFormat>dec</displayFormat>
+					</parameter>
+					<parameter uniqueID="PARAM_DOUBLE">
+						<index>0x4000</index>
+						<subIndex>0x09</subIndex>
+						<label lang="en-TT">Double</label>
+						<dataType>
+							<type>DOUBLE</type>
+						</dataType>
+						<flagsIDRef uniqueIDRef="AT_RW" />
+						<defaultValue>0</defaultValue>
+						<userLevels>
+							<userLevelIDRef uniqueIDRef="USR_Standard" />
+							<userLevelIDRef uniqueIDRef="USR_Expert" />
+							<userLevelIDRef uniqueIDRef="USR_Internal" />
+						</userLevels>
+						<displayFormat>dec</displayFormat>
+					</parameter>
+					<parameter uniqueID="PARAM_VISIBLE_STRING">
+						<index>0x4000</index>
+						<subIndex>0x0A</subIndex>
+						<label lang="en-TT">String</label>
+						<dataType>
+							<type>VISIBLE_STRING</type>
+						</dataType>
+						<flagsIDRef uniqueIDRef="AT_RW" />
+						<defaultValue/>
+						<userLevels>
+							<userLevelIDRef uniqueIDRef="USR_Standard" />
+							<userLevelIDRef uniqueIDRef="USR_Expert" />
+							<userLevelIDRef uniqueIDRef="USR_Internal" />
+						</userLevels>
+						<displayFormat>dec</displayFormat>
+					</parameter>
+					<parameter uniqueID="PARAM_OCTET_STRING">
+						<index>0x4000</index>
+						<subIndex>0x0B</subIndex>
+						<label lang="en-TT">Object</label>
+						<dataType>
+							<type>OCTET_STRING</type>
+							<size unit="byte">65535</size>
+						</dataType>
+						<flagsIDRef uniqueIDRef="AT_RW" />
+						<defaultValue/>
+						<userLevels>
+							<userLevelIDRef uniqueIDRef="USR_Standard" />
+							<userLevelIDRef uniqueIDRef="USR_Expert" />
+							<userLevelIDRef uniqueIDRef="USR_Internal" />
+						</userLevels>
+						<displayFormat>dec</displayFormat>
+					</parameter>
+					<parameter uniqueID="PARAM_DATE_TIME">
+						<index>0x4000</index>
+						<subIndex>0x0C</subIndex>
+						<label lang="en-TT">DateTime</label>
+						<dataType>
+							<type>DATE_TIME</type>
+						</dataType>
+						<flagsIDRef uniqueIDRef="AT_RW" />
+						<defaultValue></defaultValue>
+						<userLevels>
+							<userLevelIDRef uniqueIDRef="USR_Standard" />
+							<userLevelIDRef uniqueIDRef="USR_Expert" />
+							<userLevelIDRef uniqueIDRef="USR_Internal" />
+						</userLevels>
+						<displayFormat>dec</displayFormat>
+					</parameter>
+					<parameter uniqueID="PARAM_BOOLEAN">
+						<index>0x4000</index>
+						<subIndex>0x0D</subIndex>
+						<label lang="en-TT">Boolean</label>
+						<dataType>
+							<type>BOOLEAN</type>
+						</dataType>
+						<flagsIDRef uniqueIDRef="AT_RW" />
+						<defaultValue>0</defaultValue>
+						<userLevels>
+							<userLevelIDRef uniqueIDRef="USR_Standard" />
+							<userLevelIDRef uniqueIDRef="USR_Expert" />
+							<userLevelIDRef uniqueIDRef="USR_Internal" />
+						</userLevels>
+						<displayFormat>dec</displayFormat>
+					</parameter>
+					<parameter uniqueID="PARAM_IDENTITY">
+						<index>0x4000</index>
+						<subIndex>0x0E</subIndex>
+						<label lang="en-TT">Byte</label>
+						<dataType>
+							<type>IDENTITY</type>
 						</dataType>
 						<flagsIDRef uniqueIDRef="AT_RW" />
 						<defaultValue>0</defaultValue>
