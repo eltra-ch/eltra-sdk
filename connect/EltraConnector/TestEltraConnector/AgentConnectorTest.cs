@@ -514,6 +514,10 @@ namespace TestEltraConnector
 
             bool result = parameter.GetValue(out byte val);
 
+            bool setValueResult = parameter.SetValue(val);
+
+            bool writeResult = await parameter.Write();
+
             //Assert
             Assert.True(signInResult, "Sign-in failed.");
             Assert.True(connectResult, "Connect failed.");
@@ -521,7 +525,9 @@ namespace TestEltraConnector
             Assert.True(parameter != null, "Device object dictionary missing.");
             Assert.True(result, "GetValue failed.");
             Assert.True(parameterValue != null, "Get ParameterValue failed.");
-            
+            Assert.True(setValueResult, "SetValue failed.");
+            Assert.True(writeResult, "Write failed.");
+
             await _connector.SignOut();
         }
 
