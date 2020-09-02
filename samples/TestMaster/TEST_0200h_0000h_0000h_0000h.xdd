@@ -15,7 +15,7 @@
 				<deviceFamily readOnly="true">
 					<label lang="en-TT">Unit Test Controller</label>
 				</deviceFamily>
-				<productFamily readOnly="true">PHOTO</productFamily>
+				<productFamily readOnly="true">TESTUNIT</productFamily>
 				<productName readOnly="true">Unit test rev.1</productName>
 				<productText readOnly="true">
 					<label lang="en-TT">Unit test rev. 1 is ...</label>
@@ -28,7 +28,7 @@
 				<version versionType="SW" readOnly="true">0x0120</version>
 				<version versionType="HW" readOnly="true">0x0615</version>
 				<version versionType="APPNB" readOnly="true">0x0000</version>
-				<version versionType="APPVER" readOnly="true">0x0000</version>
+				<version versionType="APPVER" readOnly="true">0x0003</version>
 			</DeviceIdentity>
 			<DeviceManager>
 				<userLevelList>
@@ -362,7 +362,7 @@
 					<parameter uniqueID="PARAM_IDENTITY">
 						<index>0x4000</index>
 						<subIndex>0x0E</subIndex>
-						<label lang="en-TT">Byte</label>
+						<label lang="en-TT">Identity</label>
 						<dataType>
 							<type>IDENTITY</type>
 						</dataType>
