@@ -352,6 +352,11 @@ namespace EltraConnector.Agent
             if (_deviceAgent != null)
             {
                 result = await _deviceAgent.BindChannels(identity);
+
+                if (result)
+                {
+                    Status = AgentStatus.Binded;
+                }
             }
             
             return result;

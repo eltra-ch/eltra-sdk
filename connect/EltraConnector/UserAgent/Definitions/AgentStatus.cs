@@ -24,6 +24,10 @@
         /// <summary>
         /// Stopped
         /// </summary>
-        Stopped
+        Stopped,
+        /// <summary>
+        /// Binded
+        /// </summary>
+        Binded
     }
 }

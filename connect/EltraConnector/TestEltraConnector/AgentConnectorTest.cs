@@ -4,6 +4,7 @@ using Xunit;
 using System.Threading.Tasks;
 using System;
 using EltraCommon.Contracts.Devices;
+using EltraCommon.ObjectDictionary.Xdd.DeviceDescription.Profiles.Application.Parameters;
 
 namespace TestEltraConnector
 {
@@ -484,6 +485,43 @@ namespace TestEltraConnector
             Assert.True(channels.Count > 0, "Get channels failed.");
             Assert.True(parameter != null, "Device object dictionary missing.");
 
+            await _connector.SignOut();
+        }
+
+        [Fact]
+        public async Task Parameters_DeviceShouldHaveByteParameter()
+        {
+            //Arrange
+            bool signInResult = await _connector.SignIn(_identity, true);
+            var deviceIdentity = new UserIdentity() { Login = "test@eltra.ch", Password = "1234" };
+            var connectResult = await _connector.Connect(deviceIdentity);
+            var channels = await _connector.GetChannels();
+            EltraDevice foundDevice = null;
+
+            foreach (var channel in channels)
+            {
+                foreach (var device in channel.Devices)
+                {
+                    foundDevice = device;
+                    break;
+                }
+            }
+
+            //Act
+            var parameter = await foundDevice.GetParameter(0x4000, 0x01) as XddParameter;
+
+            var parameterValue = await parameter.ReadValue();
+
+            bool result = parameter.GetValue(out byte val);
+
+            //Assert
+            Assert.True(signInResult, "Sign-in failed.");
+            Assert.True(connectResult, "Connect failed.");
+            Assert.True(channels.Count > 0, "Get channels failed.");
+            Assert.True(parameter != null, "Device object dictionary missing.");
+            Assert.True(result, "GetValue failed.");
+            Assert.True(parameterValue != null, "Get ParameterValue failed.");
+            
             await _connector.SignOut();
         }
 
