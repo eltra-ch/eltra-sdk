@@ -15,7 +15,17 @@ namespace TestMaster
         private Parameter _counterParameter;
         private Parameter _statusWordParameter;
         private Parameter _controlWordParameter;
-        private int _counterValue;
+        int _counterValue;
+
+        private byte _byteValue;
+        private ushort _ushortValue;
+        private uint _uintValue;
+        private ulong _ulongValue;
+        private sbyte _sbyteValue;
+        private short _shortValue;
+        private int _intValue;
+        private long _longValue;
+        private double _doubleValue;
 
         public TestDeviceCommunication(MasterDevice device)
             : base(device)
@@ -37,36 +47,57 @@ namespace TestMaster
         {
             bool result = false;
 
-            //PARAM_ControlWord
-            if (objectIndex == 0x6040 && objectSubindex == 0x0)
+            switch(objectIndex)
             {
-                if(_controlWordParameter.GetValue(out byte[] v))
-                {
-                    data = v;
-                    result = true;
-                }
+                case 0x6040:
+                    {
+                        if (_controlWordParameter.GetValue(out byte[] v))
+                        {
+                            data = v;
+                            result = true;
+                        }
+                    } break;
+                case 0x6041:
+                    {
+                        if (_statusWordParameter.GetValue(out byte[] v))
+                        {
+                            data = v;
+                            result = true;
+                        }
+                    } break;
+                case 0x3000:
+                    {
+                        if (_counterParameter.GetValue(out byte[] v))
+                        {
+                            data = v;
+                            result = true;
+                        }
+                    } break;
+                case 0x4000:
+                    {
+                        switch(objectSubindex)
+                        {
+                            case 0x01:
+                                data = BitConverter.GetBytes((byte)(object)_byteValue);
+                                result = true;
+                                break;
+                            case 0x02:
+                                data = BitConverter.GetBytes((ushort)(object)_ushortValue);
+                                result = true;
+                                break;
+                            case 0x03:
+                                data = BitConverter.GetBytes((uint)(object)_uintValue);
+                                result = true;
+                                break;
+                            case 0x04:
+                                data = BitConverter.GetBytes((ulong)(object)_ulongValue);
+                                result = true;
+                                break;
+                        }
+                        
+                    } break;
             }
-
-            //PARAM_StatusWord
-            if (objectIndex == 0x6041)
-            {
-                if (_statusWordParameter.GetValue(out byte[] v))
-                {
-                    data = v;
-                    result = true;
-                }
-            }
-
-            //PARAM_Counter
-            if (objectIndex == 0x3000)
-            {
-                if (_counterParameter.GetValue(out byte[] v))
-                {
-                    data = v;
-                    result = true;
-                }
-            }
-
+            
             return result;
         }
 
@@ -74,24 +105,53 @@ namespace TestMaster
         {
             bool result = false;
 
-            //PARAM_ControlWord
-            if (objectIndex == 0x6040 && objectSubindex == 0x0)
+            switch(objectIndex)
             {
-                var controlWordValue = BitConverter.ToUInt16(data, 0);
-
-                Console.WriteLine($"new controlword value = {controlWordValue}");
-
-                result = _controlWordParameter.SetValue(controlWordValue);
+                case 0x6040:
+                    {
+                        var controlWordValue = BitConverter.ToUInt16(data, 0);
+                        Console.WriteLine($"new controlword value = {controlWordValue}");
+                        result = _controlWordParameter.SetValue(controlWordValue);
+                    } break;
+                case 0x3000:
+                    {
+                        var counterValue = BitConverter.ToInt32(data, 0);
+                        Console.WriteLine($"new counter value = {counterValue}");
+                        result = _counterParameter.SetValue(counterValue);
+                    } break;
+                case 0x4000:
+                    {
+                        switch(objectSubindex)
+                        {
+                            case 0x01:
+                            {
+                                _byteValue = data[0];
+                                result = true;
+                            }
+                            break;
+                            case 0x02:
+                            {
+                                _ushortValue = BitConverter.ToUInt16(data, 0);
+                                    result = true;
+                                }
+                            break;
+                            case 0x03:
+                            {
+                                _uintValue = BitConverter.ToUInt32(data, 0);
+                                    result = true;
+                                }
+                            break;
+                            case 0x04:
+                            {
+                                _ulongValue = BitConverter.ToUInt64(data, 0);
+                                    result = true;
+                                }
+                            break;
+                        }                        
+                    }
+                    break;
             }
-            else if (objectIndex == 0x3000 && objectSubindex == 0x0)
-            {
-                var counterValue = BitConverter.ToInt32(data, 0);
-
-                Console.WriteLine($"new counter value = {counterValue}");
-
-                result = _counterParameter.SetValue(counterValue);
-            }
-
+            
             return result;
         }
 

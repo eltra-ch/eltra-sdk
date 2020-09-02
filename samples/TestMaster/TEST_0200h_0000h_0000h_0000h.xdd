@@ -147,7 +147,7 @@
 							<type>UNSIGNED8</type>
 						</dataType>
 						<flagsIDRef uniqueIDRef="AT_RO" />
-						<defaultValue>1</defaultValue>
+						<defaultValue>0x0E</defaultValue>
 						<userLevels />
 					</parameter>
 					<parameter uniqueID="PARAM_UNSIGNED8">
@@ -171,7 +171,7 @@
 						<subIndex>0x02</subIndex>
 						<label lang="en-TT">UInt16</label>
 						<dataType>
-							<type>UNSIGNED8</type>
+							<type>UNSIGNED16</type>
 						</dataType>
 						<flagsIDRef uniqueIDRef="AT_RW" />
 						<defaultValue>0</defaultValue>
