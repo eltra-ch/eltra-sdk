@@ -11,22 +11,36 @@ namespace TestEltraConnector
     public class AgentConnectorTest : IDisposable
     {
         private AgentConnector _connector;
-        private UserIdentity _identity;
+        private static UserIdentity _identity;
+        private AgentConnectorTestData _testData;
 
         public AgentConnectorTest()
         {
             string host = "https://eltra.ch";
             //string host = "http://localhost:5001";
 
-            _connector = new AgentConnector() { Host = host };
+            _connector = new AgentConnector() { Host = host };            
+        }
 
-            _identity = new UserIdentity()
+        private AgentConnectorTestData TestData
+        {
+            get => _testData ?? (_testData = new AgentConnectorTestData(_connector, Identity));
+        }
+
+        private static UserIdentity Identity
+        {
+            get => _identity ?? (_identity = CreateUserIdentity());
+        }
+
+        private static UserIdentity CreateUserIdentity()
+        {
+            return new UserIdentity()
             {
                 Login = Guid.NewGuid().ToString(),
                 Password = "123456",
                 Name = "Unit test user",
                 Role = "developer"
-            };
+            }; 
         }
 
         [Fact]
@@ -35,7 +49,7 @@ namespace TestEltraConnector
             //Arrange
             
             //Act
-            var result = await _connector.SignIn(_identity, true);
+            var result = await _connector.SignIn(Identity, true);
 
             //Assert
             Assert.True(result);            
@@ -47,7 +61,7 @@ namespace TestEltraConnector
             //Arrange
 
             //Act
-            var result = await _connector.SignIn(_identity);
+            var result = await _connector.SignIn(CreateUserIdentity());
 
             //Assert
             Assert.False(result);
@@ -57,7 +71,7 @@ namespace TestEltraConnector
         public async Task Authentication_ConnectToTestMasterShouldSucceed()
         {
             //Arrange
-            bool signInResult = await _connector.SignIn(_identity, true);
+            bool signInResult = await _connector.SignIn(Identity, true);
 
             //Act
             var result = await _connector.Connect();
@@ -73,7 +87,7 @@ namespace TestEltraConnector
         public async Task Authentication_ConnectAndBindToTestMasterShouldSucceed()
         {
             //Arrange
-            bool signInResult = await _connector.SignIn(_identity, true);
+            bool signInResult = await _connector.SignIn(Identity, true);
             
             var deviceIdentity = new UserIdentity() { Login = "test.master@eltra.ch", Password = "1234" };
 
@@ -91,7 +105,7 @@ namespace TestEltraConnector
         public async Task Authentication_ConnectAndBindToTestMasterUsingAliasShouldSucceed()
         {
             //Arrange
-            bool signInResult = await _connector.SignIn(_identity, true);
+            bool signInResult = await _connector.SignIn(Identity, true);
 
             var deviceIdentity = new UserIdentity() { Login = "test@eltra.ch", Password = "1234" };
 
@@ -109,7 +123,7 @@ namespace TestEltraConnector
         public async Task Authentication_SignOutShouldSucceed()
         {
             //Arrange
-            await _connector.SignIn(_identity, true);
+            await _connector.SignIn(Identity, true);
 
             //Act
             var result = await _connector.SignOut();
@@ -122,7 +136,7 @@ namespace TestEltraConnector
         public async Task Channels_GetChannelsUsingAliasShouldSucceed()
         {
             //Arrange
-            bool signInResult = await _connector.SignIn(_identity, true);
+            bool signInResult = await _connector.SignIn(Identity, true);
             var deviceIdentity = new UserIdentity() { Login = "test@eltra.ch", Password = "1234" };
             var connectResult = await _connector.Connect(deviceIdentity);
 
@@ -141,7 +155,7 @@ namespace TestEltraConnector
         public async Task Channels_GetChannelLocationCountryCodeUsingAliasShouldSucceed()
         {
             //Arrange
-            bool signInResult = await _connector.SignIn(_identity, true);
+            bool signInResult = await _connector.SignIn(Identity, true);
             var deviceIdentity = new UserIdentity() { Login = "test@eltra.ch", Password = "1234" };
             var connectResult = await _connector.Connect(deviceIdentity);
             var channels = await _connector.GetChannels();
@@ -166,7 +180,7 @@ namespace TestEltraConnector
         public async Task Channels_GetChannelOwnerUserNameUsingAliasShouldSucceed()
         {
             //Arrange
-            bool signInResult = await _connector.SignIn(_identity, true);
+            bool signInResult = await _connector.SignIn(Identity, true);
             var deviceIdentity = new UserIdentity() { Login = "test@eltra.ch", Password = "1234" };
             var connectResult = await _connector.Connect(deviceIdentity);
             var channels = await _connector.GetChannels();
@@ -191,7 +205,7 @@ namespace TestEltraConnector
         public async Task Channels_ChannelShouldHaveDevices()
         {
             //Arrange
-            bool signInResult = await _connector.SignIn(_identity, true);
+            bool signInResult = await _connector.SignIn(Identity, true);
             var deviceIdentity = new UserIdentity() { Login = "test@eltra.ch", Password = "1234" };
             var connectResult = await _connector.Connect(deviceIdentity);
             var channels = await _connector.GetChannels();
@@ -215,7 +229,7 @@ namespace TestEltraConnector
         public async Task Channels_ChannelShouldHaveDeviceWithNodeId1()
         {
             //Arrange
-            bool signInResult = await _connector.SignIn(_identity, true);
+            bool signInResult = await _connector.SignIn(Identity, true);
             var deviceIdentity = new UserIdentity() { Login = "test@eltra.ch", Password = "1234" };
             var connectResult = await _connector.Connect(deviceIdentity);
             var channels = await _connector.GetChannels();
@@ -245,30 +259,11 @@ namespace TestEltraConnector
         [Fact]
         public async Task Channels_ChannelShouldHaveDeviceWithNodeId2()
         {
-            //Arrange
-            bool signInResult = await _connector.SignIn(_identity, true);
-            var deviceIdentity = new UserIdentity() { Login = "test@eltra.ch", Password = "1234" };
-            var connectResult = await _connector.Connect(deviceIdentity);
-            var channels = await _connector.GetChannels();
-            EltraDevice foundDevice = null;
-
-            foreach (var channel in channels)
-            {
-                foreach (var device in channel.Devices)
-                {
-                    if (device.NodeId == 2)
-                    {
-                        foundDevice = device;
-                        break;
-                    }
-                }
-            }
+            //Act
+            var device = TestData.GetDevice(2);
 
             //Assert
-            Assert.True(signInResult, "Sign-in failed.");
-            Assert.True(connectResult, "Connect failed.");
-            Assert.True(channels.Count > 0, "Get channels failed.");
-            Assert.True(foundDevice != null, "Device with nodeid 2 not found.");
+            Assert.True(device != null, "Device with nodeid 2 not found.");
 
             await _connector.SignOut();
         }
@@ -277,255 +272,353 @@ namespace TestEltraConnector
         public async Task Channels_ChannelShouldHaveDeviceWithNodeId3()
         {
             //Arrange
-            bool signInResult = await _connector.SignIn(_identity, true);
-            var deviceIdentity = new UserIdentity() { Login = "test@eltra.ch", Password = "1234" };
-            var connectResult = await _connector.Connect(deviceIdentity);
-            var channels = await _connector.GetChannels();
-            EltraDevice foundDevice = null;
-
-            foreach (var channel in channels)
-            {
-                foreach (var device in channel.Devices)
-                {
-                    if (device.NodeId == 3)
-                    {
-                        foundDevice = device;
-                        break;
-                    }
-                }
-            }
+            var device = TestData.GetDevice(3);
 
             //Assert
-            Assert.True(signInResult, "Sign-in failed.");
-            Assert.True(connectResult, "Connect failed.");
-            Assert.True(channels.Count > 0, "Get channels failed.");
-            Assert.True(foundDevice != null, "Device with nodeid 3 not found.");
+            Assert.True(device != null, "Device with nodeid 3 not found.");
 
             await _connector.SignOut();
         }
 
         [Fact]
-        public async Task Devices_DeviceShouldHaveIdentification()
+        public async Task Devices_DeviceNode1ShouldHaveIdentification()
         {
             //Arrange
-            bool signInResult = await _connector.SignIn(_identity, true);
-            var deviceIdentity = new UserIdentity() { Login = "test@eltra.ch", Password = "1234" };
-            var connectResult = await _connector.Connect(deviceIdentity);
-            var channels = await _connector.GetChannels();
+            var device = await TestData.GetDevice(1);
             bool result = false;
 
-            foreach (var channel in channels)
+            if (device != null)
             {
-                foreach(var device in channel.Devices)
+                if (!string.IsNullOrEmpty(device.Family))
                 {
-                    if(!string.IsNullOrEmpty(device.Family))
+                    if (!string.IsNullOrEmpty(device.Name))
                     {
-                        if (!string.IsNullOrEmpty(device.Name))
-                        {
-                            result = device.Identification.SerialNumber > 0;
-                        }
-                    }                    
+                        result = device.Identification.SerialNumber > 0;
+                    }
                 }
             }
 
             //Assert
-            Assert.True(signInResult, "Sign-in failed.");
-            Assert.True(connectResult, "Connect failed.");
-            Assert.True(channels.Count > 0, "Get channels failed.");
             Assert.True(result, "Device identification missing.");
 
             await _connector.SignOut();
         }
 
         [Fact]
-        public async Task Devices_DeviceShouldHaveObjectDictionary()
+        public async Task Devices_DeviceNode2ShouldHaveIdentification()
         {
             //Arrange
-            bool signInResult = await _connector.SignIn(_identity, true);
-            var deviceIdentity = new UserIdentity() { Login = "test@eltra.ch", Password = "1234" };
-            var connectResult = await _connector.Connect(deviceIdentity);
-            var channels = await _connector.GetChannels();
+            var device = await TestData.GetDevice(2);
             bool result = false;
 
-            foreach (var channel in channels)
+            if (device != null)
             {
-                foreach (var device in channel.Devices)
+                if (!string.IsNullOrEmpty(device.Family))
                 {
-                    result = device.ObjectDictionary != null;
+                    if (!string.IsNullOrEmpty(device.Name))
+                    {
+                        result = device.Identification.SerialNumber > 0;
+                    }
                 }
             }
 
             //Assert
-            Assert.True(signInResult, "Sign-in failed.");
-            Assert.True(connectResult, "Connect failed.");
-            Assert.True(channels.Count > 0, "Get channels failed.");
+            Assert.True(result, "Device identification missing.");
+
+            await _connector.SignOut();
+        }
+
+        [Fact]
+        public async Task Devices_DeviceNode3ShouldHaveIdentification()
+        {
+            //Arrange
+            var device = await TestData.GetDevice(3);
+            bool result = false;
+
+            if (device != null)
+            {
+                if (!string.IsNullOrEmpty(device.Family))
+                {
+                    if (!string.IsNullOrEmpty(device.Name))
+                    {
+                        result = device.Identification.SerialNumber > 0;
+                    }
+                }
+            }
+
+            //Assert
+            Assert.True(result, "Device identification missing.");
+
+            await _connector.SignOut();
+        }
+
+        [Fact]
+        public async Task Devices_DeviceNode1ShouldHaveObjectDictionary()
+        {
+            //Arrange
+            var device = await TestData.GetDevice(1);
+
+            //Act
+            bool result = device.ObjectDictionary != null;
+
+            //Assert
             Assert.True(result, "Device object dictionary missing.");
 
             await _connector.SignOut();
         }
 
         [Fact]
-        public async Task Parameters_DeviceObjectDictionaryShouldHaveCounterParameter()
+        public async Task Devices_DeviceNode2ShouldHaveObjectDictionary()
         {
             //Arrange
-            bool signInResult = await _connector.SignIn(_identity, true);
-            var deviceIdentity = new UserIdentity() { Login = "test@eltra.ch", Password = "1234" };
-            var connectResult = await _connector.Connect(deviceIdentity);
-            var channels = await _connector.GetChannels();
-            EltraDevice foundDevice = null;
-
-            foreach (var channel in channels)
-            {
-                foreach (var device in channel.Devices)
-                {
-                    foundDevice = device;
-                    break;
-                }
-            }
+            var device = await TestData.GetDevice(2);
 
             //Act
-            var parameter = foundDevice.SearchParameter(0x3000, 0x00);
+            bool result = device.ObjectDictionary != null;
 
             //Assert
-            Assert.True(signInResult, "Sign-in failed.");
-            Assert.True(connectResult, "Connect failed.");
-            Assert.True(channels.Count > 0, "Get channels failed.");
+            Assert.True(result, "Device object dictionary missing.");
+
+            await _connector.SignOut();
+        }
+
+        [Fact]
+        public async Task Devices_DeviceNode3ShouldHaveObjectDictionary()
+        {
+            //Arrange
+            var device = await TestData.GetDevice(3);
+
+            //Act
+            bool result = device.ObjectDictionary != null;
+
+            //Assert
+            Assert.True(result, "Device object dictionary missing.");
+
+            await _connector.SignOut();
+        }
+
+        [Fact]
+        public async Task Parameters_DeviceNode1ObjectDictionaryShouldHaveCounterParameter()
+        {
+            //Arrange
+            var device = await TestData.GetDevice(1);
+
+            //Act
+            var parameter = device.SearchParameter(0x3000, 0x00);
+
+            //Assert
+            Assert.True(parameter != null, "Device counter parameter missing missing.");
+
+            await _connector.SignOut();
+        }
+
+        [Fact]
+        public async Task Parameters_DeviceNode2ObjectDictionaryShouldHaveCounterParameter()
+        {
+            //Arrange
+            var device = await TestData.GetDevice(2);
+
+            //Act
+            var parameter = device.SearchParameter(0x3000, 0x00);
+
+            //Assert
+            Assert.True(parameter != null, "Device counter parameter missing missing.");
+
+            await _connector.SignOut();
+        }
+
+        [Fact]
+        public async Task Parameters_DeviceNode3ObjectDictionaryShouldHaveCounterParameter()
+        {
+            //Arrange
+            var device = await TestData.GetDevice(3);
+
+            //Act
+            var parameter = device.SearchParameter(0x3000, 0x00);
+
+            //Assert
+            Assert.True(parameter != null, "Device counter parameter missing missing.");
+
+            await _connector.SignOut();
+        }
+
+        [Fact]
+        public async Task Parameters_DeviceNode1ObjectDictionaryShouldHaveCounterParameterByUniqueId()
+        {
+            //Arrange
+            var device = await TestData.GetDevice(1);
+
+            //Act
+            var parameter = device.SearchParameter("PARAM_Counter");
+
+            //Assert
+            Assert.True(parameter != null, "Device counter parameter missing.");
+
+            await _connector.SignOut();
+        }
+
+        [Fact]
+        public async Task Parameters_DeviceNode2ObjectDictionaryShouldHaveCounterParameterByUniqueId()
+        {
+            //Arrange
+            var device = await TestData.GetDevice(2);
+
+            //Act
+            var parameter = device.SearchParameter("PARAM_Counter");
+
+            //Assert
+            Assert.True(parameter != null, "Device counter parameter missing.");
+
+            await _connector.SignOut();
+        }
+
+        [Fact]
+        public async Task Parameters_DeviceNode3ObjectDictionaryShouldHaveCounterParameterByUniqueId()
+        {
+            //Arrange
+            var device = await TestData.GetDevice(2);
+
+            //Act
+            var parameter = device.SearchParameter("PARAM_Counter");
+
+            //Assert
+            Assert.True(parameter != null, "Device counter parameter missing.");
+
+            await _connector.SignOut();
+        }
+
+        [Fact]
+        public async Task Parameters_DeviceNode1ShouldHaveCounterParameter()
+        {
+            //Arrange
+            var deviceNode1 = await TestData.GetDevice(1);
+
+            //Act
+            var parameter = deviceNode1.GetParameter(0x3000, 0x00);
+
+            //Assert
             Assert.True(parameter != null, "Device object dictionary missing.");
 
             await _connector.SignOut();
         }
 
         [Fact]
-        public async Task Parameters_DeviceObjectDictionaryShouldHaveCounterParameterByUniqueId()
+        public async Task Parameters_DeviceNode2ShouldHaveCounterParameter()
         {
             //Arrange
-            bool signInResult = await _connector.SignIn(_identity, true);
-            var deviceIdentity = new UserIdentity() { Login = "test@eltra.ch", Password = "1234" };
-            var connectResult = await _connector.Connect(deviceIdentity);
-            var channels = await _connector.GetChannels();
-            EltraDevice foundDevice = null;
-
-            foreach (var channel in channels)
-            {
-                foreach (var device in channel.Devices)
-                {
-                    foundDevice = device;
-                    break;
-                }
-            }
+            var deviceNode1 = await TestData.GetDevice(2);
 
             //Act
-            var parameter = foundDevice.SearchParameter("PARAM_Counter");
+            var parameter = deviceNode1.GetParameter(0x3000, 0x00);
 
             //Assert
-            Assert.True(signInResult, "Sign-in failed.");
-            Assert.True(connectResult, "Connect failed.");
-            Assert.True(channels.Count > 0, "Get channels failed.");
             Assert.True(parameter != null, "Device object dictionary missing.");
 
             await _connector.SignOut();
         }
 
         [Fact]
-        public async Task Parameters_DeviceShouldHaveCounterParameter()
+        public async Task Parameters_DeviceNode3ShouldHaveCounterParameter()
         {
             //Arrange
-            bool signInResult = await _connector.SignIn(_identity, true);
-            var deviceIdentity = new UserIdentity() { Login = "test@eltra.ch", Password = "1234" };
-            var connectResult = await _connector.Connect(deviceIdentity);
-            var channels = await _connector.GetChannels();
-            EltraDevice foundDevice = null;
-
-            foreach (var channel in channels)
-            {
-                foreach (var device in channel.Devices)
-                {
-                    foundDevice = device;
-                    break;
-                }
-            }
+            var deviceNode1 = await TestData.GetDevice(3);
 
             //Act
-            var parameter = foundDevice.GetParameter(0x3000, 0x00);
+            var parameter = deviceNode1.GetParameter(0x3000, 0x00);
 
             //Assert
-            Assert.True(signInResult, "Sign-in failed.");
-            Assert.True(connectResult, "Connect failed.");
-            Assert.True(channels.Count > 0, "Get channels failed.");
             Assert.True(parameter != null, "Device object dictionary missing.");
 
             await _connector.SignOut();
         }
 
         [Fact]
-        public async Task Parameters_DeviceShouldHaveCounterParameterByUniqueId()
+        public async Task Parameters_DeviceNode1ShouldHaveCounterParameterByUniqueId()
         {
             //Arrange
-            bool signInResult = await _connector.SignIn(_identity, true);
-            var deviceIdentity = new UserIdentity() { Login = "test@eltra.ch", Password = "1234" };
-            var connectResult = await _connector.Connect(deviceIdentity);
-            var channels = await _connector.GetChannels();
-            EltraDevice foundDevice = null;
-
-            foreach (var channel in channels)
-            {
-                foreach (var device in channel.Devices)
-                {
-                    foundDevice = device;
-                    break;
-                }
-            }
+            var deviceNode1 = await TestData.GetDevice(1);
 
             //Act
-            var parameter = foundDevice.GetParameter("PARAM_Counter");
+            var parameter = deviceNode1.GetParameter("PARAM_Counter");
 
             //Assert
-            Assert.True(signInResult, "Sign-in failed.");
-            Assert.True(connectResult, "Connect failed.");
-            Assert.True(channels.Count > 0, "Get channels failed.");
             Assert.True(parameter != null, "Device object dictionary missing.");
 
             await _connector.SignOut();
         }
 
         [Fact]
-        public async Task Parameters_DeviceShouldHaveByteParameter()
+        public async Task Parameters_DeviceNode2ShouldHaveCounterParameterByUniqueId()
         {
             //Arrange
-            bool signInResult = await _connector.SignIn(_identity, true);
-            var deviceIdentity = new UserIdentity() { Login = "test@eltra.ch", Password = "1234" };
-            var connectResult = await _connector.Connect(deviceIdentity);
-            var channels = await _connector.GetChannels();
-            EltraDevice foundDevice = null;
-
-            foreach (var channel in channels)
-            {
-                foreach (var device in channel.Devices)
-                {
-                    foundDevice = device;
-                    break;
-                }
-            }
+            var deviceNode2 = await TestData.GetDevice(2);
 
             //Act
-            var parameter = await foundDevice.GetParameter(0x4000, 0x01) as XddParameter;
+            var parameter = deviceNode2.GetParameter("PARAM_Counter");
 
-            var parameterValue = await parameter.ReadValue();
+            //Assert
+            Assert.True(parameter != null, "Device object dictionary missing.");
 
-            bool result = parameter.GetValue(out byte val);
+            await _connector.SignOut();
+        }
 
-            bool setValueResult = parameter.SetValue(val);
+        [Fact]
+        public async Task Parameters_DeviceNode3ShouldHaveCounterParameterByUniqueId()
+        {
+            //Arrange
+            var deviceNode2 = await TestData.GetDevice(3);
+
+            //Act
+            var parameter = deviceNode2.GetParameter("PARAM_Counter");
+
+            //Assert
+            Assert.True(parameter != null, "Device object dictionary missing.");
+
+            await _connector.SignOut();
+        }
+
+        [Fact]
+        public async Task Parameters_DeviceNode1ShouldHaveOperationalByteParameter()
+        {
+            //Arrange
+            var deviceNode1 = await TestData.GetDevice(1);
+
+            //Act
+            var parameter = await deviceNode1.GetParameter(0x4000, 0x01) as XddParameter;
+            var actualValue = parameter.ActualValue.Clone();
+
+            var parameterValue1 = await parameter.ReadValue();
+
+            bool result = parameter.GetValue(out byte val1);
+
+            if(val1 < byte.MaxValue - 1)
+            {
+                val1 = (byte)(val1 + 1);
+            }
+            else
+            {
+                val1 = byte.MinValue;
+            }
+
+            bool setValueResult = parameter.SetValue(val1);
 
             bool writeResult = await parameter.Write();
 
+            var parameterValue2 = await parameter.ReadValue();
+
+            byte val2 = byte.MinValue;
+
+            bool getValueResult = parameterValue2.GetValue(ref val2);
+
             //Assert
-            Assert.True(signInResult, "Sign-in failed.");
-            Assert.True(connectResult, "Connect failed.");
-            Assert.True(channels.Count > 0, "Get channels failed.");
             Assert.True(parameter != null, "Device object dictionary missing.");
+            Assert.True(parameterValue1 != null, "Get ParameterValue failed.");
+            Assert.True(parameterValue1.Equals(actualValue), "Get ParameterValue differs from actual value.");
             Assert.True(result, "GetValue failed.");
-            Assert.True(parameterValue != null, "Get ParameterValue failed.");
+            Assert.True(parameterValue2 != null, "Get ParameterValue failed.");
             Assert.True(setValueResult, "SetValue failed.");
+            Assert.True(getValueResult, "GetValue failed.");
+            Assert.True(val1 == val2, $"ReadValue/Write mismatch val1 = {val1} val2 = {val2}.");
             Assert.True(writeResult, "Write failed.");
 
             await _connector.SignOut();

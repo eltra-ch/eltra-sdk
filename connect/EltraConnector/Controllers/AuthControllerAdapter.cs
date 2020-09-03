@@ -29,20 +29,23 @@ namespace EltraConnector.Controllers
 
             try
             {
-                var path = "api/user/sign-in";
-
-                var json = JsonConvert.SerializeObject(identity);
-
-                var response = await Transporter.Post(Url, path, json);
-
-                if (response.StatusCode == HttpStatusCode.OK)
+                if (identity != null)
                 {
-                    MsgLogger.WriteDebug($"{GetType().Name} - SignIn", $"Sign-in for user {identity.Login} successful!");
-                    result = true;
-                }
-                else
-                {
-                    MsgLogger.WriteError($"{GetType().Name} - SignIn", $"Sign-in for user {identity.Login} failed! status code = {response.StatusCode}");
+                    var path = "api/user/sign-in";
+
+                    var json = JsonConvert.SerializeObject(identity);
+
+                    var response = await Transporter.Post(Url, path, json);
+
+                    if (response.StatusCode == HttpStatusCode.OK)
+                    {
+                        MsgLogger.WriteDebug($"{GetType().Name} - SignIn", $"Sign-in for user {identity.Login} successful!");
+                        result = true;
+                    }
+                    else
+                    {
+                        MsgLogger.WriteError($"{GetType().Name} - SignIn", $"Sign-in for user {identity.Login} failed! status code = {response.StatusCode}");
+                    }
                 }
             }
             catch (Exception e)
