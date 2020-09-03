@@ -27,6 +27,11 @@ namespace TestMaster
         private XddParameter _intParameter;
         private XddParameter _longParameter;
         private XddParameter _doubleParameter;
+        private XddParameter _stringParameter;
+        private XddParameter _objectParameter;
+        private XddParameter _dateTimeParameter;
+        private XddParameter _booleanParameter;
+        private XddParameter _identityParameter;
 
         public TestDeviceCommunication(MasterDevice device)
             : base(device)
@@ -51,6 +56,11 @@ namespace TestMaster
             _intParameter = Vcs.SearchParameter(0x4000, 0x07) as XddParameter;
             _longParameter = Vcs.SearchParameter(0x4000, 0x08) as XddParameter;
             _doubleParameter = Vcs.SearchParameter(0x4000, 0x09) as XddParameter;
+            _stringParameter = Vcs.SearchParameter(0x4000, 0x0A) as XddParameter;
+            _objectParameter = Vcs.SearchParameter(0x4000, 0x0B) as XddParameter;
+            _dateTimeParameter = Vcs.SearchParameter(0x4000, 0x0C) as XddParameter;
+            _booleanParameter = Vcs.SearchParameter(0x4000, 0x0D) as XddParameter;
+            _identityParameter = Vcs.SearchParameter(0x4000, 0x0E) as XddParameter;
 
             base.OnInitialized();
         }
@@ -170,6 +180,51 @@ namespace TestMaster
                                     }
                                 }
                                 break;
+                            case 0x0A:
+                                {
+                                    if (_stringParameter.GetValue(out byte[] d))
+                                    {
+                                        data = d;
+                                        result = true;
+                                    }
+                                }
+                                break;
+                            case 0x0B:
+                                {
+                                    if (_objectParameter.GetValue(out byte[] d))
+                                    {
+                                        data = d;
+                                        result = true;
+                                    }
+                                }
+                                break;
+                            case 0x0C:
+                                {
+                                    if (_dateTimeParameter.GetValue(out byte[] d))
+                                    {
+                                        data = d;
+                                        result = true;
+                                    }
+                                }
+                                break;
+                            case 0x0D:
+                                {
+                                    if (_booleanParameter.GetValue(out byte[] d))
+                                    {
+                                        data = d;
+                                        result = true;
+                                    }
+                                }
+                                break;
+                            case 0x0E:
+                                {
+                                    if (_identityParameter.GetValue(out byte[] d))
+                                    {
+                                        data = d;
+                                        result = true;
+                                    }
+                                }
+                                break;
                         }
                         
                     } break;
@@ -259,6 +314,49 @@ namespace TestMaster
                                     var v = BitConverter.ToDouble(data, 0);
                                     Console.WriteLine($"new double value = {v}");
                                     result = _doubleParameter.SetValue(v);
+                                }
+                                break;
+                            case 0x0A:
+                                {
+                                    //TODO, there is smth bad here
+                                    /*var v = Convert.From(data);                                    
+                                    Console.WriteLine($"new string value = {v}");
+                                    result = _stringParameter.SetValue(v);*/
+                                }
+                                break;
+                            case 0x0B:
+                                {                                    
+                                    Console.WriteLine($"new object /PARAM_OCTET_STRING/ value");
+                                    result = _objectParameter.SetValue(data);
+                                }
+                                break;
+                            case 0x0C:
+                                {
+                                    result = _dateTimeParameter.SetValue(data);
+
+                                    _dateTimeParameter.GetValue(out DateTime newVal);
+
+                                    Console.WriteLine($"new date time value {newVal}");
+                                }
+                                break;
+                            case 0x0D:
+                                {
+                                    result = _booleanParameter.SetValue(data);
+
+                                    if (result)
+                                    {
+                                        if(_booleanParameter.GetValue(out DateTime newVal))
+                                        {
+                                            Console.WriteLine($"new boolean value {newVal}");
+                                        }
+                                    }
+                                }
+                                break;
+                            case 0x0E:
+                                {
+                                    Console.WriteLine($"new identity value");
+
+                                    result = _identityParameter.SetValue(data);
                                 }
                                 break;
                         }                        
