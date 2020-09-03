@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using EltraCommon.Contracts.Devices;
 using EltraCommon.Logger;
 using EltraConnector.Master.Device;
+using EltraCommon.ObjectDictionary.Xdd.DeviceDescription.Profiles.Application.Parameters;
 
 namespace TestMaster
 {
@@ -17,15 +18,15 @@ namespace TestMaster
         private Parameter _controlWordParameter;
         int _counterValue;
 
-        private byte _byteValue;
-        private ushort _ushortValue;
-        private uint _uintValue;
-        private ulong _ulongValue;
-        private sbyte _sbyteValue;
-        private short _shortValue;
-        private int _intValue;
-        private long _longValue;
-        private double _doubleValue;
+        private XddParameter _byteParameter;
+        private XddParameter _ushortParameter;
+        private XddParameter _uintParameter;
+        private XddParameter _ulongParameter;
+        private XddParameter _sbyteParameter;
+        private XddParameter _shortParameter;
+        private XddParameter _intParameter;
+        private XddParameter _longParameter;
+        private XddParameter _doubleParameter;
 
         public TestDeviceCommunication(MasterDevice device)
             : base(device)
@@ -39,6 +40,17 @@ namespace TestMaster
             _controlWordParameter = Vcs.SearchParameter(0x6040, 0x00) as Parameter;
             _statusWordParameter = Vcs.SearchParameter(0x6041, 0x00) as Parameter;
             _counterParameter = Vcs.SearchParameter(0x3000, 0x00) as Parameter;
+
+            _byteParameter = Vcs.SearchParameter(0x4000, 0x01) as XddParameter;
+            _ushortParameter = Vcs.SearchParameter(0x4000, 0x02) as XddParameter;
+            _uintParameter = Vcs.SearchParameter(0x4000, 0x03) as XddParameter;
+            _ulongParameter = Vcs.SearchParameter(0x4000, 0x04) as XddParameter;
+
+            _sbyteParameter = Vcs.SearchParameter(0x4000, 0x05) as XddParameter;
+            _shortParameter = Vcs.SearchParameter(0x4000, 0x06) as XddParameter;
+            _intParameter = Vcs.SearchParameter(0x4000, 0x07) as XddParameter;
+            _longParameter = Vcs.SearchParameter(0x4000, 0x08) as XddParameter;
+            _doubleParameter = Vcs.SearchParameter(0x4000, 0x09) as XddParameter;
 
             base.OnInitialized();
         }
@@ -78,20 +90,85 @@ namespace TestMaster
                         switch(objectSubindex)
                         {
                             case 0x01:
-                                data = BitConverter.GetBytes((byte)(object)_byteValue);
-                                result = true;
+                                {
+                                    if (_byteParameter.GetValue(out byte[] d))
+                                    {
+                                        data = d;
+                                        result = true;
+                                    }
+                                }
                                 break;
                             case 0x02:
-                                data = BitConverter.GetBytes((ushort)(object)_ushortValue);
-                                result = true;
+                                {
+                                    if (_ushortParameter.GetValue(out byte[] d))
+                                    {
+                                        data = d;
+                                        result = true;
+                                    }
+                                }
                                 break;
                             case 0x03:
-                                data = BitConverter.GetBytes((uint)(object)_uintValue);
-                                result = true;
+                                {
+                                    if (_uintParameter.GetValue(out byte[] d))
+                                    {
+                                        data = d;
+                                        result = true;
+                                    }
+                                }
                                 break;
                             case 0x04:
-                                data = BitConverter.GetBytes((ulong)(object)_ulongValue);
-                                result = true;
+                                {
+                                    if (_ulongParameter.GetValue(out byte[] d))
+                                    {
+                                        data = d;
+                                        result = true;
+                                    }
+                                }
+                                break;
+                            case 0x05:
+                                {
+                                    if (_sbyteParameter.GetValue(out byte[] d))
+                                    {
+                                        data = d;
+                                        result = true;
+                                    }
+                                }
+                                break;
+                            case 0x06:
+                                {
+                                    if (_shortParameter.GetValue(out byte[] d))
+                                    {
+                                        data = d;
+                                        result = true;
+                                    }
+                                }
+                                break;
+                            case 0x07:
+                                {
+                                    if (_intParameter.GetValue(out byte[] d))
+                                    {
+                                        data = d;
+                                        result = true;
+                                    }
+                                }
+                                break;
+                            case 0x08:
+                                {
+                                    if (_longParameter.GetValue(out byte[] d))
+                                    {
+                                        data = d;
+                                        result = true;
+                                    }
+                                }
+                                break;
+                            case 0x09:
+                                {
+                                    if (_doubleParameter.GetValue(out byte[] d))
+                                    {
+                                        data = d;
+                                        result = true;
+                                    }
+                                }
                                 break;
                         }
                         
@@ -125,28 +202,65 @@ namespace TestMaster
                         {
                             case 0x01:
                             {
-                                _byteValue = data[0];
-                                result = true;
+                                Console.WriteLine($"new byte value = {data[0]}");
+                                result = _byteParameter.SetValue(data[0]);
                             }
                             break;
                             case 0x02:
                             {
-                                _ushortValue = BitConverter.ToUInt16(data, 0);
-                                    result = true;
-                                }
+                                var v = BitConverter.ToUInt16(data, 0);
+                                Console.WriteLine($"new ushort value = {v}");
+                                result = _ushortParameter.SetValue(v);
+                            }
                             break;
                             case 0x03:
                             {
-                                _uintValue = BitConverter.ToUInt32(data, 0);
-                                    result = true;
-                                }
+                                var v = BitConverter.ToUInt32(data, 0);
+                                Console.WriteLine($"new uint value = {v}");
+                                result = _uintParameter.SetValue(v);                              
+                            }
                             break;
                             case 0x04:
                             {
-                                _ulongValue = BitConverter.ToUInt64(data, 0);
-                                    result = true;
-                                }
+                                var v = BitConverter.ToUInt64(data, 0);
+                                Console.WriteLine($"new uint64 value = {v}");
+                                result = _ulongParameter.SetValue(v);
+                            }
                             break;
+                            case 0x05:
+                                {
+                                    Console.WriteLine($"new sbyte value = {data[0]}");
+                                    result = _sbyteParameter.SetValue((sbyte)data[0]);
+                                }
+                                break;
+                            case 0x06:
+                                {
+                                    var v = BitConverter.ToInt16(data, 0);
+                                    Console.WriteLine($"new short value = {v}");
+                                    result = _shortParameter.SetValue(v);
+                                }
+                                break;
+                            case 0x07:
+                                {
+                                    var v = BitConverter.ToInt32(data, 0);
+                                    Console.WriteLine($"new int value = {v}");
+                                    result = _intParameter.SetValue(v);
+                                }
+                                break;
+                            case 0x08:
+                                {
+                                    var v = BitConverter.ToInt64(data, 0);
+                                    Console.WriteLine($"new int64 value = {v}");
+                                    result = _longParameter.SetValue(v);
+                                }
+                                break;
+                            case 0x09:
+                                {
+                                    var v = BitConverter.ToDouble(data, 0);
+                                    Console.WriteLine($"new double value = {v}");
+                                    result = _doubleParameter.SetValue(v);
+                                }
+                                break;
                         }                        
                     }
                     break;
