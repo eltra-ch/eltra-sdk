@@ -292,7 +292,7 @@ namespace EltraConnector.Controllers
                         break;
                     }
 
-                    if (parameter is Parameter parameterEntry && parameterEntry.ActualValue.IsValid)
+                    if (parameter is Parameter parameterEntry)
                     {
                         var parameterValue = await GetParameterValue(device, parameterEntry);
 
@@ -320,11 +320,6 @@ namespace EltraConnector.Controllers
 
                                 if (subParameter is Parameter subParameterEntry)
                                 {
-                                    if(subParameterEntry.ActualValue.IsValid)
-                                    {
-
-                                    }
-
                                     var parameterValue = await GetParameterValue(device, subParameterEntry);
 
                                     if (parameterValue == null)
