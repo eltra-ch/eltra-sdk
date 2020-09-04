@@ -15,12 +15,12 @@ namespace TestMaster
             var connector = new EltraMasterConnector();
             string filePath = "TEST_0200h_0000h_0000h_0000h.xdd";
 
-            Console.WriteLine($"Hello Test Eltra Master!");
+            Console.WriteLine($"Hello Test Eltra Unit Tests Master!");
 
             var runner = Task.Run(async () =>
             {
-                //connector.Host = "https://eltra.ch";
-                connector.Host = "http://localhost:5001";
+                connector.Host = "https://eltra.ch";
+                //connector.Host = "http://localhost:5001";
 
                 Console.WriteLine("Sign-in ...");
 
