@@ -156,11 +156,10 @@ namespace EltraConnector.UserAgent
 
                     if (parameterValue != null)
                     {
-                        if (parameterEntry.SetValue(parameterValue))
-                        {
-                            result = parameterEntry;
-                        }
+                        parameterEntry.SetValue(parameterValue);
                     }
+
+                    result = parameterEntry;
                 }
                 else
                 {

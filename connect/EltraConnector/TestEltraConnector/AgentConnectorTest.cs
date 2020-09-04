@@ -16,8 +16,8 @@ namespace TestEltraConnector
 
         public AgentConnectorTest()
         {
-            string host = "https://eltra.ch";
-            //string host = "http://localhost:5001";
+            //string host = "https://eltra.ch";
+            string host = "http://localhost:5001";
 
             _connector = new AgentConnector() { Host = host };            
         }
@@ -607,6 +607,44 @@ namespace TestEltraConnector
             var parameterValue2 = await parameter.ReadValue();
 
             byte val2 = byte.MinValue;
+
+            bool getValueResult = parameterValue2.GetValue(ref val2);
+
+            //Assert
+            Assert.True(parameter != null, "Device object dictionary missing.");
+            Assert.True(parameterValue1 != null, "Get ParameterValue failed.");
+            Assert.True(parameterValue1.Equals(actualValue), "Get ParameterValue differs from actual value.");
+            Assert.True(result, "GetValue failed.");
+            Assert.True(parameterValue2 != null, "Get ParameterValue failed.");
+            Assert.True(setValueResult, "SetValue failed.");
+            Assert.True(getValueResult, "GetValue failed.");
+            Assert.True(val1 == val2, $"ReadValue/Write mismatch val1 = {val1} val2 = {val2}.");
+            Assert.True(writeResult, "Write failed.");
+
+            await _connector.SignOut();
+        }
+
+        [Fact]
+        public async Task Parameters_DeviceNode1ShouldHaveOperationalStringParameter()
+        {
+            //Arrange
+            var deviceNode1 = await TestData.GetDevice(1);
+
+            //Act
+            var parameter = await deviceNode1.GetParameter(0x4000, 0x0A) as XddParameter;
+            var actualValue = parameter.ActualValue.Clone();
+
+            var parameterValue1 = await parameter.ReadValue();
+
+            bool result = parameter.GetValue(out string val1);
+
+            bool setValueResult = parameter.SetValue(val1);
+
+            bool writeResult = await parameter.Write();
+
+            var parameterValue2 = await parameter.ReadValue();
+
+            string val2 = string.Empty;
 
             bool getValueResult = parameterValue2.GetValue(ref val2);
 

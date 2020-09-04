@@ -219,9 +219,20 @@ namespace EltraConnector.Controllers
 
                 var response = await Transporter.Put(Url, path, json);
 
-                if(response != null && response.StatusCode == HttpStatusCode.OK)
+                if(response != null)
                 {
-                    result = true;
+                    if (response.StatusCode == HttpStatusCode.OK)
+                    {
+                        result = true;
+                    }
+                    else
+                    {
+                        MsgLogger.WriteError($"{GetType().Name} - UpdateParameter", $"update parameter '{parameter.UniqueId}' failed, reason = {response.StatusCode}");
+                    }
+                }
+                else
+                {
+                    MsgLogger.WriteError($"{GetType().Name} - UpdateParameter", $"update parameter '{parameter.UniqueId}' failed, reason = no response");
                 }
             }
             catch (Exception)
@@ -307,8 +318,13 @@ namespace EltraConnector.Controllers
                                     break;
                                 }
 
-                                if (subParameter is Parameter subParameterEntry && subParameterEntry.ActualValue.IsValid)
+                                if (subParameter is Parameter subParameterEntry)
                                 {
+                                    if(subParameterEntry.ActualValue.IsValid)
+                                    {
+
+                                    }
+
                                     var parameterValue = await GetParameterValue(device, subParameterEntry);
 
                                     if (parameterValue == null)
