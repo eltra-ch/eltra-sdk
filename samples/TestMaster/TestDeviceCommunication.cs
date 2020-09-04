@@ -318,10 +318,17 @@ namespace TestMaster
                                 break;
                             case 0x0A:
                                 {
-                                    //TODO, there is smth bad here
-                                    /*var v = Convert.From(data);                                    
-                                    Console.WriteLine($"new string value = {v}");
-                                    result = _stringParameter.SetValue(v);*/
+                                    result = _stringParameter.SetValue(data);
+
+                                    if (result)
+                                    {
+                                        result = _stringParameter.GetValue(out string v);
+
+                                        if (result)
+                                        {
+                                            Console.WriteLine($"new string value '{v}'");
+                                        }
+                                    }
                                 }
                                 break;
                             case 0x0B:
@@ -345,7 +352,7 @@ namespace TestMaster
 
                                     if (result)
                                     {
-                                        if(_booleanParameter.GetValue(out DateTime newVal))
+                                        if(_booleanParameter.GetValue(out bool newVal))
                                         {
                                             Console.WriteLine($"new boolean value {newVal}");
                                         }

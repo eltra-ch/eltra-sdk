@@ -19,8 +19,9 @@ namespace TestMaster
 
             var runner = Task.Run(async () =>
             {
-                connector.Host = "https://eltra.ch";
-                
+                //connector.Host = "https://eltra.ch";
+                connector.Host = "http://localhost:5001";
+
                 Console.WriteLine("Sign-in ...");
 
                 if (await connector.SignIn(new UserIdentity() { Login = $"test.master@eltra.ch", Name = "Test", Password = "1234", Role="developer" }, true))

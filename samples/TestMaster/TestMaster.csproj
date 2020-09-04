@@ -6,7 +6,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Eltra.Connector" Version="1.4.6" />
+    <ProjectReference Include="..\..\connect\EltraConnector\EltraConnector.csproj" />
+    <ProjectReference Include="..\..\xternals\common\EltraCommon\EltraCommon.csproj" />
   </ItemGroup>
 
   <ItemGroup>
