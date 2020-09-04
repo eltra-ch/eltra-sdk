@@ -16,8 +16,8 @@ namespace TestEltraConnector
 
         public AgentConnectorTest()
         {
-            //string host = "https://eltra.ch";
-            string host = "http://localhost:5001";
+            string host = "https://eltra.ch";
+            //string host = "http://localhost:5001";
 
             _connector = new AgentConnector() { Host = host };            
         }
@@ -637,6 +637,15 @@ namespace TestEltraConnector
             var parameterValue1 = await parameter.ReadValue();
 
             bool result = parameter.GetValue(out string val1);
+
+            if (string.IsNullOrEmpty(val1) || val1 == "Olleh")
+            {
+                val1 = "Hello";
+            }
+            else
+            {
+                val1 = "Olleh";
+            }
 
             bool setValueResult = parameter.SetValue(val1);
 
