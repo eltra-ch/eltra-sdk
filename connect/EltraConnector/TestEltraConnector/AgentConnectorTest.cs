@@ -5,6 +5,8 @@ using System.Threading.Tasks;
 using System;
 using EltraCommon.Contracts.Devices;
 using EltraCommon.ObjectDictionary.Xdd.DeviceDescription.Profiles.Application.Parameters;
+using EltraCommon.Contracts.Parameters;
+using EltraCommon.Contracts.CommandSets;
 using System.Linq;
 
 namespace TestEltraConnector
@@ -17,8 +19,8 @@ namespace TestEltraConnector
 
         public AgentConnectorTest()
         {
-            //string host = "https://eltra.ch";
-            string host = "http://localhost:5001";
+            string host = "https://eltra.ch";
+            //string host = "http://localhost:5001";
 
             _connector = new AgentConnector() { Host = host };            
         }
@@ -1182,6 +1184,59 @@ namespace TestEltraConnector
         }
 
         [Fact]
+        public async Task Parameters_DeviceNode1ShouldHaveOperationalIdentityParameter()
+        {
+            //Arrange
+            var deviceNode1 = await TestData.GetDevice(1);
+
+            //Get parameter
+            var parameter = await deviceNode1.GetParameter(0x4000, 0x0E) as XddParameter;
+            //store actual value for later use
+            var actualValue = parameter.ActualValue.Clone();
+            //update value, GetParameter is more 'heavy', so should be used once, and then only ReadValue
+            var parameterValue1 = await parameter.ReadValue();
+            //get value from local object dictionary
+            bool result = parameter.GetValue(out byte val1);
+
+            if (val1 < byte.MaxValue - 1)
+            {
+                val1 = (byte)(val1 + 1);
+            }
+            else
+            {
+                val1 = byte.MinValue;
+            }
+
+            // set new parameter value in object dictionary
+            bool setValueResult = parameter.SetValue(val1);
+
+            // push the data to remote device
+            bool writeResult = await parameter.Write();
+
+            // read current value from device
+            var parameterValue2 = await parameter.ReadValue();
+
+            byte val2 = byte.MinValue;
+
+            // parameterValue2 should contain current device value
+            bool getValueResult = parameterValue2.GetValue(ref val2);
+
+            //Assert
+            Assert.True(parameter != null, "Device object dictionary missing.");
+            Assert.True(parameterValue1 != null, "Get ParameterValue failed.");
+            Assert.True(parameterValue1.Equals(actualValue), "Get ParameterValue differs from actual value.");
+            Assert.True(result, "GetValue failed.");
+            Assert.True(parameterValue2 != null, "Get ParameterValue failed.");
+            Assert.True(setValueResult, "SetValue failed.");
+            Assert.True(getValueResult, "GetValue failed.");
+            Assert.True(val1 == val2, $"ReadValue/Write mismatch val1 = {val1} val2 = {val2}.");
+            Assert.True(writeResult, "Write failed.");
+
+            // sign out
+            await _connector.SignOut();
+        }
+
+        [Fact]
         public async Task Parameters_DeviceNode1ShouldHaveOperationalObjectParameter()
         {
             //Arrange
@@ -1222,6 +1277,56 @@ namespace TestEltraConnector
             Assert.True(getValueResult, "GetValue failed.");
             Assert.True(val1.SequenceEqual(val2), $"ReadValue/Write mismatch val1 = {val1} val2 = {val2}.");
             Assert.True(writeResult, "Write failed.");
+
+            await _connector.SignOut();
+        }
+
+        [Fact(Skip = "major issues - not solved yet")]
+        public async Task Parameters_DeviceNode1CountingParameterShouldAutoUpdate()
+        {
+            //Arrange
+            var deviceNode1 = await TestData.GetDevice(1);
+
+            //Act
+            var parameter = await deviceNode1.GetParameter(0x3000, 0x00) as XddParameter;
+            var initialValue = parameter.ActualValue.Clone();
+            bool parameterChanged = false;
+            //the parameter 0x3000 will be updated automatically 
+            parameter.AutoUpdate(true, ParameterUpdatePriority.High, true);
+            
+            //let's observe the parameter changed event
+            parameter.ParameterChanged += (sender, e) => {
+            
+                if(!e.NewValue.Equals(initialValue))
+                {
+                    parameterChanged = true;
+                }
+            };
+
+            //let's execute start counting method on device
+            var startCounting = await deviceNode1.GetCommand("StartCounting");
+            
+            startCounting.SetParameterValue<int>("Step", 1); //increase the value by step
+            startCounting.SetParameterValue<int>("Delay", 10); //delay in ms between each step
+
+            //execute start counting command, this should increase the 0x3000, 0x00 parameter every 10 ms by 1
+            var startCountingResult = await startCounting.Execute();
+
+            Assert.True(startCountingResult != null && startCountingResult.Status == ExecCommandStatus.Executed, "exec start counting failed!");
+
+            //let's give him some time to respond
+            await Task.Delay(1000);
+
+            //Assert
+            Assert.True(parameter != null, "Device parameter missing.");
+            Assert.True(parameterChanged, "Parameter didn't change.");
+
+            //call stop counting
+            var stopCounting = await deviceNode1.GetCommand("StopCounting");
+
+            var stopCountingResult = await stopCounting.Execute();
+
+            parameter.AutoUpdate(false, ParameterUpdatePriority.High, true);
 
             await _connector.SignOut();
         }

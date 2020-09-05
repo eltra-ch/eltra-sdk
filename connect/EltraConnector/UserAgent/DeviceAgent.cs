@@ -260,7 +260,8 @@ namespace EltraConnector.UserAgent
         /// <param name="device"></param>
         /// <param name="uniqueId"></param>
         /// <param name="priority"></param>
-        public bool RegisterParameterUpdate(EltraDevice device, string uniqueId, ParameterUpdatePriority priority = ParameterUpdatePriority.Low)
+        /// <param name="waitForResult"></param>
+        public bool RegisterParameterUpdate(EltraDevice device, string uniqueId, ParameterUpdatePriority priority = ParameterUpdatePriority.Low, bool waitForResult = false)
         {
 #pragma warning disable 4014
 
@@ -312,7 +313,7 @@ namespace EltraConnector.UserAgent
                     }
                 }
 
-            }).ConfigureAwait(false);
+            }).ConfigureAwait(waitForResult);
 
 #pragma warning restore 4014
 
@@ -325,9 +326,10 @@ namespace EltraConnector.UserAgent
         /// <param name="device"></param>
         /// <param name="uniqueId"></param>
         /// <param name="priority"></param>
-        public bool UnregisterParameterUpdate(EltraDevice device, string uniqueId, ParameterUpdatePriority priority = ParameterUpdatePriority.Low)
+        /// <param name="waitForResult"></param>
+        public bool UnregisterParameterUpdate(EltraDevice device, string uniqueId, ParameterUpdatePriority priority = ParameterUpdatePriority.Low, bool waitForResult = false)
         {
-            Task.Run(async () =>
+            var t = Task.Run(async () =>
             {
                 if (!string.IsNullOrEmpty(uniqueId))
                 {
@@ -386,7 +388,7 @@ namespace EltraConnector.UserAgent
                         MsgLogger.WriteError($"{GetType().Name} - UnregisterParameterUpdate", $"unregister: cannot find registered parameter '{uniqueId}'");
                     }
                 }
-            }).ConfigureAwait(false);
+            }).ConfigureAwait(waitForResult);
 
             return true;
         }
