@@ -1281,7 +1281,7 @@ namespace TestEltraConnector
             await _connector.SignOut();
         }
 
-        [Fact(Skip = "major issues - not solved yet")]
+        [Fact]
         public async Task Parameters_DeviceNode1CountingParameterShouldAutoUpdate()
         {
             //Arrange
@@ -1307,7 +1307,7 @@ namespace TestEltraConnector
             var startCounting = await deviceNode1.GetCommand("StartCounting");
             
             startCounting.SetParameterValue<int>("Step", 1); //increase the value by step
-            startCounting.SetParameterValue<int>("Delay", 10); //delay in ms between each step
+            startCounting.SetParameterValue<int>("Delay", 100); //delay in ms between each step
 
             //execute start counting command, this should increase the 0x3000, 0x00 parameter every 10 ms by 1
             var startCountingResult = await startCounting.Execute();
