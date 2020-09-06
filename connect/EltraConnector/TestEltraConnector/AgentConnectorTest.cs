@@ -1309,7 +1309,107 @@ namespace TestEltraConnector
             startCounting.SetParameterValue<int>("Step", 1); //increase the value by step
             startCounting.SetParameterValue<int>("Delay", 100); //delay in ms between each step
 
-            //execute start counting command, this should increase the 0x3000, 0x00 parameter every 10 ms by 1
+            //execute start counting command, this should increase the 0x3000, 0x00 parameter every 'Delay' [ms] by 'Step'
+            var startCountingResult = await startCounting.Execute();
+
+            Assert.True(startCountingResult != null && startCountingResult.Status == ExecCommandStatus.Executed, "exec start counting failed!");
+
+            //let's give him some time to respond
+            await Task.Delay(1000);
+
+            //Assert
+            Assert.True(parameter != null, "Device parameter missing.");
+            Assert.True(parameterChanged, "Parameter didn't change.");
+
+            //call stop counting
+            var stopCounting = await deviceNode1.GetCommand("StopCounting");
+
+            var stopCountingResult = await stopCounting.Execute();
+
+            parameter.AutoUpdate(false, ParameterUpdatePriority.High, true);
+
+            await _connector.SignOut();
+        }
+
+        [Fact]
+        public async Task Parameters_DeviceNode2CountingParameterShouldAutoUpdate()
+        {
+            //Arrange
+            var deviceNode1 = await TestData.GetDevice(2);
+
+            //Act
+            var parameter = await deviceNode1.GetParameter(0x3000, 0x00) as XddParameter;
+            var initialValue = parameter.ActualValue.Clone();
+            bool parameterChanged = false;
+            //the parameter 0x3000 will be updated automatically 
+            parameter.AutoUpdate(true, ParameterUpdatePriority.High, true);
+
+            //let's observe the parameter changed event
+            parameter.ParameterChanged += (sender, e) => {
+
+                if (!e.NewValue.Equals(initialValue))
+                {
+                    parameterChanged = true;
+                }
+            };
+
+            //let's execute start counting method on device
+            var startCounting = await deviceNode1.GetCommand("StartCounting");
+
+            startCounting.SetParameterValue<int>("Step", 1); //increase the value by step
+            startCounting.SetParameterValue<int>("Delay", 100); //delay in ms between each step
+
+            //execute start counting command, this should increase the 0x3000, 0x00 parameter every 'Delay' [ms] by 'Step'
+            var startCountingResult = await startCounting.Execute();
+
+            Assert.True(startCountingResult != null && startCountingResult.Status == ExecCommandStatus.Executed, "exec start counting failed!");
+
+            //let's give him some time to respond
+            await Task.Delay(1000);
+
+            //Assert
+            Assert.True(parameter != null, "Device parameter missing.");
+            Assert.True(parameterChanged, "Parameter didn't change.");
+
+            //call stop counting
+            var stopCounting = await deviceNode1.GetCommand("StopCounting");
+
+            var stopCountingResult = await stopCounting.Execute();
+
+            parameter.AutoUpdate(false, ParameterUpdatePriority.High, true);
+
+            await _connector.SignOut();
+        }
+
+        [Fact]
+        public async Task Parameters_DeviceNode3CountingParameterShouldAutoUpdate()
+        {
+            //Arrange
+            var deviceNode1 = await TestData.GetDevice(3);
+
+            //Act
+            var parameter = await deviceNode1.GetParameter(0x3000, 0x00) as XddParameter;
+            var initialValue = parameter.ActualValue.Clone();
+            bool parameterChanged = false;
+            //the parameter 0x3000 will be updated automatically 
+            parameter.AutoUpdate(true, ParameterUpdatePriority.High, true);
+
+            //let's observe the parameter changed event
+            parameter.ParameterChanged += (sender, e) => {
+
+                if (!e.NewValue.Equals(initialValue))
+                {
+                    parameterChanged = true;
+                }
+            };
+
+            //let's execute start counting method on device
+            var startCounting = await deviceNode1.GetCommand("StartCounting");
+
+            startCounting.SetParameterValue<int>("Step", 1); //increase the value by step
+            startCounting.SetParameterValue<int>("Delay", 100); //delay in ms between each step
+
+            //execute start counting command, this should increase the 0x3000, 0x00 parameter every 'Delay' [ms] by 'Step'
             var startCountingResult = await startCounting.Execute();
 
             Assert.True(startCountingResult != null && startCountingResult.Status == ExecCommandStatus.Executed, "exec start counting failed!");
