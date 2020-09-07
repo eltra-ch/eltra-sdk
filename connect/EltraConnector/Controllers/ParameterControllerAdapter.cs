@@ -281,7 +281,6 @@ namespace EltraConnector.Controllers
         {
             bool result = true;
             var parameters = device?.ObjectDictionary?.Parameters;
-            int minTimeout = 10;
 
             if (parameters != null)
             { 
@@ -294,23 +293,13 @@ namespace EltraConnector.Controllers
 
                     if (parameter is Parameter parameterEntry)
                     {
-                        var parameterValue = await GetParameterValue(device, parameterEntry);
-
-                        if(parameterValue == null)
-                        {
-                            result = await UpdateParameter(device, parameterEntry);
-                        }
-                        else
-                        {
-                            result = parameterEntry.SetValue(parameterValue);
-                        }
-                        
-                        await Task.Delay(minTimeout);
+                        result = await UpdateParameter(device, parameterEntry);
                     }
                     else if (parameter is StructuredParameter structuredParameter)
                     {
                         var subParameters = structuredParameter.Parameters;
                         if (subParameters != null)
+                        {
                             foreach (var subParameter in subParameters)
                             {
                                 if (!ShouldRun())
@@ -320,20 +309,10 @@ namespace EltraConnector.Controllers
 
                                 if (subParameter is Parameter subParameterEntry)
                                 {
-                                    var parameterValue = await GetParameterValue(device, subParameterEntry);
-
-                                    if (parameterValue == null)
-                                    {
-                                        result = await UpdateParameter(device, subParameterEntry);
-                                    }
-                                    else
-                                    {
-                                        result = subParameterEntry.SetValue(parameterValue);
-                                    }
-
-                                    await Task.Delay(minTimeout);
+                                    result = await UpdateParameter(device, subParameterEntry);
                                 }
                             }
+                        }
                     }
                 }
             }
