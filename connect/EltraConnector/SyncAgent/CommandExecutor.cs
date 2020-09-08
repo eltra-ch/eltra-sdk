@@ -81,8 +81,10 @@ namespace EltraConnector.SyncAgent
 
         protected override async Task Execute()
         {
+            const int ReconnectTimeout = 5000;
             var sessionUuid = _sessionControllerAdapter.Channel.Id + "_CommandExec";
             string channelName = "CommandsExecution";
+            bool result = false;
 
             await Connect(sessionUuid, channelName);
 
@@ -90,18 +92,24 @@ namespace EltraConnector.SyncAgent
 
             while (ShouldRun())
             {
-                await ProcessRequest(sessionUuid);
+                result = await ProcessRequest(sessionUuid);
 
                 if (!_stopping)
                 {
+                    if(!result)
+                    {
+                        await Task.Delay(ReconnectTimeout);
+                    }
+
                     await Connect(sessionUuid, channelName);
                 }
             }
         }
 
-        private async Task ProcessWebSocketRequest(string sessionUuid)
+        private async Task<bool> ProcessWebSocketRequest(string sessionUuid)
         {
             const int executeIntervalWs = 1;
+            bool result = false;
 
             try
             {
@@ -119,6 +127,8 @@ namespace EltraConnector.SyncAgent
                         int processedCommands = await _sessionControllerAdapter.ExecuteCommands(executeCommands);
 
                         MsgLogger.WriteDebug($"{GetType().Name} - ProcessWebSocketRequest", $"executed: received commends = {executeCommands.Count}, processed commands = {processedCommands}");
+
+                        result = true;
                     }
                     else
                     {
@@ -135,6 +145,8 @@ namespace EltraConnector.SyncAgent
 
                                 OnRemoteChannelStatusChanged(new AgentChannelStatusChangedEventArgs() { Id = channelStatusUpdate.ChannelId, Status = channelStatusUpdate.Status });
                             }
+
+                            result = true;
                         }
                         else
                         {
@@ -153,27 +165,35 @@ namespace EltraConnector.SyncAgent
             }
 
             await Task.Delay(executeIntervalWs);
+
+            return result;
         }
 
-        private async Task ProcessRestRequest()
+        private async Task<bool> ProcessRestRequest()
         {
             const int executeIntervalRest = 100;
-
-            await _sessionControllerAdapter.ExecuteCommands();
+            
+            bool result = await _sessionControllerAdapter.ExecuteCommands();
 
             await Task.Delay(executeIntervalRest);
+
+            return result;
         }
 
-        private async Task ProcessRequest(string sessionUuid)
-        {   
+        private async Task<bool> ProcessRequest(string sessionUuid)
+        {
+            bool result = false;
+
             if (_wsConnectionManager != null && _wsConnectionManager.IsConnected(sessionUuid))
             {
-                await ProcessWebSocketRequest(sessionUuid);
+                result = await ProcessWebSocketRequest(sessionUuid);
             }
             else if (!_stopping)
             {
-                await ProcessRestRequest();
+                result = await ProcessRestRequest();
             }
+
+            return result;
         }
 
         public override bool Stop()

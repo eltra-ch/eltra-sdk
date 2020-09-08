@@ -145,16 +145,13 @@ namespace EltraConnector.Controllers
             return result;
         }
 
-        private async Task StartUpdate(EltraDevice device)
+        private void StartUpdate(EltraDevice device)
         {
-            if (await UpdateParameters(device))
-            {
-                RegisterEvents(device);
+            RegisterEvents(device);
 
-                Wait();
-            
-                UnregisterEvents(device);
-            }
+            Wait();
+
+            UnregisterEvents(device);
         }
 
         public void RegisterDevice(EltraDevice device)
@@ -163,9 +160,9 @@ namespace EltraConnector.Controllers
             {
                 if (ShouldRun())
                 {
-                    var task = Task.Run(async () =>
+                    var task = Task.Run(() =>
                     {
-                        await StartUpdate(device);
+                        StartUpdate(device);
                     });
 
                     _runningTasks.Add(task);

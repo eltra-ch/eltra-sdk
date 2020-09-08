@@ -8,6 +8,7 @@ using EltraCommon.Contracts.Channels;
 using EltraCommon.Logger;
 using EltraCommon.Contracts.CommandSets;
 using EltraConnector.SyncAgent;
+using System.Net.Sockets;
 
 namespace EltraConnector.Controllers
 {
@@ -389,32 +390,34 @@ namespace EltraConnector.Controllers
             return result;
         }
 
-        public async Task<int> ExecuteCommands()
+        public async Task<bool> ExecuteCommands()
         {                     
-            int result = 0;
+            bool result = true;
 
             try
             {
-                int executedCommandCount = 0;
-
                 foreach (var deviceNode in SafeDevicesArray)
                 {
                     var executeCommands = await DeviceControllerAdapter.PopCommands(deviceNode, ExecCommandStatus.Waiting);
-                                        
+                    
                     foreach (var executeCommand in executeCommands)
                     {
-                        if(await ExecuteCommand(deviceNode, executeCommand))
+                        if(!await ExecuteCommand(deviceNode, executeCommand))
                         {
-                            executedCommandCount++;
+                            result = false;
                         }
                     }
-                }
 
-                result = executedCommandCount;
+                    if (result)
+                    {
+                        result = DeviceControllerAdapter.Good;
+                    }
+                }
             }
             catch (Exception e)
             {
                 MsgLogger.Exception($"{GetType().Name} - ExecuteCommands", e);
+                result = false;
             }
 
             return result;
