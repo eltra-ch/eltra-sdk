@@ -18,8 +18,8 @@ namespace TestEltraConnector
 
         public AgentConnectorTest()
         {
-            //string host = "https://eltra.ch";
-            string host = "http://localhost:5001";
+            string host = "https://eltra.ch";
+            //string host = "http://localhost:5001";
 
             _connector = new AgentConnector() { Host = host };            
         }
