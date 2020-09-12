@@ -19,9 +19,7 @@ jobs:
         dotnet-version: 3.1.301
     - name: Install dependencies
       run: | 
-        git submodule update --init --recursive
-        git config pull.rebase false
-        git pull --recurse-submodules
+        git submodule update --recursive --remote
         dotnet restore
     - name: Build
       run: |
