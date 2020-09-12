@@ -1,4 +1,4 @@
-![.NET Core](https://github.com/eltra-ch/eltra-sdk/workflows/.NET%20Core/badge.svg?branch=master)
+![Build & Test](https://github.com/eltra-ch/eltra-sdk/workflows/Build%20&%20Test/badge.svg)
 
 # ELTRA - CANOpen inspired IoT framework
 
