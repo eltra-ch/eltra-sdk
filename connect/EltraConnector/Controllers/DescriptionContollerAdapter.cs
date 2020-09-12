@@ -112,5 +112,36 @@ namespace EltraConnector.Controllers
 
             return result;
         }
+
+        public async Task<DeviceDescriptionIdentity> GetIdentity(string channelId, DeviceVersion deviceVersion)
+        {
+            DeviceDescriptionIdentity result = null;
+
+            try
+            {
+                var query = HttpUtility.ParseQueryString(string.Empty);
+
+                query["callerId"] = channelId;
+                query["hardwareVersion"] = $"{deviceVersion.HardwareVersion}";
+                query["softwareVersion"] = $"{deviceVersion.SoftwareVersion}";
+                query["applicationNumber"] = $"{deviceVersion.ApplicationNumber}";
+                query["applicationVersion"] = $"{deviceVersion.ApplicationVersion}";
+
+                var url = UrlHelper.BuildUrl(Url, "api/description/get-identity", query);
+
+                var json = await Transporter.Get(url);
+
+                if (!string.IsNullOrEmpty(json))
+                {
+                    result = JsonConvert.DeserializeObject<DeviceDescriptionIdentity>(json);                    
+                }
+            }
+            catch (Exception e)
+            {
+                MsgLogger.Exception($"{GetType().Name} - GetIdentity", e);
+            }
+
+            return result;
+        }
     }
 }

@@ -154,6 +154,11 @@ namespace EltraConnector.Controllers
             return DeviceAdapter.DownloadDeviceDescription(channelId, deviceVersion);
         }
 
+        public Task<DeviceDescriptionIdentity> GetDeviceDescriptionIdentity(string channelId, DeviceVersion deviceVersion)
+        {
+            return DeviceAdapter.GetDeviceDescriptionIdentity(channelId, deviceVersion);
+        }
+
         public Task<Parameter> GetParameter(string sessionUuid, int nodeId, ushort index, byte subIndex)
         {
             return DeviceAdapter.GetParameter(sessionUuid, nodeId, index, subIndex);

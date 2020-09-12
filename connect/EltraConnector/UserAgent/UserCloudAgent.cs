@@ -21,6 +21,7 @@ using EltraCommon.Contracts.Devices;
 using EltraCommon.ObjectDictionary.DeviceDescription.Factory;
 using EltraCommon.Contracts.Parameters.Events;
 using EltraCommon.ObjectDictionary.DeviceDescription;
+using System.IO;
 
 namespace EltraConnector.UserAgent
 {
@@ -608,9 +609,99 @@ namespace EltraConnector.UserAgent
             return result;
         }
 
+        private DeviceDescriptionPayload GetDeviceDescriptionFromCache(DeviceDescriptionIdentity identity, DeviceVersion deviceVersion)
+        {
+            DeviceDescriptionPayload result = null;
+            var tempPath = Path.GetTempPath();
+
+            if (identity != null && deviceVersion != null)
+            {
+                try
+                {
+                    var localPath = Path.Combine(tempPath, identity.Content + ".xdd");
+
+                    if (File.Exists(localPath))
+                    {
+                        var xddContent = File.ReadAllText(localPath);
+                        var fi = new FileInfo(localPath);
+
+                        result = new DeviceDescriptionPayload()
+                        {
+                            ChannelId = _channelAdapter.ChannelId,
+                            Encoding = identity.Encoding,
+                            Content = xddContent,
+                            Version = deviceVersion,
+                            Modified = fi.LastWriteTime
+                        };
+                    }
+                }
+                catch(Exception e)
+                {
+                    MsgLogger.Exception($"{GetType().Name} - GetDeviceDescriptionFromCache", e);
+                }
+            }
+
+            return result;
+        }
+
+        private void CacheDeviceDescriptionFile(DeviceDescriptionPayload payload)
+        {
+            try
+            {
+                if (payload != null)
+                {
+                    var tempPath = Path.GetTempPath();
+                    var localPath = Path.Combine(tempPath, payload.HashCode + ".xdd");
+
+                    File.WriteAllText(localPath, payload.Content);
+                }
+            }
+            catch (Exception e)
+            {
+                MsgLogger.Exception($"{GetType().Name} - CacheDeviceDescriptionFile", e);
+            }
+        }
+
         public async Task<DeviceDescriptionPayload> DownloadDeviceDescription(DeviceVersion deviceVersion)
         {
-            return await _channelAdapter.DownloadDeviceDescription(_channelAdapter.ChannelId, deviceVersion);
+            DeviceDescriptionPayload result = null;
+
+            if (_channelAdapter != null)
+            {
+                var channelId = _channelAdapter.ChannelId;
+
+                var identity = await _channelAdapter.GetDeviceDescriptionIdentity(channelId, deviceVersion);
+
+                if (identity == null)
+                {
+                    result = await _channelAdapter.DownloadDeviceDescription(channelId, deviceVersion);
+
+                    if (result != null)
+                    {
+                        CacheDeviceDescriptionFile(result);
+                    }
+                }
+                else
+                {
+                    var cachedDeviceDescriptionPayload = GetDeviceDescriptionFromCache(identity, deviceVersion);
+
+                    if (cachedDeviceDescriptionPayload != null)
+                    {
+                        result = cachedDeviceDescriptionPayload;
+                    }
+                    else
+                    {
+                        result = await _channelAdapter.DownloadDeviceDescription(channelId, deviceVersion);
+
+                        if (result != null)
+                        {
+                            CacheDeviceDescriptionFile(result);
+                        }
+                    }
+                }
+            }
+
+            return result;
         }
 
         public async Task<Parameter> GetParameter(string channelId, int nodeId, ushort index, byte subIndex)

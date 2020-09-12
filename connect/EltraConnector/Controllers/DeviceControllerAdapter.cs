@@ -191,6 +191,11 @@ namespace EltraConnector.Controllers
             return DescriptionContollerAdapter.Download(channelId, deviceVersion);
         }
 
+        internal Task<DeviceDescriptionIdentity> GetDeviceDescriptionIdentity(string channelId, DeviceVersion deviceVersion)
+        {
+            return DescriptionContollerAdapter.GetIdentity(channelId, deviceVersion);
+        }
+
         public async Task<bool> RegisterDevice(EltraDevice deviceNode)
         {
             bool result = false;
