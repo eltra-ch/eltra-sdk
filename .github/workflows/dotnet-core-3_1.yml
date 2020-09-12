@@ -21,13 +21,10 @@ jobs:
       run: | 
         git submodule update --init --recursive
         git config pull.rebase false
-        git pull origin master
+        git pull --recurse-submodules
         dotnet restore
     - name: Build
       run: |
-        git submodule update --init --recursive
-        git config pull.rebase false
-        git pull origin master
         dotnet build --configuration Release --no-restore
     - name: Test
       run: dotnet test --no-restore --verbosity normal
