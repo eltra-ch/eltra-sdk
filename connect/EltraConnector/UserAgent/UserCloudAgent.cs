@@ -625,7 +625,7 @@ namespace EltraConnector.UserAgent
                         var xddContent = File.ReadAllText(localPath);
                         var fi = new FileInfo(localPath);
 
-                        result = new DeviceDescriptionPayload()
+                        var payload = new DeviceDescriptionPayload()
                         {
                             ChannelId = _channelAdapter.ChannelId,
                             Encoding = identity.Encoding,
@@ -633,6 +633,11 @@ namespace EltraConnector.UserAgent
                             Version = deviceVersion,
                             Modified = fi.LastWriteTime
                         };
+
+                        if(payload.HashCode == identity.Content)
+                        {
+                            result = payload;
+                        }
                     }
                 }
                 catch(Exception e)
