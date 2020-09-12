@@ -3,7 +3,6 @@ using EltraCommon.Contracts.Users;
 using Xunit;
 using System.Threading.Tasks;
 using System;
-using EltraCommon.Contracts.Devices;
 using EltraCommon.ObjectDictionary.Xdd.DeviceDescription.Profiles.Application.Parameters;
 using EltraCommon.Contracts.Parameters;
 using EltraCommon.Contracts.CommandSets;
@@ -228,54 +227,14 @@ namespace TestEltraConnector
             await _connector.SignOut();
         }
 
-        [Fact]
-        public async Task Channels_ChannelShouldHaveDeviceWithNodeId1()
+        [Theory]
+        [InlineData(1)]
+        [InlineData(2)]
+        [InlineData(3)]
+        public async Task Channels_ChannelShouldHaveDeviceWithNodeId(int nodeId)
         {
             //Arrange
-            bool signInResult = await _connector.SignIn(Identity, true);
-            var deviceIdentity = new UserIdentity() { Login = "test@eltra.ch", Password = "1234" };
-            var connectResult = await _connector.Connect(deviceIdentity);
-            var channels = await _connector.GetChannels();
-            EltraDevice foundDevice = null;
-
-            foreach (var channel in channels)
-            {
-                foreach(var device in channel.Devices)
-                {
-                    if(device.NodeId == 1)
-                    {
-                        foundDevice = device;
-                        break;
-                    }
-                }
-            }
-
-            //Assert
-            Assert.True(signInResult, "Sign-in failed.");
-            Assert.True(connectResult, "Connect failed.");
-            Assert.True(channels.Count > 0, "Get channels failed.");
-            Assert.True(foundDevice != null, "Device with nodeid 1 not found.");
-
-            await _connector.SignOut();
-        }
-
-        [Fact]
-        public async Task Channels_ChannelShouldHaveDeviceWithNodeId2()
-        {
-            //Act
-            var device = TestData.GetDevice(2);
-
-            //Assert
-            Assert.True(device != null, "Device with nodeid 2 not found.");
-
-            await _connector.SignOut();
-        }
-
-        [Fact]
-        public async Task Channels_ChannelShouldHaveDeviceWithNodeId3()
-        {
-            //Arrange
-            var device = TestData.GetDevice(3);
+            var device = TestData.GetDevice(nodeId);
 
             //Assert
             Assert.True(device != null, "Device with nodeid 3 not found.");
@@ -283,11 +242,14 @@ namespace TestEltraConnector
             await _connector.SignOut();
         }
 
-        [Fact]
-        public async Task Devices_DeviceNode1ShouldHaveIdentification()
+        [Theory]
+        [InlineData(1)]
+        [InlineData(2)]
+        [InlineData(3)]
+        public async Task Devices_DeviceNodeShouldHaveIdentification(int nodeId)
         {
             //Arrange
-            var device = await TestData.GetDevice(1);
+            var device = await TestData.GetDevice(nodeId);
             bool result = false;
 
             if (device != null)
@@ -307,59 +269,14 @@ namespace TestEltraConnector
             await _connector.SignOut();
         }
 
-        [Fact]
-        public async Task Devices_DeviceNode2ShouldHaveIdentification()
+        [Theory]
+        [InlineData(1)]
+        [InlineData(2)]
+        [InlineData(3)]
+        public async Task Devices_DeviceNodeShouldHaveObjectDictionary(int nodeId)
         {
             //Arrange
-            var device = await TestData.GetDevice(2);
-            bool result = false;
-
-            if (device != null)
-            {
-                if (!string.IsNullOrEmpty(device.Family))
-                {
-                    if (!string.IsNullOrEmpty(device.Name))
-                    {
-                        result = device.Identification.SerialNumber > 0;
-                    }
-                }
-            }
-
-            //Assert
-            Assert.True(result, "Device identification missing.");
-
-            await _connector.SignOut();
-        }
-
-        [Fact]
-        public async Task Devices_DeviceNode3ShouldHaveIdentification()
-        {
-            //Arrange
-            var device = await TestData.GetDevice(3);
-            bool result = false;
-
-            if (device != null)
-            {
-                if (!string.IsNullOrEmpty(device.Family))
-                {
-                    if (!string.IsNullOrEmpty(device.Name))
-                    {
-                        result = device.Identification.SerialNumber > 0;
-                    }
-                }
-            }
-
-            //Assert
-            Assert.True(result, "Device identification missing.");
-
-            await _connector.SignOut();
-        }
-
-        [Fact]
-        public async Task Devices_DeviceNode1ShouldHaveObjectDictionary()
-        {
-            //Arrange
-            var device = await TestData.GetDevice(1);
+            var device = await TestData.GetDevice(nodeId);
 
             //Act
             bool result = device.ObjectDictionary != null;
@@ -370,41 +287,14 @@ namespace TestEltraConnector
             await _connector.SignOut();
         }
 
-        [Fact]
-        public async Task Devices_DeviceNode2ShouldHaveObjectDictionary()
+        [Theory]
+        [InlineData(1)]
+        [InlineData(2)]
+        [InlineData(3)]
+        public async Task Parameters_DeviceNodeObjectDictionaryShouldHaveCounterParameter(int nodeId)
         {
             //Arrange
-            var device = await TestData.GetDevice(2);
-
-            //Act
-            bool result = device.ObjectDictionary != null;
-
-            //Assert
-            Assert.True(result, "Device object dictionary missing.");
-
-            await _connector.SignOut();
-        }
-
-        [Fact]
-        public async Task Devices_DeviceNode3ShouldHaveObjectDictionary()
-        {
-            //Arrange
-            var device = await TestData.GetDevice(3);
-
-            //Act
-            bool result = device.ObjectDictionary != null;
-
-            //Assert
-            Assert.True(result, "Device object dictionary missing.");
-
-            await _connector.SignOut();
-        }
-
-        [Fact]
-        public async Task Parameters_DeviceNode1ObjectDictionaryShouldHaveCounterParameter()
-        {
-            //Arrange
-            var device = await TestData.GetDevice(1);
+            var device = await TestData.GetDevice(nodeId);
 
             //Act
             var parameter = device.SearchParameter(0x3000, 0x00);
@@ -415,41 +305,14 @@ namespace TestEltraConnector
             await _connector.SignOut();
         }
 
-        [Fact]
-        public async Task Parameters_DeviceNode2ObjectDictionaryShouldHaveCounterParameter()
+        [Theory]
+        [InlineData(1)]
+        [InlineData(2)]
+        [InlineData(3)]
+        public async Task Parameters_DeviceNodeObjectDictionaryShouldHaveCounterParameterByUniqueId(int nodeId)
         {
             //Arrange
-            var device = await TestData.GetDevice(2);
-
-            //Act
-            var parameter = device.SearchParameter(0x3000, 0x00);
-
-            //Assert
-            Assert.True(parameter != null, "Device counter parameter missing missing.");
-
-            await _connector.SignOut();
-        }
-
-        [Fact]
-        public async Task Parameters_DeviceNode3ObjectDictionaryShouldHaveCounterParameter()
-        {
-            //Arrange
-            var device = await TestData.GetDevice(3);
-
-            //Act
-            var parameter = device.SearchParameter(0x3000, 0x00);
-
-            //Assert
-            Assert.True(parameter != null, "Device counter parameter missing missing.");
-
-            await _connector.SignOut();
-        }
-
-        [Fact]
-        public async Task Parameters_DeviceNode1ObjectDictionaryShouldHaveCounterParameterByUniqueId()
-        {
-            //Arrange
-            var device = await TestData.GetDevice(1);
+            var device = await TestData.GetDevice(nodeId);
 
             //Act
             var parameter = device.SearchParameter("PARAM_Counter");
@@ -460,41 +323,14 @@ namespace TestEltraConnector
             await _connector.SignOut();
         }
 
-        [Fact]
-        public async Task Parameters_DeviceNode2ObjectDictionaryShouldHaveCounterParameterByUniqueId()
+        [Theory]
+        [InlineData(1)]
+        [InlineData(2)]
+        [InlineData(3)]
+        public async Task Parameters_DeviceNodeShouldHaveCounterParameter(int nodeId)
         {
             //Arrange
-            var device = await TestData.GetDevice(2);
-
-            //Act
-            var parameter = device.SearchParameter("PARAM_Counter");
-
-            //Assert
-            Assert.True(parameter != null, "Device counter parameter missing.");
-
-            await _connector.SignOut();
-        }
-
-        [Fact]
-        public async Task Parameters_DeviceNode3ObjectDictionaryShouldHaveCounterParameterByUniqueId()
-        {
-            //Arrange
-            var device = await TestData.GetDevice(2);
-
-            //Act
-            var parameter = device.SearchParameter("PARAM_Counter");
-
-            //Assert
-            Assert.True(parameter != null, "Device counter parameter missing.");
-
-            await _connector.SignOut();
-        }
-
-        [Fact]
-        public async Task Parameters_DeviceNode1ShouldHaveCounterParameter()
-        {
-            //Arrange
-            var deviceNode1 = await TestData.GetDevice(1);
+            var deviceNode1 = await TestData.GetDevice(nodeId);
 
             //Act
             var parameter = deviceNode1.GetParameter(0x3000, 0x00);
@@ -505,56 +341,14 @@ namespace TestEltraConnector
             await _connector.SignOut();
         }
 
-        [Fact]
-        public async Task Parameters_DeviceNode2ShouldHaveCounterParameter()
+        [Theory]
+        [InlineData(1)]
+        [InlineData(2)]
+        [InlineData(3)]
+        public async Task Parameters_DeviceNodeShouldHaveCounterParameterByUniqueId(int nodeId)
         {
             //Arrange
-            var deviceNode1 = await TestData.GetDevice(2);
-
-            //Act
-            var parameter = deviceNode1.GetParameter(0x3000, 0x00);
-
-            //Assert
-            Assert.True(parameter != null, "Device object dictionary missing.");
-
-            await _connector.SignOut();
-        }
-
-        [Fact]
-        public async Task Parameters_DeviceNode3ShouldHaveCounterParameter()
-        {
-            //Arrange
-            var deviceNode1 = await TestData.GetDevice(3);
-
-            //Act
-            var parameter = deviceNode1.GetParameter(0x3000, 0x00);
-
-            //Assert
-            Assert.True(parameter != null, "Device object dictionary missing.");
-
-            await _connector.SignOut();
-        }
-
-        [Fact]
-        public async Task Parameters_DeviceNode1ShouldHaveCounterParameterByUniqueId()
-        {
-            //Arrange
-            var deviceNode1 = await TestData.GetDevice(1);
-
-            //Act
-            var parameter = deviceNode1.GetParameter("PARAM_Counter");
-
-            //Assert
-            Assert.True(parameter != null, "Device object dictionary missing.");
-
-            await _connector.SignOut();
-        }
-
-        [Fact]
-        public async Task Parameters_DeviceNode2ShouldHaveCounterParameterByUniqueId()
-        {
-            //Arrange
-            var deviceNode2 = await TestData.GetDevice(2);
+            var deviceNode2 = await TestData.GetDevice(nodeId);
 
             //Act
             var parameter = deviceNode2.GetParameter("PARAM_Counter");
@@ -565,26 +359,14 @@ namespace TestEltraConnector
             await _connector.SignOut();
         }
 
-        [Fact]
-        public async Task Parameters_DeviceNode3ShouldHaveCounterParameterByUniqueId()
+        [Theory]
+        [InlineData(1)]
+        [InlineData(2)]
+        [InlineData(3)]
+        public async Task Parameters_DeviceNodeShouldHaveOperationalByteParameter(int nodeId)
         {
             //Arrange
-            var deviceNode2 = await TestData.GetDevice(3);
-
-            //Act
-            var parameter = deviceNode2.GetParameter("PARAM_Counter");
-
-            //Assert
-            Assert.True(parameter != null, "Device object dictionary missing.");
-
-            await _connector.SignOut();
-        }
-
-        [Fact]
-        public async Task Parameters_DeviceNode1ShouldHaveOperationalByteParameter()
-        {
-            //Arrange
-            var deviceNode1 = await TestData.GetDevice(1);
+            var deviceNode1 = await TestData.GetDevice(nodeId);
 
             //Get parameter
             var parameter = await deviceNode1.GetParameter(0x4000, 0x01) as XddParameter;
@@ -626,20 +408,23 @@ namespace TestEltraConnector
             Assert.True(parameterValue2 != null, "Get ParameterValue failed.");
             Assert.True(setValueResult, "SetValue failed.");
             Assert.True(getValueResult, "GetValue failed.");
-            Assert.True(val1 == val2, $"ReadValue/Write mismatch val1 = {val1} val2 = {val2}.");
             Assert.True(writeResult, "Write failed.");
-
+            Assert.True(val1 == val2, $"ReadValue/Write mismatch val1 = {val1} val2 = {val2}.");
+            
             // sign out
             await _connector.SignOut();
         }
 
-        [Fact]
-        public async Task Parameters_DeviceNode1ShouldHaveOperationalSByteParameter()
+        [Theory]
+        [InlineData(1)]
+        [InlineData(2)]
+        [InlineData(3)]
+        public async Task Parameters_DeviceNodeShouldHaveOperationalSByteParameter(int nodeId)
         {
             //Arrange
-            var deviceNode1 = await TestData.GetDevice(1);
+            var deviceNode = await TestData.GetDevice(nodeId);
             //Get parameter
-            var parameter = await deviceNode1.GetParameter(0x4000, 0x05) as XddParameter;
+            var parameter = await deviceNode.GetParameter(0x4000, 0x05) as XddParameter;
             //store actual value for later use
             var actualValue = parameter.ActualValue.Clone();
             //update value, GetParameter is more 'heavy', so should be used once, and then only ReadValue
@@ -678,21 +463,24 @@ namespace TestEltraConnector
             Assert.True(parameterValue2 != null, "Get ParameterValue failed.");
             Assert.True(setValueResult, "SetValue failed.");
             Assert.True(getValueResult, "GetValue failed.");
-            Assert.True(val1 == val2, $"ReadValue/Write mismatch val1 = {val1} val2 = {val2}.");
             Assert.True(writeResult, "Write failed.");
-
+            Assert.True(val1 == val2, $"ReadValue/Write mismatch val1 = {val1} val2 = {val2}.");
+            
             // sign out
             await _connector.SignOut();
         }
 
-        [Fact]
-        public async Task Parameters_DeviceNode1ShouldHaveOperationalUInt16Parameter()
+        [Theory]
+        [InlineData(1)]
+        [InlineData(2)]
+        [InlineData(3)]
+        public async Task Parameters_DeviceNodeShouldHaveOperationalUInt16Parameter(int nodeId)
         {
             //Arrange
-            var deviceNode1 = await TestData.GetDevice(1);
+            var deviceNode = await TestData.GetDevice(nodeId);
 
             //Get parameter
-            var parameter = await deviceNode1.GetParameter(0x4000, 0x02) as XddParameter;
+            var parameter = await deviceNode.GetParameter(0x4000, 0x02) as XddParameter;
             //store actual value for later use
             var actualValue = parameter.ActualValue.Clone();
             //update value, GetParameter is more 'heavy', so should be used once, and then only ReadValue
@@ -731,18 +519,21 @@ namespace TestEltraConnector
             Assert.True(parameterValue2 != null, "Get ParameterValue failed.");
             Assert.True(setValueResult, "SetValue failed.");
             Assert.True(getValueResult, "GetValue failed.");
-            Assert.True(val1 == val2, $"ReadValue/Write mismatch val1 = {val1} val2 = {val2}.");
             Assert.True(writeResult, "Write failed.");
-
+            Assert.True(val1 == val2, $"ReadValue/Write mismatch val1 = {val1} val2 = {val2}.");
+            
             // sign out
             await _connector.SignOut();
         }
 
-        [Fact]
-        public async Task Parameters_DeviceNode1ShouldHaveOperationalUInt32Parameter()
+        [Theory]
+        [InlineData(1)]
+        [InlineData(2)]
+        [InlineData(3)]
+        public async Task Parameters_DeviceNodeShouldHaveOperationalUInt32Parameter(int nodeId)
         {
             //Arrange
-            var deviceNode1 = await TestData.GetDevice(1);
+            var deviceNode1 = await TestData.GetDevice(nodeId);
 
             //Get parameter
             var parameter = await deviceNode1.GetParameter(0x4000, 0x03) as XddParameter;
@@ -784,21 +575,24 @@ namespace TestEltraConnector
             Assert.True(parameterValue2 != null, "Get ParameterValue failed.");
             Assert.True(setValueResult, "SetValue failed.");
             Assert.True(getValueResult, "GetValue failed.");
-            Assert.True(val1 == val2, $"ReadValue/Write mismatch val1 = {val1} val2 = {val2}.");
             Assert.True(writeResult, "Write failed.");
-
+            Assert.True(val1 == val2, $"ReadValue/Write mismatch val1 = {val1} val2 = {val2}.");
+            
             // sign out
             await _connector.SignOut();
         }
 
-        [Fact]
-        public async Task Parameters_DeviceNode1ShouldHaveOperationalUInt64Parameter()
+        [Theory]
+        [InlineData(1)]
+        [InlineData(2)]
+        [InlineData(3)]
+        public async Task Parameters_DeviceNodeShouldHaveOperationalUInt64Parameter(int nodeId)
         {
             //Arrange
-            var deviceNode1 = await TestData.GetDevice(1);
+            var deviceNode = await TestData.GetDevice(nodeId);
 
             //Get parameter
-            var parameter = await deviceNode1.GetParameter(0x4000, 0x04) as XddParameter;
+            var parameter = await deviceNode.GetParameter(0x4000, 0x04) as XddParameter;
             //store actual value for later use
             var actualValue = parameter.ActualValue.Clone();
             //update value, GetParameter is more 'heavy', so should be used once, and then only ReadValue
@@ -837,18 +631,21 @@ namespace TestEltraConnector
             Assert.True(parameterValue2 != null, "Get ParameterValue failed.");
             Assert.True(setValueResult, "SetValue failed.");
             Assert.True(getValueResult, "GetValue failed.");
-            Assert.True(val1 == val2, $"ReadValue/Write mismatch val1 = {val1} val2 = {val2}.");
             Assert.True(writeResult, "Write failed.");
-
+            Assert.True(val1 == val2, $"ReadValue/Write mismatch val1 = {val1} val2 = {val2}.");
+            
             // sign out
             await _connector.SignOut();
         }
 
-        [Fact]
-        public async Task Parameters_DeviceNode1ShouldHaveOperationalInt16Parameter()
+        [Theory]
+        [InlineData(1)]
+        [InlineData(2)]
+        [InlineData(3)]
+        public async Task Parameters_DeviceNodeShouldHaveOperationalInt16Parameter(int nodeId)
         {
             //Arrange
-            var deviceNode1 = await TestData.GetDevice(1);
+            var deviceNode1 = await TestData.GetDevice(nodeId);
 
             //Get parameter
             var parameter = await deviceNode1.GetParameter(0x4000, 0x06) as XddParameter;
@@ -890,21 +687,24 @@ namespace TestEltraConnector
             Assert.True(parameterValue2 != null, "Get ParameterValue failed.");
             Assert.True(setValueResult, "SetValue failed.");
             Assert.True(getValueResult, "GetValue failed.");
-            Assert.True(val1 == val2, $"ReadValue/Write mismatch val1 = {val1} val2 = {val2}.");
             Assert.True(writeResult, "Write failed.");
-
+            Assert.True(val1 == val2, $"ReadValue/Write mismatch val1 = {val1} val2 = {val2}.");
+           
             // sign out
             await _connector.SignOut();
         }
 
-        [Fact]
-        public async Task Parameters_DeviceNode1ShouldHaveOperationalInt32Parameter()
+        [Theory]
+        [InlineData(1)]
+        [InlineData(2)]
+        [InlineData(3)]
+        public async Task Parameters_DeviceNodeShouldHaveOperationalInt32Parameter(int nodeId)
         {
             //Arrange
-            var deviceNode1 = await TestData.GetDevice(1);
+            var deviceNode = await TestData.GetDevice(nodeId);
 
             //Get parameter
-            var parameter = await deviceNode1.GetParameter(0x4000, 0x07) as XddParameter;
+            var parameter = await deviceNode.GetParameter(0x4000, 0x07) as XddParameter;
             //store actual value for later use
             var actualValue = parameter.ActualValue.Clone();
             //update value, GetParameter is more 'heavy', so should be used once, and then only ReadValue
@@ -943,21 +743,24 @@ namespace TestEltraConnector
             Assert.True(parameterValue2 != null, "Get ParameterValue failed.");
             Assert.True(setValueResult, "SetValue failed.");
             Assert.True(getValueResult, "GetValue failed.");
-            Assert.True(val1 == val2, $"ReadValue/Write mismatch val1 = {val1} val2 = {val2}.");
             Assert.True(writeResult, "Write failed.");
-
+            Assert.True(val1 == val2, $"ReadValue/Write mismatch val1 = {val1} val2 = {val2}.");
+            
             // sign out
             await _connector.SignOut();
         }
 
-        [Fact]
-        public async Task Parameters_DeviceNode1ShouldHaveOperationalInt64Parameter()
+        [Theory]
+        [InlineData(1)]
+        [InlineData(2)]
+        [InlineData(3)]
+        public async Task Parameters_DeviceNodeShouldHaveOperationalInt64Parameter(int nodeId)
         {
             //Arrange
-            var deviceNode1 = await TestData.GetDevice(1);
+            var deviceNode = await TestData.GetDevice(nodeId);
 
             //Get parameter
-            var parameter = await deviceNode1.GetParameter(0x4000, 0x08) as XddParameter;
+            var parameter = await deviceNode.GetParameter(0x4000, 0x08) as XddParameter;
             //store actual value for later use
             var actualValue = parameter.ActualValue.Clone();
             //update value, GetParameter is more 'heavy', so should be used once, and then only ReadValue
@@ -996,21 +799,24 @@ namespace TestEltraConnector
             Assert.True(parameterValue2 != null, "Get ParameterValue failed.");
             Assert.True(setValueResult, "SetValue failed.");
             Assert.True(getValueResult, "GetValue failed.");
-            Assert.True(val1 == val2, $"ReadValue/Write mismatch val1 = {val1} val2 = {val2}.");
             Assert.True(writeResult, "Write failed.");
-
+            Assert.True(val1 == val2, $"ReadValue/Write mismatch val1 = {val1} val2 = {val2}.");
+            
             // sign out
             await _connector.SignOut();
         }
 
-        [Fact]
-        public async Task Parameters_DeviceNode1ShouldHaveOperationalDoubleParameter()
+        [Theory]
+        [InlineData(1)]
+        [InlineData(2)]
+        [InlineData(3)]
+        public async Task Parameters_DeviceNodeShouldHaveOperationalDoubleParameter(int nodeId)
         {
             //Arrange
-            var deviceNode1 = await TestData.GetDevice(1);
+            var deviceNode = await TestData.GetDevice(nodeId);
 
             //Get parameter
-            var parameter = await deviceNode1.GetParameter(0x4000, 0x09) as XddParameter;
+            var parameter = await deviceNode.GetParameter(0x4000, 0x09) as XddParameter;
             //store actual value for later use
             var actualValue = parameter.ActualValue.Clone();
             //update value, GetParameter is more 'heavy', so should be used once, and then only ReadValue
@@ -1049,18 +855,21 @@ namespace TestEltraConnector
             Assert.True(parameterValue2 != null, "Get ParameterValue failed.");
             Assert.True(setValueResult, "SetValue failed.");
             Assert.True(getValueResult, "GetValue failed.");
-            Assert.True(val1 == val2, $"ReadValue/Write mismatch val1 = {val1} val2 = {val2}.");
             Assert.True(writeResult, "Write failed.");
-
+            Assert.True(val1 == val2, $"ReadValue/Write mismatch val1 = {val1} val2 = {val2}.");
+            
             // sign out
             await _connector.SignOut();
         }
 
-        [Fact]
-        public async Task Parameters_DeviceNode1ShouldHaveOperationalStringParameter()
+        [Theory]
+        [InlineData(1)]
+        [InlineData(2)]
+        [InlineData(3)]
+        public async Task Parameters_DeviceNodeShouldHaveOperationalStringParameter(int nodeId)
         {
             //Arrange
-            var deviceNode1 = await TestData.GetDevice(1);
+            var deviceNode1 = await TestData.GetDevice(nodeId);
 
             //Act
             var parameter = await deviceNode1.GetParameter(0x4000, 0x0A) as XddParameter;
@@ -1097,20 +906,23 @@ namespace TestEltraConnector
             Assert.True(parameterValue2 != null, "Get ParameterValue failed.");
             Assert.True(setValueResult, "SetValue failed.");
             Assert.True(getValueResult, "GetValue failed.");
-            Assert.True(val1 == val2, $"ReadValue/Write mismatch val1 = {val1} val2 = {val2}.");
             Assert.True(writeResult, "Write failed.");
-
+            Assert.True(val1 == val2, $"ReadValue/Write mismatch val1 = {val1} val2 = {val2}.");
+            
             await _connector.SignOut();
         }
 
-        [Fact]
-        public async Task Parameters_DeviceNode1ShouldHaveOperationalDateTimeParameter()
+        [Theory]
+        [InlineData(1)]
+        [InlineData(2)]
+        [InlineData(3)]
+        public async Task Parameters_DeviceNodeShouldHaveOperationalDateTimeParameter(int nodeId)
         {
             //Arrange
-            var deviceNode1 = await TestData.GetDevice(1);
+            var deviceNode = await TestData.GetDevice(nodeId);
 
             //Act
-            var parameter = await deviceNode1.GetParameter(0x4000, 0x0C) as XddParameter;
+            var parameter = await deviceNode.GetParameter(0x4000, 0x0C) as XddParameter;
             var actualValue = parameter.ActualValue.Clone();
 
             var parameterValue1 = await parameter.ReadValue();
@@ -1137,20 +949,23 @@ namespace TestEltraConnector
             Assert.True(parameterValue2 != null, "Get ParameterValue failed.");
             Assert.True(setValueResult, "SetValue failed.");
             Assert.True(getValueResult, "GetValue failed.");
-            Assert.True(val1 == val2, $"ReadValue/Write mismatch val1 = {val1} val2 = {val2}.");
             Assert.True(writeResult, "Write failed.");
-
+            Assert.True(val1 == val2, $"ReadValue/Write mismatch val1 = {val1} val2 = {val2}.");
+            
             await _connector.SignOut();
         }
 
-        [Fact]
-        public async Task Parameters_DeviceNode1ShouldHaveOperationalBooleanParameter()
+        [Theory]
+        [InlineData(1)]
+        [InlineData(2)]
+        [InlineData(3)]
+        public async Task Parameters_DeviceNodeShouldHaveOperationalBooleanParameter(int nodeId)
         {
             //Arrange
-            var deviceNode1 = await TestData.GetDevice(1);
+            var deviceNode = await TestData.GetDevice(nodeId);
 
             //Act
-            var parameter = await deviceNode1.GetParameter(0x4000, 0x0D) as XddParameter;
+            var parameter = await deviceNode.GetParameter(0x4000, 0x0D) as XddParameter;
             var actualValue = parameter.ActualValue.Clone();
 
             var parameterValue1 = await parameter.ReadValue();
@@ -1177,20 +992,23 @@ namespace TestEltraConnector
             Assert.True(parameterValue2 != null, "Get ParameterValue failed.");
             Assert.True(setValueResult, "SetValue failed.");
             Assert.True(getValueResult, "GetValue failed.");
-            Assert.True(val1 == val2, $"ReadValue/Write mismatch val1 = {val1} val2 = {val2}.");
             Assert.True(writeResult, "Write failed.");
-
+            Assert.True(val1 == val2, $"ReadValue/Write mismatch val1 = {val1} val2 = {val2}.");
+            
             await _connector.SignOut();
         }
 
-        [Fact]
-        public async Task Parameters_DeviceNode1ShouldHaveOperationalIdentityParameter()
+        [Theory]
+        [InlineData(1)]
+        [InlineData(2)]
+        [InlineData(3)]
+        public async Task Parameters_DeviceNodeShouldHaveOperationalIdentityParameter(int nodeId)
         {
             //Arrange
-            var deviceNode1 = await TestData.GetDevice(1);
+            var deviceNode = await TestData.GetDevice(nodeId);
 
             //Get parameter
-            var parameter = await deviceNode1.GetParameter(0x4000, 0x0E) as XddParameter;
+            var parameter = await deviceNode.GetParameter(0x4000, 0x0E) as XddParameter;
             //store actual value for later use
             var actualValue = parameter.ActualValue.Clone();
             //update value, GetParameter is more 'heavy', so should be used once, and then only ReadValue
@@ -1229,21 +1047,24 @@ namespace TestEltraConnector
             Assert.True(parameterValue2 != null, "Get ParameterValue failed.");
             Assert.True(setValueResult, "SetValue failed.");
             Assert.True(getValueResult, "GetValue failed.");
-            Assert.True(val1 == val2, $"ReadValue/Write mismatch val1 = {val1} val2 = {val2}.");
             Assert.True(writeResult, "Write failed.");
-
+            Assert.True(val1 == val2, $"ReadValue/Write mismatch val1 = {val1} val2 = {val2}.");
+            
             // sign out
             await _connector.SignOut();
         }
 
-        [Fact]
-        public async Task Parameters_DeviceNode1ShouldHaveOperationalObjectParameter()
+        [Theory]
+        [InlineData(1)]
+        [InlineData(2)]
+        [InlineData(3)]
+        public async Task Parameters_DeviceNodeShouldHaveOperationalObjectParameter(int nodeId)
         {
             //Arrange
-            var deviceNode1 = await TestData.GetDevice(1);
+            var deviceNode = await TestData.GetDevice(nodeId);
 
             //Act
-            var parameter = await deviceNode1.GetParameter(0x4000, 0x0B) as XddParameter;
+            var parameter = await deviceNode.GetParameter(0x4000, 0x0B) as XddParameter;
             var actualValue = parameter.ActualValue.Clone();
 
             var parameterValue1 = await parameter.ReadValue();
@@ -1281,11 +1102,14 @@ namespace TestEltraConnector
             await _connector.SignOut();
         }
 
-        [Fact]
-        public async Task Parameters_DeviceNode1CountingParameterShouldAutoUpdate()
+        [Theory]
+        [InlineData(1)]
+        [InlineData(2)]
+        [InlineData(3)]
+        public async Task Parameters_DeviceNodeCountingParameterShouldAutoUpdate(int nodeId)
         {
             //Arrange
-            var deviceNode1 = await TestData.GetDevice(1);
+            var deviceNode1 = await TestData.GetDevice(nodeId);
 
             //Act
             var parameter = await deviceNode1.GetParameter(0x3000, 0x00) as XddParameter;
@@ -1306,106 +1130,6 @@ namespace TestEltraConnector
             //let's execute start counting method on device
             var startCounting = await deviceNode1.GetCommand("StartCounting");
             
-            startCounting.SetParameterValue<int>("Step", 1); //increase the value by step
-            startCounting.SetParameterValue<int>("Delay", 100); //delay in ms between each step
-
-            //execute start counting command, this should increase the 0x3000, 0x00 parameter every 'Delay' [ms] by 'Step'
-            var startCountingResult = await startCounting.Execute();
-
-            Assert.True(startCountingResult != null && startCountingResult.Status == ExecCommandStatus.Executed, "exec start counting failed!");
-
-            //let's give him some time to respond
-            await Task.Delay(1000);
-
-            //Assert
-            Assert.True(parameter != null, "Device parameter missing.");
-            Assert.True(parameterChanged, "Parameter didn't change.");
-
-            //call stop counting
-            var stopCounting = await deviceNode1.GetCommand("StopCounting");
-
-            var stopCountingResult = await stopCounting.Execute();
-
-            parameter.AutoUpdate(false, ParameterUpdatePriority.High, true);
-
-            await _connector.SignOut();
-        }
-
-        [Fact]
-        public async Task Parameters_DeviceNode2CountingParameterShouldAutoUpdate()
-        {
-            //Arrange
-            var deviceNode1 = await TestData.GetDevice(2);
-
-            //Act
-            var parameter = await deviceNode1.GetParameter(0x3000, 0x00) as XddParameter;
-            var initialValue = parameter.ActualValue.Clone();
-            bool parameterChanged = false;
-            //the parameter 0x3000 will be updated automatically 
-            parameter.AutoUpdate(true, ParameterUpdatePriority.High, true);
-
-            //let's observe the parameter changed event
-            parameter.ParameterChanged += (sender, e) => {
-
-                if (!e.NewValue.Equals(initialValue))
-                {
-                    parameterChanged = true;
-                }
-            };
-
-            //let's execute start counting method on device
-            var startCounting = await deviceNode1.GetCommand("StartCounting");
-
-            startCounting.SetParameterValue<int>("Step", 1); //increase the value by step
-            startCounting.SetParameterValue<int>("Delay", 100); //delay in ms between each step
-
-            //execute start counting command, this should increase the 0x3000, 0x00 parameter every 'Delay' [ms] by 'Step'
-            var startCountingResult = await startCounting.Execute();
-
-            Assert.True(startCountingResult != null && startCountingResult.Status == ExecCommandStatus.Executed, "exec start counting failed!");
-
-            //let's give him some time to respond
-            await Task.Delay(1000);
-
-            //Assert
-            Assert.True(parameter != null, "Device parameter missing.");
-            Assert.True(parameterChanged, "Parameter didn't change.");
-
-            //call stop counting
-            var stopCounting = await deviceNode1.GetCommand("StopCounting");
-
-            var stopCountingResult = await stopCounting.Execute();
-
-            parameter.AutoUpdate(false, ParameterUpdatePriority.High, true);
-
-            await _connector.SignOut();
-        }
-
-        [Fact]
-        public async Task Parameters_DeviceNode3CountingParameterShouldAutoUpdate()
-        {
-            //Arrange
-            var deviceNode1 = await TestData.GetDevice(3);
-
-            //Act
-            var parameter = await deviceNode1.GetParameter(0x3000, 0x00) as XddParameter;
-            var initialValue = parameter.ActualValue.Clone();
-            bool parameterChanged = false;
-            //the parameter 0x3000 will be updated automatically 
-            parameter.AutoUpdate(true, ParameterUpdatePriority.High, true);
-
-            //let's observe the parameter changed event
-            parameter.ParameterChanged += (sender, e) => {
-
-                if (!e.NewValue.Equals(initialValue))
-                {
-                    parameterChanged = true;
-                }
-            };
-
-            //let's execute start counting method on device
-            var startCounting = await deviceNode1.GetCommand("StartCounting");
-
             startCounting.SetParameterValue<int>("Step", 1); //increase the value by step
             startCounting.SetParameterValue<int>("Delay", 100); //delay in ms between each step
 
