@@ -1,4 +1,4 @@
-name: .NET Core
+name: Build & Test
 
 on:
   push:
@@ -20,12 +20,10 @@ jobs:
     - name: Install dependencies
       run: | 
         git submodule update --init --recursive
-        git pull origin master
+        git submodule update --recursive --remote
         dotnet restore
     - name: Build
       run: |
-        git submodule update --init --recursive
-        git pull origin master
         dotnet build --configuration Release --no-restore
     - name: Test
       run: dotnet test --no-restore --verbosity normal

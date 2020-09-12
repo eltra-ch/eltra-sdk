@@ -1,3 +1,5 @@
+![.NET Core](https://github.com/eltra-ch/eltra-sdk/workflows/.NET%20Core/badge.svg)
+
 # ELTRA - CANOpen inspired IoT framework
 
 ELTRA IoT framework is based on standard Web Protocols like REST, JSON and WebSocket.
