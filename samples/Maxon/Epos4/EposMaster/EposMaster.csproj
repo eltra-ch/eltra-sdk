@@ -1,0 +1,25 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+	<LangVersion>7.1</LangVersion>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+
+  <ItemGroup>
+      <PackageReference Include="CommandLineParser" Version="2.8.0" />
+      <PackageReference Include="Eltra.Connector" Version="1.5.2" />
+      <PackageReference Include="Microsoft.Extensions.Configuration" Version="3.1.8" />
+      <PackageReference Include="Microsoft.Extensions.Configuration.FileExtensions" Version="3.1.8" />
+      <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="3.1.8" />
+      <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
+   </ItemGroup>
+  
+</Project>

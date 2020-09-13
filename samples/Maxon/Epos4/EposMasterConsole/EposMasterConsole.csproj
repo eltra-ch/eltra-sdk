@@ -1,0 +1,55 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+   
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+	<LangVersion>7.1</LangVersion>
+	<Company>eltra.ch</Company>
+	<Authors>Dawid Sienkiewicz</Authors>
+	<Product>Epos Master Console</Product>
+  </PropertyGroup>
+   
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+   
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+   
+  <ItemGroup>
+    <None Include="bin\Debug\netcoreapp3.1\EPOS4_0110h_6150h_0000h_0000h.xdd" />
+  </ItemGroup>
+
+  <ItemGroup>
+      <PackageReference Include="Microsoft.Extensions.Configuration" Version="3.1.8" />
+      <PackageReference Include="Microsoft.Extensions.Configuration.FileExtensions" Version="3.1.8" />
+      <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="3.1.8" />
+      <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
+   </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\EposMaster\EposMaster.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="appsettings.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="EPOS4_0110h_6150h_0000h_0000h.xdd">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="EposCmd.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="EposCmd64.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+    <Exec Command="copy $(ProjectDir)..\xternals\Maxon\lib\windows\intel\x86_64\EposCmd64.dll $(TargetDir)&#xD;&#xA;if not exist $(ProjectDir)..\Assemblies (md $(ProjectDir)..\Assemblies)&#xD;&#xA;xcopy $(TargetPath) $(ProjectDir)..\Assemblies /Y" Condition=" '$(OS)' == 'Windows_NT' " />
+    <Exec Command="mkdir -p $(ProjectDir)../Assemblies;/bin/cp -f $(TargetPath) $(ProjectDir)../Assemblies" Condition=" '$(OS)' == 'Unix' " />
+  </Target>
+   
+</Project>
