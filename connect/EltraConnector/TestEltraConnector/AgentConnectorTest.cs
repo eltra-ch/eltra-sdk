@@ -7,6 +7,7 @@ using EltraCommon.ObjectDictionary.Xdd.DeviceDescription.Profiles.Application.Pa
 using EltraCommon.Contracts.Parameters;
 using EltraCommon.Contracts.CommandSets;
 using System.Linq;
+using EltraCommon.ObjectDictionary.Common.DeviceDescription.Profiles.Application.Parameters;
 
 namespace TestEltraConnector
 {
@@ -1139,7 +1140,7 @@ namespace TestEltraConnector
             Assert.True(startCountingResult != null && startCountingResult.Status == ExecCommandStatus.Executed, "exec start counting failed!");
 
             //let's give him some time to respond
-            await Task.Delay(1000);
+            await Task.Delay(1);
 
             //Assert
             Assert.True(parameter != null, "Device parameter missing.");
@@ -1152,6 +1153,116 @@ namespace TestEltraConnector
 
             parameter.AutoUpdate(false, ParameterUpdatePriority.High, true);
 
+            await _connector.SignOut();
+        }
+
+        [Theory]
+        [InlineData(1, 50)]
+        [InlineData(2, 50)]
+        [InlineData(3, 50)]
+        public async Task Parameters_DeviceNodeReadInt32PerformanceTest(int nodeId, int maxCount)
+        {
+            //Arrange
+            var deviceNode = await TestData.GetDevice(nodeId);
+
+            int count = 0;
+            XddParameter parameter;
+            ParameterValue actualValue;
+            ParameterValue parameterValue1;
+
+            do
+            {
+                //Get parameter
+                parameter = await deviceNode.GetParameter(0x4000, 0x07) as XddParameter;
+                //store actual value for later use
+                actualValue = parameter.ActualValue.Clone();
+                //update value, GetParameter is more 'heavy', so should be used once, and then only ReadValue
+                parameterValue1 = await parameter.ReadValue();
+
+                count++;
+            }
+            while (parameter != null && actualValue != null && parameterValue1 != null && count < maxCount);
+
+            //Assert
+            Assert.True(parameter != null, "Device object dictionary missing.");
+            Assert.True(parameterValue1 != null, "Get ParameterValue failed.");
+            Assert.True(parameterValue1.Equals(actualValue), "Get ParameterValue differs from actual value.");
+
+            // sign out
+            await _connector.SignOut();
+        }
+
+        [Theory]
+        [InlineData(1, 50)]
+        [InlineData(2, 50)]
+        [InlineData(3, 50)]
+        public async Task Parameters_DeviceNodeReadWriteInt32PerformanceTest(int nodeId, int maxCount)
+        {
+            //Arrange
+            var deviceNode = await TestData.GetDevice(nodeId);
+
+            bool result = false;
+            bool getValueResult = false;
+            bool setValueResult = false;
+            bool writeResult = false;
+            int count = 0;
+            XddParameter parameter;
+            ParameterValue actualValue;
+            ParameterValue parameterValue1;
+            ParameterValue parameterValue2;
+            int val1, val2;
+
+            do
+            {
+                //Get parameter
+                parameter = await deviceNode.GetParameter(0x4000, 0x07) as XddParameter;
+                //store actual value for later use
+                actualValue = parameter.ActualValue.Clone();
+                //update value, GetParameter is more 'heavy', so should be used once, and then only ReadValue
+                parameterValue1 = await parameter.ReadValue();
+                //get value from local object dictionary
+                result = parameter.GetValue(out val1);
+
+                if (val1 < int.MaxValue - 1)
+                {
+                    val1 = (int)(val1 + 1);
+                }
+                else
+                {
+                    val1 = int.MinValue;
+                }
+
+                // set new parameter value in object dictionary
+                setValueResult = parameter.SetValue(val1);
+
+                // push the data to remote device
+                writeResult = await parameter.Write();
+
+                // read current value from device
+                parameterValue2 = await parameter.ReadValue();
+
+                val2 = int.MinValue;
+
+                // parameterValue2 should contain current device value
+                getValueResult = parameterValue2.GetValue(ref val2);
+
+                count++;
+            }
+            while (result && getValueResult && writeResult && setValueResult && count < maxCount);
+
+            //Assert
+            Assert.True(parameter != null, "Device object dictionary missing.");
+            Assert.True(parameterValue1 != null, "Get ParameterValue failed.");
+            Assert.True(parameterValue1.Equals(actualValue), "Get ParameterValue differs from actual value.");
+            Assert.True(parameterValue2 != null, "Get ParameterValue failed.");
+            Assert.True(val1 == val2, $"ReadValue/Write mismatch val1 = {val1} val2 = {val2}.");
+
+            Assert.True(result, "GetValue failed.");
+            Assert.True(setValueResult, "SetValue failed.");
+            Assert.True(getValueResult, "GetValue failed.");
+            Assert.True(writeResult, "Write failed.");
+            
+            // sign out
             await _connector.SignOut();
         }
 
