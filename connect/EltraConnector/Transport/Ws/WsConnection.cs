@@ -235,7 +235,7 @@ namespace EltraConnector.Transport.Ws
             return result;
         }
 
-        private void HandleBrokenConnection(WebSocketError errorCode)
+        private async void HandleBrokenConnection(WebSocketError errorCode)
         {
             MsgLogger.WriteError($"{GetType().Name} - HandleBrokenConnection", $"Connection to '{Url}' failed, error code = {errorCode}");
 
@@ -245,6 +245,8 @@ namespace EltraConnector.Transport.Ws
 
                 Initialize();
             }
+
+            await Task.Delay(100);
         }
 
         public async Task<bool> Send<T>(UserIdentity identity, T obj)
