@@ -2,6 +2,8 @@
 using EltraMaster.DeviceManager.Events;
 using System;
 using EltraConnector.Master.Device;
+using EltraCommon.ObjectDictionary.Common.DeviceDescription.Profiles.Application.Parameters.Events;
+using System.Collections.Generic;
 
 namespace StreemaMaster
 {
@@ -9,16 +11,13 @@ namespace StreemaMaster
     {
         #region Private fields
 
+        private readonly List<Parameter> _urlParameters;
+
         private Parameter _activeStationParameter;
         private Parameter _volumeParameter;
         private Parameter _statusWordParameter;
         private Parameter _controlWordParameter;
-        private Parameter _url1Parameter;
-        private Parameter _url2Parameter;
-        private Parameter _url3Parameter;
-        private Parameter _url4Parameter;
-        private Parameter _url5Parameter;
-
+        
         #endregion
 
         #region Constructors
@@ -26,13 +25,14 @@ namespace StreemaMaster
         public StreemaDeviceCommunication(MasterDevice device)
             : base(device)
         {
+            _urlParameters = new List<Parameter>();
         }
 
         #endregion
 
         #region Init
 
-        protected override void OnInitialized()
+        protected override async void OnInitialized()
         {
             Console.WriteLine($"device (node id={Device.NodeId}) initialized, processing ...");
 
@@ -42,13 +42,49 @@ namespace StreemaMaster
             _activeStationParameter = Vcs.SearchParameter(0x4001, 0x00) as Parameter;
             _volumeParameter = Vcs.SearchParameter(0x4002, 0x00) as Parameter;
 
-            _url1Parameter = Vcs.SearchParameter(0x4000, 0x01) as Parameter;
-            _url2Parameter = Vcs.SearchParameter(0x4000, 0x02) as Parameter;
-            _url3Parameter = Vcs.SearchParameter(0x4000, 0x03) as Parameter;
-            _url4Parameter = Vcs.SearchParameter(0x4000, 0x04) as Parameter;
-            _url5Parameter = Vcs.SearchParameter(0x4000, 0x05) as Parameter;
+            var maxUrlsCountParameter = Vcs.SearchParameter(0x4000, 0x00) as Parameter;
+
+            if(maxUrlsCountParameter != null && maxUrlsCountParameter.GetValue(out byte maxCount))
+            {
+                for(byte i = 0; i < maxCount; i++)
+                {
+                    var urlParameter = Vcs.SearchParameter(0x4000, (byte)(i + 1)) as Parameter;
+
+                    if (urlParameter != null)
+                    {
+                        _urlParameters.Add(urlParameter);
+                    }
+                }                
+            }
+
+            if(_activeStationParameter != null)
+            {
+                var actualActiveStationValue = await Vcs.GetParameterValue(_activeStationParameter.UniqueId);
+
+                if(actualActiveStationValue!=null)
+                {
+                    _activeStationParameter.ActualValue = actualActiveStationValue;
+                }
+
+                _activeStationParameter.ParameterChanged += OnActiveStationParameterChanged;
+            }
 
             base.OnInitialized();
+        }
+
+        #endregion
+
+        #region Events
+
+        private void OnActiveStationParameterChanged(object sender, ParameterChangedEventArgs e)
+        {
+            var parameterValue = e.NewValue;
+            int activeStationValue = 0;
+
+            if(parameterValue.GetValue(ref activeStationValue))
+            {
+                Console.WriteLine($"Active Station Changed = {activeStationValue}");
+            }
         }
 
         #endregion
@@ -94,45 +130,14 @@ namespace StreemaMaster
             }
             else if (objectIndex == 0x4000)
             {
-                switch(objectSubindex)
+                if (_urlParameters.Count > objectSubindex)
                 {
-                    case 0x01:
-                        if (_url1Parameter.GetValue(out byte[] d1))
-                        {
-                            data = d1;
-                            result = true;
-                        }
-                        break;
-                    case 0x02:
-                        if (_url2Parameter.GetValue(out byte[] d2))
-                        {
-                            data = d2;
-                            result = true;
-                        }
-                        break;
-                    case 0x03:
-                        if (_url3Parameter.GetValue(out byte[] d3))
-                        {
-                            data = d3;
-                            result = true;
-                        }
-                        break;
-                    case 0x04:
-                        if (_url4Parameter.GetValue(out byte[] d4))
-                        {
-                            data = d4;
-                            result = true;
-                        }
-                        break;
-                    case 0x05:
-                        if (_url4Parameter.GetValue(out byte[] d5))
-                        {
-                            data = d5;
-                            result = true;
-                        }
-                        break;
+                    if (_urlParameters[objectSubindex - 1].GetValue(out byte[] d1))
+                    {
+                        data = d1;
+                        result = true;
+                    }
                 }
-                
             }
 
             return result;
@@ -153,23 +158,9 @@ namespace StreemaMaster
             }
             else if (objectIndex == 0x4000)
             {
-                switch (objectSubindex)
+                if (_urlParameters.Count > objectSubindex)
                 {
-                    case 0x01:
-                        result = _url1Parameter.SetValue(data);
-                        break;
-                    case 0x02:
-                        result = _url2Parameter.SetValue(data);
-                        break;
-                    case 0x03:
-                        result = _url3Parameter.SetValue(data);
-                        break;
-                    case 0x04:
-                        result = _url4Parameter.SetValue(data);
-                        break;
-                    case 0x05:
-                        result = _url5Parameter.SetValue(data);
-                        break;
+                    result = _urlParameters[objectSubindex - 1].SetValue(data);
                 }
             }
             else if (objectIndex == 0x4001 && objectSubindex == 0x0)
