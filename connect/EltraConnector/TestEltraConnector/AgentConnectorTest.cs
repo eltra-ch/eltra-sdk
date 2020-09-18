@@ -1140,7 +1140,7 @@ namespace TestEltraConnector
             Assert.True(startCountingResult != null && startCountingResult.Status == ExecCommandStatus.Executed, "exec start counting failed!");
 
             //let's give him some time to respond
-            await Task.Delay(1);
+            await Task.Delay(100);
 
             //Assert
             Assert.True(parameter != null, "Device parameter missing.");
