@@ -28,7 +28,7 @@
 				<version versionType="SW" readOnly="true">0x0100</version>
 				<version versionType="HW" readOnly="true">0x0200</version>
 				<version versionType="APPNB" readOnly="true">0x0000</version>
-				<version versionType="APPVER" readOnly="true">0x0002</version>
+				<version versionType="APPVER" readOnly="true">0x0003</version>
 			</DeviceIdentity>
 			<DeviceManager>
 				<userLevelList>
@@ -94,7 +94,7 @@
 					<parameter uniqueID="PARAM_StationUrl_1">
 						<index>0x4000</index>
 						<subIndex>0x01</subIndex>
-						<label lang="en-TT">String</label>
+						<label lang="en-TT">Station 1 url</label>
 						<dataType>
 							<type>VISIBLE_STRING</type>
 						</dataType>
@@ -110,7 +110,7 @@
 					<parameter uniqueID="PARAM_StationUrl_2">
 						<index>0x4000</index>
 						<subIndex>0x02</subIndex>
-						<label lang="en-TT">String</label>
+						<label lang="en-TT">Station 2 url</label>
 						<dataType>
 							<type>VISIBLE_STRING</type>
 						</dataType>
@@ -126,7 +126,7 @@
 					<parameter uniqueID="PARAM_StationUrl_3">
 						<index>0x4000</index>
 						<subIndex>0x03</subIndex>
-						<label lang="en-TT">String</label>
+						<label lang="en-TT">Station 3 url</label>
 						<dataType>
 							<type>VISIBLE_STRING</type>
 						</dataType>
@@ -142,7 +142,7 @@
 					<parameter uniqueID="PARAM_StationUrl_4">
 						<index>0x4000</index>
 						<subIndex>0x04</subIndex>
-						<label lang="en-TT">String</label>
+						<label lang="en-TT">Station 4 url</label>
 						<dataType>
 							<type>VISIBLE_STRING</type>
 						</dataType>
@@ -158,7 +158,7 @@
 					<parameter uniqueID="PARAM_StationUrl_5">
 						<index>0x4000</index>
 						<subIndex>0x05</subIndex>
-						<label lang="en-TT">String</label>
+						<label lang="en-TT">Station 5 url</label>
 						<dataType>
 							<type>VISIBLE_STRING</type>
 						</dataType>

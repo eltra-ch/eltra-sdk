@@ -10,6 +10,7 @@ namespace StreemaMaster
         #region Private fields
 
         private Parameter _activeStationParameter;
+        private Parameter _volumeParameter;
         private Parameter _statusWordParameter;
         private Parameter _controlWordParameter;
         private Parameter _url1Parameter;
@@ -39,6 +40,7 @@ namespace StreemaMaster
             _statusWordParameter = Vcs.SearchParameter(0x6041, 0x00) as Parameter;
             
             _activeStationParameter = Vcs.SearchParameter(0x4001, 0x00) as Parameter;
+            _volumeParameter = Vcs.SearchParameter(0x4002, 0x00) as Parameter;
 
             _url1Parameter = Vcs.SearchParameter(0x4000, 0x01) as Parameter;
             _url2Parameter = Vcs.SearchParameter(0x4000, 0x02) as Parameter;
@@ -66,19 +68,15 @@ namespace StreemaMaster
                     result = true;
                 }
             }
-
-            //PARAM_StatusWord
-            if (objectIndex == 0x6041)
+            else if (objectIndex == 0x6041)
             {
                 if (_statusWordParameter.GetValue(out byte[] v))
                 {
                     data = v;
                     result = true;
                 }
-            }
-
-            //PARAM_Counter
-            if (objectIndex == 0x4001)
+            } 
+            else if (objectIndex == 0x4001)
             {
                 if (_activeStationParameter.GetValue(out byte[] v))
                 {
@@ -86,8 +84,15 @@ namespace StreemaMaster
                     result = true;
                 }
             }
-
-            if (objectIndex == 0x4000)
+            else if (objectIndex == 0x4002)
+            {
+                if (_volumeParameter.GetValue(out byte[] v))
+                {
+                    data = v;
+                    result = true;
+                }
+            }
+            else if (objectIndex == 0x4000)
             {
                 switch(objectSubindex)
                 {
@@ -146,17 +151,9 @@ namespace StreemaMaster
 
                 result = _controlWordParameter.SetValue(controlWordValue);
             }
-            else if (objectIndex == 0x4001 && objectSubindex == 0x0)
-            {
-                var activeStationValue = BitConverter.ToInt32(data, 0);
-
-                Console.WriteLine($"new active station value = {activeStationValue}");
-
-                result = _activeStationParameter.SetValue(activeStationValue);
-            }
             else if (objectIndex == 0x4000)
             {
-                switch(objectSubindex)
+                switch (objectSubindex)
                 {
                     case 0x01:
                         result = _url1Parameter.SetValue(data);
@@ -173,7 +170,23 @@ namespace StreemaMaster
                     case 0x05:
                         result = _url5Parameter.SetValue(data);
                         break;
-                }                
+                }
+            }
+            else if (objectIndex == 0x4001 && objectSubindex == 0x0)
+            {
+                var activeStationValue = BitConverter.ToInt32(data, 0);
+
+                Console.WriteLine($"new active station value = {activeStationValue}");
+
+                result = _activeStationParameter.SetValue(activeStationValue);
+            }
+            else if (objectIndex == 0x4002)
+            {
+                var volumeValue = BitConverter.ToInt32(data, 0);
+
+                Console.WriteLine($"new volume value = {volumeValue}");
+
+                result = _volumeParameter.SetValue(volumeValue);
             }
 
             return result;

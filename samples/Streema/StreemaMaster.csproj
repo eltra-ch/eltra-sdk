@@ -6,6 +6,12 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="TestStreema\**" />
+    <EmbeddedResource Remove="TestStreema\**" />
+    <None Remove="TestStreema\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Eltra.Connector" Version="1.5.2" />
   </ItemGroup>
 
