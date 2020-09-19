@@ -129,7 +129,7 @@ namespace DummyAgent
                 
                 // to activate this feature, call RegisterUpdate
                 // priority is transfered to the master and is up to master to decide what low, high or medium priority is
-                counterParameter.AutoUpdate(true, ParameterUpdatePriority.High);
+                counterParameter.AutoUpdate(ParameterUpdatePriority.High);
                 //from now on, our local object dictionary will be actualized each time the {counterParameter} is changed by remote party
 
                 // execute command on the remote master device, 
@@ -141,7 +141,7 @@ namespace DummyAgent
                 await sampleCommands.PlayWithDeviceCommands();
 
                 //we don't need the notifications at this point
-                counterParameter?.AutoUpdate(false, ParameterUpdatePriority.High);
+                counterParameter?.StopUpdate(ParameterUpdatePriority.High);
 
                 //remove events handling
                 counterParameter.ParameterChanged -= OnParameterChanged;
