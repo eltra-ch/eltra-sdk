@@ -5,9 +5,13 @@ namespace StreemaMaster
 {
     internal class StreemaDevice : MasterDevice
     {
-        public StreemaDevice(string deviceDescriptionFilePath, int nodeId) 
+        private StreemaSettings _settings;
+
+        public StreemaDevice(string deviceDescriptionFilePath, int nodeId, StreemaSettings settings) 
             : base("STREEMA", deviceDescriptionFilePath, nodeId)
         {
+            _settings = settings;
+
             Identification.SerialNumber = 0x100;
         }
 
@@ -20,7 +24,7 @@ namespace StreemaMaster
 
         protected override void CreateCommunication()
         {
-            var communication = new StreemaDeviceCommunication(this);
+            var communication = new StreemaDeviceCommunication(this, _settings);
 
             Communication = communication;
         }

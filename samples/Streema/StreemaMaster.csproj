@@ -11,12 +11,17 @@
     <None Remove="TestStreema\**" />
   </ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\..\connect\EltraConnector\EltraConnector.csproj" />
-    <ProjectReference Include="..\..\xternals\common\EltraCommon\EltraCommon.csproj" />
-  </ItemGroup>
+	<ItemGroup>
+      <PackageReference Include="Eltra.Connector" Version="1.5.4" />
+      <PackageReference Include="Microsoft.Extensions.Configuration" Version="3.1.8" />
+      <PackageReference Include="Microsoft.Extensions.Configuration.FileExtensions" Version="3.1.8" />
+      <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="3.1.8" />
+   </ItemGroup>
 
   <ItemGroup>
+    <None Update="appsettings.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Update="DUMMY_0100h_0000h_0000h_0000h.xdd">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

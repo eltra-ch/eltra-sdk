@@ -53,7 +53,7 @@
 			<DeviceHardware/>
 			<DeviceInteraction>
 				<DeviceTools>
-					<DeviceTool Uuid="EF90E3A5-4474-4F90-BAB6-1E1A17C1B7AC" Name="DummyTool" Status="Enabled"/>
+					<DeviceTool Uuid="399EF4BE-D7AF-45D7-8D16-0F562DFF9127" Name="StreemaTool" Status="Enabled"/>
 				</DeviceTools>
 			</DeviceInteraction>
 			<ApplicationProcess>

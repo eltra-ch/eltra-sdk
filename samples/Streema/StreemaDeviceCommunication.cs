@@ -4,6 +4,8 @@ using System;
 using EltraConnector.Master.Device;
 using EltraCommon.ObjectDictionary.Common.DeviceDescription.Profiles.Application.Parameters.Events;
 using System.Collections.Generic;
+using System.Threading.Tasks;
+using System.Diagnostics;
 
 namespace StreemaMaster
 {
@@ -17,14 +19,16 @@ namespace StreemaMaster
         private Parameter _volumeParameter;
         private Parameter _statusWordParameter;
         private Parameter _controlWordParameter;
-        
+        private StreemaSettings _settings;
+
         #endregion
 
         #region Constructors
 
-        public StreemaDeviceCommunication(MasterDevice device)
+        public StreemaDeviceCommunication(MasterDevice device, StreemaSettings settings)
             : base(device)
         {
+            _settings = settings;
             _urlParameters = new List<Parameter>();
         }
 
@@ -79,6 +83,28 @@ namespace StreemaMaster
             if(parameterValue.GetValue(ref activeStationValue))
             {
                 Console.WriteLine($"Active Station Changed = {activeStationValue}");
+
+                Task.Run(()=> {
+                    if(_urlParameters.Count > activeStationValue)
+                    {
+                        var urlParam = _urlParameters[activeStationValue];
+
+                        if(urlParam.GetValue(out string url))
+                        {
+                            foreach (var p in Process.GetProcessesByName(_settings.AppName))
+                            {
+                                //p.Kill();
+                            }
+
+                            var startInfo = new ProcessStartInfo(_settings.AppPath);
+
+                            startInfo.WindowStyle = ProcessWindowStyle.Normal;
+                            startInfo.Arguments = _settings.AppArgs + $" {url}";
+                                               
+                             Process.Start(startInfo);
+                        }
+                    }
+                });
             }
         }
 

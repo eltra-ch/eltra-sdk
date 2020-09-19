@@ -12,23 +12,22 @@ namespace StreemaMaster
     {
         static void Main(string[] args)
         {
-            string filePath = "STREEMA_0100h_0000h_0000h_0000h.xdd";
             string serviceName = "STREEMA";
 
             var connector = new EltraMasterConnector();
-            
+            var settings = new StreemaSettings();
+
             Console.WriteLine($"Hello Dummy Eltra Master - {serviceName}!");
 
             var runner = Task.Run(async () =>
             {
-                //connector.Host = "https://eltra.ch";
-                connector.Host = "http://localhost:5001";
+                connector.Host = settings.Host;
 
                 Console.WriteLine("Sign-in ...");
 
-                if (await connector.SignIn(new UserIdentity() { Login = $"streema_master@eltra.ch", Name = "Streema", Password = "1234", Role="developer" }, true))
+                if (await connector.SignIn(new UserIdentity() { Login = settings.Login, Name = "Streema", Password = settings.LoginPasswd, Role="developer" }, true))
                 {
-                    var predefinedAlias = new UserIdentity() { Login = "streema@eltra.ch", Password = "1234", Name = "Streema client", Role = "engineer" };
+                    var predefinedAlias = new UserIdentity() { Login = settings.Alias, Password = settings.AliasPasswd, Name = "Streema client", Role = "engineer" };
 
                     if (await connector.CreateAlias(predefinedAlias))
                     {
@@ -45,7 +44,7 @@ namespace StreemaMaster
 
                     Console.WriteLine("Signed in - Start service");
 
-                    connector.StartService(serviceName, new StreemaDeviceManager(filePath));
+                    connector.StartService(serviceName, new StreemaDeviceManager(settings.XddFile, settings));
                 }
                 else
                 {
