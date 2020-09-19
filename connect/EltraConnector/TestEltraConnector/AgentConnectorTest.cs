@@ -19,8 +19,8 @@ namespace TestEltraConnector
 
         public AgentConnectorTest()
         {
-            string host = "https://eltra.ch";
-            //string host = "http://localhost:5001";
+            //string host = "https://eltra.ch";
+            string host = "http://localhost:5001";
 
             _connector = new AgentConnector() { Host = host };            
         }
@@ -1117,7 +1117,7 @@ namespace TestEltraConnector
             var initialValue = parameter.ActualValue.Clone();
             bool parameterChanged = false;
             //the parameter 0x3000 will be updated automatically 
-            parameter.AutoUpdate(true, ParameterUpdatePriority.High, true);
+            parameter.AutoUpdate(ParameterUpdatePriority.High, true);
             
             //let's observe the parameter changed event
             parameter.ParameterChanged += (sender, e) => {
@@ -1151,7 +1151,7 @@ namespace TestEltraConnector
 
             var stopCountingResult = await stopCounting.Execute();
 
-            parameter.AutoUpdate(false, ParameterUpdatePriority.High, true);
+            parameter.StopUpdate(ParameterUpdatePriority.High, true);
 
             await _connector.SignOut();
         }

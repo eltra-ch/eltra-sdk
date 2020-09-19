@@ -9,6 +9,7 @@ using EltraCommon.Logger;
 using EltraCommon.Contracts.CommandSets;
 using EltraConnector.SyncAgent;
 using System.Net.Sockets;
+using EltraConnector.Controllers.Events;
 
 namespace EltraConnector.Controllers
 {
@@ -74,25 +75,38 @@ namespace EltraConnector.Controllers
 
             if (e.State == RegistrationState.Registered)
             {
-                if (device.DeviceDescription != null)
-                { 
-                    device.Status = DeviceStatus.Registered;                    
-                }
-                else
-                {
-                    device.Status = DeviceStatus.Ready;
-                }
+                ParameterControllerAdapter.ParametersUpdated -= OnParametersUpdated;
+                ParameterControllerAdapter.ParametersUpdated += OnParametersUpdated;
 
-                ParameterControllerAdapter.RegisterDevice(device);
-
-                device.RunAsync();
+                ParameterControllerAdapter.RegisterDevice(device);                
             }
             else if (e.State == RegistrationState.Failed)
             {
                 MsgLogger.WriteError($"{GetType().Name} - OnDeviceRegistrationStateChanged", $"Device ({device.Family}) registration failed!");
             }
         }
-        
+
+        private void OnParametersUpdated(object sender, ParameterUpdateEventArgs args)
+        {
+            var device = args.Device;
+
+            MsgLogger.WriteFlow($"{GetType().Name} - OnParametersUpdated", $"Device = {device.Name}, parameters updated, result = {args.Result}");
+
+            if (device != null)
+            {
+                if (device.DeviceDescription != null)
+                {
+                    device.Status = DeviceStatus.Registered;
+                }
+                else
+                {
+                    device.Status = DeviceStatus.Ready;
+                }
+
+                device.RunAsync();
+            }
+        }
+
         #endregion
 
         #region Methods

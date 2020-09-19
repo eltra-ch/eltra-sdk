@@ -23,8 +23,7 @@ namespace EltraConnector.UserAgent.Vcs
         #region Private fields
 
         private const int DefaultTimeout = 30000;
-        private EltraDevice _deviceNode;        
-        private SyncCloudAgent _masterAgent;
+        private EltraDevice _deviceNode;
 
         #endregion
 
@@ -40,38 +39,52 @@ namespace EltraConnector.UserAgent.Vcs
         /// <param name="timeout"></param>
         public DeviceVcs(string url, string uuid, UserIdentity identity, uint updateInterval, uint timeout)
         {
-            _deviceNode = new EltraDevice() { ChannelId = uuid };
+            if (identity != null)
+            {
+                _deviceNode = new EltraDevice() { ChannelId = uuid };
 
-            Timeout = DefaultTimeout;
+                Timeout = DefaultTimeout;
 
-            Agent = new DeviceAgent(url, uuid, identity, updateInterval, timeout);
+                Agent = new DeviceAgent(url, uuid, identity, updateInterval, timeout);
 
-            Agent.ParameterValueChanged += OnParameterValueChanged;
+                Agent.ParameterValueChanged += OnParameterValueChanged;
+
+                _deviceNode.CloudConnector = Agent;
+            }
         }
 
         internal DeviceVcs(SyncCloudAgent masterAgent, EltraDevice deviceNode, uint updateInterval, uint timeout)
         {
-            _deviceNode = deviceNode;
-            _masterAgent = masterAgent;
+            if (deviceNode != null)
+            {
+                _deviceNode = deviceNode;
 
-            Timeout = DefaultTimeout;
+                Timeout = DefaultTimeout;
 
-            Agent = new DeviceAgent(masterAgent, deviceNode, updateInterval, timeout);
+                Agent = new DeviceAgent(masterAgent, deviceNode, updateInterval, timeout);
 
-            Agent.ParameterValueChanged += OnParameterValueChanged;
+                Agent.ParameterValueChanged += OnParameterValueChanged;
+
+                _deviceNode.CloudConnector = Agent;
+            }
         }
 
         internal DeviceVcs(DeviceAgent agent, EltraDevice deviceNode)
         {
             Timeout = DefaultTimeout;
 
-            _deviceNode = deviceNode;
-
-            if (agent != null)
+            if (deviceNode != null)
             {
-                Agent = agent;
+                _deviceNode = deviceNode;
 
-                Agent.ParameterValueChanged += OnParameterValueChanged;
+                if (agent != null)
+                {
+                    Agent = agent;
+
+                    Agent.ParameterValueChanged += OnParameterValueChanged;
+
+                    _deviceNode.CloudConnector = Agent;
+                }
             }
         }
 
@@ -132,6 +145,11 @@ namespace EltraConnector.UserAgent.Vcs
         /// </summary>
         protected virtual void OnDeviceChanged()
         {
+            if(Agent!=null && Device!=null)
+            {
+                Device.CloudConnector = Agent;
+            }
+
             DeviceChanged?.Invoke(this, EventArgs.Empty);
         }
 

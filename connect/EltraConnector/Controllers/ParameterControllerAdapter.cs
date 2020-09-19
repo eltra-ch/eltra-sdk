@@ -14,6 +14,8 @@ using Newtonsoft.Json;
 using EltraCommon.Contracts.Devices;
 using EltraCommon.Contracts.History;
 using System.Net;
+using EltraConnector.Controllers.Events;
+using System.Runtime.CompilerServices;
 
 namespace EltraConnector.Controllers
 {
@@ -37,7 +39,13 @@ namespace EltraConnector.Controllers
 
             _devices = new List<EltraDevice>();
         }
-        
+
+        #endregion
+
+        #region Events
+
+        public event EventHandler<ParameterUpdateEventArgs> ParametersUpdated;
+
         #endregion
 
         #region Events handling
@@ -55,6 +63,11 @@ namespace EltraConnector.Controllers
             MsgLogger.WriteLine($"changed: {e.Parameter.UniqueId}, new value = '{logValue}'");
 
             await UpdateParameterValue(e.Parameter.Device, e.Parameter);
+        }
+
+        private void OnParametersUpdated(EltraDevice device, bool updateResult)
+        {
+            ParametersUpdated?.Invoke(this, new ParameterUpdateEventArgs() { Device = device, Result = updateResult });
         }
 
         #endregion
@@ -145,31 +158,40 @@ namespace EltraConnector.Controllers
             return result;
         }
 
-        private void StartUpdate(EltraDevice device)
+        private async Task StartUpdate(EltraDevice device)
         {
             RegisterEvents(device);
 
-            Wait();
+            if (await UpdateParameters(device))
+            {
+                Wait();
+            }
 
             UnregisterEvents(device);
         }
 
-        public void RegisterDevice(EltraDevice device)
+        public bool RegisterDevice(EltraDevice device)
         {
+            bool result = false;
+
             if(!_devices.Contains(device))
             {
                 if (ShouldRun())
                 {
-                    var task = Task.Run(() =>
+                    var task = Task.Run(async () =>
                     {
-                        StartUpdate(device);
+                        await StartUpdate(device);
                     });
 
                     _runningTasks.Add(task);
                 }
 
                 _devices.Add(device);
+
+                result = true;
             }
+
+            return result;
         }
 
         private bool ShouldRun()
@@ -290,7 +312,12 @@ namespace EltraConnector.Controllers
 
                     if (parameter is Parameter parameterEntry)
                     {
-                        result = await UpdateParameter(device, parameterEntry);
+                        var parameterValue = await GetParameterValue(device, parameterEntry);
+
+                        if (parameterValue != null)
+                        {
+                            result = parameterEntry.SetValue(parameterValue);
+                        }
                     }
                     else if (parameter is StructuredParameter structuredParameter)
                     {
@@ -306,13 +333,20 @@ namespace EltraConnector.Controllers
 
                                 if (subParameter is Parameter subParameterEntry)
                                 {
-                                    result = await UpdateParameter(device, subParameterEntry);
+                                    var parameterValue = await GetParameterValue(device, subParameterEntry);
+
+                                    if (parameterValue != null)
+                                    {
+                                        result = subParameterEntry.SetValue(parameterValue);
+                                    }
                                 }
                             }
                         }
                     }
                 }
             }
+
+            OnParametersUpdated(device, result);
 
             return result;
         }
