@@ -15,8 +15,8 @@ namespace TestStreema
 
         public StreemaTest()
         {
-            string host = "https://eltra.ch";
-            //string host = "http://localhost:5001";
+            //string host = "https://eltra.ch";
+            string host = "http://localhost:5001";
 
             _connector = new AgentConnector() { Host = host };            
         }
@@ -36,7 +36,7 @@ namespace TestStreema
             return new UserIdentity()
             {
                 Login = Guid.NewGuid().ToString(),
-                Password = "streema_123456",
+                Password = "123456",
                 Name = "Unit test user",
                 Role = "developer"
             }; 

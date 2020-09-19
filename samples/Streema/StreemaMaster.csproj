@@ -12,7 +12,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Eltra.Connector" Version="1.5.2" />
+    <ProjectReference Include="..\..\connect\EltraConnector\EltraConnector.csproj" />
+    <ProjectReference Include="..\..\xternals\common\EltraCommon\EltraCommon.csproj" />
   </ItemGroup>
 
   <ItemGroup>

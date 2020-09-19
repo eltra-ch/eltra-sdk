@@ -59,12 +59,7 @@ namespace StreemaMaster
 
             if(_activeStationParameter != null)
             {
-                var actualActiveStationValue = await Vcs.GetParameterValue(_activeStationParameter.UniqueId);
-
-                if(actualActiveStationValue!=null)
-                {
-                    _activeStationParameter.ActualValue = actualActiveStationValue;
-                }
+                await _activeStationParameter.UpdateValue();
 
                 _activeStationParameter.ParameterChanged += OnActiveStationParameterChanged;
             }

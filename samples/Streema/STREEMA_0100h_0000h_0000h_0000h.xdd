@@ -28,7 +28,7 @@
 				<version versionType="SW" readOnly="true">0x0100</version>
 				<version versionType="HW" readOnly="true">0x0200</version>
 				<version versionType="APPNB" readOnly="true">0x0000</version>
-				<version versionType="APPVER" readOnly="true">0x0003</version>
+				<version versionType="APPVER" readOnly="true">0x0004</version>
 			</DeviceIdentity>
 			<DeviceManager>
 				<userLevelList>
@@ -187,7 +187,7 @@
 									<value>0</value>
 								</minValue>
 								<maxValue>
-									<value>5</value>
+									<value>4</value>
 								</maxValue>
 							</range>
 						</allowedValues>
