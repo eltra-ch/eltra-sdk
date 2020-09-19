@@ -259,25 +259,32 @@ namespace EltraConnector.Controllers
 
         private async Task<bool> UploadDeviceDescription(EltraDevice device)
         {
-            bool result;
+            bool result = false;
             var deviceDescriptionPayload = new DeviceDescriptionPayload(device)
             {
                 ChannelId = Channel.Id
             };
 
-            if (!await DescriptionContollerAdapter.Exists(deviceDescriptionPayload))
+            if (string.IsNullOrEmpty(deviceDescriptionPayload.Content))
             {
-                result = await DescriptionContollerAdapter.Upload(deviceDescriptionPayload);
-
-                if (!result)
-                {
-                    MsgLogger.WriteError($"{GetType().Name} - UploadDeviceDescription", "Upload device description failed!");
-                }
+                MsgLogger.WriteError($"{GetType().Name} - UploadDeviceDescription", "Missing device description content!");
             }
             else
             {
-                MsgLogger.WriteDebug($"{GetType().Name} - UploadDeviceDescription", "Device description already exists");
-                result = true;
+                if (!await DescriptionContollerAdapter.Exists(deviceDescriptionPayload))
+                {
+                    result = await DescriptionContollerAdapter.Upload(deviceDescriptionPayload);
+
+                    if (!result)
+                    {
+                        MsgLogger.WriteError($"{GetType().Name} - UploadDeviceDescription", "Upload device description failed!");
+                    }
+                }
+                else
+                {
+                    MsgLogger.WriteDebug($"{GetType().Name} - UploadDeviceDescription", "Device description already exists");
+                    result = true;
+                }
             }
 
             return result;
