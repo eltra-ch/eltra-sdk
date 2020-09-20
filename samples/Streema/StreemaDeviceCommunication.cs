@@ -6,6 +6,8 @@ using EltraCommon.ObjectDictionary.Common.DeviceDescription.Profiles.Application
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Diagnostics;
+using EltraCommon.Logger;
+using System.Runtime.InteropServices;
 
 namespace StreemaMaster
 {
@@ -63,9 +65,20 @@ namespace StreemaMaster
 
             if(_activeStationParameter != null)
             {
+                _activeStationParameter.ParameterChanged += OnActiveStationParameterChanged;
+
                 await _activeStationParameter.UpdateValue();
 
-                _activeStationParameter.ParameterChanged += OnActiveStationParameterChanged;
+                SetActiveStationAsync(_activeStationParameter);
+            }
+
+            if (_volumeParameter != null)
+            {
+                _volumeParameter.ParameterChanged += OnVolumeChanged;
+
+                await _volumeParameter.UpdateValue();
+
+                SetVolumeAsync(_activeStationParameter);
             }
 
             base.OnInitialized();
@@ -84,33 +97,25 @@ namespace StreemaMaster
             {
                 Console.WriteLine($"Active Station Changed = {activeStationValue}");
 
-                Task.Run(()=> {
-                    if(_urlParameters.Count > activeStationValue)
-                    {
-                        var urlParam = _urlParameters[activeStationValue];
+                SetActiveStationAsync(activeStationValue);
+            }
+        }
+        private void OnVolumeChanged(object sender, ParameterChangedEventArgs e)
+        {
+            var parameterValue = e.NewValue;
+            int currentValue = 0;
 
-                        if(urlParam.GetValue(out string url))
-                        {
-                            foreach (var p in Process.GetProcessesByName(_settings.AppName))
-                            {
-                                //p.Kill();
-                            }
+            if (parameterValue.GetValue(ref currentValue))
+            {
+                Console.WriteLine($"Volume Changed = {currentValue}");
 
-                            var startInfo = new ProcessStartInfo(_settings.AppPath);
-
-                            startInfo.WindowStyle = ProcessWindowStyle.Normal;
-                            startInfo.Arguments = _settings.AppArgs + $" {url}";
-                                               
-                             Process.Start(startInfo);
-                        }
-                    }
-                });
+                SetVolumeAsync(currentValue);
             }
         }
 
         #endregion
 
-        #region SDO
+            #region SDO
 
         public override bool GetObject(ushort objectIndex, byte objectSubindex, ref byte[] data)
         {
@@ -213,6 +218,95 @@ namespace StreemaMaster
             Console.WriteLine($"status changed, status = {e.Device.Status}, error code = {e.LastErrorCode}");
 
             base.OnStatusChanged(e);
+        }
+
+        private void SetActiveStationAsync(int activeStationValue)
+        {
+            Task.Run(() =>
+            {
+                if (_urlParameters.Count > activeStationValue)
+                {
+                    var urlParam = _urlParameters[activeStationValue];
+
+                    if (urlParam.GetValue(out string url))
+                    {
+                        foreach (var p in Process.GetProcessesByName(_settings.AppName))
+                        {
+                            p.Kill();
+                        }
+
+                        var startInfo = new ProcessStartInfo(_settings.AppPath);
+
+                        startInfo.WindowStyle = ProcessWindowStyle.Normal;
+
+                        string playUrl = _settings.PlayUrl;
+
+                        if(!playUrl.EndsWith('/'))
+                        {
+                            playUrl += "/";
+                        }
+
+                        startInfo.Arguments = _settings.AppArgs + $" {playUrl}{url}";
+
+                        Process.Start(startInfo);
+                    }
+                }
+            });
+        }
+
+        private void SetVolumeAsync(int volumeValue)
+        {
+            Task.Run(() =>
+            {
+                if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
+                {
+                    string args = $"-D pulse sset Master {volumeValue}%";
+
+                    var startInfo = new ProcessStartInfo("amixer");
+
+                    startInfo.WindowStyle = ProcessWindowStyle.Hidden;
+                    startInfo.Arguments = args;
+
+                    Process.Start(startInfo);
+                }
+            });
+        }
+
+        private void SetActiveStationAsync(Parameter activeStation)
+        {
+            if (activeStation != null)
+            {
+                if (activeStation.GetValue(out int activeStationValue))
+                {
+                    SetActiveStationAsync(activeStationValue);
+                }
+                else
+                {
+                    MsgLogger.WriteError($"{GetType().Name} - SetActiveStationAsync", "get activeStation parameter value failed!");
+                }
+            }
+            else
+            {
+                MsgLogger.WriteError($"{GetType().Name} - SetActiveStationAsync", "activeStation parameter not defined!");
+            }
+        }
+        private void SetVolumeAsync(Parameter parameter)
+        {
+            if (parameter != null)
+            {
+                if (parameter.GetValue(out int parameterValue))
+                {
+                    SetVolumeAsync(parameterValue);
+                }
+                else
+                {
+                    MsgLogger.WriteError($"{GetType().Name} - SetVolumeAsync", "get volume parameter value failed!");
+                }
+            }
+            else
+            {
+                MsgLogger.WriteError($"{GetType().Name} - SetVolumeAsync", "volume parameter not defined!");
+            }
         }
 
         #endregion

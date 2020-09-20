@@ -178,7 +178,7 @@ namespace TestStreema
             
             if (val1 < maxValue)
             {
-                val1 = (int)(val1 + 1);
+                val1 = (int)(val1 + 10);
             }
             else
             {

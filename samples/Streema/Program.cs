@@ -5,6 +5,7 @@ using EltraConnector.Events;
 using EltraConnector.Master;
 using EltraConnector.Master.Definitions;
 using EltraConnector.Master.Events;
+using EltraConnector.Master.Device.Connection;
 
 namespace StreemaMaster
 {
@@ -43,6 +44,9 @@ namespace StreemaMaster
                     connector.RemoteChannelStatusChanged += OnRemotePartyChannelStatusChanged;
 
                     Console.WriteLine("Signed in - Start service");
+
+                    //heartbeat every 3 min, timeout device after 9 min
+                    connector.ConnectionSettings = new ConnectionSettings() { UpdateInterval = 180, Timeout = 540 };
 
                     connector.StartService(serviceName, new StreemaDeviceManager(settings.XddFile, settings));
                 }

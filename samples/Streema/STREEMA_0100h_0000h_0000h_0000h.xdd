@@ -28,7 +28,7 @@
 				<version versionType="SW" readOnly="true">0x0100</version>
 				<version versionType="HW" readOnly="true">0x0200</version>
 				<version versionType="APPNB" readOnly="true">0x0000</version>
-				<version versionType="APPVER" readOnly="true">0x0004</version>
+				<version versionType="APPVER" readOnly="true">0x0006</version>
 			</DeviceIdentity>
 			<DeviceManager>
 				<userLevelList>
@@ -99,7 +99,7 @@
 							<type>VISIBLE_STRING</type>
 						</dataType>
 						<flagsIDRef uniqueIDRef="AT_RW" />
-						<defaultValue>http://streema.com/radios/play/RetroHitMix</defaultValue>
+						<defaultValue>RetroHitMix</defaultValue>
 						<userLevels>
 							<userLevelIDRef uniqueIDRef="USR_Standard" />
 							<userLevelIDRef uniqueIDRef="USR_Expert" />
@@ -115,7 +115,7 @@
 							<type>VISIBLE_STRING</type>
 						</dataType>
 						<flagsIDRef uniqueIDRef="AT_RW" />
-						<defaultValue>http://streema.com/radios/play/Radio_SRF3</defaultValue>
+						<defaultValue>Radio_SRF3</defaultValue>
 						<userLevels>
 							<userLevelIDRef uniqueIDRef="USR_Standard" />
 							<userLevelIDRef uniqueIDRef="USR_Expert" />
@@ -131,7 +131,7 @@
 							<type>VISIBLE_STRING</type>
 						</dataType>
 						<flagsIDRef uniqueIDRef="AT_RW" />
-						<defaultValue>http://streema.com/radios/play/Radio_Forever_80s</defaultValue>
+						<defaultValue>Radio_Forever_80s</defaultValue>
 						<userLevels>
 							<userLevelIDRef uniqueIDRef="USR_Standard" />
 							<userLevelIDRef uniqueIDRef="USR_Expert" />
@@ -147,7 +147,7 @@
 							<type>VISIBLE_STRING</type>
 						</dataType>
 						<flagsIDRef uniqueIDRef="AT_RW" />
-						<defaultValue>http://streema.com/radios/play/Radio_Merkury</defaultValue>
+						<defaultValue>Radio_Merkury</defaultValue>
 						<userLevels>
 							<userLevelIDRef uniqueIDRef="USR_Standard" />
 							<userLevelIDRef uniqueIDRef="USR_Expert" />
@@ -163,7 +163,7 @@
 							<type>VISIBLE_STRING</type>
 						</dataType>
 						<flagsIDRef uniqueIDRef="AT_RW" />
-						<defaultValue>http://streema.com/radios/play/Sky_Radio_90s</defaultValue>
+						<defaultValue>Radio_Center</defaultValue>
 						<userLevels>
 							<userLevelIDRef uniqueIDRef="USR_Standard" />
 							<userLevelIDRef uniqueIDRef="USR_Expert" />
