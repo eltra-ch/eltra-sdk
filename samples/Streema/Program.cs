@@ -6,6 +6,7 @@ using EltraConnector.Master;
 using EltraConnector.Master.Definitions;
 using EltraConnector.Master.Events;
 using EltraConnector.Master.Device.Connection;
+using System.Runtime.InteropServices;
 
 namespace StreemaMaster
 {
@@ -18,7 +19,7 @@ namespace StreemaMaster
             var connector = new EltraMasterConnector();
             var settings = new StreemaSettings();
 
-            Console.WriteLine($"Hello Dummy Eltra Master - {serviceName}!");
+            Console.WriteLine($"Hello Streema Eltra Master - {serviceName}!");
 
             var runner = Task.Run(async () =>
             {
@@ -56,9 +57,12 @@ namespace StreemaMaster
                 }
             });
 
-            Console.ReadKey();
+            /*if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+            {
+                Console.ReadKey();
 
-            connector.StopService(serviceName);
+                connector.StopService(serviceName);
+            }*/
 
             runner.Wait();
         }

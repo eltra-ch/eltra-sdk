@@ -140,6 +140,22 @@ namespace StreemaMaster
             }
         }
 
+        public bool IsWebKitProcess
+        {
+            get
+            {
+                bool result = false;
+                var webKitProcessString = Configuration["WebKitProcess"];
+
+                if(bool.TryParse(webKitProcessString, out bool webKitProcess))
+                {
+                    result = webKitProcess;
+                }
+
+                return result;
+            }
+        }
+
         private IConfiguration Configuration
         {
             get => _configuration ?? (_configuration = new ConfigurationBuilder()

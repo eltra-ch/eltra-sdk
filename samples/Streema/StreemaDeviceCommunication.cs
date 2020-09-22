@@ -230,35 +230,55 @@ namespace StreemaMaster
 
                     if (urlParam.GetValue(out string url))
                     {
-                        foreach (var p in Process.GetProcessesByName(_settings.AppName))
+                        CloseWebAppInstances();
+
+                        try
                         {
-                            p.Kill();
+                            var startInfo = new ProcessStartInfo(_settings.AppPath);
+
+                            startInfo.WindowStyle = ProcessWindowStyle.Normal;
+
+                            string playUrl = _settings.PlayUrl;
+
+                            if (!playUrl.EndsWith('/'))
+                            {
+                                playUrl += "/";
+                            }
+
+                            startInfo.Arguments = _settings.AppArgs + $" {playUrl}{url}";
+
+                            Process.Start(startInfo);
                         }
-
-                        var startInfo = new ProcessStartInfo(_settings.AppPath);
-
-                        startInfo.WindowStyle = ProcessWindowStyle.Normal;
-
-                        string playUrl = _settings.PlayUrl;
-
-                        if(!playUrl.EndsWith('/'))
+                        catch (Exception e)
                         {
-                            playUrl += "/";
+                            MsgLogger.Exception($"{GetType().Name} - SetActiveStationAsync", e);
                         }
-
-                        startInfo.Arguments = _settings.AppArgs + $" {playUrl}{url}";
-
-                        Process.Start(startInfo);
                     }
                 }
             });
+        }
+
+        private void CloseWebAppInstances()
+        {
+            foreach (var p in Process.GetProcessesByName(_settings.AppName))
+            {
+                p.Kill();
+            }
+
+            if (_settings.IsWebKitProcess)
+            {
+                foreach (var p in Process.GetProcessesByName("WebKitWebProcess"))
+                {
+                    p.Kill();
+                }
+            }
         }
 
         private void SetVolumeAsync(int volumeValue)
         {
             Task.Run(() =>
             {
-                if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
+                try
                 {
                     string args = $"-D pulse sset Master {volumeValue}%";
 
@@ -268,6 +288,10 @@ namespace StreemaMaster
                     startInfo.Arguments = args;
 
                     Process.Start(startInfo);
+                }
+                catch(Exception e)
+                {
+                    MsgLogger.Exception($"{GetType().Name} - SetVolumeAsync", e);
                 }
             });
         }
