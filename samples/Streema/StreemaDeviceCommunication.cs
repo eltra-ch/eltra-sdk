@@ -10,6 +10,8 @@ using EltraCommon.Logger;
 using StreemaMaster.Site;
 using EltraCommon.ObjectDictionary.Xdd.DeviceDescription.Profiles.Application.Parameters;
 using System.Runtime.InteropServices;
+using System.Threading;
+using System.Timers;
 
 namespace StreemaMaster
 {
@@ -28,6 +30,8 @@ namespace StreemaMaster
         private Parameter _controlWordParameter;
         private Parameter _stationsCountParameter;
         private StreemaSettings _settings;
+
+        private System.Timers.Timer _stationInfoUpdateTimer;
 
         #endregion
 
@@ -59,9 +63,9 @@ namespace StreemaMaster
             _activeStationParameter = Vcs.SearchParameter("PARAM_ActiveStation") as Parameter;
             _volumeParameter = Vcs.SearchParameter("PARAM_Volume") as Parameter;
 
-            if(_stationsCountParameter != null && _stationsCountParameter.GetValue(out ushort maxCount))
+            if (_stationsCountParameter != null && _stationsCountParameter.GetValue(out ushort maxCount))
             {
-                for(ushort i = 0; i < maxCount; i++)
+                for (ushort i = 0; i < maxCount; i++)
                 {
                     ushort index = (ushort)(0x4000 + i);
 
@@ -79,10 +83,10 @@ namespace StreemaMaster
                         _imageParameters.Add(imageParameter);
                         _volumeScalingParameters.Add(valumeScalingParameter);
                     }
-                }                
+                }
             }
 
-            if(_activeStationParameter != null)
+            if (_activeStationParameter != null)
             {
                 _activeStationParameter.ParameterChanged += OnActiveStationParameterChanged;
 
@@ -100,17 +104,46 @@ namespace StreemaMaster
                 SetVolumeAsync(_activeStationParameter);
             }
 
-            UpdateLabels();
-
+            if(!await UpdateLabels())
+            {
+                StartStationInfoUpdate();
+            }
+            
             base.OnInitialized();
+        }
+
+        private void StartStationInfoUpdate()
+        {
+            if(_stationInfoUpdateTimer!=null)
+            {
+                _stationInfoUpdateTimer.Stop();
+            }
+
+            _stationInfoUpdateTimer = new System.Timers.Timer(60000);
+            _stationInfoUpdateTimer.Elapsed += OnStationInfoUpdate;
+            _stationInfoUpdateTimer.Enabled = true;
+
+            _stationInfoUpdateTimer.Start();
+        }
+
+        private async void OnStationInfoUpdate(object sender, ElapsedEventArgs e)
+        {
+            _stationInfoUpdateTimer.Stop();
+
+            if (!await UpdateLabels())
+            {
+                StartStationInfoUpdate();
+            }
         }
 
         private void OnUrlParameterChanged(object sender, ParameterChangedEventArgs e)
         {
             Task.Run(async ()=> {
 
-                await UpdateLabel(e.Parameter);
-            
+                if(!await UpdateLabel(e.Parameter))
+                {
+                    StartStationInfoUpdate();
+                }            
             });            
         }
 
@@ -145,10 +178,12 @@ namespace StreemaMaster
 
         #endregion
 
-        private Task UpdateLabel(Parameter urlParameter)
+        private Task<bool> UpdateLabel(Parameter urlParameter)
         {
-            var result = Task.Run(() =>
+            var t = Task.Run(() =>
             {
+                bool result = false;
+
                 if (urlParameter.GetValue(out string url))
                 {
                     var site = new SiteProcessor(_settings.PlayUrl + url);
@@ -164,26 +199,40 @@ namespace StreemaMaster
                         if (!string.IsNullOrEmpty(titleMeta.Content))
                         {
                             _labelParameters[i].SetValue(titleMeta.Content);
+                            result = true;
                         }
 
-                        imageUrlMeta.Content = imageUrlMeta.Content.Trim();
-                        if (!string.IsNullOrEmpty(imageUrlMeta.Content))
+                        if (result)
                         {
-                            _imageParameters[i].SetValue(imageUrlMeta.Content);
+                            imageUrlMeta.Content = imageUrlMeta.Content.Trim();
+                            if (!string.IsNullOrEmpty(imageUrlMeta.Content))
+                            {
+                                _imageParameters[i].SetValue(imageUrlMeta.Content);
+                                result = true;
+                            }
                         }
                     }
                 }
+
+                return result;
             });
 
-            return result;
+            return t;
         }
 
-        private void UpdateLabels()
+        private async Task<bool> UpdateLabels()
         {
+            bool result = true;
+
             foreach (var urlParameter in _urlParameters)
             {
-                UpdateLabel(urlParameter);
+                if(!await UpdateLabel(urlParameter))
+                {
+                    result = false;
+                }
             }
+
+            return result;
         }
 
         #region SDO
