@@ -7,6 +7,8 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Diagnostics;
 using EltraCommon.Logger;
+using StreemaMaster.Site;
+using EltraCommon.ObjectDictionary.Xdd.DeviceDescription.Profiles.Application.Parameters;
 using System.Runtime.InteropServices;
 
 namespace StreemaMaster
@@ -16,11 +18,15 @@ namespace StreemaMaster
         #region Private fields
 
         private readonly List<Parameter> _urlParameters;
+        private readonly List<Parameter> _labelParameters;
+        private readonly List<Parameter> _imageParameters;
+        private readonly List<Parameter> _volumeScalingParameters;
 
         private Parameter _activeStationParameter;
         private Parameter _volumeParameter;
         private Parameter _statusWordParameter;
         private Parameter _controlWordParameter;
+        private Parameter _stationsCountParameter;
         private StreemaSettings _settings;
 
         #endregion
@@ -31,7 +37,11 @@ namespace StreemaMaster
             : base(device)
         {
             _settings = settings;
+
             _urlParameters = new List<Parameter>();
+            _labelParameters = new List<Parameter>();
+            _imageParameters = new List<Parameter>();
+            _volumeScalingParameters = new List<Parameter>();
         }
 
         #endregion
@@ -42,23 +52,32 @@ namespace StreemaMaster
         {
             Console.WriteLine($"device (node id={Device.NodeId}) initialized, processing ...");
 
-            _controlWordParameter = Vcs.SearchParameter(0x6040, 0x00) as Parameter;
-            _statusWordParameter = Vcs.SearchParameter(0x6041, 0x00) as Parameter;
-            
-            _activeStationParameter = Vcs.SearchParameter(0x4001, 0x00) as Parameter;
-            _volumeParameter = Vcs.SearchParameter(0x4002, 0x00) as Parameter;
+            _controlWordParameter = Vcs.SearchParameter("PARAM_ControlWord") as XddParameter;
+            _statusWordParameter = Vcs.SearchParameter("PARAM_StatusWord") as XddParameter;
+            _stationsCountParameter = Vcs.SearchParameter("PARAM_StationsCount") as XddParameter;
 
-            var maxUrlsCountParameter = Vcs.SearchParameter(0x4000, 0x00) as Parameter;
+            _activeStationParameter = Vcs.SearchParameter("PARAM_ActiveStation") as Parameter;
+            _volumeParameter = Vcs.SearchParameter("PARAM_Volume") as Parameter;
 
-            if(maxUrlsCountParameter != null && maxUrlsCountParameter.GetValue(out byte maxCount))
+            if(_stationsCountParameter != null && _stationsCountParameter.GetValue(out ushort maxCount))
             {
-                for(byte i = 0; i < maxCount; i++)
+                for(ushort i = 0; i < maxCount; i++)
                 {
-                    var urlParameter = Vcs.SearchParameter(0x4000, (byte)(i + 1)) as Parameter;
+                    ushort index = (ushort)(0x4000 + i);
 
-                    if (urlParameter != null)
+                    var urlParameter = Vcs.SearchParameter(index, 0x01) as XddParameter;
+                    var labelParameter = Vcs.SearchParameter(index, 0x02) as XddParameter;
+                    var imageParameter = Vcs.SearchParameter(index, 0x03) as XddParameter;
+                    var valumeScalingParameter = Vcs.SearchParameter(index, 0x04) as XddParameter;
+
+                    if (urlParameter != null && labelParameter != null && imageParameter != null && valumeScalingParameter != null)
                     {
+                        urlParameter.ParameterChanged += OnUrlParameterChanged;
+
                         _urlParameters.Add(urlParameter);
+                        _labelParameters.Add(labelParameter);
+                        _imageParameters.Add(imageParameter);
+                        _volumeScalingParameters.Add(valumeScalingParameter);
                     }
                 }                
             }
@@ -81,7 +100,18 @@ namespace StreemaMaster
                 SetVolumeAsync(_activeStationParameter);
             }
 
+            UpdateLabels();
+
             base.OnInitialized();
+        }
+
+        private void OnUrlParameterChanged(object sender, ParameterChangedEventArgs e)
+        {
+            Task.Run(async ()=> {
+
+                await UpdateLabel(e.Parameter);
+            
+            });            
         }
 
         #endregion
@@ -115,7 +145,48 @@ namespace StreemaMaster
 
         #endregion
 
-            #region SDO
+        private Task UpdateLabel(Parameter urlParameter)
+        {
+            var result = Task.Run(() =>
+            {
+                if (urlParameter.GetValue(out string url))
+                {
+                    var site = new SiteProcessor(_settings.PlayUrl + url);
+
+                    if (site.Parse())
+                    {
+                        var titleMeta = site.FindMetaTagByPropertyName("og:title");
+                        var imageUrlMeta = site.FindMetaTagByPropertyName("og:image");
+
+                        ushort i = (ushort)(urlParameter.Index - 0x4000);
+
+                        titleMeta.Content = titleMeta.Content.Trim();
+                        if (!string.IsNullOrEmpty(titleMeta.Content))
+                        {
+                            _labelParameters[i].SetValue(titleMeta.Content);
+                        }
+
+                        imageUrlMeta.Content = imageUrlMeta.Content.Trim();
+                        if (!string.IsNullOrEmpty(imageUrlMeta.Content))
+                        {
+                            _imageParameters[i].SetValue(imageUrlMeta.Content);
+                        }
+                    }
+                }
+            });
+
+            return result;
+        }
+
+        private void UpdateLabels()
+        {
+            foreach (var urlParameter in _urlParameters)
+            {
+                UpdateLabel(urlParameter);
+            }
+        }
+
+        #region SDO
 
         public override bool GetObject(ushort objectIndex, byte objectSubindex, ref byte[] data)
         {
@@ -146,7 +217,7 @@ namespace StreemaMaster
                     result = true;
                 }
             }
-            else if (objectIndex == 0x4002)
+            else if (objectIndex == 0x4200)
             {
                 if (_volumeParameter.GetValue(out byte[] v))
                 {
@@ -154,15 +225,13 @@ namespace StreemaMaster
                     result = true;
                 }
             }
-            else if (objectIndex == 0x4000)
+            else if (objectIndex >= 0x4000 && objectIndex <= 0x4003 && objectSubindex == 0x01
+                      && _urlParameters.Count > 0)
             {
-                if (_urlParameters.Count > objectSubindex)
+                if (_urlParameters[objectIndex - 0x4000].GetValue(out byte[] d1))
                 {
-                    if (_urlParameters[objectSubindex - 1].GetValue(out byte[] d1))
-                    {
-                        data = d1;
-                        result = true;
-                    }
+                    data = d1;
+                    result = true;
                 }
             }
 
@@ -182,14 +251,15 @@ namespace StreemaMaster
 
                 result = _controlWordParameter.SetValue(controlWordValue);
             }
-            else if (objectIndex == 0x4000)
+            else if (objectIndex >= 0x4000 && objectIndex <= 0x4003
+                    && objectSubindex == 0x01)
             {
-                if (_urlParameters.Count > objectSubindex)
+                if (_urlParameters.Count > (objectIndex - 0x4000))
                 {
-                    result = _urlParameters[objectSubindex - 1].SetValue(data);
+                    result = _urlParameters[objectIndex - 0x4000].SetValue(data);
                 }
             }
-            else if (objectIndex == 0x4001 && objectSubindex == 0x0)
+            else if (objectIndex == 0x4100 && objectSubindex == 0x0)
             {
                 var activeStationValue = BitConverter.ToInt32(data, 0);
 
@@ -197,7 +267,7 @@ namespace StreemaMaster
 
                 result = _activeStationParameter.SetValue(activeStationValue);
             }
-            else if (objectIndex == 0x4002)
+            else if (objectIndex == 0x4200)
             {
                 var volumeValue = BitConverter.ToInt32(data, 0);
 
@@ -240,11 +310,6 @@ namespace StreemaMaster
 
                             string playUrl = _settings.PlayUrl;
 
-                            if (!playUrl.EndsWith('/'))
-                            {
-                                playUrl += "/";
-                            }
-
                             startInfo.Arguments = _settings.AppArgs + $" {playUrl}{url}";
 
                             Process.Start(startInfo);
@@ -278,20 +343,23 @@ namespace StreemaMaster
         {
             Task.Run(() =>
             {
-                try
+                if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
                 {
-                    string args = $"-D pulse sset Master {volumeValue}%";
+                    try
+                    {
+                        string args = $"-D pulse sset Master {volumeValue}%";
 
-                    var startInfo = new ProcessStartInfo("amixer");
+                        var startInfo = new ProcessStartInfo("amixer");
 
-                    startInfo.WindowStyle = ProcessWindowStyle.Hidden;
-                    startInfo.Arguments = args;
+                        startInfo.WindowStyle = ProcessWindowStyle.Hidden;
+                        startInfo.Arguments = args;
 
-                    Process.Start(startInfo);
-                }
-                catch(Exception e)
-                {
-                    MsgLogger.Exception($"{GetType().Name} - SetVolumeAsync", e);
+                        Process.Start(startInfo);
+                    }
+                    catch (Exception e)
+                    {
+                        MsgLogger.Exception($"{GetType().Name} - SetVolumeAsync", e);
+                    }
                 }
             });
         }

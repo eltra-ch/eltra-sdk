@@ -132,11 +132,14 @@ namespace StreemaMaster
         {
             get
             {
-                return Configuration["PlayUrl"];
-            }
-            set
-            {
-                Configuration["PlayUrl"] = value;
+                var result = Configuration["PlayUrl"];
+
+                if (!result.EndsWith('/'))
+                {
+                    result += "/";
+                }
+
+                return result;
             }
         }
 
