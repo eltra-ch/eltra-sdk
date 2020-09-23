@@ -16,9 +16,9 @@
 					<label lang="en-TT">Streema Controller</label>
 				</deviceFamily>
 				<productFamily readOnly="true">STREEMA</productFamily>
-				<productName readOnly="true">Streema rev.2</productName>
+				<productName readOnly="true">Streema rev.3</productName>
 				<productText readOnly="true">
-					<label lang="en-TT">Streema rev. 2 is ...</label>
+					<label lang="en-TT">Streema rev. 3 is ...</label>
 				</productText>
 				<productUrl readOnly="true">
 					<label lang="en-TT">http://www.eltra.ch</label>
@@ -28,7 +28,7 @@
 				<version versionType="SW" readOnly="true">0x0100</version>
 				<version versionType="HW" readOnly="true">0x0200</version>
 				<version versionType="APPNB" readOnly="true">0x0001</version>
-				<version versionType="APPVER" readOnly="true">0x0001</version>
+				<version versionType="APPVER" readOnly="true">0x0002</version>
 			</DeviceIdentity>
 			<DeviceManager>
 				<userLevelList>
@@ -53,7 +53,7 @@
 			<DeviceHardware/>
 			<DeviceInteraction>
 				<DeviceTools>
-					<DeviceTool Uuid="399EF4BE-D7AF-45D7-8D16-0F562DFF9127" Name="StreemaTool" Status="Enabled"/>
+					<DeviceTool Uuid="A8BEC143-7BBE-4C3B-A425-6C2D38C32E1A" Name="StreemaTool" Status="Enabled"/>
 				</DeviceTools>
 			</DeviceInteraction>
 			<ApplicationProcess>
