@@ -12,6 +12,7 @@ using EltraCommon.ObjectDictionary.Xdd.DeviceDescription.Profiles.Application.Pa
 using System.Runtime.InteropServices;
 using System.Threading;
 using System.Timers;
+using System.Linq.Expressions;
 
 namespace StreemaMaster
 {
@@ -183,35 +184,48 @@ namespace StreemaMaster
             var t = Task.Run(() =>
             {
                 bool result = false;
-
-                if (urlParameter.GetValue(out string url))
+                try
                 {
-                    var site = new SiteProcessor(_settings.PlayUrl + url);
-
-                    if (site.Parse())
+                    if (urlParameter.GetValue(out string url))
                     {
-                        var titleMeta = site.FindMetaTagByPropertyName("og:title");
-                        var imageUrlMeta = site.FindMetaTagByPropertyName("og:image");
+                        var site = new SiteProcessor(_settings.PlayUrl + url);
 
-                        ushort i = (ushort)(urlParameter.Index - 0x4000);
-
-                        titleMeta.Content = titleMeta.Content.Trim();
-                        if (!string.IsNullOrEmpty(titleMeta.Content))
+                        if (site.Parse())
                         {
-                            _labelParameters[i].SetValue(titleMeta.Content);
-                            result = true;
-                        }
+                            var titleMeta = site.FindMetaTagByPropertyName("og:title");
 
-                        if (result)
-                        {
-                            imageUrlMeta.Content = imageUrlMeta.Content.Trim();
-                            if (!string.IsNullOrEmpty(imageUrlMeta.Content))
+                            ushort i = (ushort)(urlParameter.Index - 0x4000);
+
+                            if (titleMeta != null)
                             {
-                                _imageParameters[i].SetValue(imageUrlMeta.Content);
-                                result = true;
+                                titleMeta.Content = titleMeta.Content.Trim();
+                                if (!string.IsNullOrEmpty(titleMeta.Content))
+                                {
+                                    _labelParameters[i].SetValue(titleMeta.Content);
+                                    result = true;
+                                }
+                            }
+
+                            if (result)
+                            {
+                                var imageUrlMeta = site.FindMetaTagByPropertyName("og:image");
+
+                                if (imageUrlMeta != null)
+                                {
+                                    imageUrlMeta.Content = imageUrlMeta.Content.Trim();
+                                    if (!string.IsNullOrEmpty(imageUrlMeta.Content))
+                                    {
+                                        _imageParameters[i].SetValue(imageUrlMeta.Content);
+                                        result = true;
+                                    }
+                                }
                             }
                         }
-                    }
+                    }                   
+                }
+                catch(Exception e)
+                {
+                    MsgLogger.Exception($"{GetType().Name} - UpdateLabel", e);
                 }
 
                 return result;

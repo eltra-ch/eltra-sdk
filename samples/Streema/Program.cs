@@ -6,7 +6,7 @@ using EltraConnector.Master;
 using EltraConnector.Master.Definitions;
 using EltraConnector.Master.Events;
 using EltraConnector.Master.Device.Connection;
-using System.Runtime.InteropServices;
+using EltraCommon.Logger;
 
 namespace StreemaMaster
 {
@@ -18,6 +18,9 @@ namespace StreemaMaster
 
             var connector = new EltraMasterConnector();
             var settings = new StreemaSettings();
+
+            MsgLogger.LogLevels = MsgLogger.SupportedLogLevels;
+            MsgLogger.LogOutputs = MsgLogger.SupportedLogOutputs;
 
             Console.WriteLine($"Hello Streema Eltra Master - {serviceName}!");
 
