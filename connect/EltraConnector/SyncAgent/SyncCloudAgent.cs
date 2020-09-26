@@ -96,6 +96,16 @@ namespace EltraConnector.SyncAgent
             ChannelStatusChanged?.Invoke(sender, e);
         }
 
+        private void OnSignInRequested(object sender, SignInRequestEventArgs args)
+        {
+            var t = Task.Run(async ()=> 
+            {
+                args.SignInResult = await SignIn(Identity); 
+            });
+
+            t.Wait();
+        }
+
         #endregion
 
         #region Properties
@@ -131,9 +141,12 @@ namespace EltraConnector.SyncAgent
         private void RegisterEvents()
         {
             _channelHeartbeat.StatusChanged += OnChannelStatusChanged;
+            _channelHeartbeat.SignInRequested += OnSignInRequested;
 
             _channelControllerAdapter.ChannelRegistered += OnChannelRegistered;
+            
             _commandExecutor.RemoteChannelStatusChanged += OnRemoteChannelStatusChanged;
+            _commandExecutor.SignInRequested += OnSignInRequested;
 
             _channelControllerAdapter.GoodChanged += OnAdapterGoodChanged;
             _authentication.GoodChanged += OnAdapterGoodChanged;

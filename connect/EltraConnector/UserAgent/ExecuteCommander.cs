@@ -59,6 +59,12 @@ namespace EltraConnector.UserAgent
 
         public event EventHandler<AgentChannelStatusChangedEventArgs> RemoteChannelStatusChanged;
 
+        public event EventHandler<SignInRequestEventArgs> SignInRequested;
+
+        #endregion
+
+        #region Events handling
+
         protected virtual void OnCommandExecuted(ExecuteCommanderEventArgs e)
         {
             CommandExecuted?.Invoke(this, e);
@@ -67,6 +73,15 @@ namespace EltraConnector.UserAgent
         protected virtual void OnRemoteChannelStatusChanged(AgentChannelStatusChangedEventArgs args)
         {
             RemoteChannelStatusChanged?.Invoke(this, args);
+        }
+
+        private bool OnSignInRequested()
+        {
+            var args = new SignInRequestEventArgs();
+
+            SignInRequested?.Invoke(this, args);
+
+            return args.SignInResult;
         }
 
         #endregion
@@ -236,9 +251,12 @@ namespace EltraConnector.UserAgent
         {
             if (_wsConnectionManager.CanConnect(commandExecUuid))
             {
-                if (await _wsConnectionManager.Connect(commandExecUuid, wsChannelName))
+                if (OnSignInRequested())
                 {
-                    await SendSessionIdentyfication(commandExecUuid);
+                    if (await _wsConnectionManager.Connect(commandExecUuid, wsChannelName))
+                    {
+                        await SendSessionIdentyfication(commandExecUuid);
+                    }
                 }
             }
         }

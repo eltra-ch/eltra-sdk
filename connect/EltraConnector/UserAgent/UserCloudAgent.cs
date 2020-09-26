@@ -178,6 +178,16 @@ namespace EltraConnector.UserAgent
             }
         }
 
+        private void OnSignInRequested(object sender, SignInRequestEventArgs args)
+        {
+            var t = Task.Run(async () => 
+            {
+                args.SignInResult = await SignIn(_identity); 
+            });
+
+            t.Wait();
+        }
+
         #endregion
 
         #region Properties
@@ -240,9 +250,6 @@ namespace EltraConnector.UserAgent
             _authentication = new Authentication(url);
 
             _channelHeartbeat = new ChannelHeartbeat(_channelAdapter, updateInterval, timeout);
-
-            _channelHeartbeat.StatusChanged += OnChannelStatusChanged;
-
             _executeCommander = new ExecuteCommander(_channelAdapter);
             _parameterUpdateManager = new ParameterUpdateManager(_channelAdapter);
 
@@ -452,10 +459,19 @@ namespace EltraConnector.UserAgent
 
         private void RegisterEvents()
         {
-            _channelAdapter.ChannelRegistered += OnChannelRegistered;
+            if (_channelHeartbeat != null)
+            {
+                _channelHeartbeat.StatusChanged += OnChannelStatusChanged;
+                _channelHeartbeat.SignInRequested += OnSignInRequested;
+            }
 
+            _parameterUpdateManager.SignInRequested += OnSignInRequested;
+
+            _channelAdapter.ChannelRegistered += OnChannelRegistered;
+            
             _executeCommander.CommandExecuted += OnCommandExecuted;
             _executeCommander.RemoteChannelStatusChanged += OnRemoteChannelStatusChanged;
+            _executeCommander.SignInRequested += OnSignInRequested;
         }
 
         private async Task<List<EltraDevice>> GetDeviceNodes(Channel channel)

@@ -35,11 +35,25 @@ namespace EltraConnector.SyncAgent
 
         #region Events
 
+        public event EventHandler<SignInRequestEventArgs> SignInRequested;
         public event EventHandler<AgentChannelStatusChangedEventArgs> RemoteChannelStatusChanged;
+
+        #endregion
+
+        #region Events handling
 
         protected virtual void OnRemoteChannelStatusChanged(AgentChannelStatusChangedEventArgs args)
         {
             RemoteChannelStatusChanged?.Invoke(this, args);
+        }
+
+        private bool OnSignInRequested()
+        {
+            var args = new SignInRequestEventArgs();
+
+            SignInRequested?.Invoke(this, args);
+
+            return args.SignInResult;
         }
 
         #endregion
@@ -71,9 +85,12 @@ namespace EltraConnector.SyncAgent
             {
                 if (_wsConnectionManager.CanConnect(sessionUuid))
                 {
-                    if (await _wsConnectionManager.Connect(sessionUuid, channelName))
+                    if (OnSignInRequested())
                     {
-                        await SendSessionIdentyfication(sessionUuid);
+                        if (await _wsConnectionManager.Connect(sessionUuid, channelName))
+                        {
+                            await SendSessionIdentyfication(sessionUuid);
+                        }
                     }
                 }
             }
@@ -84,16 +101,14 @@ namespace EltraConnector.SyncAgent
             const int ReconnectTimeout = 5000;
             var sessionUuid = _sessionControllerAdapter.Channel.Id + "_CommandExec";
             string channelName = "CommandsExecution";
-            bool result = false;
-
+            
             await Connect(sessionUuid, channelName);
 
             _stopping = false;
 
             while (ShouldRun())
             {
-                result = await ProcessRequest(sessionUuid);
-
+                bool result = await ProcessRequest(sessionUuid);
                 if (!_stopping)
                 {
                     if(!result)

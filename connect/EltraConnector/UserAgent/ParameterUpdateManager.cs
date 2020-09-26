@@ -3,7 +3,6 @@ using System.Threading.Tasks;
 using EltraCommon.Logger;
 using EltraConnector.Transport.Ws;
 using EltraCommon.Contracts.Channels;
-using EltraCommon.ObjectDictionary.Common.DeviceDescription.Profiles.Application.Parameters.Events;
 using EltraCommon.Threads;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
@@ -11,6 +10,7 @@ using System.Collections.Generic;
 using EltraConnector.Controllers.Base;
 using EltraCommon.Contracts.Parameters;
 using EltraCommon.Contracts.Parameters.Events;
+using EltraConnector.Events;
 
 namespace EltraConnector.UserAgent
 {
@@ -51,9 +51,24 @@ namespace EltraConnector.UserAgent
 
         public event EventHandler<ParameterValueChangedEventArgs> ParameterValueChanged;
 
+        public event EventHandler<SignInRequestEventArgs> SignInRequested;
+
+        #endregion
+
+        #region Events handling
+
         protected virtual void OnParameterValueChanged(ParameterValueChangedEventArgs e)
         {
             ParameterValueChanged?.Invoke(this, e);
+        }
+
+        private bool OnSignInRequested()
+        {
+            var args = new SignInRequestEventArgs();
+
+            SignInRequested?.Invoke(this, args);
+
+            return args.SignInResult;
         }
 
         #endregion
@@ -172,9 +187,12 @@ namespace EltraConnector.UserAgent
 
             if (_wsConnectionManager.CanConnect(commandExecUuid))
             {
-                if (await _wsConnectionManager.Connect(commandExecUuid, wsChannelName))
+                if (OnSignInRequested())
                 {
-                    result = await SendSessionIdentyfication(commandExecUuid);
+                    if (await _wsConnectionManager.Connect(commandExecUuid, wsChannelName))
+                    {
+                        result = await SendSessionIdentyfication(commandExecUuid);
+                    }
                 }
             }
 

@@ -53,10 +53,24 @@ namespace EltraConnector.Sessions
         #region Events
 
         public event EventHandler<AgentChannelStatusChangedEventArgs> StatusChanged;
+        public event EventHandler<SignInRequestEventArgs> SignInRequested;
+
+        #endregion
+
+        #region Event handling
 
         private void OnStatusChanged()
         {
             StatusChanged?.Invoke(this, new AgentChannelStatusChangedEventArgs() { Status = _status, Id = _uuid });
+        }
+
+        private bool OnSignInRequested()
+        {
+            var args = new SignInRequestEventArgs();
+
+            SignInRequested?.Invoke(this, args);
+
+            return args.SignInResult;
         }
 
         #endregion
@@ -120,11 +134,14 @@ namespace EltraConnector.Sessions
 
                 if (!wsConnectionManager.IsConnected(sessionUuid) && wsConnectionManager.CanConnect(sessionUuid))
                 {
-                    if (await wsConnectionManager.Connect(sessionUuid, wsChannelName))
+                    if (OnSignInRequested())
                     {
-                        updateResult = await _channelControllerAdapter.Update();
+                        if (await wsConnectionManager.Connect(sessionUuid, wsChannelName))
+                        {
+                            updateResult = await _channelControllerAdapter.Update();
 
-                        Status = updateResult ? ChannelStatus.Online : ChannelStatus.Offline;
+                            Status = updateResult ? ChannelStatus.Online : ChannelStatus.Offline;
+                        }
                     }
                 }
             }

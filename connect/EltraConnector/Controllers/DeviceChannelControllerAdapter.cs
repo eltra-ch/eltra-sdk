@@ -8,7 +8,6 @@ using EltraCommon.Contracts.Channels;
 using EltraCommon.Logger;
 using EltraCommon.Contracts.CommandSets;
 using EltraConnector.SyncAgent;
-using System.Net.Sockets;
 using EltraConnector.Controllers.Events;
 
 namespace EltraConnector.Controllers
