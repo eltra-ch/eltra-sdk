@@ -5,6 +5,10 @@ VisualStudioVersion = 16.0.30204.135
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DummyAgent", "DummyAgent.csproj", "{7F02A7A1-1C87-44F9-BAFB-5C11D31F08C3}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EltraConnector", "..\..\..\connect\EltraConnector\EltraConnector.csproj", "{AB9842EB-0C5C-4AA1-AF97-1EFF12847C31}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EltraCommon", "..\..\..\xternals\common\EltraCommon\EltraCommon.csproj", "{B0BFFDD4-78B2-461C-B2D3-8C66F2C86B8A}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +19,14 @@ Global
 		{7F02A7A1-1C87-44F9-BAFB-5C11D31F08C3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7F02A7A1-1C87-44F9-BAFB-5C11D31F08C3}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7F02A7A1-1C87-44F9-BAFB-5C11D31F08C3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AB9842EB-0C5C-4AA1-AF97-1EFF12847C31}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AB9842EB-0C5C-4AA1-AF97-1EFF12847C31}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AB9842EB-0C5C-4AA1-AF97-1EFF12847C31}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AB9842EB-0C5C-4AA1-AF97-1EFF12847C31}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B0BFFDD4-78B2-461C-B2D3-8C66F2C86B8A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B0BFFDD4-78B2-461C-B2D3-8C66F2C86B8A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B0BFFDD4-78B2-461C-B2D3-8C66F2C86B8A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B0BFFDD4-78B2-461C-B2D3-8C66F2C86B8A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

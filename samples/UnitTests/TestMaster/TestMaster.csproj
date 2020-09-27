@@ -6,7 +6,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Eltra.Connector" Version="1.5.4" />
+    <PackageReference Include="Eltra.Connector" Version="1.5.5" />
   </ItemGroup>
 
   <ItemGroup>
