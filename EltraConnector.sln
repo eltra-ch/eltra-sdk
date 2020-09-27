@@ -9,10 +9,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EltraCommon", "xternals\com
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TestEltraConnector", "connect\EltraConnector\TestEltraConnector\TestEltraConnector.csproj", "{DF75143E-0633-4F42-AB4D-E0B146730C20}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DummyMaster", "samples\Dummy\DummyMaster\DummyMaster.csproj", "{1B8F8A5B-3A1A-437D-9125-F13876137F9A}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DummyAgent", "samples\Dummy\DummyAgent\DummyAgent.csproj", "{F6A14845-4AE0-42A3-A5B2-F59282A561C6}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EposMaster", "samples\Maxon\Epos4\EposMaster\EposMaster.csproj", "{D0EA845F-CE12-41A2-87CC-7E45D0D562D5}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EposMasterConsole", "samples\Maxon\Epos4\EposMasterConsole\EposMasterConsole.csproj", "{0E3E6312-F4A1-462B-99C1-1601EB8088E7}"
@@ -35,14 +31,6 @@ Global
 		{DF75143E-0633-4F42-AB4D-E0B146730C20}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DF75143E-0633-4F42-AB4D-E0B146730C20}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{DF75143E-0633-4F42-AB4D-E0B146730C20}.Release|Any CPU.Build.0 = Release|Any CPU
-		{1B8F8A5B-3A1A-437D-9125-F13876137F9A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{1B8F8A5B-3A1A-437D-9125-F13876137F9A}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{1B8F8A5B-3A1A-437D-9125-F13876137F9A}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{1B8F8A5B-3A1A-437D-9125-F13876137F9A}.Release|Any CPU.Build.0 = Release|Any CPU
-		{F6A14845-4AE0-42A3-A5B2-F59282A561C6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{F6A14845-4AE0-42A3-A5B2-F59282A561C6}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{F6A14845-4AE0-42A3-A5B2-F59282A561C6}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{F6A14845-4AE0-42A3-A5B2-F59282A561C6}.Release|Any CPU.Build.0 = Release|Any CPU
 		{D0EA845F-CE12-41A2-87CC-7E45D0D562D5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{D0EA845F-CE12-41A2-87CC-7E45D0D562D5}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D0EA845F-CE12-41A2-87CC-7E45D0D562D5}.Release|Any CPU.ActiveCfg = Release|Any CPU
