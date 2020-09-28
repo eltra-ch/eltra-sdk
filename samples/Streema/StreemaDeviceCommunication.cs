@@ -10,9 +10,7 @@ using EltraCommon.Logger;
 using StreemaMaster.Site;
 using EltraCommon.ObjectDictionary.Xdd.DeviceDescription.Profiles.Application.Parameters;
 using System.Runtime.InteropServices;
-using System.Threading;
 using System.Timers;
-using System.Linq.Expressions;
 
 namespace StreemaMaster
 {
@@ -27,6 +25,7 @@ namespace StreemaMaster
 
         private Parameter _activeStationParameter;
         private Parameter _volumeParameter;
+        private XddParameter _muteParameter;
         private Parameter _statusWordParameter;
         private Parameter _controlWordParameter;
         private Parameter _stationsCountParameter;
@@ -56,13 +55,69 @@ namespace StreemaMaster
         protected override async void OnInitialized()
         {
             Console.WriteLine($"device (node id={Device.NodeId}) initialized, processing ...");
+            
+            InitStateMachine();
 
+            InitializeStationList();
+
+            await SetActiveStation();
+
+            await InitVolumeControl();
+
+            if (!await UpdateLabels())
+            {
+                StartStationInfoUpdate();
+            }
+
+            base.OnInitialized();
+        }
+
+        private void InitStateMachine()
+        {
             _controlWordParameter = Vcs.SearchParameter("PARAM_ControlWord") as XddParameter;
             _statusWordParameter = Vcs.SearchParameter("PARAM_StatusWord") as XddParameter;
-            _stationsCountParameter = Vcs.SearchParameter("PARAM_StationsCount") as XddParameter;
+        }
 
-            _activeStationParameter = Vcs.SearchParameter("PARAM_ActiveStation") as Parameter;
+        private async Task InitVolumeControl()
+        {
+            _muteParameter = Vcs.SearchParameter("PARAM_Mute") as XddParameter;
+            if (_muteParameter != null)
+            {
+                _muteParameter.ParameterChanged += OnMuteChanged;
+
+                await _muteParameter.UpdateValue();
+
+                SetMuteAsync(_muteParameter);
+            }
+
             _volumeParameter = Vcs.SearchParameter("PARAM_Volume") as Parameter;
+
+            if (_volumeParameter != null)
+            {
+                _volumeParameter.ParameterChanged += OnVolumeChanged;
+
+                await _volumeParameter.UpdateValue();
+
+                SetVolumeAsync(_volumeParameter);
+            }
+        }
+
+        private async Task SetActiveStation()
+        {
+            _activeStationParameter = Vcs.SearchParameter("PARAM_ActiveStation") as Parameter;
+            if (_activeStationParameter != null)
+            {
+                _activeStationParameter.ParameterChanged += OnActiveStationParameterChanged;
+
+                await _activeStationParameter.UpdateValue();
+
+                SetActiveStationAsync(_activeStationParameter);
+            }
+        }
+
+        private void InitializeStationList()
+        {
+            _stationsCountParameter = Vcs.SearchParameter("PARAM_StationsCount") as XddParameter;
 
             if (_stationsCountParameter != null && _stationsCountParameter.GetValue(out ushort maxCount))
             {
@@ -86,31 +141,6 @@ namespace StreemaMaster
                     }
                 }
             }
-
-            if (_activeStationParameter != null)
-            {
-                _activeStationParameter.ParameterChanged += OnActiveStationParameterChanged;
-
-                await _activeStationParameter.UpdateValue();
-
-                SetActiveStationAsync(_activeStationParameter);
-            }
-
-            if (_volumeParameter != null)
-            {
-                _volumeParameter.ParameterChanged += OnVolumeChanged;
-
-                await _volumeParameter.UpdateValue();
-
-                SetVolumeAsync(_activeStationParameter);
-            }
-
-            if(!await UpdateLabels())
-            {
-                StartStationInfoUpdate();
-            }
-            
-            base.OnInitialized();
         }
 
         private void StartStationInfoUpdate()
@@ -174,6 +204,19 @@ namespace StreemaMaster
                 Console.WriteLine($"Volume Changed = {currentValue}");
 
                 SetVolumeAsync(currentValue);
+            }
+        }
+
+        private void OnMuteChanged(object sender, ParameterChangedEventArgs e)
+        {
+            var parameterValue = e.NewValue;
+            bool currentValue = false;
+
+            if (parameterValue.GetValue(ref currentValue))
+            {
+                Console.WriteLine($"Mute Changed = {currentValue}");
+
+                SetMuteAsync(currentValue);
             }
         }
 
@@ -288,6 +331,14 @@ namespace StreemaMaster
                     result = true;
                 }
             }
+            else if (objectIndex == 0x4201)
+            {
+                if (_muteParameter.GetValue(out byte[] v))
+                {
+                    data = v;
+                    result = true;
+                }
+            }
             else if (objectIndex >= 0x4000 && objectIndex <= 0x4003 && objectSubindex == 0x01
                       && _urlParameters.Count > 0)
             {
@@ -338,6 +389,14 @@ namespace StreemaMaster
 
                 result = _volumeParameter.SetValue(volumeValue);
             }
+            else if (objectIndex == 0x4201)
+            {
+                var muteValue = BitConverter.ToBoolean(data, 0);
+
+                Console.WriteLine($"new mute value = {muteValue}");
+
+                result = _muteParameter.SetValue(muteValue);
+            }
 
             return result;
         }
@@ -375,7 +434,9 @@ namespace StreemaMaster
 
                             startInfo.Arguments = _settings.AppArgs + $" {playUrl}{url}";
 
-                            Process.Start(startInfo);
+                            var startResult = Process.Start(startInfo);
+
+                            MsgLogger.WriteFlow($"{GetType().Name} - SetActiveStationAsync", $"Set Station request: {url}, result = {startResult != null}");
                         }
                         catch (Exception e)
                         {
@@ -402,31 +463,6 @@ namespace StreemaMaster
             }
         }
 
-        private void SetVolumeAsync(int volumeValue)
-        {
-            Task.Run(() =>
-            {
-                if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
-                {
-                    try
-                    {
-                        string args = $"-D pulse sset Master {volumeValue}%";
-
-                        var startInfo = new ProcessStartInfo("amixer");
-
-                        startInfo.WindowStyle = ProcessWindowStyle.Hidden;
-                        startInfo.Arguments = args;
-
-                        Process.Start(startInfo);
-                    }
-                    catch (Exception e)
-                    {
-                        MsgLogger.Exception($"{GetType().Name} - SetVolumeAsync", e);
-                    }
-                }
-            });
-        }
-
         private void SetActiveStationAsync(Parameter activeStation)
         {
             if (activeStation != null)
@@ -445,6 +481,7 @@ namespace StreemaMaster
                 MsgLogger.WriteError($"{GetType().Name} - SetActiveStationAsync", "activeStation parameter not defined!");
             }
         }
+
         private void SetVolumeAsync(Parameter parameter)
         {
             if (parameter != null)
@@ -462,6 +499,81 @@ namespace StreemaMaster
             {
                 MsgLogger.WriteError($"{GetType().Name} - SetVolumeAsync", "volume parameter not defined!");
             }
+        }
+
+        private void SetVolumeAsync(int volumeValue)
+        {
+            Task.Run(() =>
+            {
+                if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+                {
+                    try
+                    {
+                        string args = $"-D pulse sset Master {volumeValue}%";
+
+                        var startInfo = new ProcessStartInfo("amixer");
+
+                        startInfo.WindowStyle = ProcessWindowStyle.Hidden;
+                        startInfo.Arguments = args;
+
+                        var startResult = Process.Start(startInfo);
+
+                        MsgLogger.WriteFlow($"{GetType().Name} - SetVolumeAsync", $"Set Volume request: {volumeValue}, result = {startResult != null}");
+                    }
+                    catch (Exception e)
+                    {
+                        MsgLogger.Exception($"{GetType().Name} - SetVolumeAsync", e);
+                    }
+                }
+            });
+        }
+
+        private void SetMuteAsync(Parameter parameter)
+        {
+            if (parameter != null)
+            {
+                if (parameter.GetValue(out bool parameterValue))
+                {
+                    SetMuteAsync(parameterValue);
+                }
+                else
+                {
+                    MsgLogger.WriteError($"{GetType().Name} - SetVolumeAsync", "get volume parameter value failed!");
+                }
+            }
+            else
+            {
+                MsgLogger.WriteError($"{GetType().Name} - SetVolumeAsync", "volume parameter not defined!");
+            }
+        }
+
+        private void SetMuteAsync(bool muteValue)
+        {
+            Task.Run(() =>
+            {
+                if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+                {
+                    try
+                    {
+                        string muteString = muteValue ? "mute" : "unmute";
+
+                        string args = $"-D pulse sset Master {muteString}";
+
+                        var startInfo = new ProcessStartInfo("amixer");
+
+                        startInfo.WindowStyle = ProcessWindowStyle.Hidden;
+                        startInfo.Arguments = args;
+
+                        var startResult = Process.Start(startInfo);
+
+                        MsgLogger.WriteFlow($"{GetType().Name} - SetMuteAsync", $"Mute request: {muteString}, result = {startResult!=null}");
+                    }
+                    catch (Exception e)
+                    {
+                        MsgLogger.Exception($"{GetType().Name} - SetMuteAsync", e);
+                    }
+                }
+            });
         }
 
         #endregion

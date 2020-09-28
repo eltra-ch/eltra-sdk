@@ -28,7 +28,7 @@
 				<version versionType="SW" readOnly="true">0x0100</version>
 				<version versionType="HW" readOnly="true">0x0200</version>
 				<version versionType="APPNB" readOnly="true">0x0001</version>
-				<version versionType="APPVER" readOnly="true">0x0002</version>
+				<version versionType="APPVER" readOnly="true">0x0003</version>
 			</DeviceIdentity>
 			<DeviceManager>
 				<userLevelList>
@@ -493,6 +493,23 @@
 						</userLevels>
 						<displayFormat>dec</displayFormat>
 					</parameter>
+          <!-- Mute -->
+          <parameter uniqueID="PARAM_Mute">
+            <index>0x4201</index>
+            <subIndex>0x00</subIndex>
+            <label lang="en-TT">Mute</label>
+            <dataType>
+              <type>BOOLEAN</type>
+            </dataType>
+            <flagsIDRef uniqueIDRef="AT_RW" />
+            <defaultValue>False</defaultValue>
+            <userLevels>
+              <userLevelIDRef uniqueIDRef="USR_Standard" />
+              <userLevelIDRef uniqueIDRef="USR_Expert" />
+              <userLevelIDRef uniqueIDRef="USR_Internal" />
+            </userLevels>
+            <displayFormat>dec</displayFormat>
+          </parameter>
 					<!-- Control Word -->
 					<parameter uniqueID="PARAM_ControlWord">
 						<index>0x6040</index>
