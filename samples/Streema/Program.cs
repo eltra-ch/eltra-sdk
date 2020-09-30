@@ -19,8 +19,8 @@ namespace StreemaMaster
             var connector = new EltraMasterConnector();
             var settings = new StreemaSettings();
 
-            MsgLogger.LogLevels = MsgLogger.SupportedLogLevels;
-            MsgLogger.LogOutputs = MsgLogger.SupportedLogOutputs;
+            MsgLogger.LogLevels = "Error;Exception;Workflow";
+            MsgLogger.LogOutputs = "Console;File";
 
             Console.WriteLine($"Hello Streema Eltra Master - {serviceName}!");
 
