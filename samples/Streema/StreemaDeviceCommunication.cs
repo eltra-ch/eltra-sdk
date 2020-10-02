@@ -16,6 +16,19 @@ namespace StreemaMaster
 {
     public class StreemaDeviceCommunication : MasterDeviceCommunication
     {
+        #region Enums
+
+        internal enum StatusWordEnums
+        {
+            Undefined = 0x0,
+            Waiting = 0x0001,
+            PendingExecution = 0x0010,
+            ExecutedSuccessfully = 0x0020,
+            ExecutionFailed = 0x8000
+        }
+
+        #endregion
+
         #region Private fields
 
         private readonly List<Parameter> _urlParameters;
@@ -31,7 +44,7 @@ namespace StreemaMaster
         private Parameter _stationsCountParameter;
         private StreemaSettings _settings;
 
-        private System.Timers.Timer _stationInfoUpdateTimer;
+        private Timer _stationInfoUpdateTimer;
 
         #endregion
 
@@ -76,6 +89,11 @@ namespace StreemaMaster
         {
             _controlWordParameter = Vcs.SearchParameter("PARAM_ControlWord") as XddParameter;
             _statusWordParameter = Vcs.SearchParameter("PARAM_StatusWord") as XddParameter;
+
+            if(!SetExecutionStatus(StatusWordEnums.Waiting))
+            {
+                MsgLogger.WriteError($"{GetType().Name} - InitStateMachine", "Set execution state (waiting) failed!");
+            }
         }
 
         private async Task InitVolumeControl()
@@ -87,7 +105,7 @@ namespace StreemaMaster
 
                 await _muteParameter.UpdateValue();
 
-                SetMuteAsync(_muteParameter);
+                await SetMuteAsync(_muteParameter);
             }
 
             _volumeParameter = Vcs.SearchParameter("PARAM_Volume") as Parameter;
@@ -98,20 +116,21 @@ namespace StreemaMaster
 
                 await _volumeParameter.UpdateValue();
 
-                SetVolumeAsync(_volumeParameter);
+                await SetVolumeAsync(_volumeParameter);
             }
         }
 
         private async Task SetActiveStation()
         {
             _activeStationParameter = Vcs.SearchParameter("PARAM_ActiveStation") as Parameter;
+            
             if (_activeStationParameter != null)
             {
                 _activeStationParameter.ParameterChanged += OnActiveStationParameterChanged;
 
                 await _activeStationParameter.UpdateValue();
 
-                SetActiveStationAsync(_activeStationParameter);
+                await SetActiveStationAsync(_activeStationParameter);
             }
         }
 
@@ -412,9 +431,9 @@ namespace StreemaMaster
             base.OnStatusChanged(e);
         }
 
-        private void SetActiveStationAsync(int activeStationValue)
+        private Task SetActiveStationAsync(int activeStationValue)
         {
-            Task.Run(() =>
+            var result = Task.Run(() =>
             {
                 if (_urlParameters.Count > activeStationValue)
                 {
@@ -434,7 +453,11 @@ namespace StreemaMaster
 
                             startInfo.Arguments = _settings.AppArgs + $" {playUrl}{url}";
 
+                            SetExecutionStatus(StatusWordEnums.PendingExecution);
+
                             var startResult = Process.Start(startInfo);
+
+                            SetExecutionStatus(startResult != null ? StatusWordEnums.ExecutedSuccessfully : StatusWordEnums.ExecutionFailed);
 
                             MsgLogger.WriteFlow($"{GetType().Name} - SetActiveStationAsync", $"Set Station request: {url}, result = {startResult != null}");
                         }
@@ -445,6 +468,8 @@ namespace StreemaMaster
                     }
                 }
             });
+
+            return result;
         }
 
         private void CloseWebAppInstances()
@@ -463,13 +488,15 @@ namespace StreemaMaster
             }
         }
 
-        private void SetActiveStationAsync(Parameter activeStation)
+        private Task SetActiveStationAsync(Parameter activeStation)
         {
+            Task result = null;
+
             if (activeStation != null)
             {
                 if (activeStation.GetValue(out int activeStationValue))
                 {
-                    SetActiveStationAsync(activeStationValue);
+                    result = SetActiveStationAsync(activeStationValue);
                 }
                 else
                 {
@@ -480,15 +507,19 @@ namespace StreemaMaster
             {
                 MsgLogger.WriteError($"{GetType().Name} - SetActiveStationAsync", "activeStation parameter not defined!");
             }
+
+            return result;
         }
 
-        private void SetVolumeAsync(Parameter parameter)
+        private Task SetVolumeAsync(Parameter parameter)
         {
+            Task result = null;
+
             if (parameter != null)
             {
                 if (parameter.GetValue(out int parameterValue))
                 {
-                    SetVolumeAsync(parameterValue);
+                    result = SetVolumeAsync(parameterValue);
                 }
                 else
                 {
@@ -499,11 +530,13 @@ namespace StreemaMaster
             {
                 MsgLogger.WriteError($"{GetType().Name} - SetVolumeAsync", "volume parameter not defined!");
             }
+
+            return result;
         }
 
-        private void SetVolumeAsync(int volumeValue)
+        private Task SetVolumeAsync(int volumeValue)
         {
-            Task.Run(() =>
+            var result = Task.Run(() =>
             {
                 if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
                 {
@@ -516,7 +549,11 @@ namespace StreemaMaster
                         startInfo.WindowStyle = ProcessWindowStyle.Hidden;
                         startInfo.Arguments = args;
 
+                        SetExecutionStatus(StatusWordEnums.PendingExecution);
+
                         var startResult = Process.Start(startInfo);
+
+                        SetExecutionStatus(startResult != null ? StatusWordEnums.ExecutedSuccessfully : StatusWordEnums.ExecutionFailed);
 
                         MsgLogger.WriteFlow($"{GetType().Name} - SetVolumeAsync", $"Set Volume request: {volumeValue}, result = {startResult != null}");
                     }
@@ -526,15 +563,18 @@ namespace StreemaMaster
                     }
                 }
             });
+
+            return result;
         }
 
-        private void SetMuteAsync(Parameter parameter)
+        private Task SetMuteAsync(Parameter parameter)
         {
+            Task result = null;
             if (parameter != null)
             {
                 if (parameter.GetValue(out bool parameterValue))
                 {
-                    SetMuteAsync(parameterValue);
+                    result = SetMuteAsync(parameterValue);
                 }
                 else
                 {
@@ -545,11 +585,13 @@ namespace StreemaMaster
             {
                 MsgLogger.WriteError($"{GetType().Name} - SetVolumeAsync", "volume parameter not defined!");
             }
+
+            return result;
         }
 
-        private void SetMuteAsync(bool muteValue)
+        private Task SetMuteAsync(bool muteValue)
         {
-            Task.Run(() =>
+            var result = Task.Run(() =>
             {
                 if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
                 {
@@ -564,9 +606,13 @@ namespace StreemaMaster
                         startInfo.WindowStyle = ProcessWindowStyle.Hidden;
                         startInfo.Arguments = args;
 
+                        SetExecutionStatus(StatusWordEnums.PendingExecution);
+
                         var startResult = Process.Start(startInfo);
 
                         MsgLogger.WriteFlow($"{GetType().Name} - SetMuteAsync", $"Mute request: {muteString}, result = {startResult!=null}");
+
+                        SetExecutionStatus(startResult != null ? StatusWordEnums.ExecutedSuccessfully : StatusWordEnums.ExecutionFailed);
                     }
                     catch (Exception e)
                     {
@@ -574,6 +620,20 @@ namespace StreemaMaster
                     }
                 }
             });
+
+            return result;
+        }
+
+        private bool SetExecutionStatus(StatusWordEnums status)
+        {
+            bool result = false;
+
+            if(_statusWordParameter!=null)
+            {
+                result = _statusWordParameter.SetValue((ushort)status);
+            }
+
+            return result;
         }
 
         #endregion
