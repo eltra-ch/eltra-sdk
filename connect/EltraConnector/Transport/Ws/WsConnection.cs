@@ -384,7 +384,8 @@ namespace EltraConnector.Transport.Ws
                         }
                     }
 
-                    if(receiveResult.MessageType == WebSocketMessageType.Close)
+                    if(receiveResult.MessageType == WebSocketMessageType.Close &&
+                        (Socket.State == WebSocketState.CloseReceived || Socket.State == WebSocketState.Open))
                     {
                         await Socket.CloseOutputAsync(WebSocketCloseStatus.NormalClosure, "Server closed connection", _cancellationTokenSource.Token);
                     }
