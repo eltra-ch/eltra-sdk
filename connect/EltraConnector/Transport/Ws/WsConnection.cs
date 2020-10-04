@@ -383,6 +383,11 @@ namespace EltraConnector.Transport.Ws
                             break;
                         }
                     }
+
+                    if(receiveResult.MessageType == WebSocketMessageType.Close)
+                    {
+                        await Socket.CloseOutputAsync(WebSocketCloseStatus.NormalClosure, "Server closed connection", _cancellationTokenSource.Token);
+                    }
                 }
                 else
                 {
@@ -392,6 +397,10 @@ namespace EltraConnector.Transport.Ws
             catch (WebSocketException e)
             {
                 MsgLogger.Exception($"{GetType().Name} - ReadMessage", e.InnerException != null ? e.InnerException : e);
+            }
+            catch (InvalidOperationException e)
+            {               
+                MsgLogger.Exception($"{GetType().Name} - ReadMessage", e);
             }
             catch (Exception e)
             {

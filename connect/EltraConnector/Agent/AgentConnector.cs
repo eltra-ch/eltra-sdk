@@ -355,7 +355,7 @@ namespace EltraConnector.Agent
 
                 if (result)
                 {
-                    Status = AgentStatus.Binded;
+                    Status = AgentStatus.Bound;
                 }
             }
             
@@ -387,7 +387,7 @@ namespace EltraConnector.Agent
 
                 if (result)
                 {
-                    Status = AgentStatus.Binded;
+                    Status = AgentStatus.Started;
                 }
             }
 

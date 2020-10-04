@@ -20,7 +20,8 @@
 		<Product>Eltra.Connector</Product>		
 		<Description>Eltra - CANOpen based IoT Framework - SDK</Description>
 		<PackageTags>CANOpen IoT Eltra OPCUA OPC</PackageTags>
-        <Version>1.5.6</Version>
+        <Version>1.5.7</Version>
+        <AssemblyVersion>1.5.7.0</AssemblyVersion>
     </PropertyGroup>
 
     <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">

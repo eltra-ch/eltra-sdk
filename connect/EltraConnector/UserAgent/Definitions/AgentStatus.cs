@@ -26,8 +26,8 @@
         /// </summary>
         Stopped,
         /// <summary>
-        /// Binded
+        /// Bound
         /// </summary>
-        Binded
+        Bound
     }
 }
