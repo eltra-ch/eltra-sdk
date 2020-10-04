@@ -457,6 +457,13 @@ namespace EltraConnector.UserAgent
             return result;
         }
 
+        public async Task<bool> UnbindChannel(Channel channel)
+        {
+            var result = await _channelAdapter.UnbindChannel(_channelAdapter.ChannelId, channel.Id);
+
+            return result;
+        }
+
         private void RegisterEvents()
         {
             if (_channelHeartbeat != null)

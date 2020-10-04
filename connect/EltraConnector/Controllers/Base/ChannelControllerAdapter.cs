@@ -148,6 +148,29 @@ namespace EltraConnector.Controllers.Base
             return result;
         }
 
+        public async Task<bool> UnbindChannel(string callerId, string channelId)
+        {
+            bool result = false;
+
+            try
+            {
+                var query = HttpUtility.ParseQueryString(string.Empty);
+
+                query["callerId"] = callerId;
+                query["channelId"] = channelId;
+
+                var url = UrlHelper.BuildUrl(Url, "api/channel/unbind", query);
+
+                result = await Transporter.Get(url, CancellationToken.None);
+            }
+            catch (Exception e)
+            {
+                MsgLogger.Exception($"{GetType().Name} - UnbindChannel", e);
+            }
+
+            return result;
+        }
+
         public async Task<List<Channel>> GetChannels()
         {
             var result = new List<Channel>();

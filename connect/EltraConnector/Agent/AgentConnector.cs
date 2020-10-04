@@ -363,6 +363,38 @@ namespace EltraConnector.Agent
         }
 
         /// <summary>
+        /// Unbind bounded channel
+        /// </summary>
+        /// <param name="channel"></param>
+        /// <returns></returns>
+        public async Task<bool> UnbindChannel(Channel channel)
+        {
+            bool result = false;
+
+            if (Host == null)
+            {
+                throw new Exception("Host property not specified!");
+            }
+
+            if (Identity == null)
+            {
+                throw new Exception("AuthData property not specified!");
+            }
+
+            if (_deviceAgent != null)
+            {
+                result = await _deviceAgent.UnbindChannel(channel);
+
+                if (result)
+                {
+                    Status = AgentStatus.Binded;
+                }
+            }
+
+            return result;
+        }
+
+        /// <summary>
         /// SearchParameter - search device parameter by index and subindex
         /// </summary>
         /// <param name="device">Eltra device instance</param>
