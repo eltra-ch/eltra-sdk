@@ -388,7 +388,10 @@ namespace EltraConnector.Controllers
                 {
                     command.Status = status;
 
-                    execCommand.TargetChannelId = command.Device.ChannelId;
+                    if (string.IsNullOrEmpty(execCommand.TargetChannelId))
+                    {
+                        execCommand.TargetChannelId = command.Device.ChannelId;
+                    }
                 }
 
                 execCommand.SourceChannelId = Channel.Id;

@@ -302,6 +302,7 @@ namespace EltraConnector.Controllers
             {
                 if (executeCommand != null)
                 {
+                    var sourceChannelId = executeCommand.SourceChannelId;
                     var commandName = executeCommand.Command?.Name;
 
                     var deviceCommand = device.FindCommand(commandName);
@@ -342,7 +343,7 @@ namespace EltraConnector.Controllers
                                         MsgLogger.WriteDebug($"{GetType().Name} - ExecuteCommand", $"Push Response for Command '{commandName}'");
 
                                         executeCommand.SourceChannelId = Channel.Id;
-                                        executeCommand.TargetChannelId = clonedDeviceCommand.Device.ChannelId;
+                                        executeCommand.TargetChannelId = sourceChannelId;
 
                                         result = await DeviceControllerAdapter.PushCommand(executeCommand, ExecCommandStatus.Executed);
 
@@ -363,6 +364,9 @@ namespace EltraConnector.Controllers
                                             command != null
                                                 ? $"Command '{command.Name}' uuid '{executeCommand.CommandId}' execution failed!"
                                                 : $"Command '?' uuid '{executeCommand.CommandId}' execution failed!");
+
+                                        executeCommand.SourceChannelId = Channel.Id;
+                                        executeCommand.TargetChannelId = sourceChannelId;
 
                                         await DeviceControllerAdapter.SetCommandStatus(executeCommand,
                                             ExecCommandStatus.Failed);
