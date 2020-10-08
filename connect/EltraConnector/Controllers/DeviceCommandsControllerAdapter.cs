@@ -13,20 +13,45 @@ using EltraCommon.Contracts.Channels;
 using EltraCommon.Logger;
 using EltraCommon.Helpers;
 using EltraCommon.Contracts.Devices;
+using EltraConnector.Transport.Ws;
+using EltraCommon.Contracts.Users;
 
 namespace EltraConnector.Controllers
 {
     internal class DeviceCommandsControllerAdapter : CloudChannelControllerAdapter
     {
+        #region Private fields
+                
+        private readonly UserIdentity _userIdentity;        
+        private readonly string _commandExecUuid;
+                
+        #endregion
+
         #region Constructors
 
-        public DeviceCommandsControllerAdapter(string url, Channel session)
-            : base(url, session)
+        public DeviceCommandsControllerAdapter(string url, Channel channel, UserIdentity userIdentity, bool master)
+            : base(url, channel)
         {
+            _userIdentity = userIdentity;
+
+            if (!master)
+            {
+                _commandExecUuid = channel.Id + "_CommandsExecution";
+            }
+            else
+            {
+                _commandExecUuid = channel.Id + "_ExecCommander";
+            }
         }
 
         #endregion
-        
+
+        #region Properties
+
+        public WsConnectionManager WsConnectionManager { get; set; }
+
+        #endregion
+
         #region Methods
 
         public async Task<List<DeviceCommand>> GetDeviceCommands(EltraDevice deviceNode)
@@ -130,12 +155,22 @@ namespace EltraConnector.Controllers
                 {
                     MsgLogger.WriteLine($"push command='{execCommand.Command.Name}' to device='{device.Family}':0x{device.NodeId}");
 
-                    var postResult = await Transporter.Post(Url, "api/command/push", execCommand.ToJson());
-
-                    if (postResult.StatusCode == HttpStatusCode.OK)
+                    if (WsConnectionManager != null && WsConnectionManager.IsConnected(_commandExecUuid))
                     {
-                        result = true;
+                        if(await WsConnectionManager.Send(_commandExecUuid, _userIdentity, execCommand))
+                        {
+                            result = true;
+                        }
                     }
+                    else
+                    {
+                        var postResult = await Transporter.Post(Url, "api/command/push", execCommand.ToJson());
+
+                        if (postResult.StatusCode == HttpStatusCode.OK)
+                        {
+                            result = true;
+                        }
+                    }                    
                 }
             }
             catch (Exception e)

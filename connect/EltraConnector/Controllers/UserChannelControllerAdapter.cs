@@ -65,6 +65,8 @@ namespace EltraConnector.Controllers
                 var wsConnectionManager = new WsConnectionManager() { HostUrl = Url };
 
                 WsConnectionManager = wsConnectionManager;
+
+                DeviceAdapter.WsConnectionManager = wsConnectionManager;
             }
             else
             {
@@ -83,7 +85,7 @@ namespace EltraConnector.Controllers
 
         private DeviceControllerAdapter CreateDeviceController()
         {
-            DeviceControllerAdapter result = new DeviceControllerAdapter(Url, Channel);
+            var result = new DeviceControllerAdapter(Url, Channel, User.Identity, false);
             
             return result;
         }

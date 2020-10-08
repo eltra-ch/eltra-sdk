@@ -6,6 +6,7 @@ using EltraCommon.Threads;
 using EltraConnector.Controllers.Base;
 using EltraConnector.Events;
 using EltraCommon.Contracts.Channels;
+using EltraConnector.Transport.Ws;
 
 namespace EltraConnector.Sessions
 {
@@ -89,7 +90,10 @@ namespace EltraConnector.Sessions
 
             if (wsConnectionManager.CanConnect(sessionUuid))
             {
-                await wsConnectionManager.Connect(sessionUuid, wsChannelName);
+                if(await wsConnectionManager.Connect(sessionUuid, wsChannelName))
+                {
+                    await SendSessionIdentyfication(wsConnectionManager, sessionUuid);
+                }
             }
 
             _uuid = _channelControllerAdapter.Channel.Id;
@@ -138,6 +142,8 @@ namespace EltraConnector.Sessions
                     {
                         if (await wsConnectionManager.Connect(sessionUuid, wsChannelName))
                         {
+                            await SendSessionIdentyfication(wsConnectionManager, sessionUuid);
+
                             updateResult = await _channelControllerAdapter.Update();
 
                             Status = updateResult ? ChannelStatus.Online : ChannelStatus.Offline;
@@ -152,6 +158,16 @@ namespace EltraConnector.Sessions
             }
 
             MsgLogger.WriteLine($"Sync agent working thread finished successfully!");
+        }
+
+        private async Task SendSessionIdentyfication(WsConnectionManager wsConnectionManager, string sessionUuid)
+        {
+            if (wsConnectionManager != null && wsConnectionManager.IsConnected(sessionUuid))
+            {
+                var sessionIdent = new ChannelIdentification() { Id = _channelControllerAdapter.ChannelId };
+
+                await wsConnectionManager.Send(sessionUuid, _channelControllerAdapter.User.Identity, sessionIdent);
+            }
         }
 
         #endregion

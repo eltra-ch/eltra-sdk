@@ -33,7 +33,7 @@ namespace EltraConnector.UserAgent
         {
             _deviceCommands = new List<DeviceCommand>();
 
-            _wsConnectionManager = new WsConnectionManager() { HostUrl = channelAdapter.Url };
+            _wsConnectionManager = channelAdapter.WsConnectionManager;
 
             _channelAdapter = channelAdapter;
             _commandExecUuid = _channelAdapter.ChannelId + "_ExecCommander";
@@ -44,7 +44,7 @@ namespace EltraConnector.UserAgent
         {
             _deviceCommands = new List<DeviceCommand>();
 
-            _wsConnectionManager = new WsConnectionManager() { HostUrl = channelAdapter.Url };
+            _wsConnectionManager = channelAdapter.WsConnectionManager;
 
             _channelAdapter = channelAdapter;
             _commandExecUuid = _channelAdapter.ChannelId + $"_ExecCommander_{nodeId}";

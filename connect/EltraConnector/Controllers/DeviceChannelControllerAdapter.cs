@@ -121,7 +121,7 @@ namespace EltraConnector.Controllers
 
         private DeviceControllerAdapter CreateDeviceController()
         {
-            var adapter = new DeviceControllerAdapter(Url, Channel);
+            var adapter = new DeviceControllerAdapter(Url, Channel, _agent.Identity, true);
 
             AddChild(adapter);
 

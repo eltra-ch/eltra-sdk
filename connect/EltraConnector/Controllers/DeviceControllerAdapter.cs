@@ -16,6 +16,8 @@ using EltraCommon.ObjectDictionary.DeviceDescription;
 using EltraCommon.ObjectDictionary.DeviceDescription.Factory;
 using EltraCommon.Contracts.History;
 using System.Threading;
+using EltraCommon.Contracts.Users;
+using EltraConnector.Transport.Ws;
 
 namespace EltraConnector.Controllers
 {
@@ -27,19 +29,34 @@ namespace EltraConnector.Controllers
         private DeviceCommandsControllerAdapter _deviceCommandsControllerAdapter;
         private ParameterControllerAdapter _parameterControllerAdapter;
         private DescriptionControllerAdapter _descriptionContollerAdapter;
+        private readonly UserIdentity _userIdentity;
+        private bool _master;
+        private WsConnectionManager _wsConnectionManager;
 
         #endregion
 
         #region Constructors
 
-        public DeviceControllerAdapter(string url, Channel session)
+        public DeviceControllerAdapter(string url, Channel session, UserIdentity userIdentity, bool master)
             : base(url, session)
         {
+            _userIdentity = userIdentity;
+            _master = master;
         }
 
         #endregion
 
         #region Properties
+
+        public WsConnectionManager WsConnectionManager 
+        { 
+            get => _wsConnectionManager;
+            set 
+            {
+                _wsConnectionManager = value;
+                OnWsConnectionManagerChanged();
+            }
+        }
 
         private EltraDeviceSet ChannelDevices => _sessionDevices ?? (_sessionDevices = new EltraDeviceSet { Channel = Channel });
 
@@ -58,6 +75,11 @@ namespace EltraConnector.Controllers
         #endregion
 
         #region Events handling
+
+        private void OnWsConnectionManagerChanged()
+        {
+            DeviceCommandsAdapter.WsConnectionManager = WsConnectionManager;
+        }
 
         protected virtual void OnRegistrationStateChanged(RegistrationEventArgs e)
         {
@@ -90,7 +112,7 @@ namespace EltraConnector.Controllers
 
         private DeviceCommandsControllerAdapter CreateDeviceCommandsAdapter()
         {
-            var adapter = new DeviceCommandsControllerAdapter(Url, Channel);
+            var adapter = new DeviceCommandsControllerAdapter(Url, Channel, _userIdentity, _master);
 
            AddChild(adapter);
 

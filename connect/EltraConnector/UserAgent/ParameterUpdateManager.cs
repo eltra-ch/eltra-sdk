@@ -29,7 +29,7 @@ namespace EltraConnector.UserAgent
 
         public ParameterUpdateManager(ChannelControllerAdapter channelAdapter)
         {
-            _wsConnectionManager = new WsConnectionManager() { HostUrl = channelAdapter.Url };
+            _wsConnectionManager = channelAdapter.WsConnectionManager;
 
             _channelAdapter = channelAdapter;
             _wsChannelId = _channelAdapter.ChannelId + "_ParameterUpdate";
@@ -38,7 +38,7 @@ namespace EltraConnector.UserAgent
 
         public ParameterUpdateManager(ChannelControllerAdapter channelAdapter, int nodeId)
         {
-            _wsConnectionManager = new WsConnectionManager() { HostUrl = channelAdapter.Url };
+            _wsConnectionManager = channelAdapter.WsConnectionManager;
 
             _channelAdapter = channelAdapter;
             _wsChannelId = _channelAdapter.ChannelId + $"_ParameterUpdate_{nodeId}";
