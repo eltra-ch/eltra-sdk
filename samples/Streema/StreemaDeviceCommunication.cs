@@ -507,30 +507,37 @@ namespace StreemaMaster
                     {
                         if (_processIdParameters[i].GetValue(out int processId) && processId > 0)
                         {
-                            var p = Process.GetProcessById(processId);
-
-                            if (p != null)
+                            try
                             {
-                                if (!p.HasExited)
+                                var p = Process.GetProcessById(processId);
+
+                                if (p != null)
                                 {
-                                    const int MaxWaitTimeInMs = 10000;
-                                    var startInfo = new ProcessStartInfo("kill");
+                                    if (!p.HasExited)
+                                    {
+                                        const int MaxWaitTimeInMs = 10000;
+                                        var startInfo = new ProcessStartInfo("kill");
 
-                                    startInfo.WindowStyle = ProcessWindowStyle.Normal;
-                                    startInfo.Arguments = $"{processId}";
+                                        startInfo.WindowStyle = ProcessWindowStyle.Normal;
+                                        startInfo.Arguments = $"{processId}";
 
-                                    Process.Start(startInfo);
+                                        Process.Start(startInfo);
 
-                                    gracefullClose = p.WaitForExit(MaxWaitTimeInMs);
+                                        gracefullClose = p.WaitForExit(MaxWaitTimeInMs);
+                                    }
+                                    else
+                                    {
+                                        MsgLogger.WriteError($"{GetType().Name} - CloseWebAppInstances", $"process id exited - pid {processId}");
+                                    }
                                 }
                                 else
                                 {
-                                    MsgLogger.WriteError($"{GetType().Name} - CloseWebAppInstances", $"process id exited - pid {processId}");
+                                    MsgLogger.WriteError($"{GetType().Name} - CloseWebAppInstances", $"process id not found - pid {processId}");
                                 }
                             }
-                            else
+                            catch(Exception e)
                             {
-                                MsgLogger.WriteError($"{GetType().Name} - CloseWebAppInstances", $"process id not found - pid {processId}");
+                                MsgLogger.Exception($"{GetType().Name} - CloseWebAppInstances [1]", e);
                             }
                         }
                     }
@@ -556,7 +563,7 @@ namespace StreemaMaster
             }
             catch(Exception e)
             {
-                MsgLogger.Exception($"{GetType().Name} - CloseWebAppInstances", e);
+                MsgLogger.Exception($"{GetType().Name} - CloseWebAppInstances [2]", e);
             }
         }
 
