@@ -339,7 +339,7 @@ namespace StreemaMaster
                     result = true;
                 }
             } 
-            else if (objectIndex == 0x4001)
+            else if (objectIndex == 0x4100)
             {
                 if (_activeStationParameter.GetValue(out byte[] v))
                 {
@@ -367,6 +367,15 @@ namespace StreemaMaster
                       && _urlParameters.Count > 0)
             {
                 if (_urlParameters[objectIndex - 0x4000].GetValue(out byte[] d1))
+                {
+                    data = d1;
+                    result = true;
+                }
+            }
+            else if (objectIndex >= 0x4000 && objectIndex <= 0x4003 && objectSubindex == 0x04
+                      && _urlParameters.Count > 0)
+            {
+                if (_volumeScalingParameters[objectIndex - 0x4000].GetValue(out byte[] d1))
                 {
                     data = d1;
                     result = true;
@@ -404,6 +413,14 @@ namespace StreemaMaster
                 if (_urlParameters.Count > (objectIndex - 0x4000))
                 {
                     result = _urlParameters[objectIndex - 0x4000].SetValue(data);
+                }
+            }
+            else if (objectIndex >= 0x4000 && objectIndex <= 0x4003
+                    && objectSubindex == 0x04)
+            {
+                if (_volumeScalingParameters.Count > (objectIndex - 0x4000))
+                {
+                    result = _volumeScalingParameters[objectIndex - 0x4000].SetValue(data);
                 }
             }
             else if (objectIndex == 0x4100 && objectSubindex == 0x0)

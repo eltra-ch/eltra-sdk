@@ -27,8 +27,8 @@
 				<orderNumber readOnly="true">000000</orderNumber>
 				<version versionType="SW" readOnly="true">0x0100</version>
 				<version versionType="HW" readOnly="true">0x0200</version>
-				<version versionType="APPNB" readOnly="true">0x0001</version>
-				<version versionType="APPVER" readOnly="true">0x0004</version>
+				<version versionType="APPNB" readOnly="true">0x0002</version>
+				<version versionType="APPVER" readOnly="true">0x0001</version>
 			</DeviceIdentity>
 			<DeviceManager>
 				<userLevelList>
@@ -126,7 +126,7 @@
 					<parameter uniqueID="PARAM_Station_1_Id">
 						<index>0x4000</index>
 						<subIndex>0x01</subIndex>
-						<label lang="en-TT">Station 1 id</label>
+						<label lang="en-TT">Streema ID</label>
 						<dataType>
 							<type>VISIBLE_STRING</type>
 						</dataType>
@@ -174,12 +174,22 @@
           <parameter uniqueID="PARAM_Station_1_VolumeScaling">
             <index>0x4000</index>
             <subIndex>0x04</subIndex>
-            <label lang="en-TT">Station 1 Volume Scaling</label>
+            <label lang="en-TT">Volume level</label>
             <dataType>
               <type>DOUBLE</type>
             </dataType>
             <flagsIDRef uniqueIDRef="AT_RW" />
             <defaultValue>100</defaultValue>
+            <allowedValues>
+              <range>
+                <minValue>
+                  <value>0</value>
+                </minValue>
+                <maxValue>
+                  <value>100</value>
+                </maxValue>
+              </range>
+            </allowedValues>
             <unit>
               <label lang="en-TT">%</label>
             </unit>
@@ -224,7 +234,7 @@
           <parameter uniqueID="PARAM_Station_2_Id">
             <index>0x4001</index>
             <subIndex>0x01</subIndex>
-            <label lang="en-TT">Station 2 id</label>
+            <label lang="en-TT">Streema ID</label>
             <dataType>
               <type>VISIBLE_STRING</type>
             </dataType>
@@ -272,7 +282,7 @@
           <parameter uniqueID="PARAM_Station_2_VolumeScaling">
             <index>0x4001</index>
             <subIndex>0x04</subIndex>
-            <label lang="en-TT">Station 2 Volume Scaling</label>
+            <label lang="en-TT">Volume level</label>
             <dataType>
               <type>DOUBLE</type>
             </dataType>
@@ -322,7 +332,7 @@
           <parameter uniqueID="PARAM_Station_3_Id">
             <index>0x4002</index>
             <subIndex>0x01</subIndex>
-            <label lang="en-TT">Station 3 id</label>
+            <label lang="en-TT">Streema ID</label>
             <dataType>
               <type>VISIBLE_STRING</type>
             </dataType>
@@ -370,7 +380,7 @@
           <parameter uniqueID="PARAM_Station_3_VolumeScaling">
             <index>0x4002</index>
             <subIndex>0x04</subIndex>
-            <label lang="en-TT">Station 3 Volume Scaling</label>
+            <label lang="en-TT">Volume level</label>
             <dataType>
               <type>DOUBLE</type>
             </dataType>
@@ -420,7 +430,7 @@
           <parameter uniqueID="PARAM_Station_4_Id">
             <index>0x4003</index>
             <subIndex>0x01</subIndex>
-            <label lang="en-TT">Station 4 id</label>
+            <label lang="en-TT">Streema ID</label>
             <dataType>
               <type>VISIBLE_STRING</type>
             </dataType>
@@ -468,7 +478,7 @@
           <parameter uniqueID="PARAM_Station_4_VolumeScaling">
             <index>0x4003</index>
             <subIndex>0x04</subIndex>
-            <label lang="en-TT">Station 4 Volume Scaling</label>
+            <label lang="en-TT">Volume level</label>
             <dataType>
               <type>DOUBLE</type>
             </dataType>
