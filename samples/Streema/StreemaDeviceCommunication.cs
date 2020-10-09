@@ -507,17 +507,30 @@ namespace StreemaMaster
                     {
                         var p = Process.GetProcessById(processId);
 
-                        if (p != null && !p.HasExited)
+                        if (p != null)
                         {
-                            const int MaxWaitTimeInMs = 10000;
-                            var startInfo = new ProcessStartInfo("kill");
+                            if (!p.HasExited)
+                            {
+                                const int MaxWaitTimeInMs = 10000;
+                                var startInfo = new ProcessStartInfo("kill");
 
-                            startInfo.WindowStyle = ProcessWindowStyle.Hidden;
-                            startInfo.Arguments = $"{processId}";
+                                startInfo.WindowStyle = ProcessWindowStyle.Normal;
+                                startInfo.Arguments = $"{processId}";
 
-                            Process.Start(startInfo);
+                                Process.Start(startInfo);
 
-                            gracefullClose = p.WaitForExit(MaxWaitTimeInMs);
+                                p.WaitForExit(MaxWaitTimeInMs);
+
+                                gracefullClose = true;
+                            }
+                            else
+                            {
+                                MsgLogger.WriteError($"{GetType().Name} - CloseWebAppInstances", $"process id exited - pid {processId}");
+                            }
+                        }
+                        else
+                        {
+                            MsgLogger.WriteError($"{GetType().Name} - CloseWebAppInstances", $"process id not found - pid {processId}");
                         }
                     }
                 }
