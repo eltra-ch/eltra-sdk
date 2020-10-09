@@ -501,36 +501,37 @@ namespace StreemaMaster
             {
                 bool gracefullClose = false;
 
-                if(_activeStationParameter.GetValue(out int activeStationValue))
+                if(_stationsCountParameter.GetValue(out ushort maxCount))
                 {
-                    if(_processIdParameters[activeStationValue].GetValue(out int processId) && processId > 0)
+                    for(ushort i = 0; i < maxCount; i++)
                     {
-                        var p = Process.GetProcessById(processId);
-
-                        if (p != null)
+                        if (_processIdParameters[i].GetValue(out int processId) && processId > 0)
                         {
-                            if (!p.HasExited)
+                            var p = Process.GetProcessById(processId);
+
+                            if (p != null)
                             {
-                                const int MaxWaitTimeInMs = 10000;
-                                var startInfo = new ProcessStartInfo("kill");
+                                if (!p.HasExited)
+                                {
+                                    const int MaxWaitTimeInMs = 10000;
+                                    var startInfo = new ProcessStartInfo("kill");
 
-                                startInfo.WindowStyle = ProcessWindowStyle.Normal;
-                                startInfo.Arguments = $"{processId}";
+                                    startInfo.WindowStyle = ProcessWindowStyle.Normal;
+                                    startInfo.Arguments = $"{processId}";
 
-                                Process.Start(startInfo);
+                                    Process.Start(startInfo);
 
-                                p.WaitForExit(MaxWaitTimeInMs);
-
-                                gracefullClose = true;
+                                    gracefullClose = p.WaitForExit(MaxWaitTimeInMs);
+                                }
+                                else
+                                {
+                                    MsgLogger.WriteError($"{GetType().Name} - CloseWebAppInstances", $"process id exited - pid {processId}");
+                                }
                             }
                             else
                             {
-                                MsgLogger.WriteError($"{GetType().Name} - CloseWebAppInstances", $"process id exited - pid {processId}");
+                                MsgLogger.WriteError($"{GetType().Name} - CloseWebAppInstances", $"process id not found - pid {processId}");
                             }
-                        }
-                        else
-                        {
-                            MsgLogger.WriteError($"{GetType().Name} - CloseWebAppInstances", $"process id not found - pid {processId}");
                         }
                     }
                 }
