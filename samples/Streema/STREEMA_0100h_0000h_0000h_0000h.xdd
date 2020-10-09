@@ -28,7 +28,7 @@
 				<version versionType="SW" readOnly="true">0x0100</version>
 				<version versionType="HW" readOnly="true">0x0200</version>
 				<version versionType="APPNB" readOnly="true">0x0001</version>
-				<version versionType="APPVER" readOnly="true">0x0003</version>
+				<version versionType="APPVER" readOnly="true">0x0004</version>
 			</DeviceIdentity>
 			<DeviceManager>
 				<userLevelList>
@@ -120,7 +120,7 @@
 							<type>UNSIGNED8</type>
 						</dataType>
 						<flagsIDRef uniqueIDRef="AT_RO" />
-						<defaultValue>0x04</defaultValue>
+						<defaultValue>0x05</defaultValue>
 						<userLevels />
 					</parameter>
 					<parameter uniqueID="PARAM_Station_1_Id">
@@ -190,6 +190,21 @@
             </userLevels>
             <displayFormat>dec</displayFormat>
           </parameter>
+          <parameter uniqueID="PARAM_Station1ProcessId">
+            <index>0x4000</index>
+            <subIndex>0x05</subIndex>
+            <label lang="en-TT">Station 1 Process Id</label>
+            <dataType>
+              <type>INTEGER32</type>
+            </dataType>
+            <flagsIDRef uniqueIDRef="AT_RO" />
+            <defaultValue>0x00</defaultValue>
+            <userLevels>
+              <userLevelIDRef uniqueIDRef="USR_Standard" />
+              <userLevelIDRef uniqueIDRef="USR_Expert" />
+              <userLevelIDRef uniqueIDRef="USR_Internal" />
+            </userLevels>
+          </parameter>
           <!-- Station 2 -->
           <structuredParameter uniqueID="PARAM_Station_2">
             <index>0x4001</index>
@@ -203,7 +218,7 @@
               <type>UNSIGNED8</type>
             </dataType>
             <flagsIDRef uniqueIDRef="AT_RO" />
-            <defaultValue>0x04</defaultValue>
+            <defaultValue>0x05</defaultValue>
             <userLevels />
           </parameter>
           <parameter uniqueID="PARAM_Station_2_Id">
@@ -273,6 +288,21 @@
             </userLevels>
             <displayFormat>dec</displayFormat>
           </parameter>
+          <parameter uniqueID="PARAM_Station2ProcessId">
+            <index>0x4001</index>
+            <subIndex>0x05</subIndex>
+            <label lang="en-TT">Station 2 Process Id</label>
+            <dataType>
+              <type>INTEGER32</type>
+            </dataType>
+            <flagsIDRef uniqueIDRef="AT_RO" />
+            <defaultValue>0x00</defaultValue>
+            <userLevels>
+              <userLevelIDRef uniqueIDRef="USR_Standard" />
+              <userLevelIDRef uniqueIDRef="USR_Expert" />
+              <userLevelIDRef uniqueIDRef="USR_Internal" />
+            </userLevels>
+          </parameter>
           <!-- Station 3 -->
           <structuredParameter uniqueID="PARAM_Station_3">
             <index>0x4002</index>
@@ -286,7 +316,7 @@
               <type>UNSIGNED8</type>
             </dataType>
             <flagsIDRef uniqueIDRef="AT_RO" />
-            <defaultValue>0x04</defaultValue>
+            <defaultValue>0x05</defaultValue>
             <userLevels />
           </parameter>
           <parameter uniqueID="PARAM_Station_3_Id">
@@ -356,6 +386,21 @@
             </userLevels>
             <displayFormat>dec</displayFormat>
           </parameter>
+          <parameter uniqueID="PARAM_Station3ProcessId">
+            <index>0x4002</index>
+            <subIndex>0x05</subIndex>
+            <label lang="en-TT">Station 3 Process Id</label>
+            <dataType>
+              <type>INTEGER32</type>
+            </dataType>
+            <flagsIDRef uniqueIDRef="AT_RO" />
+            <defaultValue>0x00</defaultValue>
+            <userLevels>
+              <userLevelIDRef uniqueIDRef="USR_Standard" />
+              <userLevelIDRef uniqueIDRef="USR_Expert" />
+              <userLevelIDRef uniqueIDRef="USR_Internal" />
+            </userLevels>
+          </parameter>
           <!-- Station 4 -->
           <structuredParameter uniqueID="PARAM_Station_4">
             <index>0x4003</index>
@@ -369,7 +414,7 @@
               <type>UNSIGNED8</type>
             </dataType>
             <flagsIDRef uniqueIDRef="AT_RO" />
-            <defaultValue>0x04</defaultValue>
+            <defaultValue>0x05</defaultValue>
             <userLevels />
           </parameter>
           <parameter uniqueID="PARAM_Station_4_Id">
@@ -438,6 +483,21 @@
               <userLevelIDRef uniqueIDRef="USR_Internal" />
             </userLevels>
             <displayFormat>dec</displayFormat>
+          </parameter>
+          <parameter uniqueID="PARAM_Station4ProcessId">
+            <index>0x4003</index>
+            <subIndex>0x05</subIndex>
+            <label lang="en-TT">Station 4 Process Id</label>
+            <dataType>
+              <type>INTEGER32</type>
+            </dataType>
+            <flagsIDRef uniqueIDRef="AT_RO" />
+            <defaultValue>0x00</defaultValue>
+            <userLevels>
+              <userLevelIDRef uniqueIDRef="USR_Standard" />
+              <userLevelIDRef uniqueIDRef="USR_Expert" />
+              <userLevelIDRef uniqueIDRef="USR_Internal" />
+            </userLevels>
           </parameter>
           <!-- Active Station -->
 					<parameter uniqueID="PARAM_ActiveStation">

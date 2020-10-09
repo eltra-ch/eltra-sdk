@@ -35,6 +35,7 @@ namespace StreemaMaster
         private readonly List<Parameter> _labelParameters;
         private readonly List<Parameter> _imageParameters;
         private readonly List<Parameter> _volumeScalingParameters;
+        private readonly List<Parameter> _processIdParameters;
 
         private Parameter _activeStationParameter;
         private Parameter _volumeParameter;
@@ -59,6 +60,7 @@ namespace StreemaMaster
             _labelParameters = new List<Parameter>();
             _imageParameters = new List<Parameter>();
             _volumeScalingParameters = new List<Parameter>();
+            _processIdParameters = new List<Parameter>();
         }
 
         #endregion
@@ -148,8 +150,10 @@ namespace StreemaMaster
                     var labelParameter = Vcs.SearchParameter(index, 0x02) as XddParameter;
                     var imageParameter = Vcs.SearchParameter(index, 0x03) as XddParameter;
                     var valumeScalingParameter = Vcs.SearchParameter(index, 0x04) as XddParameter;
+                    var processIdParameter = Vcs.SearchParameter(index, 0x05) as XddParameter;
 
-                    if (urlParameter != null && labelParameter != null && imageParameter != null && valumeScalingParameter != null)
+                    if (urlParameter != null && labelParameter != null && 
+                        imageParameter != null && valumeScalingParameter != null && processIdParameter != null)
                     {
                         urlParameter.ParameterChanged += OnUrlParameterChanged;
 
@@ -157,6 +161,7 @@ namespace StreemaMaster
                         _labelParameters.Add(labelParameter);
                         _imageParameters.Add(imageParameter);
                         _volumeScalingParameters.Add(valumeScalingParameter);
+                        _processIdParameters.Add(processIdParameter);
                     }
                 }
             }
@@ -169,7 +174,7 @@ namespace StreemaMaster
                 _stationInfoUpdateTimer.Stop();
             }
 
-            _stationInfoUpdateTimer = new System.Timers.Timer(60000);
+            _stationInfoUpdateTimer = new Timer(60000);
             _stationInfoUpdateTimer.Elapsed += OnStationInfoUpdate;
             _stationInfoUpdateTimer.Enabled = true;
 
@@ -367,6 +372,15 @@ namespace StreemaMaster
                     result = true;
                 }
             }
+            else if (objectIndex >= 0x4000 && objectIndex <= 0x4003 && objectSubindex == 0x05
+                      && _urlParameters.Count > 0)
+            {
+                if (_processIdParameters[objectIndex - 0x4000].GetValue(out byte[] d1))
+                {
+                    data = d1;
+                    result = true;
+                }
+            }
 
             return result;
         }
@@ -438,6 +452,7 @@ namespace StreemaMaster
                 if (_urlParameters.Count > activeStationValue)
                 {
                     var urlParam = _urlParameters[activeStationValue];
+                    var processParam = _processIdParameters[activeStationValue];
 
                     if (urlParam.GetValue(out string url))
                     {
@@ -459,6 +474,14 @@ namespace StreemaMaster
 
                             SetExecutionStatus(startResult != null ? StatusWordEnums.ExecutedSuccessfully : StatusWordEnums.ExecutionFailed);
 
+                            if(startResult!=null)
+                            {
+                                if(!processParam.SetValue(startResult.Id))
+                                {
+                                    MsgLogger.WriteError($"{GetType().Name} - SetActiveStationAsync", "process id cannot be set");
+                                }
+                            }
+
                             MsgLogger.WriteFlow($"{GetType().Name} - SetActiveStationAsync", $"Set Station request: {url}, result = {startResult != null}");
                         }
                         catch (Exception e)
@@ -476,16 +499,44 @@ namespace StreemaMaster
         {
             try
             {
-                foreach (var p in Process.GetProcessesByName(_settings.AppName))
+                bool gracefullClose = false;
+
+                if(_activeStationParameter.GetValue(out int activeStationValue))
                 {
-                    p.CloseMainWindow();
+                    if(_processIdParameters[activeStationValue].GetValue(out int processId) && processId > 0)
+                    {
+                        var p = Process.GetProcessById(processId);
+
+                        if (p != null && !p.HasExited)
+                        {
+                            const int MaxWaitTimeInMs = 10000;
+                            var startInfo = new ProcessStartInfo("kill");
+
+                            startInfo.WindowStyle = ProcessWindowStyle.Hidden;
+                            startInfo.Arguments = $"{processId}";
+
+                            Process.Start(startInfo);
+
+                            gracefullClose = p.WaitForExit(MaxWaitTimeInMs);
+                        }
+                    }
                 }
 
-                if (_settings.IsWebKitProcess)
+                if (!gracefullClose)
                 {
-                    foreach (var p in Process.GetProcessesByName("WebKitWebProcess"))
+                    MsgLogger.WriteFlow("close browser brute force");
+
+                    foreach (var p in Process.GetProcessesByName(_settings.AppName))
                     {
                         p.Kill();
+                    }
+
+                    if (_settings.IsWebKitProcess)
+                    {
+                        foreach (var p in Process.GetProcessesByName("WebKitWebProcess"))
+                        {
+                            p.Kill();
+                        }
                     }
                 }
             }
