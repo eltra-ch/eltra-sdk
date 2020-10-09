@@ -474,17 +474,24 @@ namespace StreemaMaster
 
         private void CloseWebAppInstances()
         {
-            foreach (var p in Process.GetProcessesByName(_settings.AppName))
+            try
             {
-                p.Kill();
-            }
-
-            if (_settings.IsWebKitProcess)
-            {
-                foreach (var p in Process.GetProcessesByName("WebKitWebProcess"))
+                foreach (var p in Process.GetProcessesByName(_settings.AppName))
                 {
-                    p.Kill();
+                    p.CloseMainWindow();
                 }
+
+                if (_settings.IsWebKitProcess)
+                {
+                    foreach (var p in Process.GetProcessesByName("WebKitWebProcess"))
+                    {
+                        p.Kill();
+                    }
+                }
+            }
+            catch(Exception e)
+            {
+                MsgLogger.Exception($"{GetType().Name} - CloseWebAppInstances", e);
             }
         }
 
