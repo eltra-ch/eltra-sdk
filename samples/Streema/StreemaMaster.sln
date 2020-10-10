@@ -5,10 +5,6 @@ VisualStudioVersion = 16.0.30204.135
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StreemaMaster", "StreemaMaster.csproj", "{A6B58520-EBA0-4CCF-BFA8-EF82174E075A}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EltraConnector", "..\..\connect\EltraConnector\EltraConnector.csproj", "{7B4975E2-BA92-4FD8-A78F-CBA97D888105}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EltraCommon", "..\..\xternals\common\EltraCommon\EltraCommon.csproj", "{50167C7C-9B01-4420-ACC9-1E9E61A8232F}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -19,14 +15,6 @@ Global
 		{A6B58520-EBA0-4CCF-BFA8-EF82174E075A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A6B58520-EBA0-4CCF-BFA8-EF82174E075A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A6B58520-EBA0-4CCF-BFA8-EF82174E075A}.Release|Any CPU.Build.0 = Release|Any CPU
-		{7B4975E2-BA92-4FD8-A78F-CBA97D888105}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{7B4975E2-BA92-4FD8-A78F-CBA97D888105}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{7B4975E2-BA92-4FD8-A78F-CBA97D888105}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{7B4975E2-BA92-4FD8-A78F-CBA97D888105}.Release|Any CPU.Build.0 = Release|Any CPU
-		{50167C7C-9B01-4420-ACC9-1E9E61A8232F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{50167C7C-9B01-4420-ACC9-1E9E61A8232F}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{50167C7C-9B01-4420-ACC9-1E9E61A8232F}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{50167C7C-9B01-4420-ACC9-1E9E61A8232F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
