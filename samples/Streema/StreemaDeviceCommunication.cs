@@ -484,10 +484,14 @@ namespace StreemaMaster
         {
             var result = Task.Run(() =>
             {
-                if (_urlParameters.Count > activeStationValue)
+                if(activeStationValue == 0)
                 {
-                    var urlParam = _urlParameters[activeStationValue];
-                    var processParam = _processIdParameters[activeStationValue];
+                    CloseWebAppInstances();
+                }
+                else if (_urlParameters.Count >= activeStationValue && activeStationValue > 0)
+                {
+                    var urlParam = _urlParameters[activeStationValue - 1];
+                    var processParam = _processIdParameters[activeStationValue - 1];
 
                     if (urlParam.GetValue(out string url))
                     {
