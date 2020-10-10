@@ -12,11 +12,15 @@
   </ItemGroup>
 
 	<ItemGroup>
-      <PackageReference Include="Eltra.Connector" Version="1.5.9" />
       <PackageReference Include="Microsoft.Extensions.Configuration" Version="3.1.8" />
       <PackageReference Include="Microsoft.Extensions.Configuration.FileExtensions" Version="3.1.8" />
       <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="3.1.8" />
    </ItemGroup>
+
+	<ItemGroup>
+	  <ProjectReference Include="..\..\connect\EltraConnector\EltraConnector.csproj" />
+	  <ProjectReference Include="..\..\xternals\common\EltraCommon\EltraCommon.csproj" />
+	</ItemGroup>
 
   <ItemGroup>
     <None Update="appsettings.json">

@@ -159,6 +159,22 @@ namespace StreemaMaster
             }
         }
 
+        public bool UseIFrameDelegation
+        {
+            get
+            {
+                bool result = false;
+                var iFrameDelegation = Configuration["IFrameDelegation"];
+
+                if (bool.TryParse(iFrameDelegation, out bool val))
+                {
+                    result = val;
+                }
+
+                return result;
+            }
+        }
+
         private IConfiguration Configuration
         {
             get => _configuration ?? (_configuration = new ConfigurationBuilder()

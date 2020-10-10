@@ -11,6 +11,9 @@ using StreemaMaster.Site;
 using EltraCommon.ObjectDictionary.Xdd.DeviceDescription.Profiles.Application.Parameters;
 using System.Runtime.InteropServices;
 using System.Timers;
+using System.Xml;
+using System.Xml.Linq;
+using System.IO;
 
 namespace StreemaMaster
 {
@@ -44,7 +47,7 @@ namespace StreemaMaster
         private Parameter _controlWordParameter;
         private Parameter _stationsCountParameter;
         private StreemaSettings _settings;
-
+        private ushort _maxStationsCount;
         private Timer _stationInfoUpdateTimer;
 
         #endregion
@@ -142,6 +145,8 @@ namespace StreemaMaster
 
             if (_stationsCountParameter != null && _stationsCountParameter.GetValue(out ushort maxCount))
             {
+                _maxStationsCount = maxCount;
+
                 for (ushort i = 0; i < maxCount; i++)
                 {
                     ushort index = (ushort)(0x4000 + i);
@@ -363,7 +368,7 @@ namespace StreemaMaster
                     result = true;
                 }
             }
-            else if (objectIndex >= 0x4000 && objectIndex <= 0x4003 && objectSubindex == 0x01
+            else if (objectIndex >= 0x4000 && objectIndex <= (0x4000 + _maxStationsCount) && objectSubindex == 0x01
                       && _urlParameters.Count > 0)
             {
                 if (_urlParameters[objectIndex - 0x4000].GetValue(out byte[] d1))
@@ -372,7 +377,7 @@ namespace StreemaMaster
                     result = true;
                 }
             }
-            else if (objectIndex >= 0x4000 && objectIndex <= 0x4003 && objectSubindex == 0x02
+            else if (objectIndex >= 0x4000 && objectIndex <= (0x4000 + _maxStationsCount) && objectSubindex == 0x02
                       && _labelParameters.Count > 0)
             {
                 if (_labelParameters[objectIndex - 0x4000].GetValue(out byte[] d1))
@@ -381,7 +386,7 @@ namespace StreemaMaster
                     result = true;
                 }
             }
-            else if (objectIndex >= 0x4000 && objectIndex <= 0x4003 && objectSubindex == 0x03
+            else if (objectIndex >= 0x4000 && objectIndex <= (0x4000 + _maxStationsCount) && objectSubindex == 0x03
                       && _imageParameters.Count > 0)
             {
                 if (_imageParameters[objectIndex - 0x4000].GetValue(out byte[] d1))
@@ -390,7 +395,7 @@ namespace StreemaMaster
                     result = true;
                 }
             }
-            else if (objectIndex >= 0x4000 && objectIndex <= 0x4003 && objectSubindex == 0x04
+            else if (objectIndex >= 0x4000 && objectIndex <= (0x4000 + _maxStationsCount) && objectSubindex == 0x04
                       && _volumeScalingParameters.Count > 0)
             {
                 if (_volumeScalingParameters[objectIndex - 0x4000].GetValue(out byte[] d1))
@@ -399,7 +404,7 @@ namespace StreemaMaster
                     result = true;
                 }
             }
-            else if (objectIndex >= 0x4000 && objectIndex <= 0x4003 && objectSubindex == 0x05
+            else if (objectIndex >= 0x4000 && objectIndex <= (0x4000 + _maxStationsCount) && objectSubindex == 0x05
                       && _processIdParameters.Count > 0)
             {
                 if (_processIdParameters[objectIndex - 0x4000].GetValue(out byte[] d1))
@@ -425,7 +430,7 @@ namespace StreemaMaster
 
                 result = _controlWordParameter.SetValue(controlWordValue);
             }
-            else if (objectIndex >= 0x4000 && objectIndex <= 0x4003
+            else if (objectIndex >= 0x4000 && objectIndex <= (0x4000 + _maxStationsCount)
                     && objectSubindex == 0x01)
             {
                 if (_urlParameters.Count > (objectIndex - 0x4000))
@@ -433,7 +438,7 @@ namespace StreemaMaster
                     result = _urlParameters[objectIndex - 0x4000].SetValue(data);
                 }
             }
-            else if (objectIndex >= 0x4000 && objectIndex <= 0x4003
+            else if (objectIndex >= 0x4000 && objectIndex <= (0x4000 + _maxStationsCount)
                     && objectSubindex == 0x04)
             {
                 if (_volumeScalingParameters.Count > (objectIndex - 0x4000))
@@ -480,6 +485,55 @@ namespace StreemaMaster
             base.OnStatusChanged(e);
         }
 
+        private bool CreateDelegationFile(string url, out string delegationUri)
+        {
+            bool result = false;
+            XmlDocument doc = new XmlDocument();
+            var tempPath = Path.GetTempPath();
+
+            delegationUri = string.Empty;
+
+            try
+            {
+                var htmlElement = doc.CreateElement("html");
+                var headElement = doc.CreateElement("head");
+                var bodyElement = doc.CreateElement("body");
+                var iFrameElement = doc.CreateElement("iframe");
+                var srcAttribute = doc.CreateAttribute("src");
+                var allowAttribute = doc.CreateAttribute("allow");
+                var widthAttribute = doc.CreateAttribute("width");
+                var heightAttribute = doc.CreateAttribute("height");
+
+                srcAttribute.InnerText = url;
+                allowAttribute.InnerText = "autoplay";
+                widthAttribute.InnerText = "480";
+                heightAttribute.InnerText = "640";
+
+                iFrameElement.Attributes.Append(srcAttribute);
+                iFrameElement.Attributes.Append(allowAttribute);
+                iFrameElement.Attributes.Append(widthAttribute);
+                iFrameElement.Attributes.Append(heightAttribute);
+
+                bodyElement.AppendChild(iFrameElement);
+                htmlElement.AppendChild(headElement);
+                htmlElement.AppendChild(bodyElement);
+
+                doc.AppendChild(htmlElement);
+
+                delegationUri = Path.Combine(tempPath, "streema.html");
+
+                doc.Save(delegationUri);
+
+                result = true;
+            }
+            catch(Exception e)
+            {
+                MsgLogger.Exception($"{GetType().Name} - CreateDelegationFile", e);
+            }
+
+            return result;
+        }
+
         private Task SetActiveStationAsync(int activeStationValue)
         {
             var result = Task.Run(() =>
@@ -504,8 +558,17 @@ namespace StreemaMaster
                             startInfo.WindowStyle = ProcessWindowStyle.Normal;
 
                             string playUrl = _settings.PlayUrl;
+                            string fullUrl = $"{playUrl}{url}";
 
-                            startInfo.Arguments = _settings.AppArgs + $" {playUrl}{url}";
+                            if(_settings.UseIFrameDelegation)
+                            {
+                                if(CreateDelegationFile(fullUrl, out var delegationUri))
+                                {
+                                    fullUrl = delegationUri;
+                                }
+                            }
+
+                            startInfo.Arguments = _settings.AppArgs + $" {fullUrl}";
 
                             SetExecutionStatus(StatusWordEnums.PendingExecution);
 
