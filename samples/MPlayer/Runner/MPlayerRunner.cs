@@ -117,6 +117,7 @@ namespace MPlayerMaster
                 {
                     Parser.ProcessLine(args.Data);
                 };
+
                 p.Start();
 
                 p.BeginOutputReadLine();

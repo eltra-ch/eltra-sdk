@@ -28,7 +28,7 @@
 				<version versionType="SW" readOnly="true">0x0100</version>
 				<version versionType="HW" readOnly="true">0x0210</version>
 				<version versionType="APPNB" readOnly="true">0x0001</version>
-				<version versionType="APPVER" readOnly="true">0x0002</version>
+				<version versionType="APPVER" readOnly="true">0x0004</version>
 			</DeviceIdentity>
 			<DeviceManager>
 				<userLevelList>
@@ -100,7 +100,7 @@
 							<type>UNSIGNED16</type>
 						</dataType>
 						<flagsIDRef uniqueIDRef="AT_RO" />
-						<defaultValue>0x02</defaultValue>
+						<defaultValue>0x04</defaultValue>
 						<userLevels>
 							<userLevelIDRef uniqueIDRef="USR_Expert" />
 							<userLevelIDRef uniqueIDRef="USR_Internal" />
@@ -323,7 +323,226 @@
 							<userLevelIDRef uniqueIDRef="USR_Internal" />
 						</userLevels>
 					</parameter>
-					<!-- Active Station -->
+
+          <!-- Station 3 -->
+          <structuredParameter uniqueID="PARAM_Station_3">
+            <index>0x4002</index>
+            <label lang="en-TT">Radio station 3</label>
+          </structuredParameter>
+          <parameter uniqueID="PARAM_Station3MaxSubIdx">
+            <index>0x4002</index>
+            <subIndex>0x00</subIndex>
+            <label lang="en-TT">Highest sub-index supported</label>
+            <dataType>
+              <type>UNSIGNED8</type>
+            </dataType>
+            <flagsIDRef uniqueIDRef="AT_RO" />
+            <defaultValue>0x05</defaultValue>
+            <userLevels />
+          </parameter>
+          <parameter uniqueID="PARAM_Station_3_Id">
+            <index>0x4002</index>
+            <subIndex>0x01</subIndex>
+            <label lang="en-TT">Stream URL</label>
+            <dataType>
+              <type>VISIBLE_STRING</type>
+            </dataType>
+            <flagsIDRef uniqueIDRef="AT_RW" />
+            <defaultValue>http://listen.livestreamingservice.com:8128</defaultValue>
+            <userLevels>
+              <userLevelIDRef uniqueIDRef="USR_Standard" />
+              <userLevelIDRef uniqueIDRef="USR_Expert" />
+              <userLevelIDRef uniqueIDRef="USR_Internal" />
+            </userLevels>
+            <displayFormat>dec</displayFormat>
+          </parameter>
+          <parameter uniqueID="PARAM_Station_3_Title">
+            <index>0x4002</index>
+            <subIndex>0x02</subIndex>
+            <label lang="en-TT">Station Title</label>
+            <dataType>
+              <type>VISIBLE_STRING</type>
+            </dataType>
+            <flagsIDRef uniqueIDRef="AT_RO" />
+            <defaultValue>Power (Top 40)</defaultValue>
+            <userLevels>
+              <userLevelIDRef uniqueIDRef="USR_Standard" />
+              <userLevelIDRef uniqueIDRef="USR_Expert" />
+              <userLevelIDRef uniqueIDRef="USR_Internal" />
+            </userLevels>
+            <displayFormat>dec</displayFormat>
+          </parameter>
+          <parameter uniqueID="PARAM_Station_3_StreamTitle">
+            <index>0x4002</index>
+            <subIndex>0x03</subIndex>
+            <label lang="en-TT">Stream Title</label>
+            <dataType>
+              <type>VISIBLE_STRING</type>
+            </dataType>
+            <flagsIDRef uniqueIDRef="AT_RO" />
+            <defaultValue/>
+            <userLevels>
+              <userLevelIDRef uniqueIDRef="USR_Standard" />
+              <userLevelIDRef uniqueIDRef="USR_Expert" />
+              <userLevelIDRef uniqueIDRef="USR_Internal" />
+            </userLevels>
+            <displayFormat>dec</displayFormat>
+          </parameter>
+          <parameter uniqueID="PARAM_Station_3_VolumeScaling">
+            <index>0x4002</index>
+            <subIndex>0x04</subIndex>
+            <label lang="en-TT">Volume level</label>
+            <dataType>
+              <type>DOUBLE</type>
+            </dataType>
+            <flagsIDRef uniqueIDRef="AT_RW" />
+            <defaultValue>100</defaultValue>
+            <allowedValues>
+              <range>
+                <minValue>
+                  <value>0</value>
+                </minValue>
+                <maxValue>
+                  <value>100</value>
+                </maxValue>
+              </range>
+            </allowedValues>
+            <unit>
+              <label lang="en-TT">%</label>
+            </unit>
+            <userLevels>
+              <userLevelIDRef uniqueIDRef="USR_Standard" />
+              <userLevelIDRef uniqueIDRef="USR_Expert" />
+              <userLevelIDRef uniqueIDRef="USR_Internal" />
+            </userLevels>
+            <displayFormat>dec</displayFormat>
+          </parameter>
+          <parameter uniqueID="PARAM_Station3ProcessId">
+            <index>0x4002</index>
+            <subIndex>0x05</subIndex>
+            <label lang="en-TT">Station 3 Process Id</label>
+            <dataType>
+              <type>INTEGER32</type>
+            </dataType>
+            <flagsIDRef uniqueIDRef="AT_RO" />
+            <defaultValue>0x00</defaultValue>
+            <userLevels>
+              <userLevelIDRef uniqueIDRef="USR_Standard" />
+              <userLevelIDRef uniqueIDRef="USR_Expert" />
+              <userLevelIDRef uniqueIDRef="USR_Internal" />
+            </userLevels>
+          </parameter>
+
+          <!-- Station 4 -->
+          <structuredParameter uniqueID="PARAM_Station_4">
+            <index>0x4003</index>
+            <label lang="en-TT">Radio station 4</label>
+          </structuredParameter>
+          <parameter uniqueID="PARAM_Station4MaxSubIdx">
+            <index>0x4003</index>
+            <subIndex>0x00</subIndex>
+            <label lang="en-TT">Highest sub-index supported</label>
+            <dataType>
+              <type>UNSIGNED8</type>
+            </dataType>
+            <flagsIDRef uniqueIDRef="AT_RO" />
+            <defaultValue>0x05</defaultValue>
+            <userLevels />
+          </parameter>
+          <parameter uniqueID="PARAM_Station_4_Id">
+            <index>0x4003</index>
+            <subIndex>0x01</subIndex>
+            <label lang="en-TT">Stream URL</label>
+            <dataType>
+              <type>VISIBLE_STRING</type>
+            </dataType>
+            <flagsIDRef uniqueIDRef="AT_RW" />
+            <defaultValue>http://listen.livestreamingservice.com:8070</defaultValue>
+            <userLevels>
+              <userLevelIDRef uniqueIDRef="USR_Standard" />
+              <userLevelIDRef uniqueIDRef="USR_Expert" />
+              <userLevelIDRef uniqueIDRef="USR_Internal" />
+            </userLevels>
+            <displayFormat>dec</displayFormat>
+          </parameter>
+          <parameter uniqueID="PARAM_Station_4_Title">
+            <index>0x4003</index>
+            <subIndex>0x02</subIndex>
+            <label lang="en-TT">Station Title</label>
+            <dataType>
+              <type>VISIBLE_STRING</type>
+            </dataType>
+            <flagsIDRef uniqueIDRef="AT_RO" />
+            <defaultValue>UK top 40</defaultValue>
+            <userLevels>
+              <userLevelIDRef uniqueIDRef="USR_Standard" />
+              <userLevelIDRef uniqueIDRef="USR_Expert" />
+              <userLevelIDRef uniqueIDRef="USR_Internal" />
+            </userLevels>
+            <displayFormat>dec</displayFormat>
+          </parameter>
+          <parameter uniqueID="PARAM_Station_4_StreamTitle">
+            <index>0x4003</index>
+            <subIndex>0x03</subIndex>
+            <label lang="en-TT">Stream Title</label>
+            <dataType>
+              <type>VISIBLE_STRING</type>
+            </dataType>
+            <flagsIDRef uniqueIDRef="AT_RO" />
+            <defaultValue/>
+            <userLevels>
+              <userLevelIDRef uniqueIDRef="USR_Standard" />
+              <userLevelIDRef uniqueIDRef="USR_Expert" />
+              <userLevelIDRef uniqueIDRef="USR_Internal" />
+            </userLevels>
+            <displayFormat>dec</displayFormat>
+          </parameter>
+          <parameter uniqueID="PARAM_Station_4_VolumeScaling">
+            <index>0x4003</index>
+            <subIndex>0x04</subIndex>
+            <label lang="en-TT">Volume level</label>
+            <dataType>
+              <type>DOUBLE</type>
+            </dataType>
+            <flagsIDRef uniqueIDRef="AT_RW" />
+            <defaultValue>100</defaultValue>
+            <allowedValues>
+              <range>
+                <minValue>
+                  <value>0</value>
+                </minValue>
+                <maxValue>
+                  <value>100</value>
+                </maxValue>
+              </range>
+            </allowedValues>
+            <unit>
+              <label lang="en-TT">%</label>
+            </unit>
+            <userLevels>
+              <userLevelIDRef uniqueIDRef="USR_Standard" />
+              <userLevelIDRef uniqueIDRef="USR_Expert" />
+              <userLevelIDRef uniqueIDRef="USR_Internal" />
+            </userLevels>
+            <displayFormat>dec</displayFormat>
+          </parameter>
+          <parameter uniqueID="PARAM_Station4ProcessId">
+            <index>0x4003</index>
+            <subIndex>0x05</subIndex>
+            <label lang="en-TT">Station 3 Process Id</label>
+            <dataType>
+              <type>INTEGER32</type>
+            </dataType>
+            <flagsIDRef uniqueIDRef="AT_RO" />
+            <defaultValue>0x00</defaultValue>
+            <userLevels>
+              <userLevelIDRef uniqueIDRef="USR_Standard" />
+              <userLevelIDRef uniqueIDRef="USR_Expert" />
+              <userLevelIDRef uniqueIDRef="USR_Internal" />
+            </userLevels>
+          </parameter>
+          
+          <!-- Active Station -->
 					<parameter uniqueID="PARAM_ActiveStation">
 						<index>0x4100</index>
 						<subIndex>0x00</subIndex>
