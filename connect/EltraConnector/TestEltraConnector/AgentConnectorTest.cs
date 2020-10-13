@@ -136,6 +136,23 @@ namespace TestEltraConnector
         }
 
         [Fact]
+        public async Task Connection_ConnectDisconnectShouldSucceed()
+        {
+            //Arrange
+            await _connector.SignIn(Identity, true);
+
+            //Act
+            bool connectResult = await _connector.Connect();
+
+            _connector.Disconnect();
+
+            await _connector.SignOut();
+
+            //Assert
+            Assert.True(connectResult);
+        }
+
+        [Fact]
         public async Task Channels_GetChannelsUsingAliasShouldSucceed()
         {
             //Arrange

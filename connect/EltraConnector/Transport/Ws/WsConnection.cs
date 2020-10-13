@@ -160,9 +160,7 @@ namespace EltraConnector.Transport.Ws
 
                     if (Socket.State == WebSocketState.Open)
                     {
-                        const int maxDelay = 10000;
-
-                        await Socket.CloseAsync(WebSocketCloseStatus.NormalClosure, "Disconnect", new CancellationTokenSource(maxDelay).Token);
+                        await Socket.CloseAsync(WebSocketCloseStatus.Empty, "", _cancellationTokenSource.Token);
                     }
 
                     if (Socket.State == WebSocketState.Closed)

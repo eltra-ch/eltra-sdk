@@ -96,11 +96,11 @@ namespace EltraConnector.UserAgent
 
         public override bool Stop()
         {
-            if(_wsConnectionManager.IsConnected(_commandExecUuid))
+            if (_wsConnectionManager.IsConnected(_commandExecUuid))
             {
-                Task.Run(async ()=>{ await _wsConnectionManager.Disconnect(_commandExecUuid); }).GetAwaiter().GetResult();
+                Task.Run(async () => { await _wsConnectionManager.Disconnect(_commandExecUuid); }).GetAwaiter().GetResult();
             }
-            
+
             return base.Stop();
         }
 
