@@ -96,6 +96,8 @@ namespace EltraConnector.UserAgent
 
         public override bool Stop()
         {
+            RequestStop();
+
             if (_wsConnectionManager.IsConnected(_commandExecUuid))
             {
                 Task.Run(async () => { await _wsConnectionManager.Disconnect(_commandExecUuid); }).GetAwaiter().GetResult();

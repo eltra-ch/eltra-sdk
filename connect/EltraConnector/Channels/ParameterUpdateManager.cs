@@ -77,6 +77,8 @@ namespace EltraConnector.UserAgent
 
         public override bool Stop()
         {
+            RequestStop();
+
             Task.Run(async ()=> await CloseWsChannel(_wsChannelId));
 
             return base.Stop();

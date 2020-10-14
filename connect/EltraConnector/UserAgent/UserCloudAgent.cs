@@ -35,9 +35,6 @@ namespace EltraConnector.UserAgent
 
         private Task _agentTask;
         private CancellationTokenSource _agentCancelationTokenSource;
-        private ChannelHeartbeat _channelHeartbeat;
-        private ExecuteCommander _executeCommander;
-        private ParameterUpdateManager _parameterUpdateManager;        
         private Authentication _authentication;
         private Channel _channel;
         private UserIdentity _deviceIdentity;
@@ -46,6 +43,10 @@ namespace EltraConnector.UserAgent
         private ChannelStatus _remoteChannelStatus = ChannelStatus.Undefined;
         private string _remoteChannelId;
         private string _url;
+
+        private ChannelHeartbeat _channelHeartbeat;
+        private ExecuteCommander _executeCommander;
+        private ParameterUpdateManager _parameterUpdateManager;
 
         #endregion
 
