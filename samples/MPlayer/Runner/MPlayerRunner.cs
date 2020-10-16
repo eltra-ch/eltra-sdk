@@ -5,7 +5,6 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Runtime.InteropServices;
-using static MPlayerMaster.MPlayerDefinitions;
 
 namespace MPlayerMaster
 {
@@ -80,20 +79,10 @@ namespace MPlayerMaster
             return result;
         }
 
-        private bool SetExecutionStatus(StatusWordEnums status)
+        public bool Start(Parameter processParam, string url)
         {
             bool result = false;
 
-            if (StatusWordParameter != null)
-            {
-                result = StatusWordParameter.SetValue((ushort)status);
-            }
-
-            return result;
-        }
-
-        public void Start(Parameter processParam, string url)
-        {
             try
             {
                 var tempPath = Path.GetTempPath();
@@ -109,8 +98,6 @@ namespace MPlayerMaster
                 startInfo.Arguments = startInfo.Arguments.Trim();
                 startInfo.FileName = _mplayerProcessName;
 
-                SetExecutionStatus(StatusWordEnums.PendingExecution);
-
                 p.StartInfo = startInfo;
 
                 p.OutputDataReceived += (sender, args) =>
@@ -122,13 +109,15 @@ namespace MPlayerMaster
 
                 p.BeginOutputReadLine();
 
-                SetExecutionStatus(p != null ? StatusWordEnums.ExecutedSuccessfully : StatusWordEnums.ExecutionFailed);
-
                 if (p != null)
                 {
                     if (!processParam.SetValue(p.Id))
                     {
                         MsgLogger.WriteError($"{GetType().Name} - SetActiveStationAsync", "process id cannot be set");
+                    }
+                    else
+                    {
+                        result = true;
                     }
                 }
 
@@ -138,70 +127,118 @@ namespace MPlayerMaster
             {
                 MsgLogger.Exception($"{GetType().Name} - SetActiveStationAsync", e);
             }
+
+            return result;
         }
 
-        public void Stop()
+        public bool Stop()
         {
+            bool result = false;
+
             try
             {
-                bool gracefullClose = false;
+                result = CloseActualStationProcess();
 
-                if (StationsCountParameter.GetValue(out ushort maxCount))
+                if (!result)
                 {
-                    for (ushort i = 0; i < maxCount; i++)
-                    {
-                        if (ProcessIdParameters[i].GetValue(out int processId) && processId > 0)
-                        {
-                            try
-                            {
-                                var p = Process.GetProcessById(processId);
-
-                                if (p != null)
-                                {
-                                    if (!p.HasExited)
-                                    {
-                                        const int MaxWaitTimeInMs = 10000;
-                                        var startInfo = new ProcessStartInfo("kill");
-
-                                        startInfo.WindowStyle = ProcessWindowStyle.Normal;
-                                        startInfo.Arguments = $"{processId}";
-
-                                        Process.Start(startInfo);
-
-                                        gracefullClose = p.WaitForExit(MaxWaitTimeInMs);
-                                    }
-                                    else
-                                    {
-                                        MsgLogger.WriteError($"{GetType().Name} - CloseWebAppInstances", $"process id exited - pid {processId}");
-                                    }
-                                }
-                                else
-                                {
-                                    MsgLogger.WriteError($"{GetType().Name} - CloseWebAppInstances", $"process id not found - pid {processId}");
-                                }
-                            }
-                            catch (Exception e)
-                            {
-                                MsgLogger.Exception($"{GetType().Name} - CloseWebAppInstances [1]", e);
-                            }
-                        }
-                    }
+                    result = TryCloseAllProcesses();
                 }
 
-                if (!gracefullClose)
+                if (!result)
                 {
-                    MsgLogger.WriteFlow("close browser brute force");
-
-                    foreach (var p in Process.GetProcessesByName(_mplayerProcessName))
-                    {
-                        p.Kill();
-                    }
+                    CloseBruteForce();
                 }
             }
             catch (Exception e)
             {
-                MsgLogger.Exception($"{GetType().Name} - CloseWebAppInstances [2]", e);
+                MsgLogger.Exception($"{GetType().Name} - Stop [2]", e);
             }
+
+            return result;
+        }
+
+        private bool TryCloseAllProcesses()
+        {
+            bool result = false;
+
+            if (StationsCountParameter.GetValue(out ushort maxCount))
+            {
+                for (ushort i = 0; i < maxCount; i++)
+                {
+                    if (ProcessIdParameters[i].GetValue(out int processId) && processId > 0)
+                    {
+                        result = CloseProcess(processId);
+                    }
+                }
+            }
+
+            return result;
+        }
+
+        private bool CloseActualStationProcess()
+        {
+            bool result = false;
+            int i = ActiveStationValue - 1;
+
+            if (i >= 0)
+            {
+                if (ProcessIdParameters[i].GetValue(out int processId) && processId > 0)
+                {
+                    result = CloseProcess(processId);
+                }
+            }
+
+            return result;
+        }
+
+        private void CloseBruteForce()
+        {
+            MsgLogger.WriteFlow($"close '{_mplayerProcessName}' brute force");
+
+            foreach (var p in Process.GetProcessesByName(_mplayerProcessName))
+            {
+                p.Kill();
+            }
+        }
+
+        private bool CloseProcess(int processId)
+        {
+            bool result = false;
+            
+            try
+            {
+                var p = Process.GetProcessById(processId);
+
+                if (p != null)
+                {
+                    if (!p.HasExited)
+                    {
+                        const int MaxWaitTimeInMs = 10000;
+                        var startInfo = new ProcessStartInfo("kill");
+
+                        startInfo.WindowStyle = ProcessWindowStyle.Normal;
+                        startInfo.Arguments = $"{processId}";
+
+                        Process.Start(startInfo);
+
+                        result = p.WaitForExit(MaxWaitTimeInMs);
+                    }
+                    else
+                    {
+                        MsgLogger.WriteError($"{GetType().Name} - Stop", $"process id exited - pid {processId}");
+                    }
+                }
+                else
+                {
+                    MsgLogger.WriteError($"{GetType().Name} - Stop", $"process id not found - pid {processId}");
+                }
+            }
+            catch (Exception e)
+            {
+                MsgLogger.Exception($"{GetType().Name} - Stop [1]", e);
+            }
+
+            return result;
         }
 
         #endregion

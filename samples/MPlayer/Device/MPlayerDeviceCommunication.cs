@@ -407,7 +407,11 @@ namespace MPlayerMaster
             {
                 if(activeStationValue == 0)
                 {
-                    Runner.Stop();
+                    SetExecutionStatus(StatusWordEnums.PendingExecution);
+
+                    bool result = Runner.Stop();
+
+                    SetExecutionStatus(result ? StatusWordEnums.ExecutedSuccessfully : StatusWordEnums.ExecutionFailed);
                 }
                 else if (_urlParameters.Count >= activeStationValue && activeStationValue > 0)
                 {
@@ -416,9 +420,13 @@ namespace MPlayerMaster
 
                     if (urlParam.GetValue(out string url))
                     {
+                        SetExecutionStatus(StatusWordEnums.PendingExecution);
+
                         Runner.Stop();
 
-                        Runner.Start(processParam, url);
+                        var result = Runner.Start(processParam, url);
+
+                        SetExecutionStatus(result ? StatusWordEnums.ExecutedSuccessfully : StatusWordEnums.ExecutionFailed);
                     }
                 }
             });
