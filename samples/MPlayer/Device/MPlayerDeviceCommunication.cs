@@ -401,12 +401,30 @@ namespace MPlayerMaster
             base.OnStatusChanged(e);
         }
 
+        private void SetEmptyStreamLabel(ushort stationIndex)
+        {
+            if (_streamTitleParameters.Count > stationIndex)
+            {
+                var streamParam = _streamTitleParameters[stationIndex];
+
+                if (streamParam != null)
+                {
+                    streamParam.SetValue("-");
+                }
+            }
+        }
+
         private Task SetActiveStationAsync(int activeStationValue)
         {
             var result = Task.Run(() =>
             {
                 if(activeStationValue == 0)
                 {
+                    for (ushort i = 0; i < _maxStationsCount; i++)
+                    {
+                        SetEmptyStreamLabel(i);
+                    }
+
                     SetExecutionStatus(StatusWordEnums.PendingExecution);
 
                     bool result = Runner.Stop();
@@ -417,10 +435,12 @@ namespace MPlayerMaster
                 {
                     var urlParam = _urlParameters[activeStationValue - 1];
                     var processParam = _processIdParameters[activeStationValue - 1];
-
+                    
                     if (urlParam.GetValue(out string url))
                     {
                         SetExecutionStatus(StatusWordEnums.PendingExecution);
+
+                        SetEmptyStreamLabel((ushort)(activeStationValue - 1));
 
                         Runner.Stop();
 
