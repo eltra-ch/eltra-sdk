@@ -7,6 +7,7 @@ using EltraCommon.Contracts.Parameters;
 using EltraCommon.ObjectDictionary.Common.DeviceDescription.Common;
 using EltraCommon.ObjectDictionary.Common.DeviceDescription.Profiles.Application.Parameters;
 using EltraCommon.Threads;
+using EltraCommon.ObjectDictionary.Xdd.DeviceDescription.Profiles.Application.Parameters;
 
 namespace EltraConnector.Master.Device.ParameterConnection
 {
@@ -180,7 +181,7 @@ namespace EltraConnector.Master.Device.ParameterConnection
         {
             bool result = false;
 
-            MsgLogger.WriteDebug($"{GetType().Name} - Register", $"Register Parameter '{registeredParameter.Key}'");
+            MsgLogger.WriteFlow($"{GetType().Name} - Register", $"Register parameter source = '{registeredParameter.Key}', index = {registeredParameter.Parameter.Index:X4}, subindex = {(registeredParameter.Parameter as XddParameter).SubIndex:X4}");
 
             lock (RegisteredParametersLock)
             {
@@ -222,7 +223,7 @@ namespace EltraConnector.Master.Device.ParameterConnection
         {
             bool result = false;
 
-            MsgLogger.WriteDebug($"{GetType().Name} - Unregister", $"Unregister Parameter '{registeredParameter.Key}'");
+            MsgLogger.WriteDebug($"{GetType().Name} - Unregister", $"Unregister Parameter '{registeredParameter.Key}', index = {registeredParameter.Parameter.Index:X4}, subindex = {(registeredParameter.Parameter as XddParameter).SubIndex:X4}");
 
             lock (RegisteredParametersLock)
             {
@@ -267,7 +268,7 @@ namespace EltraConnector.Master.Device.ParameterConnection
         {
             var result = new List<RegisteredParameter>();
 
-            MsgLogger.WriteDebug($"{GetType().Name} - GetParametersFromSource", $"GetParametersFromSource enter ...");
+            MsgLogger.WriteFlow($"{GetType().Name} - GetParametersFromSource", $"GetParametersFromSource enter ...");
 
             lock (RegisteredParametersLock)
             {
@@ -283,7 +284,7 @@ namespace EltraConnector.Master.Device.ParameterConnection
                 }
             }
 
-            MsgLogger.WriteDebug($"{GetType().Name} - GetParametersFromSource", $"GetParametersFromSource leave");
+            MsgLogger.WriteFlow($"{GetType().Name} - GetParametersFromSource", $"GetParametersFromSource leave");
 
             return result;
         }

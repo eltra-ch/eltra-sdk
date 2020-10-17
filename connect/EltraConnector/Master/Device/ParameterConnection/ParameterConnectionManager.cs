@@ -76,11 +76,19 @@ namespace EltraConnector.Master.Device.ParameterConnection
             {
                 var registeredParameter = new RegisteredParameter { Source = source, Parameter = parameter, Priority = priority };
 
-                lock(RegisterParametersQueueLock)
+                MsgLogger.WriteFlow($"{GetType().Name} - RegisterParameter", $"register parameter index = 0x{index:X4}, subindex = 0x{subIndex:X4}, add to queue ...");
+
+                lock (RegisterParametersQueueLock)
                 {
                     _registerParametersQueue.Add(registeredParameter);
                     result = true;
                 }
+
+                MsgLogger.WriteFlow($"{GetType().Name} - RegisterParameter", $"register parameter index = 0x{index:X4}, subindex = 0x{subIndex:X4}, added to queue");
+            }
+            else
+            {
+                MsgLogger.WriteError($"{GetType().Name} - RegisterParameter", $"parameter index = 0x{index:X4}, subindex = 0x{subIndex:X4}, not found");
             }
 
             return result;
@@ -96,11 +104,19 @@ namespace EltraConnector.Master.Device.ParameterConnection
             {
                 var registeredParameter = new RegisteredParameter { Source = source, Parameter = parameter, Priority = priority };
 
-                lock(UnregisterParametersQueueLock)
+                MsgLogger.WriteFlow($"{GetType().Name} - UnregisterParameter", $"un-register parameter index = 0x{index:X4}, subindex = 0x{subIndex:X4}, add to queue ...");
+
+                lock (UnregisterParametersQueueLock)
                 {
                     _unregisterParametersQueue.Add(registeredParameter);
                     result = true;
                 }
+
+                MsgLogger.WriteFlow($"{GetType().Name} - UnregisterParameter", $"un-register parameter index = 0x{index:X4}, subindex = 0x{subIndex:X4}, added to queue");
+            }
+            else
+            {
+                MsgLogger.WriteError($"{GetType().Name} - UnregisterParameter", $"parameter index = 0x{index:X4}, subindex = 0x{subIndex:X4}, not found");
             }
 
             return result;
@@ -231,6 +247,8 @@ namespace EltraConnector.Master.Device.ParameterConnection
         {
             var parameters = _parameterUpdater.GetParametersFromSource(source);
 
+            MsgLogger.WriteFlow($"{GetType().Name} - SourceChannelGoingOffline", $"Source {source} is going offline ...");
+
             lock (UnregisterParametersQueueLock)
             {
                 foreach (var parameter in parameters)
@@ -238,6 +256,8 @@ namespace EltraConnector.Master.Device.ParameterConnection
                     _unregisterParametersQueue.Add(parameter);
                 }
             }
+
+            MsgLogger.WriteFlow($"{GetType().Name} - SourceChannelGoingOffline", $"Source {source} unregister queue ready!");
         }
         
         #endregion
