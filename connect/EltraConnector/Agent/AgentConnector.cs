@@ -95,7 +95,14 @@ namespace EltraConnector.Agent
         public AgentStatus Status
         {
             get => _status;
-            private set => _status = value;
+            private set 
+            {
+                if (_status != value)
+                {
+                    _status = value;
+                    OnStatusChanged();
+                }
+            }
         }
 
         /// <summary>
@@ -126,6 +133,11 @@ namespace EltraConnector.Agent
         #endregion
 
         #region Events handling
+
+        private void OnStatusChanged()
+        {
+            StatusChanged?.Invoke(this, new AgentStatusEventArgs { Status = Status });
+        }
 
         private void OnHostChanged()
         {
@@ -510,7 +522,6 @@ namespace EltraConnector.Agent
             return result;
         }
 
-
         private void RegisterEvents()
         {
             if (_deviceAgent != null)
@@ -518,8 +529,6 @@ namespace EltraConnector.Agent
                 _deviceAgent.StatusChanged += (sender, args) =>
                 {
                     Status = args.Status;
-
-                    StatusChanged?.Invoke(this, args);
                 };
 
                 _deviceAgent.AgentChannelStatusChanged += (sender, args) =>
@@ -579,7 +588,20 @@ namespace EltraConnector.Agent
                 do
                 {
                     await Task.Delay(10);
-                } while (Status != AgentStatus.Started && waiter.Elapsed < timeout);
+
+                    if(_deviceAgent != null && _deviceAgent.Status == AgentStatus.Started)
+                    {
+                        Status = AgentStatus.Started;
+                        break;
+                    }
+
+                    if (_deviceAgent != null && _deviceAgent.Status == AgentStatus.Bound)
+                    {
+                        Status = AgentStatus.Bound;
+                        break;
+                    }
+
+                } while (Status != AgentStatus.Started && Status != AgentStatus.Bound && waiter.Elapsed < timeout);
 
                 result = waiter.Elapsed < timeout;
             }

@@ -215,6 +215,11 @@ namespace EltraConnector.Controllers.Base
                     result = requestResult.Result;
                 }
 
+                if(!result)
+                {
+                    Channel.Status = ChannelStatus.Offline;
+                }
+
                 OnChannelRegistered(new ChannelRegistrationEventArgs { Channel = Channel, Success = result, Exception = postResult.Exception });
             }
             catch (Exception e)

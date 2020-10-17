@@ -57,6 +57,7 @@ namespace EltraConnector.UserAgent
             _status = AgentStatus.Undefined;
             _identity = identity;
             _executedCommands = new List<DeviceCommand>();
+            _channel = new Channel() { Status = ChannelStatus.Offline };
             _channelAdapter = new UserChannelControllerAdapter(url, identity, updateInterval, timeout) { UseWebSockets = true };
 
             Initialize(url, updateInterval, timeout);
@@ -66,6 +67,7 @@ namespace EltraConnector.UserAgent
         {
             _status = AgentStatus.Undefined;
             _identity = identity;
+            _channel = new Channel() { Status = ChannelStatus.Offline };
             _executedCommands = new List<DeviceCommand>();
             _channelAdapter = new UserChannelControllerAdapter(url, uuid, identity, updateInterval, timeout) { UseWebSockets = true };
 
@@ -76,6 +78,7 @@ namespace EltraConnector.UserAgent
         {
             _status = AgentStatus.Undefined;
             _identity = masterAgent.Identity;
+            _channel = new Channel() { Status = ChannelStatus.Offline };
             _executedCommands = new List<DeviceCommand>();
             _channelAdapter = new UserChannelControllerAdapter(masterAgent.Url, deviceNode.ChannelId, masterAgent.Identity, updateInterval, timeout) { UseWebSockets = true };
 
@@ -112,6 +115,16 @@ namespace EltraConnector.UserAgent
         {
             _channel = e.Channel;
 
+            _channel.StatusChanged += (a, f) => {
+
+                if (Status == AgentStatus.Starting && f.Status == ChannelStatus.Online)
+                {
+                    Status = AgentStatus.Started;
+                }
+
+                ChannelStatus = f.Status;
+            };
+
             if (e.Success)
             {
                 _channel.Status = ChannelStatus.Online;
@@ -122,7 +135,7 @@ namespace EltraConnector.UserAgent
             }
         }
         
-        private void RecoverSession()
+        private void RecoverChannel()
         {
             if (_deviceIdentity != null && _channelAdapter != null)
             {
@@ -150,10 +163,9 @@ namespace EltraConnector.UserAgent
         private void OnChannelStatusChanged()
         {
             AgentChannelStatusChanged?.Invoke(this, new AgentChannelStatusChangedEventArgs() {  Status = ChannelStatus, Id = ChannelId });
-
         }
 
-        private void OnChannelStatusChanged(object sender, AgentChannelStatusChangedEventArgs e)
+        private void OnHeartbeatChannelStatusChanged(object sender, AgentChannelStatusChangedEventArgs e)
         {
             if (Status == AgentStatus.Starting && e.Status == ChannelStatus.Online)
             {
@@ -175,7 +187,7 @@ namespace EltraConnector.UserAgent
 
             if (e.Status == ChannelStatus.Online)
             {
-                RecoverSession();
+                RecoverChannel();
             }
         }
 
@@ -446,6 +458,11 @@ namespace EltraConnector.UserAgent
 
             var result = await _channelAdapter.BindChannels(uuid, identity);
 
+            if(result)
+            {
+                Status = AgentStatus.Bound;
+            }
+
             return result;
         }
 
@@ -454,6 +471,11 @@ namespace EltraConnector.UserAgent
             _deviceIdentity = identity;
 
             var result = await _channelAdapter.BindChannels(_channelAdapter.ChannelId, identity);
+
+            if (result)
+            {
+                Status = AgentStatus.Bound;
+            }
 
             return result;
         }
@@ -469,7 +491,7 @@ namespace EltraConnector.UserAgent
         {
             if (_channelHeartbeat != null)
             {
-                _channelHeartbeat.StatusChanged += OnChannelStatusChanged;
+                _channelHeartbeat.StatusChanged += OnHeartbeatChannelStatusChanged;
                 _channelHeartbeat.SignInRequested += OnSignInRequested;
             }
 

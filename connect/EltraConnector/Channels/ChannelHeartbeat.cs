@@ -161,7 +161,9 @@ namespace EltraConnector.Sessions
                 }
             }
 
-            if(_wsConnectionManager.IsConnected(_channelId))
+            Status = ChannelStatus.Offline;
+
+            if (_wsConnectionManager.IsConnected(_channelId))
             {
                 await _wsConnectionManager.Disconnect(_channelId);
             }
