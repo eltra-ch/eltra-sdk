@@ -276,6 +276,8 @@ namespace EltraConnector.UserAgent
                         {
                             if (device.SearchParameter(uniqueId) is Parameter parameterEntry)
                             {
+                                AddToRegisteredParameters(uniqueId);
+
                                 var command = await GetDeviceCommand(device, "RegisterParameterUpdate");
 
                                 if (command != null)
@@ -287,12 +289,10 @@ namespace EltraConnector.UserAgent
                                     result = await ExecuteCommandAsync(command);
                                 }
 
-                                if (result)
+                                if (!result)
                                 {
-                                    AddToRegisteredParameters(uniqueId);
-                                }
-                                else
-                                {
+                                    RemoveFromRegisteredParameters(uniqueId);
+                                
                                     MsgLogger.WriteError($"{GetType().Name} - RegisterParameterUpdate", $"parameter could't be registered - '{uniqueId}'");
                                 }
                             }
@@ -339,6 +339,8 @@ namespace EltraConnector.UserAgent
                     {
                         if (registeredParameter.InstanceCount <= 1)
                         {
+                            RemoveFromRegisteredParameters(uniqueId);
+
                             if (device != null)
                             {
                                 if (device.SearchParameter(uniqueId) is Parameter parameterEntry)
@@ -356,15 +358,15 @@ namespace EltraConnector.UserAgent
                                 }
                             }
 
-                            if (result)
+                            if (!result)
                             {
-                                RemoveFromRegisteredParameters(uniqueId);
+                                AddToRegisteredParameters(uniqueId);
 
-                                MsgLogger.WriteDebug($"{GetType().Name} - UnregisterParameterUpdate", $"unregistered parameter '{uniqueId}'");
+                                MsgLogger.WriteError($"{GetType().Name} - UnregisterParameterUpdate", $"parameter could't be unregistered - '{uniqueId}'");       
                             }
                             else
                             {
-                                MsgLogger.WriteError($"{GetType().Name} - UnregisterParameterUpdate", $"parameter could't be unregistered - '{uniqueId}'");
+                                MsgLogger.WriteDebug($"{GetType().Name} - UnregisterParameterUpdate", $"unregistered parameter '{uniqueId}'");
                             }
                         }
                         else
