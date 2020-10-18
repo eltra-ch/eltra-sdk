@@ -325,13 +325,19 @@ namespace EltraConnector.Agent
                 {
                     foreach (var device in channel.Devices)
                     {
-                        if (FindVcs(device) == null)
+                        var vcs = FindVcs(device);
+
+                        if (vcs == null)
                         {
-                            var vcs = new DeviceVcs(_deviceAgent, device);
+                            vcs = new DeviceVcs(_deviceAgent, device);
 
                             vcs.DeviceChanged += (sender, args) => { DeviceDetected?.Invoke(this, new DeviceDetectedEventArgs() { Device = device }); };
 
                             _vcsList.Add((channel, vcs));
+                        }
+                        else
+                        {
+                            vcs.Device = device;
                         }
                     }
                 }
