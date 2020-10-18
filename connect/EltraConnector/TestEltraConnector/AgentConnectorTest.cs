@@ -16,9 +16,9 @@ namespace TestEltraConnector
         private AgentConnector _connector;
         private static UserIdentity _identity;
         private AgentConnectorTestData _testData;
-        private string _aliasDeviceLogin = "test@eltra.ch";
+        private string _aliasDeviceLogin = "test2@eltra.ch";
         private string _aliasDevicePassword = "1234";
-        private string masterDeviceLogin = "test.master@eltra.ch";
+        private string masterDeviceLogin = "test.master2@eltra.ch";
 
         public AgentConnectorTest()
         {
