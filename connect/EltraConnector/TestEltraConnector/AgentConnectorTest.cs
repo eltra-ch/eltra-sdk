@@ -307,7 +307,7 @@ namespace TestEltraConnector
         public async Task Channels_ChannelShouldHaveDeviceWithNodeId(int nodeId)
         {
             //Arrange
-            var device = TestData.GetDevice(nodeId, _aliasDeviceLogin, _aliasDevicePassword);
+            var device = await TestData.GetDevice(nodeId, _aliasDeviceLogin, _aliasDevicePassword);
 
             //Assert
             Assert.True(device != null, "Device with nodeid 3 not found.");
