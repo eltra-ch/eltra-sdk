@@ -16,6 +16,9 @@ namespace TestEltraConnector
         private AgentConnector _connector;
         private static UserIdentity _identity;
         private AgentConnectorTestData _testData;
+        private string _aliasDeviceLogin = "test@eltra.ch";
+        private string _aliasDevicePassword = "1234";
+        private string masterDeviceLogin = "test.master@eltra.ch";
 
         public AgentConnectorTest()
         {
@@ -92,7 +95,7 @@ namespace TestEltraConnector
             //Arrange
             bool signInResult = await _connector.SignIn(Identity, true);
             
-            var deviceIdentity = new UserIdentity() { Login = "test.master@eltra.ch", Password = "1234" };
+            var deviceIdentity = new UserIdentity() { Login = masterDeviceLogin, Password = "1234" };
 
             //Act
             var result = await _connector.Connect(deviceIdentity);
@@ -110,7 +113,7 @@ namespace TestEltraConnector
             //Arrange
             bool signInResult = await _connector.SignIn(Identity, true);
 
-            var deviceIdentity = new UserIdentity() { Login = "test@eltra.ch", Password = "1234" };
+            var deviceIdentity = new UserIdentity() { Login = _aliasDeviceLogin, Password = _aliasDevicePassword };
 
             //Act
             var result = await _connector.Connect(deviceIdentity);
@@ -157,7 +160,7 @@ namespace TestEltraConnector
         {
             //Arrange
             bool signInResult = await _connector.SignIn(Identity, true);
-            var deviceIdentity = new UserIdentity() { Login = "test@eltra.ch", Password = "1234" };
+            var deviceIdentity = new UserIdentity() { Login = _aliasDeviceLogin, Password = _aliasDevicePassword };
             var connectResult = await _connector.Connect(deviceIdentity);
 
             //Act
@@ -176,7 +179,7 @@ namespace TestEltraConnector
         {
             //Arrange
             bool signInResult = await _connector.SignIn(Identity, true);
-            var deviceIdentity = new UserIdentity() { Login = "test@eltra.ch", Password = "1234" };
+            var deviceIdentity = new UserIdentity() { Login = _aliasDeviceLogin, Password = _aliasDevicePassword };
             var connectResult = await _connector.Connect(deviceIdentity);
             var channels = await _connector.GetChannels();
 
@@ -201,7 +204,7 @@ namespace TestEltraConnector
         {
             //Arrange
             bool signInResult = await _connector.SignIn(Identity, true);
-            var deviceIdentity = new UserIdentity() { Login = "test@eltra.ch", Password = "1234" };
+            var deviceIdentity = new UserIdentity() { Login = _aliasDeviceLogin, Password = _aliasDevicePassword };
             var connectResult = await _connector.Connect(deviceIdentity);
             var channels = await _connector.GetChannels();
 
@@ -226,7 +229,7 @@ namespace TestEltraConnector
         {
             //Arrange
             bool signInResult = await _connector.SignIn(Identity, true);
-            var deviceIdentity = new UserIdentity() { Login = "test@eltra.ch", Password = "1234" };
+            var deviceIdentity = new UserIdentity() { Login = _aliasDeviceLogin, Password = _aliasDevicePassword };
             var connectResult = await _connector.Connect(deviceIdentity);
             var channels = await _connector.GetChannels();
             int devicesCount = 0;
@@ -250,7 +253,7 @@ namespace TestEltraConnector
         {
             //Arrange
             bool signInResult = await _connector.SignIn(Identity, true);
-            var deviceIdentity = new UserIdentity() { Login = "test@eltra.ch", Password = "1234" };
+            var deviceIdentity = new UserIdentity() { Login = _aliasDeviceLogin, Password = _aliasDevicePassword };
             var connectResult = await _connector.Connect();
             
             //Act
@@ -269,7 +272,7 @@ namespace TestEltraConnector
         {
             //Arrange
             bool signInResult = await _connector.SignIn(Identity, true);
-            var deviceIdentity = new UserIdentity() { Login = "test@eltra.ch", Password = "1234" };
+            var deviceIdentity = new UserIdentity() { Login = _aliasDeviceLogin, Password = _aliasDevicePassword };
             var connectResult = await _connector.Connect();
             var bindResult = await _connector.BindChannels(deviceIdentity);
 
@@ -304,7 +307,7 @@ namespace TestEltraConnector
         public async Task Channels_ChannelShouldHaveDeviceWithNodeId(int nodeId)
         {
             //Arrange
-            var device = TestData.GetDevice(nodeId);
+            var device = TestData.GetDevice(nodeId, _aliasDeviceLogin, _aliasDevicePassword);
 
             //Assert
             Assert.True(device != null, "Device with nodeid 3 not found.");
@@ -319,7 +322,7 @@ namespace TestEltraConnector
         public async Task Devices_DeviceNodeShouldHaveIdentification(int nodeId)
         {
             //Arrange
-            var device = await TestData.GetDevice(nodeId);
+            var device = await TestData.GetDevice(nodeId, _aliasDeviceLogin, _aliasDevicePassword);
             bool result = false;
 
             if (device != null)
@@ -346,7 +349,7 @@ namespace TestEltraConnector
         public async Task Devices_DeviceNodeShouldHaveObjectDictionary(int nodeId)
         {
             //Arrange
-            var device = await TestData.GetDevice(nodeId);
+            var device = await TestData.GetDevice(nodeId, _aliasDeviceLogin, _aliasDevicePassword);
 
             //Act
             bool result = device.ObjectDictionary != null;
@@ -364,7 +367,7 @@ namespace TestEltraConnector
         public async Task Parameters_DeviceNodeObjectDictionaryShouldHaveCounterParameter(int nodeId)
         {
             //Arrange
-            var device = await TestData.GetDevice(nodeId);
+            var device = await TestData.GetDevice(nodeId, _aliasDeviceLogin, _aliasDevicePassword);
 
             //Act
             var parameter = device.SearchParameter(0x3000, 0x00);
@@ -382,7 +385,7 @@ namespace TestEltraConnector
         public async Task Parameters_DeviceNodeObjectDictionaryShouldHaveCounterParameterByUniqueId(int nodeId)
         {
             //Arrange
-            var device = await TestData.GetDevice(nodeId);
+            var device = await TestData.GetDevice(nodeId, _aliasDeviceLogin, _aliasDevicePassword);
 
             //Act
             var parameter = device.SearchParameter("PARAM_Counter");
@@ -400,7 +403,7 @@ namespace TestEltraConnector
         public async Task Parameters_DeviceNodeShouldHaveCounterParameter(int nodeId)
         {
             //Arrange
-            var deviceNode1 = await TestData.GetDevice(nodeId);
+            var deviceNode1 = await TestData.GetDevice(nodeId, _aliasDeviceLogin, _aliasDevicePassword);
 
             //Act
             var parameter = deviceNode1.GetParameter(0x3000, 0x00);
@@ -418,7 +421,7 @@ namespace TestEltraConnector
         public async Task Parameters_DeviceNodeShouldHaveCounterParameterByUniqueId(int nodeId)
         {
             //Arrange
-            var deviceNode2 = await TestData.GetDevice(nodeId);
+            var deviceNode2 = await TestData.GetDevice(nodeId, _aliasDeviceLogin, _aliasDevicePassword);
 
             //Act
             var parameter = deviceNode2.GetParameter("PARAM_Counter");
@@ -436,7 +439,7 @@ namespace TestEltraConnector
         public async Task Parameters_DeviceNodeShouldHaveOperationalByteParameter(int nodeId)
         {
             //Arrange
-            var deviceNode1 = await TestData.GetDevice(nodeId);
+            var deviceNode1 = await TestData.GetDevice(nodeId, _aliasDeviceLogin, _aliasDevicePassword);
 
             //Get parameter
             var parameter = await deviceNode1.GetParameter(0x4000, 0x01) as XddParameter;
@@ -492,7 +495,7 @@ namespace TestEltraConnector
         public async Task Parameters_DeviceNodeShouldHaveOperationalSByteParameter(int nodeId)
         {
             //Arrange
-            var deviceNode = await TestData.GetDevice(nodeId);
+            var deviceNode = await TestData.GetDevice(nodeId, _aliasDeviceLogin, _aliasDevicePassword);
             //Get parameter
             var parameter = await deviceNode.GetParameter(0x4000, 0x05) as XddParameter;
             //store actual value for later use
@@ -547,7 +550,7 @@ namespace TestEltraConnector
         public async Task Parameters_DeviceNodeShouldHaveOperationalUInt16Parameter(int nodeId)
         {
             //Arrange
-            var deviceNode = await TestData.GetDevice(nodeId);
+            var deviceNode = await TestData.GetDevice(nodeId, _aliasDeviceLogin, _aliasDevicePassword);
 
             //Get parameter
             var parameter = await deviceNode.GetParameter(0x4000, 0x02) as XddParameter;
@@ -603,7 +606,7 @@ namespace TestEltraConnector
         public async Task Parameters_DeviceNodeShouldHaveOperationalUInt32Parameter(int nodeId)
         {
             //Arrange
-            var deviceNode1 = await TestData.GetDevice(nodeId);
+            var deviceNode1 = await TestData.GetDevice(nodeId, _aliasDeviceLogin, _aliasDevicePassword);
 
             //Get parameter
             var parameter = await deviceNode1.GetParameter(0x4000, 0x03) as XddParameter;
@@ -659,7 +662,7 @@ namespace TestEltraConnector
         public async Task Parameters_DeviceNodeShouldHaveOperationalUInt64Parameter(int nodeId)
         {
             //Arrange
-            var deviceNode = await TestData.GetDevice(nodeId);
+            var deviceNode = await TestData.GetDevice(nodeId, _aliasDeviceLogin, _aliasDevicePassword);
 
             //Get parameter
             var parameter = await deviceNode.GetParameter(0x4000, 0x04) as XddParameter;
@@ -715,7 +718,7 @@ namespace TestEltraConnector
         public async Task Parameters_DeviceNodeShouldHaveOperationalInt16Parameter(int nodeId)
         {
             //Arrange
-            var deviceNode1 = await TestData.GetDevice(nodeId);
+            var deviceNode1 = await TestData.GetDevice(nodeId, _aliasDeviceLogin, _aliasDevicePassword);
 
             //Get parameter
             var parameter = await deviceNode1.GetParameter(0x4000, 0x06) as XddParameter;
@@ -771,7 +774,7 @@ namespace TestEltraConnector
         public async Task Parameters_DeviceNodeShouldHaveOperationalInt32Parameter(int nodeId)
         {
             //Arrange
-            var deviceNode = await TestData.GetDevice(nodeId);
+            var deviceNode = await TestData.GetDevice(nodeId, _aliasDeviceLogin, _aliasDevicePassword);
 
             //Get parameter
             var parameter = await deviceNode.GetParameter(0x4000, 0x07) as XddParameter;
@@ -827,7 +830,7 @@ namespace TestEltraConnector
         public async Task Parameters_DeviceNodeShouldHaveOperationalInt64Parameter(int nodeId)
         {
             //Arrange
-            var deviceNode = await TestData.GetDevice(nodeId);
+            var deviceNode = await TestData.GetDevice(nodeId, _aliasDeviceLogin, _aliasDevicePassword);
 
             //Get parameter
             var parameter = await deviceNode.GetParameter(0x4000, 0x08) as XddParameter;
@@ -883,7 +886,7 @@ namespace TestEltraConnector
         public async Task Parameters_DeviceNodeShouldHaveOperationalDoubleParameter(int nodeId)
         {
             //Arrange
-            var deviceNode = await TestData.GetDevice(nodeId);
+            var deviceNode = await TestData.GetDevice(nodeId, _aliasDeviceLogin, _aliasDevicePassword);
 
             //Get parameter
             var parameter = await deviceNode.GetParameter(0x4000, 0x09) as XddParameter;
@@ -939,7 +942,7 @@ namespace TestEltraConnector
         public async Task Parameters_DeviceNodeShouldHaveOperationalStringParameter(int nodeId)
         {
             //Arrange
-            var deviceNode1 = await TestData.GetDevice(nodeId);
+            var deviceNode1 = await TestData.GetDevice(nodeId, _aliasDeviceLogin, _aliasDevicePassword);
 
             //Act
             var parameter = await deviceNode1.GetParameter(0x4000, 0x0A) as XddParameter;
@@ -989,7 +992,7 @@ namespace TestEltraConnector
         public async Task Parameters_DeviceNodeShouldHaveOperationalDateTimeParameter(int nodeId)
         {
             //Arrange
-            var deviceNode = await TestData.GetDevice(nodeId);
+            var deviceNode = await TestData.GetDevice(nodeId, _aliasDeviceLogin, _aliasDevicePassword);
 
             //Act
             var parameter = await deviceNode.GetParameter(0x4000, 0x0C) as XddParameter;
@@ -1032,7 +1035,7 @@ namespace TestEltraConnector
         public async Task Parameters_DeviceNodeShouldHaveOperationalBooleanParameter(int nodeId)
         {
             //Arrange
-            var deviceNode = await TestData.GetDevice(nodeId);
+            var deviceNode = await TestData.GetDevice(nodeId, _aliasDeviceLogin, _aliasDevicePassword);
 
             //Act
             var parameter = await deviceNode.GetParameter(0x4000, 0x0D) as XddParameter;
@@ -1075,7 +1078,7 @@ namespace TestEltraConnector
         public async Task Parameters_DeviceNodeShouldHaveOperationalIdentityParameter(int nodeId)
         {
             //Arrange
-            var deviceNode = await TestData.GetDevice(nodeId);
+            var deviceNode = await TestData.GetDevice(nodeId, _aliasDeviceLogin, _aliasDevicePassword);
 
             //Get parameter
             var parameter = await deviceNode.GetParameter(0x4000, 0x0E) as XddParameter;
@@ -1131,7 +1134,7 @@ namespace TestEltraConnector
         public async Task Parameters_DeviceNodeShouldHaveOperationalObjectParameter(int nodeId)
         {
             //Arrange
-            var deviceNode = await TestData.GetDevice(nodeId);
+            var deviceNode = await TestData.GetDevice(nodeId, _aliasDeviceLogin, _aliasDevicePassword);
 
             //Act
             var parameter = await deviceNode.GetParameter(0x4000, 0x0B) as XddParameter;
@@ -1179,7 +1182,7 @@ namespace TestEltraConnector
         public async Task Parameters_DeviceNodeCountingParameterShouldAutoUpdate(int nodeId)
         {
             //Arrange
-            var deviceNode1 = await TestData.GetDevice(nodeId);
+            var deviceNode1 = await TestData.GetDevice(nodeId, _aliasDeviceLogin, _aliasDevicePassword);
 
             //Act
             var parameter = await deviceNode1.GetParameter(0x3000, 0x00) as XddParameter;
@@ -1211,16 +1214,16 @@ namespace TestEltraConnector
             //let's give him some time to respond
             await Task.Delay(100);
 
-            //Assert
-            Assert.True(parameter != null, "Device parameter missing.");
-            Assert.True(parameterChanged, "Parameter didn't change.");
-
             //call stop counting
             var stopCounting = await deviceNode1.GetCommand("StopCounting");
 
             var stopCountingResult = await stopCounting.Execute();
 
             parameter.StopUpdate(ParameterUpdatePriority.High, true);
+
+            //Assert
+            Assert.True(parameter != null, "Device parameter missing.");
+            Assert.True(parameterChanged, "Parameter didn't change.");
 
             await _connector.SignOut();
         }
@@ -1232,7 +1235,7 @@ namespace TestEltraConnector
         public async Task Parameters_DeviceNodeReadInt32PerformanceTest(int nodeId, int maxCount)
         {
             //Arrange
-            var deviceNode = await TestData.GetDevice(nodeId);
+            var deviceNode = await TestData.GetDevice(nodeId, _aliasDeviceLogin, _aliasDevicePassword);
 
             int count = 0;
             XddParameter parameter;
@@ -1268,7 +1271,7 @@ namespace TestEltraConnector
         public async Task Parameters_DeviceNodeReadWriteInt32PerformanceTest(int nodeId, int maxCount)
         {
             //Arrange
-            var deviceNode = await TestData.GetDevice(nodeId);
+            var deviceNode = await TestData.GetDevice(nodeId, _aliasDeviceLogin, _aliasDevicePassword);
 
             bool result = false;
             bool getValueResult = false;

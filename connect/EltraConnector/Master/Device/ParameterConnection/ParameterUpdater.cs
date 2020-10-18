@@ -183,38 +183,65 @@ namespace EltraConnector.Master.Device.ParameterConnection
 
             MsgLogger.WriteFlow($"{GetType().Name} - Register", $"Register parameter source = '{registeredParameter.Key}', index = {registeredParameter.Parameter.Index:X4}, subindex = {(registeredParameter.Parameter as XddParameter).SubIndex:X4}");
 
-            lock (RegisteredParametersLock)
+            try
             {
-                if (!_registeredParameters.ContainsKey(registeredParameter.Key))
+                lock (RegisteredParametersLock)
                 {
-                    _registeredParameters.Add(registeredParameter.Key, registeredParameter);
-
-                    registeredParameter.RefCount++;
-
-                    MsgLogger.WriteLine($"(+)register parameter key='{registeredParameter.Key}'");
-
-                    result = true;
-                }
-                else
-                {
-                    var parameter = _registeredParameters[registeredParameter.Key];
-
-                    if (parameter != null)
+                    if (!_registeredParameters.ContainsKey(registeredParameter.Key))
                     {
-                        parameter.RefCount++;
-
-                        MsgLogger.WriteLine($"(+)register parameter key='{registeredParameter.Key}', refCount = {parameter.RefCount}");
-
-                        result = true;
+                        result = AddToRegisteredParameters(registeredParameter);
                     }
                     else
                     {
-                        MsgLogger.WriteError($"{GetType().Name} - Register", $"(+)register parameter key='{registeredParameter.Key}' failed, parameter empty!");
+                        result = UpdateParameterRefCount(registeredParameter);
                     }
                 }
             }
+            catch (Exception e)
+            {
+                MsgLogger.Exception($"{GetType().Name} - Register", e);
+            }
 
             MsgLogger.WriteDebug($"{GetType().Name} - Register", $"Register Parameter '{registeredParameter.Key}' - OK");
+
+            return result;
+        }
+
+        private bool UpdateParameterRefCount(RegisteredParameter registeredParameter)
+        {
+            bool result = false;
+            var parameter = _registeredParameters[registeredParameter.Key];
+
+            if (parameter != null)
+            {
+                parameter.RefCount++;
+
+                MsgLogger.WriteLine($"(+)register parameter key='{registeredParameter.Key}', refCount = {parameter.RefCount}");
+
+                result = true;
+            }
+            else
+            {
+                MsgLogger.WriteError($"{GetType().Name} - Register", $"(+)register parameter key='{registeredParameter.Key}' failed, parameter empty!");
+            }
+
+            return result;
+        }
+
+        private bool AddToRegisteredParameters(RegisteredParameter registeredParameter)
+        {
+            bool result = false;
+
+            if (_registeredParameters != null)
+            {
+                _registeredParameters.Add(registeredParameter.Key, registeredParameter);
+
+                registeredParameter.RefCount++;
+
+                MsgLogger.WriteLine($"(+)register parameter key='{registeredParameter.Key}'");
+
+                result = true;
+            }
 
             return result;
         }

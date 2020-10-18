@@ -210,6 +210,33 @@ namespace EltraConnector.Master.Device.ParameterConnection
         
         private void ProcessQueueRequests()
         {
+            ProcessUnregisterQueue();
+            
+            ProcessRegisterQueue();
+        }
+
+        private void ProcessRegisterQueue()
+        {
+            var parameterUpdater = _parameterUpdater;
+
+            lock (_registerParametersQueue)
+            {
+                var queue = _registerParametersQueue.ToArray();
+
+                foreach (var parameter in queue)
+                {
+                    if (!parameterUpdater.Register(parameter))
+                    {
+                        MsgLogger.WriteError($"{GetType().Name} - ProcessQueueRequests", "Error processing register request!");
+                    }
+
+                    _registerParametersQueue.Remove(parameter);
+                }
+            }
+        }
+
+        private void ProcessUnregisterQueue()
+        {
             var parameterUpdater = _parameterUpdater;
 
             lock (_unregisterParametersQueue)
@@ -226,23 +253,8 @@ namespace EltraConnector.Master.Device.ParameterConnection
                     _unregisterParametersQueue.Remove(parameter);
                 }
             }
-
-            lock (_registerParametersQueue)
-            {
-                var queue = _registerParametersQueue.ToArray();
-                
-                foreach (var parameter in queue)
-                {
-                    if (!parameterUpdater.Register(parameter))
-                    {
-                        MsgLogger.WriteError($"{GetType().Name} - ProcessQueueRequests", "Error processing register request!");
-                    }
-
-                    _registerParametersQueue.Remove(parameter);
-                }
-            }
         }
-        
+
         private void SourceChannelGoingOffline(string source)
         {
             var parameters = _parameterUpdater.GetParametersFromSource(source);

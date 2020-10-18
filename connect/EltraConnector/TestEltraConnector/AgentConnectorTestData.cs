@@ -16,14 +16,14 @@ namespace TestEltraConnector
             _identity = identity;
         }
 
-        public async Task<EltraDevice> GetDevice(int nodeId)
+        public async Task<EltraDevice> GetDevice(int nodeId, string deviceLogin, string devicePassword)
         {
             EltraDevice result = null;
             bool signInResult = await _connector.SignIn(_identity, true);
 
             if (signInResult)
             {
-                var deviceIdentity = new UserIdentity() { Login = "test@eltra.ch", Password = "1234" };
+                var deviceIdentity = new UserIdentity() { Login = deviceLogin, Password = devicePassword };
                 
                 var connectResult = await _connector.Connect(deviceIdentity);
 
