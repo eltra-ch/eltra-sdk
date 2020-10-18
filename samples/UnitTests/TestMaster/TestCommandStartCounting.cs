@@ -53,7 +53,7 @@ namespace TestMaster
 
             if (communication is TestDeviceCommunication deviceCommunication)
             {
-                var commandResult = deviceCommunication.StartCounting(step, delay);
+                var commandResult = deviceCommunication.StartCounting(eposDevice.CloudAgent, source, step, delay);
 
                 SetParameterValue("ErrorCode", communication.LastErrorCode);
                 SetParameterValue("Result", commandResult);

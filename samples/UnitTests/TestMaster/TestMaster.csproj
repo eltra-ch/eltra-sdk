@@ -10,6 +10,11 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\..\connect\EltraConnector\EltraConnector.csproj" />
+    <ProjectReference Include="..\..\..\xternals\common\EltraCommon\EltraCommon.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
     <None Update="TEST_0200h_0000h_0000h_0000h.xdd">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

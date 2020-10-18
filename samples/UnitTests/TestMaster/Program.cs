@@ -28,9 +28,9 @@ namespace TestMaster
                 
                 Console.WriteLine("Sign-in ...");
 
-                if (await connector.SignIn(new UserIdentity() { Login = $"test.master@eltra.ch", Name = "Test", Password = "1234", Role="developer" }, true))
+                if (await connector.SignIn(new UserIdentity() { Login = $"test.master2@eltra.ch", Name = "Test", Password = "1234", Role="developer" }, true))
                 {
-                    var predefinedAlias = new UserIdentity() { Login = "test@eltra.ch", Password = "1234", Name = "Tester", Role = "engineer" };
+                    var predefinedAlias = new UserIdentity() { Login = "test2@eltra.ch", Password = "1234", Name = "Tester", Role = "engineer" };
 
                     if (await connector.CreateAlias(predefinedAlias))
                     {

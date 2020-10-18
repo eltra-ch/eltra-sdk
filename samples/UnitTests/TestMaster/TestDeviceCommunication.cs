@@ -6,6 +6,8 @@ using EltraCommon.Contracts.Devices;
 using EltraCommon.Logger;
 using EltraConnector.Master.Device;
 using EltraCommon.ObjectDictionary.Xdd.DeviceDescription.Profiles.Application.Parameters;
+using EltraCommon.Contracts.Channels;
+using EltraConnector.SyncAgent;
 
 namespace TestMaster
 {
@@ -386,7 +388,7 @@ namespace TestMaster
             base.OnStatusChanged(e);
         }
 
-        internal bool StartCounting(int step, int delay)
+        internal bool StartCounting(SyncCloudAgent agent, string source, int step, int delay)
         {
             Console.WriteLine($"start counting (node id = {Device.NodeId}), step = {step}, delay = {delay}");
 
@@ -396,6 +398,14 @@ namespace TestMaster
 
                 _countingRunning = true;
                 _counterValue = 0;
+
+                agent.RemoteChannelStatusChanged += (a, o) => 
+                { 
+                    if(o.Id == source && o.Status == ChannelStatus.Offline)
+                    {
+                        _countingRunning = false;
+                    }
+                };
 
                 do
                 {
