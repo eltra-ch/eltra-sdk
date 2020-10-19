@@ -12,6 +12,7 @@ namespace MPlayerMaster
     {
         #region Private fields
 
+        private readonly string _mplayerProcessFullPath;
         private readonly string _mplayerProcessName;
 
         private MPlayerConsoleParser _parser;
@@ -24,11 +25,13 @@ namespace MPlayerMaster
         {
             if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
             {
-                _mplayerProcessName = "/usr/bin/mplayer";
+                _mplayerProcessFullPath = "/usr/bin/mplayer";
+                _mplayerProcessName = "mplayer";
             }
             else
             {
-                _mplayerProcessName = "C:\\MPlayer\\mplayer.exe";
+                _mplayerProcessFullPath = "C:\\MPlayer\\mplayer.exe";
+                _mplayerProcessName = "mplayer.exe";
             }
         }
 
@@ -96,7 +99,7 @@ namespace MPlayerMaster
 
                 startInfo.Arguments = Settings.AppArgs + $" {url}";
                 startInfo.Arguments = startInfo.Arguments.Trim();
-                startInfo.FileName = _mplayerProcessName;
+                startInfo.FileName = _mplayerProcessFullPath;
 
                 p.StartInfo = startInfo;
 
