@@ -170,7 +170,10 @@ namespace MPlayerMaster
                 {
                     if (ProcessIdParameters[i].GetValue(out int processId) && processId > 0)
                     {
-                        result = CloseProcess(processId);
+                        if(CloseProcess(processId))
+                        {
+                            result = true;
+                        }
                     }
                 }
             }

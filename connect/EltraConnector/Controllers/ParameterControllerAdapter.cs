@@ -50,19 +50,41 @@ namespace EltraConnector.Controllers
 
         #region Events handling
 
-        private async void OnParameterChanged(object sender, ParameterChangedEventArgs e)
+        private void OnParameterChanged(object sender, ParameterChangedEventArgs e)
+        {
+            Parameter parameter = e.Parameter;
+            if (parameter != null)
+            {
+                var device = parameter.Device;
+                if (device != null)
+                {
+                    int nodeId = device.NodeId;
+                    var actualValue = parameter.ActualValue.Clone();
+                    var uniqueId = parameter.UniqueId;
+                    ushort index = parameter.Index;
+                    byte subIndex = parameter.SubIndex;
+
+                    Task.Run(async () =>
+                    {
+                        MsgLogger.WriteLine($"changed: {uniqueId}, new value = '{CreateShortLogValue(actualValue)}'");
+
+                        await UpdateParameterValue(nodeId, index, subIndex, actualValue);
+                    });
+                }
+            }
+        }
+
+        private static string CreateShortLogValue(ParameterValue actualValue)
         {
             const int MaxLogValueLength = 8;
-            string logValue = e.Parameter.ActualValue.Value;
+            string logValue = actualValue.Value;
 
-            if(logValue.Length> MaxLogValueLength)
+            if (logValue.Length > MaxLogValueLength)
             {
-                logValue = logValue.Substring(0, MaxLogValueLength-1);
+                logValue = logValue.Substring(0, MaxLogValueLength - 1);
             }
 
-            MsgLogger.WriteLine($"changed: {e.Parameter.UniqueId}, new value = '{logValue}'");
-
-            await UpdateParameterValue(e.Parameter.Device, e.Parameter);
+            return logValue;
         }
 
         private void OnParametersUpdated(EltraDevice device, bool updateResult)
@@ -262,7 +284,7 @@ namespace EltraConnector.Controllers
             return result;
         }
 
-        private async Task<bool> UpdateParameterValue(EltraDevice device, Parameter parameter)
+        private async Task<bool> UpdateParameterValue(int nodeId, ushort index, byte subIndex, ParameterValue actualValue)
         {
             bool result = false;
 
@@ -271,10 +293,10 @@ namespace EltraConnector.Controllers
                 var parameterUpdate = new ParameterValueUpdate
                 {
                     ChannelId = Channel.Id,
-                    NodeId = device.NodeId,
-                    ParameterValue = parameter.ActualValue,
-                    Index = parameter.Index,
-                    SubIndex = parameter.SubIndex
+                    NodeId = nodeId,
+                    ParameterValue = actualValue,
+                    Index = index,
+                    SubIndex = subIndex
                 };
 
                 var path = $"api/parameter/value";
