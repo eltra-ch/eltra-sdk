@@ -22,6 +22,7 @@ namespace EltraConnector.UserAgent
         private readonly WsConnectionManager _wsConnectionManager;
         private string _wsChannelName;
         private string _wsChannelId;
+        private int _nodeId;
 
         #endregion
 
@@ -39,7 +40,7 @@ namespace EltraConnector.UserAgent
         public ParameterUpdateManager(ChannelControllerAdapter channelAdapter, int nodeId)
         {
             _wsConnectionManager = channelAdapter.WsConnectionManager;
-
+            _nodeId = nodeId;
             _channelAdapter = channelAdapter;
             _wsChannelId = _channelAdapter.ChannelId + $"_ParameterUpdate_{nodeId}";
             _wsChannelName = "ParameterUpdate";
@@ -90,7 +91,7 @@ namespace EltraConnector.UserAgent
 
             if (_wsConnectionManager.IsConnected(commandExecUuid))
             {
-                var sessionIdent = new ChannelIdentification() { Id = _channelAdapter.ChannelId };
+                var sessionIdent = new ChannelIdentification() { Id = _channelAdapter.ChannelId, NodeId = _nodeId };
 
                 result = await _wsConnectionManager.Send(commandExecUuid, _channelAdapter.User.Identity, sessionIdent);
             }
