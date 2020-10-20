@@ -24,6 +24,7 @@ namespace EltraConnector.UserAgent
         private readonly WsConnectionManager _wsConnectionManager;
         private string _commandExecUuid;
         private string _wsChannelName;
+        private int _nodeId;
         
         #endregion
 
@@ -42,6 +43,8 @@ namespace EltraConnector.UserAgent
 
         public ExecuteCommander(UserChannelControllerAdapter channelAdapter, int nodeId)
         {
+            _nodeId = nodeId;
+
             _deviceCommands = new List<DeviceCommand>();
 
             _wsConnectionManager = channelAdapter.WsConnectionManager;
@@ -110,7 +113,7 @@ namespace EltraConnector.UserAgent
         {
             if (_wsConnectionManager.IsConnected(commandExecUuid))
             {
-                var sessionIdent = new ChannelIdentification() { Id = _channelAdapter.ChannelId };
+                var sessionIdent = new ChannelIdentification() { Id = _channelAdapter.ChannelId, NodeId = _nodeId };
 
                 await _wsConnectionManager.Send(commandExecUuid, _channelAdapter.User.Identity, sessionIdent);
             }
