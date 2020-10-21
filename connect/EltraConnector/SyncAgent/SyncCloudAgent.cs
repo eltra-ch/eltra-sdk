@@ -140,7 +140,7 @@ namespace EltraConnector.SyncAgent
 
         private void RegisterEvents()
         {
-            _channelHeartbeat.StatusChanged += OnChannelStatusChanged;
+            _channelHeartbeat.ChannelStatusChanged += OnChannelStatusChanged;
             _channelHeartbeat.SignInRequested += OnSignInRequested;
 
             _channelControllerAdapter.ChannelRegistered += OnChannelRegistered;

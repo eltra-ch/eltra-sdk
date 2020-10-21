@@ -28,6 +28,18 @@
         /// <summary>
         /// Bound
         /// </summary>
-        Bound
+        Bound,
+        /// <summary>
+        /// Registered
+        /// </summary>
+        Registered,
+        /// <summary>
+        /// Online
+        /// </summary>
+        Online,
+        /// <summary>
+        /// Offline
+        /// </summary>
+        Offline
     }
 }

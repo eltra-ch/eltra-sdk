@@ -2,14 +2,12 @@
 using System.Threading.Tasks;
 using EltraCommon.Logger;
 using EltraConnector.Transport.Ws;
-using EltraCommon.Contracts.Channels;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using System.Collections.Generic;
 using EltraConnector.Controllers.Base;
 using EltraCommon.Contracts.Parameters;
 using EltraCommon.Contracts.Parameters.Events;
-using EltraConnector.Events;
 using EltraConnector.Channels.Events;
 
 namespace EltraConnector.Channels
@@ -21,8 +19,7 @@ namespace EltraConnector.Channels
         const string ChannelName = "ParameterUpdate";
 
         private readonly ChannelControllerAdapter _channelAdapter;        
-        private int _nodeId;
-
+        
         #endregion
 
         #region Constructors
@@ -38,8 +35,6 @@ namespace EltraConnector.Channels
             : base(channelAdapter.WsConnectionManager, channelAdapter.ChannelId + $"_ParameterUpdate_{nodeId}", ChannelName,
                   channelAdapter.ChannelId, nodeId, channelAdapter.User.Identity)
         {
-            _nodeId = nodeId;
-            
             _channelAdapter = channelAdapter;
         }
 
@@ -61,20 +56,6 @@ namespace EltraConnector.Channels
         #endregion
 
         #region Methods
-
-        private async Task<bool> SendSessionIdentyfication(string commandExecUuid)
-        {
-            bool result = false;
-
-            if (WsConnectionManager.IsConnected(commandExecUuid))
-            {
-                var sessionIdent = new ChannelIdentification() { Id = _channelAdapter.ChannelId, NodeId = _nodeId };
-
-                result = await WsConnectionManager.Send(commandExecUuid, _channelAdapter.User.Identity, sessionIdent);
-            }
-
-            return result;
-        }
 
         private void HandleDeserializationError(object sender, ErrorEventArgs errorArgs)
         {
@@ -155,10 +136,7 @@ namespace EltraConnector.Channels
                 }
             }
 
-            foreach (var parameterChangedTask in parameterChangedTasks)
-            {
-                parameterChangedTask.Wait();
-            }
+            Task.WaitAll(parameterChangedTasks.ToArray());
 
             await DisconnectFromWsChannel();            
         }

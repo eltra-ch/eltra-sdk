@@ -119,9 +119,9 @@ namespace EltraConnector.Channels
                 }
             }
 
-            ChannelStatus = ChannelStatus.Offline;
-
             await DisconnectFromWsChannel();
+
+            ChannelStatus = ChannelStatus.Offline;
 
             MsgLogger.WriteLine($"Sync agent working thread finished successfully!");
         }

@@ -32,6 +32,7 @@ namespace EltraConnector.UserAgent
         private readonly List<DeviceCommand> _executedCommands;
         private readonly UserIdentity _identity;
         private readonly UserChannelControllerAdapter _channelAdapter;
+        private readonly uint _timeout;
 
         private Task _agentTask;
         private CancellationTokenSource _agentCancelationTokenSource;
@@ -54,24 +55,26 @@ namespace EltraConnector.UserAgent
 
         public UserCloudAgent(string url, UserIdentity identity, uint updateInterval, uint timeout)
         {
+            _timeout = timeout;
             _status = AgentStatus.Undefined;
             _identity = identity;
             _executedCommands = new List<DeviceCommand>();
             _channel = new Channel() { Status = ChannelStatus.Offline };
             _channelAdapter = new UserChannelControllerAdapter(url, identity, updateInterval, timeout) { UseWebSockets = true };
 
-            Initialize(url, updateInterval, timeout);
+            Initialize(url, updateInterval);
         }
 
         public UserCloudAgent(string url, string uuid, UserIdentity identity, uint updateInterval, uint timeout)
         {
+            _timeout = timeout;
             _status = AgentStatus.Undefined;
             _identity = identity;
             _channel = new Channel() { Status = ChannelStatus.Offline };
             _executedCommands = new List<DeviceCommand>();
             _channelAdapter = new UserChannelControllerAdapter(url, uuid, identity, updateInterval, timeout) { UseWebSockets = true };
 
-            Initialize(url, updateInterval, timeout);
+            Initialize(url, updateInterval);
         }
 
         public UserCloudAgent(SyncCloudAgent masterAgent, EltraDevice deviceNode, uint updateInterval, uint timeout)
@@ -119,7 +122,11 @@ namespace EltraConnector.UserAgent
 
                 if (Status == AgentStatus.Starting && f.Status == ChannelStatus.Online)
                 {
-                    Status = AgentStatus.Started;
+                    Status = AgentStatus.Online;
+                }
+                else if (Status == AgentStatus.Online && f.Status == ChannelStatus.Offline)
+                {
+                    Status = AgentStatus.Offline;
                 }
 
                 ChannelStatus = f.Status;
@@ -169,7 +176,11 @@ namespace EltraConnector.UserAgent
         {
             if (Status == AgentStatus.Starting && e.Status == ChannelStatus.Online)
             {
-                Status = AgentStatus.Started;
+                Status = AgentStatus.Online;
+            }
+            else if (Status == AgentStatus.Online && e.Status == ChannelStatus.Offline)
+            {
+                Status = AgentStatus.Offline;
             }
 
             ChannelStatus = e.Status;
@@ -257,12 +268,12 @@ namespace EltraConnector.UserAgent
 
         #region Methods
 
-        private void Initialize(string url, uint updateInterval, uint timeout)
+        private void Initialize(string url, uint updateInterval)
         {
             _url = url;
             _authentication = new Authentication(url);
 
-            _channelHeartbeat = new ChannelHeartbeat(_channelAdapter, updateInterval, timeout);
+            _channelHeartbeat = new ChannelHeartbeat(_channelAdapter, updateInterval, _timeout);
             _executeCommander = new ExecuteCommander(_channelAdapter);
             _parameterUpdateManager = new ParameterUpdateManager(_channelAdapter);
 
@@ -270,7 +281,7 @@ namespace EltraConnector.UserAgent
 
             _agentCancelationTokenSource = new CancellationTokenSource();
 
-            _agentTask = Task.Run(() => Run(_agentCancelationTokenSource.Token));
+            StartWorkingTask();
         }
 
         private void Initialize(SyncCloudAgent agent, EltraDevice node)
@@ -285,7 +296,36 @@ namespace EltraConnector.UserAgent
 
             _agentCancelationTokenSource = new CancellationTokenSource();
 
-            _agentTask = Task.Run(() => RunMaster(_agentCancelationTokenSource.Token));
+            StartWorkingTask();
+        }
+
+        private bool StartWorkingTask()
+        {
+            bool result = false;
+
+            _agentTask = Task.Run(() => Run(_agentCancelationTokenSource.Token));
+
+            const int minWaitTime = 1;
+            
+            int startupTimeout = (int)TimeSpan.FromSeconds(_timeout).TotalMilliseconds;
+            var stopWatch = new Stopwatch();
+            
+            stopWatch.Start();
+
+            StatusChanged += (o, e) =>
+            {
+                if (e.Status == AgentStatus.Started)
+                {
+                    result = true;
+                }
+            };
+
+            while (!result && stopWatch.ElapsedMilliseconds < startupTimeout)
+            {
+                Thread.Sleep(minWaitTime);
+            }
+
+            return result;
         }
 
         public void Release()
@@ -338,6 +378,16 @@ namespace EltraConnector.UserAgent
                 RegisterParameterUpdateManagerEvents();
 
                 result = _parameterUpdateManager.Status == WsChannelStatus.Started;
+
+                if (result)
+                {
+                    result = _executeCommander.Status == WsChannelStatus.Started;
+                }
+
+                if (result)
+                {
+                    result = _channelHeartbeat.Status == WsChannelStatus.Started;
+                }
             }
 
             return result;
@@ -362,8 +412,12 @@ namespace EltraConnector.UserAgent
 
             if(await RegisterChannel(token))
             {
+                Status = AgentStatus.Registered;
+
                 if (StartChannel(token))
                 {
+                    Status = AgentStatus.Started;
+
                     await WaitForRequests(token);
 
                     await StopChannel();
@@ -372,6 +426,10 @@ namespace EltraConnector.UserAgent
                 {
                     MsgLogger.WriteError($"{GetType().Name} - Run",$"starting channel failed");
                 }
+            }
+            else
+            {
+                MsgLogger.WriteError($"{GetType().Name} - Run", $"channel registration failed!");
             }
 
             MsgLogger.WriteLine($"UserCloud agent working thread finished successfully!");
@@ -495,7 +553,7 @@ namespace EltraConnector.UserAgent
         {
             if (_channelHeartbeat != null)
             {
-                _channelHeartbeat.StatusChanged += OnHeartbeatChannelStatusChanged;
+                _channelHeartbeat.ChannelStatusChanged += OnHeartbeatChannelStatusChanged;
                 _channelHeartbeat.SignInRequested += OnSignInRequested;
             }
 

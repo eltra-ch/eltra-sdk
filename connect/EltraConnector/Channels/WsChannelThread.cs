@@ -102,6 +102,8 @@ namespace EltraConnector.Channels
 
         public string ChannelId => _channelId;
 
+        public int NodeId => _nodeId;
+
         #endregion
 
         #region Methods
@@ -146,7 +148,6 @@ namespace EltraConnector.Channels
 
                 var stopWatch = new Stopwatch();
                 
-
                 stopWatch.Start();
 
                 StatusChanged += (o, e) =>

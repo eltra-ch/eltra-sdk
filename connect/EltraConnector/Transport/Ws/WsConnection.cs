@@ -162,11 +162,19 @@ namespace EltraConnector.Transport.Ws
                     {
                         await Socket.CloseAsync(WebSocketCloseStatus.Empty, "", _cancellationTokenSource.Token);
                     }
+                    else if (Socket.State == WebSocketState.Closed)
+                    {
+                        MsgLogger.WriteDebug($"{GetType().Name} - Disconnect", $"Disconnect, state = {Socket.State}");
+                    }
 
                     if (Socket.State == WebSocketState.Closed)
                     {
                         result = true;
                     }
+                }
+                else
+                {
+                    MsgLogger.WriteDebug($"{GetType().Name} - Disconnect", $"Disconnect, state = {Socket.State}");
                 }
             }
             catch (WebSocketException e)
