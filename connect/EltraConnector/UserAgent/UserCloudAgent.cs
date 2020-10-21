@@ -8,7 +8,6 @@ using EltraConnector.Controllers;
 using EltraConnector.Events;
 using EltraConnector.UserAgent.Events;
 using EltraCommon.Logger;
-
 using EltraCommon.Contracts.CommandSets;
 using EltraCommon.Contracts.Channels;
 using EltraCommon.Contracts.Users;
@@ -22,6 +21,7 @@ using EltraCommon.ObjectDictionary.DeviceDescription.Factory;
 using EltraCommon.Contracts.Parameters.Events;
 using EltraCommon.ObjectDictionary.DeviceDescription;
 using System.IO;
+using EltraConnector.Channels.Events;
 
 namespace EltraConnector.UserAgent
 {
@@ -331,13 +331,13 @@ namespace EltraConnector.UserAgent
 
             if (!token.IsCancellationRequested)
             {
-                _channelHeartbeat?.Start();
-                _executeCommander?.Start();
                 _parameterUpdateManager?.Start();
+                _executeCommander?.Start();
+                _channelHeartbeat?.Start();
 
                 RegisterParameterUpdateManagerEvents();
 
-                result = true;
+                result = _parameterUpdateManager.Status == WsChannelStatus.Started;
             }
 
             return result;
@@ -368,9 +368,13 @@ namespace EltraConnector.UserAgent
 
                     await StopChannel();
                 }
+                else
+                {
+                    MsgLogger.WriteError($"{GetType().Name} - Run",$"starting channel failed");
+                }
             }
 
-            MsgLogger.WriteLine($"Sync agent working thread finished successfully!");
+            MsgLogger.WriteLine($"UserCloud agent working thread finished successfully!");
             
             Status = AgentStatus.Stopped;
         }

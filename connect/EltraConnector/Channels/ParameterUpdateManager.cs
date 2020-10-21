@@ -11,6 +11,9 @@ using EltraConnector.Controllers.Base;
 using EltraCommon.Contracts.Parameters;
 using EltraCommon.Contracts.Parameters.Events;
 using EltraConnector.Events;
+using EltraConnector.Channels.Events;
+using System.Diagnostics;
+using System.Threading;
 
 namespace EltraConnector.UserAgent
 {
@@ -23,6 +26,7 @@ namespace EltraConnector.UserAgent
         private string _wsChannelName;
         private string _wsChannelId;
         private int _nodeId;
+        private WsChannelStatus _status;
 
         #endregion
 
@@ -55,6 +59,8 @@ namespace EltraConnector.UserAgent
 
         public event EventHandler<SignInRequestEventArgs> SignInRequested;
 
+        public event EventHandler<WsChannelStatusEventArgs> StatusChanged;
+
         #endregion
 
         #region Events handling
@@ -62,6 +68,11 @@ namespace EltraConnector.UserAgent
         protected virtual void OnParameterValueChanged(ParameterValueChangedEventArgs e)
         {
             ParameterValueChanged?.Invoke(this, e);
+        }
+
+        protected virtual void OnStatusChanged(WsChannelStatusEventArgs e)
+        {
+            StatusChanged?.Invoke(this, e);
         }
 
         private bool OnSignInRequested()
@@ -75,10 +86,56 @@ namespace EltraConnector.UserAgent
 
         #endregion
 
+        #region Properties
+
+        public WsChannelStatus Status
+        {
+            get => _status;
+            set
+            {
+                if (_status != value)
+                {
+                    _status = value;
+
+                    OnStatusChanged(new WsChannelStatusEventArgs() { Status = Status });
+                }
+            }
+        }
+
+        #endregion
+
         #region Methods
+
+        public override void Start()
+        {
+            base.Start();
+
+            const int minWaitTime = 1;
+            const long maxWaitTime = 60000;
+
+            var stopWatch = new Stopwatch();
+            bool result = false;
+
+            stopWatch.Start();
+
+            StatusChanged += (o, e) =>
+            {
+                if (e.Status == WsChannelStatus.Started)
+                {
+                    result = true;
+                }
+            };
+
+            while (!result && stopWatch.ElapsedMilliseconds < maxWaitTime)
+            {
+                Thread.Sleep(minWaitTime);
+            }
+        }
 
         public override bool Stop()
         {
+            Status = WsChannelStatus.Stopping;
+
             RequestStop();
 
             Task.Run(async ()=> await CloseWsChannel(_wsChannelId));
@@ -113,9 +170,14 @@ namespace EltraConnector.UserAgent
         {
             const int executeIntervalWs = 1;
 
+            Status = WsChannelStatus.Starting;
+
             var parameterChangedTasks = new List<Task>();
 
-            await CreateWsChannel(_wsChannelId, _wsChannelName);
+            if(await CreateWsChannel(_wsChannelId, _wsChannelName))
+            {
+                Status = WsChannelStatus.Started;
+            }
             
             while (ShouldRun())
             {
@@ -171,7 +233,12 @@ namespace EltraConnector.UserAgent
 
                 if (ShouldRun() && !_wsConnectionManager.IsConnected(_wsChannelId))
                 {
-                    await CreateWsChannel(_wsChannelId, _wsChannelName);
+                    Status = WsChannelStatus.Starting;
+
+                    if(await CreateWsChannel(_wsChannelId, _wsChannelName))
+                    {
+                        Status = WsChannelStatus.Started;
+                    }
 
                     await Task.Delay(executeIntervalWs);
                 }
@@ -183,6 +250,8 @@ namespace EltraConnector.UserAgent
             }
 
             await CloseWsChannel(_wsChannelId);
+
+            Status = WsChannelStatus.Stopped;
         }
 
         private async Task<bool> CreateWsChannel(string commandExecUuid, string wsChannelName)

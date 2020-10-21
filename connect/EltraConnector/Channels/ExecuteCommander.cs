@@ -103,7 +103,12 @@ namespace EltraConnector.UserAgent
 
             if (_wsConnectionManager.IsConnected(_commandExecUuid))
             {
-                Task.Run(async () => { await _wsConnectionManager.Disconnect(_commandExecUuid); }).GetAwaiter().GetResult();
+                var t = Task.Run(async () => 
+                { 
+                    await _wsConnectionManager.Disconnect(_commandExecUuid); 
+                });
+
+                t.Wait(30000);
             }
 
             return base.Stop();
@@ -247,6 +252,11 @@ namespace EltraConnector.UserAgent
                         await CreateWsChannel(_commandExecUuid, _wsChannelName);
                     }
                 }
+            }
+
+            if (_wsConnectionManager.IsConnected(_commandExecUuid))
+            {
+                await _wsConnectionManager.Disconnect(_commandExecUuid);
             }
 
             MsgLogger.WriteDebug($"{GetType().Name} - Execute", $"exec channel '{_wsChannelName}', uuid='{_commandExecUuid}' closed");
@@ -395,7 +405,10 @@ namespace EltraConnector.UserAgent
             const double timeout = 30; 
             DeviceCommand result = null;
 
-            var commandStatus = await GetCommandStatus(new ExecuteCommand {Command = command, SourceChannelId = _channelAdapter.ChannelId, TargetChannelId = command.Device.ChannelId});
+            var commandStatus = await GetCommandStatus(new ExecuteCommand {Command = command, 
+                                                                           SourceChannelId = _channelAdapter.ChannelId, 
+                                                                           TargetChannelId = command.Device.ChannelId,
+                                                                           NodeId = command.Device.NodeId});
 
             if (commandStatus != null)
             {

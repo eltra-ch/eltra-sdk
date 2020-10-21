@@ -22,8 +22,8 @@ namespace TestEltraConnector
 
         public AgentConnectorTest()
         {
-            string host = "https://eltra.ch";
-            //string host = "http://localhost:5001";
+            //string host = "https://eltra.ch";
+            string host = "http://localhost:5001";
 
             _connector = new AgentConnector() { Host = host };            
         }
@@ -1184,6 +1184,8 @@ namespace TestEltraConnector
             //Arrange
             var deviceNode1 = await TestData.GetDevice(nodeId, _aliasDeviceLogin, _aliasDevicePassword);
 
+            await Task.Delay(1000);
+
             //Act
             var parameter = await deviceNode1.GetParameter(0x3000, 0x00) as XddParameter;
             var initialValue = parameter.ActualValue.Clone();
@@ -1212,7 +1214,7 @@ namespace TestEltraConnector
             Assert.True(startCountingResult != null && startCountingResult.Status == ExecCommandStatus.Executed, "exec start counting failed!");
 
             //let's give him some time to respond
-            await Task.Delay(100);
+            await Task.Delay(500);
 
             //call stop counting
             var stopCounting = await deviceNode1.GetCommand("StopCounting");
