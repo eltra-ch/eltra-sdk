@@ -1,7 +1,6 @@
 ﻿using EltraConnector.Controllers;
 using EltraConnector.Events;
 using EltraConnector.Transport.Ws;
-using EltraConnector.Sessions;
 using EltraCommon.Threads;
 using System;
 using EltraCommon.Contracts.Channels;
@@ -10,6 +9,7 @@ using EltraCommon.Contracts.Users;
 using System.Threading.Tasks;
 using EltraConnector.Controllers.Base.Events;
 using EltraCommon.Contracts.Devices;
+using EltraConnector.Channels;
 
 #pragma warning disable 1591
 

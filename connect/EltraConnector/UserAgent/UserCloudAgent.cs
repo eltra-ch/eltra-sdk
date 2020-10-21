@@ -12,7 +12,6 @@ using EltraCommon.Contracts.CommandSets;
 using EltraCommon.Contracts.Channels;
 using EltraCommon.Contracts.Users;
 using EltraCommon.ObjectDictionary.Common.DeviceDescription.Profiles.Application.Parameters;
-using EltraConnector.Sessions;
 using EltraConnector.SyncAgent;
 using EltraConnector.UserAgent.Definitions;
 using EltraCommon.Contracts.History;
@@ -22,6 +21,7 @@ using EltraCommon.Contracts.Parameters.Events;
 using EltraCommon.ObjectDictionary.DeviceDescription;
 using System.IO;
 using EltraConnector.Channels.Events;
+using EltraConnector.Channels;
 
 namespace EltraConnector.UserAgent
 {

@@ -2,41 +2,43 @@
 using System.Threading.Tasks;
 using EltraCommon.Logger;
 using System;
-using EltraCommon.Threads;
 using EltraConnector.Controllers.Base;
 using EltraConnector.Events;
 using EltraCommon.Contracts.Channels;
 using EltraConnector.Transport.Ws;
 
-namespace EltraConnector.Sessions
+namespace EltraConnector.Channels
 {
-    class ChannelHeartbeat : EltraThread
+    class ChannelHeartbeat : WsChannelThread
     {
         #region Private fields
+
+        const string ChannelName = "SessionUpdate";
 
         private readonly ChannelControllerAdapter _channelControllerAdapter;
         private readonly uint _updateInterval;
         private readonly uint _timeout;
         private ChannelStatus _status = ChannelStatus.Offline;
-        private string _channelId;
-        private WsConnectionManager _wsConnectionManager;
-      
+                
         #endregion
 
         #region Constructors
 
         public ChannelHeartbeat(ChannelControllerAdapter channelControllerAdapter, uint updateInterval, uint timeout)
+            : base(channelControllerAdapter.WsConnectionManager, 
+                  channelControllerAdapter.Channel.Id, ChannelName,
+                  channelControllerAdapter.Channel.Id, channelControllerAdapter.User.Identity)
         {
             _updateInterval = updateInterval;
             _timeout = timeout;
-            _channelControllerAdapter = channelControllerAdapter;            
+            _channelControllerAdapter = channelControllerAdapter;
         }
 
         #endregion
 
         #region Properties
 
-        public ChannelStatus Status
+        public ChannelStatus ChannelStatus
         {
             get => _status;
             set
@@ -45,7 +47,7 @@ namespace EltraConnector.Sessions
                 {
                     _status = value;
 
-                    OnStatusChanged();
+                    OnChannelStatusChanged();
                 }
             }
         }
@@ -54,84 +56,50 @@ namespace EltraConnector.Sessions
 
         #region Events
 
-        public event EventHandler<AgentChannelStatusChangedEventArgs> StatusChanged;
-        public event EventHandler<SignInRequestEventArgs> SignInRequested;
+        public event EventHandler<AgentChannelStatusChangedEventArgs> ChannelStatusChanged;
 
         #endregion
 
         #region Event handling
 
-        private void OnStatusChanged()
+        private void OnChannelStatusChanged()
         {
-            StatusChanged?.Invoke(this, new AgentChannelStatusChangedEventArgs() { Status = _status, Id = _channelId });
-        }
-
-        private bool OnSignInRequested()
-        {
-            var args = new SignInRequestEventArgs();
-
-            SignInRequested?.Invoke(this, args);
-
-            return args.SignInResult;
+            ChannelStatusChanged?.Invoke(this, new AgentChannelStatusChangedEventArgs() { Status = _status, Id = ChannelId });
         }
 
         #endregion
 
         #region Methods
 
-        public override bool Stop()
-        {
-            RequestStop();
-
-            Task.Run(async () => {
-                if (_wsConnectionManager.IsConnected(_channelId))
-                {
-                    await _wsConnectionManager.Disconnect(_channelId);
-                }
-            });
-
-            return base.Stop();
-        }
-
         protected override async Task Execute()
         {
             const int minWaitTime = 10;
             const int reconnectTimeout = 3;
 
-            _channelId = _channelControllerAdapter.Channel.Id;
-            _wsConnectionManager = _channelControllerAdapter.WsConnectionManager;
-            
-            string wsChannelName = "SessionUpdate";
             uint updateIntervalInSec = _updateInterval;
 
-            if (_wsConnectionManager.CanConnect(_channelId))
-            {
-                if(await _wsConnectionManager.Connect(_channelId, wsChannelName))
-                {
-                    await SendSessionIdentyfication(_channelId);
-                }
-            }
+            await ConnectToWsChannel();
 
             while (ShouldRun())
             {
-                MsgLogger.Write($"{GetType().Name} - Execute", $"Updating session id = '{_channelId}'...");
+                MsgLogger.Write($"{GetType().Name} - Execute", $"Updating session id = '{WsChannelId}'...");
 
                 var updateResult = await _channelControllerAdapter.Update();
 
-                Status = updateResult ? ChannelStatus.Online : ChannelStatus.Offline;
+                ChannelStatus = updateResult ? ChannelStatus.Online : ChannelStatus.Offline;
 
                 if (!updateResult)
                 {
-                    MsgLogger.WriteError($"{GetType().Name} - Execute", $"Update session '{_channelId}' failed!");
+                    MsgLogger.WriteError($"{GetType().Name} - Execute", $"Update session '{WsChannelId}' failed!");
                 }
-                
+
                 var waitWatch = new Stopwatch();
-                
+
                 waitWatch.Start();
 
                 int sessionUpdateTimeout;
-                
-                if (_wsConnectionManager.IsConnected(_channelId))
+
+                if (WsConnectionManager.IsConnected(WsChannelId))
                 {
                     sessionUpdateTimeout = (int)TimeSpan.FromSeconds(updateIntervalInSec).TotalMilliseconds;
                 }
@@ -145,40 +113,31 @@ namespace EltraConnector.Sessions
                     await Task.Delay(minWaitTime);
                 }
 
-                if (!_wsConnectionManager.IsConnected(_channelId) && _wsConnectionManager.CanConnect(_channelId))
+                if (ShouldRun())
                 {
-                    if (OnSignInRequested())
-                    {
-                        if (await _wsConnectionManager.Connect(_channelId, wsChannelName))
-                        {
-                            await SendSessionIdentyfication(_channelId);
-
-                            updateResult = await _channelControllerAdapter.Update();
-
-                            Status = updateResult ? ChannelStatus.Online : ChannelStatus.Offline;
-                        }
-                    }
+                    await ReconnectToWsChannel();
                 }
             }
 
-            Status = ChannelStatus.Offline;
+            ChannelStatus = ChannelStatus.Offline;
 
-            if (_wsConnectionManager.IsConnected(_channelId))
-            {
-                await _wsConnectionManager.Disconnect(_channelId);
-            }
+            await DisconnectFromWsChannel();
 
             MsgLogger.WriteLine($"Sync agent working thread finished successfully!");
         }
 
-        private async Task SendSessionIdentyfication(string sessionUuid)
+        protected override async Task<bool> ReconnectToWsChannel()
         {
-            if (_wsConnectionManager != null && _wsConnectionManager.IsConnected(sessionUuid))
-            {
-                var sessionIdent = new ChannelIdentification() { Id = _channelControllerAdapter.ChannelId };
+            bool result = await base.ReconnectToWsChannel();
 
-                await _wsConnectionManager.Send(sessionUuid, _channelControllerAdapter.User.Identity, sessionIdent);
+            if (result)
+            {
+                var updateResult = await _channelControllerAdapter.Update();
+
+                ChannelStatus = updateResult ? ChannelStatus.Online : ChannelStatus.Offline;
             }
+
+            return result;
         }
 
         #endregion
