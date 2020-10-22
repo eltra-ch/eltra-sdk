@@ -371,11 +371,25 @@ namespace EltraConnector.UserAgent
 
             if (!token.IsCancellationRequested)
             {
-                _parameterUpdateManager?.Start();
-                _executeCommander?.Start();
-                _channelHeartbeat?.Start();
+                var t1 = Task.Run(() => 
+                {
+                    _parameterUpdateManager?.Start(); 
+                });
+
+                var t2 = Task.Run(() =>
+                {
+                    _executeCommander?.Start();
+                });
+
+                var t3 = Task.Run(() => 
+                {
+                    _channelHeartbeat?.Start();
+                });
+                
 
                 RegisterParameterUpdateManagerEvents();
+
+                Task.WaitAll(new Task[] { t1, t2, t3 });
 
                 result = _parameterUpdateManager.Status == WsChannelStatus.Started;
 
