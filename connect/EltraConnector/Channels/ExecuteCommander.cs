@@ -13,42 +13,40 @@ using Newtonsoft.Json.Serialization;
 using EltraConnector.Events;
 using EltraCommon.Contracts.Devices;
 
-namespace EltraConnector.UserAgent
+namespace EltraConnector.Channels
 {
-    class ExecuteCommander : EltraThread
+    class ExecuteCommander : WsChannelThread
     {
         #region Private fields
 
+        const string ChannelName = "ExecuteCommander";
+
         private readonly UserChannelControllerAdapter _channelAdapter;
-        private readonly List<DeviceCommand> _deviceCommands;
-        private readonly WsConnectionManager _wsConnectionManager;
-        private string _commandExecUuid;
-        private string _wsChannelName;
-        
+        private readonly List<DeviceCommand> _deviceCommands;        
+        private int _nodeId;
+
         #endregion
 
         #region Constructors
 
         public ExecuteCommander(UserChannelControllerAdapter channelAdapter)
+            : base(channelAdapter.WsConnectionManager, channelAdapter.ChannelId + "_ExecCommander", ChannelName,
+                  channelAdapter.ChannelId, 0, channelAdapter.User.Identity)
         {
-            _deviceCommands = new List<DeviceCommand>();
-
-            _wsConnectionManager = channelAdapter.WsConnectionManager;
+            _deviceCommands = new List<DeviceCommand>();           
 
             _channelAdapter = channelAdapter;
-            _commandExecUuid = _channelAdapter.ChannelId + "_ExecCommander";
-            _wsChannelName = "ExecuteCommander";
         }
 
         public ExecuteCommander(UserChannelControllerAdapter channelAdapter, int nodeId)
+            : base(channelAdapter.WsConnectionManager, channelAdapter.ChannelId + $"_ExecCommander_{nodeId}", ChannelName,
+                  channelAdapter.ChannelId, nodeId, channelAdapter.User.Identity)
         {
+            _nodeId = nodeId;
+
             _deviceCommands = new List<DeviceCommand>();
 
-            _wsConnectionManager = channelAdapter.WsConnectionManager;
-
             _channelAdapter = channelAdapter;
-            _commandExecUuid = _channelAdapter.ChannelId + $"_ExecCommander_{nodeId}";
-            _wsChannelName = "ExecuteCommander";
         }
 
         #endregion
@@ -58,8 +56,6 @@ namespace EltraConnector.UserAgent
         public event EventHandler<ExecuteCommanderEventArgs> CommandExecuted;
 
         public event EventHandler<AgentChannelStatusChangedEventArgs> RemoteChannelStatusChanged;
-
-        public event EventHandler<SignInRequestEventArgs> SignInRequested;
 
         #endregion
 
@@ -75,15 +71,6 @@ namespace EltraConnector.UserAgent
             RemoteChannelStatusChanged?.Invoke(this, args);
         }
 
-        private bool OnSignInRequested()
-        {
-            var args = new SignInRequestEventArgs();
-
-            SignInRequested?.Invoke(this, args);
-
-            return args.SignInResult;
-        }
-
         #endregion
 
         #region Properties
@@ -93,28 +80,6 @@ namespace EltraConnector.UserAgent
         #endregion
 
         #region Methods
-
-        public override bool Stop()
-        {
-            RequestStop();
-
-            if (_wsConnectionManager.IsConnected(_commandExecUuid))
-            {
-                Task.Run(async () => { await _wsConnectionManager.Disconnect(_commandExecUuid); }).GetAwaiter().GetResult();
-            }
-
-            return base.Stop();
-        }
-
-        private async Task SendSessionIdentyfication(string commandExecUuid)
-        {
-            if (_wsConnectionManager.IsConnected(commandExecUuid))
-            {
-                var sessionIdent = new ChannelIdentification() { Id = _channelAdapter.ChannelId };
-
-                await _wsConnectionManager.Send(commandExecUuid, _channelAdapter.User.Identity, sessionIdent);
-            }
-        }
 
         private void HandleDeserializationError(object sender, ErrorEventArgs errorArgs)
         {
@@ -130,9 +95,9 @@ namespace EltraConnector.UserAgent
             const int executeIntervalRest = 100;
             const int executeIntervalWs = 10;
 
-            MsgLogger.WriteDebug($"{GetType().Name} - Execute", $"create exec channel '{_wsChannelName}', uuid='{_commandExecUuid}'");
+            MsgLogger.WriteDebug($"{GetType().Name} - Execute", $"create exec channel '{WsChannelName}', uuid='{WsChannelId}'");
 
-            await CreateWsChannel(_commandExecUuid, _wsChannelName);
+            await ConnectToWsChannel();
 
             while (ShouldRun())
             {
@@ -140,11 +105,11 @@ namespace EltraConnector.UserAgent
                 {
                     var processingCommands = GetProcessingCommands();
 
-                    if (_wsConnectionManager.IsConnected(_commandExecUuid))
+                    if (WsConnectionManager.IsConnected(WsChannelId))
                     {
-                        MsgLogger.WriteDebug($"{GetType().Name} - Execute", $"channel '{_wsChannelName}', uuid='{_commandExecUuid}' - receive...");
+                        MsgLogger.WriteDebug($"{GetType().Name} - Execute", $"channel '{WsChannelName}', uuid='{WsChannelId}' - receive...");
 
-                        var json = await _wsConnectionManager.Receive(_commandExecUuid);
+                        var json = await WsConnectionManager.Receive(WsChannelId);
 
                         try
                         {
@@ -157,7 +122,7 @@ namespace EltraConnector.UserAgent
 
                                 if (executeCommands != null)
                                 {
-                                    MsgLogger.WriteDebug($"{GetType().Name} - Execute", $"channel '{_wsChannelName}', uuid='{_commandExecUuid}' - received {executeCommands.Count} commands");
+                                    MsgLogger.WriteDebug($"{GetType().Name} - Execute", $"channel '{WsChannelName}', uuid='{WsChannelId}' - received {executeCommands.Count} commands");
 
                                     foreach (var executeCommand in executeCommands)
                                     {
@@ -173,7 +138,7 @@ namespace EltraConnector.UserAgent
 
                                     if (executeCommandStatusList != null)
                                     {
-                                        MsgLogger.WriteDebug($"{GetType().Name} - Execute", $"channel '{_wsChannelName}', uuid='{_commandExecUuid}' - received {executeCommandStatusList.Count} command status");
+                                        MsgLogger.WriteDebug($"{GetType().Name} - Execute", $"channel '{WsChannelName}', uuid='{WsChannelId}' - received {executeCommandStatusList.Count} command status");
 
                                         foreach (var executeCommandStatus in executeCommandStatusList)
                                         {
@@ -193,33 +158,33 @@ namespace EltraConnector.UserAgent
                                             {
                                                 MsgLogger.WriteDebug($"{GetType().Name} - Execute", $"session {channelStatusUpdate.ChannelId}, status changed to {channelStatusUpdate.Status}");
 
-                                                OnRemoteChannelStatusChanged(new AgentChannelStatusChangedEventArgs() { Id = channelStatusUpdate.ChannelId, Status = channelStatusUpdate.Status } );
+                                                OnRemoteChannelStatusChanged(new AgentChannelStatusChangedEventArgs() { Id = channelStatusUpdate.ChannelId, Status = channelStatusUpdate.Status });
                                             }
                                         }
                                         else
                                         {
-                                            MsgLogger.WriteDebug($"{GetType().Name} - Execute", $"channel '{_wsChannelName}', uuid='{_commandExecUuid}' - received 0 commands");
+                                            MsgLogger.WriteDebug($"{GetType().Name} - Execute", $"channel '{WsChannelName}', uuid='{WsChannelId}' - received 0 commands");
                                         }
                                     }
 
                                 }
                             }
-                            else if (string.IsNullOrEmpty(json) && _wsConnectionManager.IsConnected(_commandExecUuid))
+                            else if (string.IsNullOrEmpty(json) && WsConnectionManager.IsConnected(WsChannelId))
                             {
                                 MsgLogger.WriteLine($"empty string received");
                             }
                         }
-                        catch(Exception e)
+                        catch (Exception e)
                         {
                             MsgLogger.Exception($"{GetType().Name} - Execute", e);
                         }
 
                         if (ShouldRun())
-                        { 
+                        {
                             await Task.Delay(executeIntervalWs);
                         }
                     }
-                    else if(UseRest)
+                    else if (UseRest)
                     {
                         foreach (var deviceCommand in processingCommands)
                         {
@@ -227,7 +192,7 @@ namespace EltraConnector.UserAgent
                         }
 
                         if (ShouldRun())
-                        { 
+                        {
                             await Task.Delay(executeIntervalRest);
                         }
                     }
@@ -239,40 +204,25 @@ namespace EltraConnector.UserAgent
 
                 if (ShouldRun())
                 {
-                    if (!_wsConnectionManager.IsConnected(_commandExecUuid))
-                    {
-                        await CreateWsChannel(_commandExecUuid, _wsChannelName);
-                    }
+                    await ReconnectToWsChannel();
                 }
             }
 
-            MsgLogger.WriteDebug($"{GetType().Name} - Execute", $"exec channel '{_wsChannelName}', uuid='{_commandExecUuid}' closed");
-        }
+            await DisconnectFromWsChannel();
 
-        private async Task CreateWsChannel(string commandExecUuid, string wsChannelName)
-        {
-            if (_wsConnectionManager.CanConnect(commandExecUuid))
-            {
-                if (OnSignInRequested())
-                {
-                    if (await _wsConnectionManager.Connect(commandExecUuid, wsChannelName))
-                    {
-                        await SendSessionIdentyfication(commandExecUuid);
-                    }
-                }
-            }
+            MsgLogger.WriteDebug($"{GetType().Name} - Execute", $"exec channel '{WsChannelName}', uuid='{WsChannelId}' closed");
         }
 
         private List<DeviceCommand> GetProcessingCommands()
         {
-            var result = new List<DeviceCommand>(); 
+            var result = new List<DeviceCommand>();
 
             lock (this)
             {
                 foreach (var deviceCommand in _deviceCommands)
                 {
                     var clonedCommand = deviceCommand.Clone();
-                    
+
                     result.Add(clonedCommand);
                 }
             }
@@ -304,31 +254,32 @@ namespace EltraConnector.UserAgent
         {
             var deviceCommand = execCommand?.Command;
 
-            if(deviceCommand!=null)
+            if (deviceCommand != null)
             {
                 var followedCommand = FindDeviceCommand(deviceCommand.Id);
 
                 switch (deviceCommand.Status)
                 {
                     case ExecCommandStatus.Executed:
-                    {
-                        await SetCommandStatus(execCommand, ExecCommandStatus.Complete);
-
-                        OnCommandExecuted(new ExecuteCommanderEventArgs
                         {
-                            CommandUuid = deviceCommand.Id,
-                            Status = ExecCommandStatus.Executed,
-                            Command = deviceCommand
-                        });
+                            await SetCommandStatus(execCommand, ExecCommandStatus.Complete);
 
-                        RemoveDeviceCommand(deviceCommand.Id);
+                            OnCommandExecuted(new ExecuteCommanderEventArgs
+                            {
+                                CommandUuid = deviceCommand.Id,
+                                Status = ExecCommandStatus.Executed,
+                                Command = deviceCommand
+                            });
 
-                    } break;
+                            RemoveDeviceCommand(deviceCommand.Id);
+
+                        }
+                        break;
                     case ExecCommandStatus.Failed:
                     case ExecCommandStatus.Refused:
                         {
-                        MsgLogger.WriteError($"{GetType().Name} - WsPopCommand",
-                            $"Command {deviceCommand.Name} (uuid='{deviceCommand.Id}') execution failed!, status={deviceCommand.Status}");
+                            MsgLogger.WriteError($"{GetType().Name} - WsPopCommand",
+                                $"Command {deviceCommand.Name} (uuid='{deviceCommand.Id}') execution failed!, status={deviceCommand.Status}");
 
                             OnCommandExecuted(new ExecuteCommanderEventArgs
                             {
@@ -338,8 +289,9 @@ namespace EltraConnector.UserAgent
                             });
 
                             RemoveDeviceCommand(deviceCommand.Id);
-                    } break;
-                    
+                        }
+                        break;
+
                 }
 
                 if (followedCommand != null)
@@ -350,7 +302,7 @@ namespace EltraConnector.UserAgent
         }
 
         public async Task WsPopCommand(ExecuteCommandStatus execCommandStatus)
-        {  
+        {
             if (execCommandStatus != null)
             {
                 switch (execCommandStatus.Status)
@@ -389,56 +341,67 @@ namespace EltraConnector.UserAgent
 
         public async Task<DeviceCommand> PopCommand(DeviceCommand command)
         {
-            const double timeout = 30; 
+            const double timeout = 30;
             DeviceCommand result = null;
 
-            var commandStatus = await GetCommandStatus(new ExecuteCommand {Command = command, SourceChannelId = _channelAdapter.ChannelId, TargetChannelId = command.Device.ChannelId});
+            var commandStatus = await GetCommandStatus(new ExecuteCommand
+            {
+                Command = command,
+                SourceChannelId = _channelAdapter.ChannelId,
+                TargetChannelId = command.Device.ChannelId,
+                NodeId = command.Device.NodeId
+            });
 
             if (commandStatus != null)
             {
                 switch (commandStatus.Status)
                 {
                     case ExecCommandStatus.Waiting:
-                    {
-                        if((DateTime.Now - commandStatus.Modified).TotalSeconds > timeout)
+                        {
+                            if ((DateTime.Now - commandStatus.Modified).TotalSeconds > timeout)
+                            {
+                                RemoveDeviceCommand(command.Id);
+                            }
+                        }
+                        break;
+                    case ExecCommandStatus.Complete:
                         {
                             RemoveDeviceCommand(command.Id);
                         }
-                    } break;
-                    case ExecCommandStatus.Complete:
-                    {
-                        RemoveDeviceCommand(command.Id);
-                    } break;
+                        break;
                     case ExecCommandStatus.Executed:
-                    {
-                        var execCommand = await PopCommand(command.Id, command.Device, ExecCommandStatus.Executed);
-
-                        if (execCommand != null)
                         {
-                            if (await SetCommandStatus(execCommand, ExecCommandStatus.Complete))
+                            var execCommand = await PopCommand(command.Id, command.Device, ExecCommandStatus.Executed);
+
+                            if (execCommand != null)
                             {
-                                RemoveDeviceCommand(command.Id);
+                                if (await SetCommandStatus(execCommand, ExecCommandStatus.Complete))
+                                {
+                                    RemoveDeviceCommand(command.Id);
 
-                                result = execCommand.Command;
+                                    result = execCommand.Command;
 
-                                OnCommandExecuted(new ExecuteCommanderEventArgs { CommandUuid = command.Id, Command = command, Status = ExecCommandStatus.Complete });
+                                    OnCommandExecuted(new ExecuteCommanderEventArgs { CommandUuid = command.Id, Command = command, Status = ExecCommandStatus.Complete });
+                                }
                             }
                         }
-                    } break;
+                        break;
                     case ExecCommandStatus.Failed:
-                    {
-                        RemoveDeviceCommand(command.Id);
+                        {
+                            RemoveDeviceCommand(command.Id);
 
-                        MsgLogger.WriteError($"{GetType().Name} - PopCommand",
-                            $"Command {command.Name} (uuid='{command.Id}') execution failed!");
-                    } break;
+                            MsgLogger.WriteError($"{GetType().Name} - PopCommand",
+                                $"Command {command.Name} (uuid='{command.Id}') execution failed!");
+                        }
+                        break;
                     case ExecCommandStatus.Refused:
-                    {
-                        RemoveDeviceCommand(command.Id);
+                        {
+                            RemoveDeviceCommand(command.Id);
 
-                        MsgLogger.WriteError($"{GetType().Name} - PopCommand",
-                            $"Command {command.Name} (uuid='{command.Id}') execution refused!");
-                    } break;
+                            MsgLogger.WriteError($"{GetType().Name} - PopCommand",
+                                $"Command {command.Name} (uuid='{command.Id}') execution refused!");
+                        }
+                        break;
                 }
             }
 

@@ -405,7 +405,7 @@ namespace EltraConnector.Agent
 
                 if (result)
                 {
-                    Status = AgentStatus.Started;
+                    Status = AgentStatus.Online;
                 }
             }
 
@@ -595,7 +595,13 @@ namespace EltraConnector.Agent
                 {
                     await Task.Delay(10);
 
-                    if(_deviceAgent != null && _deviceAgent.Status == AgentStatus.Started)
+                    if(_deviceAgent != null && _deviceAgent.Status == AgentStatus.Online)
+                    {
+                        Status = AgentStatus.Online;
+                        break;
+                    }
+
+                    if (_deviceAgent != null && _deviceAgent.Status == AgentStatus.Started)
                     {
                         Status = AgentStatus.Started;
                         break;
@@ -607,11 +613,11 @@ namespace EltraConnector.Agent
                         break;
                     }
 
-                } while (Status != AgentStatus.Started && Status != AgentStatus.Bound && waiter.Elapsed < timeout);
+                } while (Status != AgentStatus.Online && Status != AgentStatus.Bound && waiter.Elapsed < timeout);
 
                 result = waiter.Elapsed < timeout;
             }
-            else if (Status == AgentStatus.Started)
+            else if (Status == AgentStatus.Online || Status == AgentStatus.Started)
             {
                 result = true;
             }
