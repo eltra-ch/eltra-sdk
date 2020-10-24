@@ -8,6 +8,7 @@ using EltraConnector.Master.Device;
 using EltraCommon.ObjectDictionary.Xdd.DeviceDescription.Profiles.Application.Parameters;
 using EltraCommon.Contracts.Channels;
 using EltraConnector.SyncAgent;
+using System.Diagnostics;
 
 namespace TestMaster
 {
@@ -396,6 +397,9 @@ namespace TestMaster
 
             _countingTask = Task.Run(async () => {
 
+                var stopWatch = new Stopwatch();
+                const double maxRunTimeInMs = 60000;
+
                 _countingRunning = true;
                 _counterValue = 0;
 
@@ -406,6 +410,8 @@ namespace TestMaster
                         _countingRunning = false;
                     }
                 };
+
+                stopWatch.Start();
 
                 do
                 {
@@ -418,7 +424,7 @@ namespace TestMaster
 
                     await Task.Delay(delay);
                 }
-                while (_countingRunning);
+                while (_countingRunning && stopWatch.ElapsedMilliseconds < maxRunTimeInMs);
                 
             });
 
