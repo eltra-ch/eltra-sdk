@@ -60,7 +60,13 @@ namespace EltraConnector.UserAgent
             _identity = identity;
             _executedCommands = new List<DeviceCommand>();
             _channel = new Channel() { Status = ChannelStatus.Offline };
-            _channelAdapter = new UserChannelControllerAdapter(url, identity, updateInterval, timeout) { UseWebSockets = true };
+            
+            _channelAdapter = new UserChannelControllerAdapter(url, identity, updateInterval, timeout) 
+            { 
+                UseWebSockets = true
+            };
+
+            _channelAdapter.WsChannelId = _channelAdapter.ChannelId + "_ExecCommander";
 
             Initialize(url, updateInterval);
         }
@@ -72,7 +78,12 @@ namespace EltraConnector.UserAgent
             _identity = identity;
             _channel = new Channel() { Status = ChannelStatus.Offline };
             _executedCommands = new List<DeviceCommand>();
-            _channelAdapter = new UserChannelControllerAdapter(url, uuid, identity, updateInterval, timeout) { UseWebSockets = true };
+
+            _channelAdapter = new UserChannelControllerAdapter(url, uuid, identity, updateInterval, timeout) 
+            { 
+                UseWebSockets = true,
+                WsChannelId = _channelAdapter.ChannelId + $"_ExecCommander"
+            };
 
             Initialize(url, updateInterval);
         }
@@ -83,7 +94,13 @@ namespace EltraConnector.UserAgent
             _identity = masterAgent.Identity;
             _channel = new Channel() { Status = ChannelStatus.Offline };
             _executedCommands = new List<DeviceCommand>();
-            _channelAdapter = new UserChannelControllerAdapter(masterAgent.Url, deviceNode.ChannelId, masterAgent.Identity, updateInterval, timeout) { UseWebSockets = true };
+
+            _channelAdapter = new UserChannelControllerAdapter(masterAgent.Url, deviceNode.ChannelId, masterAgent.Identity, updateInterval, timeout) 
+            { 
+                UseWebSockets = true
+            };
+
+            _channelAdapter.WsChannelId = _channelAdapter.ChannelId + $"_ExecCommander_{deviceNode.NodeId}";
 
             Initialize(masterAgent, deviceNode);
         }
@@ -273,8 +290,9 @@ namespace EltraConnector.UserAgent
             _url = url;
             _authentication = new Authentication(url);
 
-            _channelHeartbeat = new ChannelHeartbeat(_channelAdapter, updateInterval, _timeout);
-            _executeCommander = new ExecuteCommander(_channelAdapter);
+            _executeCommander = new ExecuteCommander(_channelAdapter, "ExecuteCommander", _channelAdapter.WsChannelId);
+
+            _channelHeartbeat = new ChannelHeartbeat("ExecuteCommander", _executeCommander.WsChannelId, _channelAdapter, updateInterval, _timeout);
             _parameterUpdateManager = new ParameterUpdateManager(_channelAdapter);
 
             RegisterEvents();
@@ -289,7 +307,8 @@ namespace EltraConnector.UserAgent
             _url = agent.Url;
             _authentication = new Authentication(agent.Url);
 
-            _executeCommander = new ExecuteCommander(_channelAdapter, node.NodeId);
+            _executeCommander = new ExecuteCommander(_channelAdapter, "ExecuteCommander", _channelAdapter.WsChannelId);
+            
             _parameterUpdateManager = new ParameterUpdateManager(_channelAdapter, node.NodeId);
 
             RegisterEvents();
@@ -371,25 +390,24 @@ namespace EltraConnector.UserAgent
 
             if (!token.IsCancellationRequested)
             {
-                var t1 = Task.Run(() => 
+                var parameterUpdateTask = Task.Run(() => 
                 {
-                    _parameterUpdateManager?.Start(); 
+                    _parameterUpdateManager?.Start();
                 });
 
-                var t2 = Task.Run(() =>
+                var executeCommanderTask = Task.Run(() =>
                 {
                     _executeCommander?.Start();
                 });
 
-                var t3 = Task.Run(() => 
+                var heartbeatTask = Task.Run(() => 
                 {
                     _channelHeartbeat?.Start();
                 });
                 
-
                 RegisterParameterUpdateManagerEvents();
 
-                Task.WaitAll(new Task[] { t1, t2, t3 });
+                Task.WaitAll(new Task[] { parameterUpdateTask, executeCommanderTask, heartbeatTask });
 
                 result = _parameterUpdateManager.Status == WsChannelStatus.Started;
 
@@ -400,7 +418,10 @@ namespace EltraConnector.UserAgent
 
                 if (result)
                 {
-                    result = _channelHeartbeat.Status == WsChannelStatus.Started;
+                    if (_channelHeartbeat != null)
+                    {
+                        result = _channelHeartbeat.Status == WsChannelStatus.Started;
+                    }
                 }
             }
 
@@ -409,12 +430,12 @@ namespace EltraConnector.UserAgent
 
         private async Task StopChannel()
         {
-            _executeCommander?.Stop();
-           
             await UnregisterSession();
 
             _channelHeartbeat?.Stop();
 
+            _executeCommander?.Stop();
+           
             UnregisterParameterUpdateManagerEvents();
 
             _parameterUpdateManager?.Stop();

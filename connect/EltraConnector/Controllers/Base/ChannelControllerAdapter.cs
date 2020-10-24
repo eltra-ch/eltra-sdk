@@ -13,6 +13,8 @@ using System.Net;
 using System.Threading.Tasks;
 using System.Web;
 using System.Threading;
+using Newtonsoft.Json.Serialization;
+using System.Diagnostics;
 
 namespace EltraConnector.Controllers.Base
 {
@@ -74,6 +76,8 @@ namespace EltraConnector.Controllers.Base
         public WsConnectionManager WsConnectionManager { get; set; }
 
         public User User => _user;
+
+        public string WsChannelId { get; set; }
 
         #endregion
 
@@ -278,6 +282,10 @@ namespace EltraConnector.Controllers.Base
             return result;
         }
 
+        private void HandleDeserializationError(object sender, ErrorEventArgs errorArgs)
+        {
+            errorArgs.ErrorContext.Handled = true;
+        }
 
         protected async Task<bool> SetChannelStatus(ChannelStatus status)
         {
@@ -286,16 +294,46 @@ namespace EltraConnector.Controllers.Base
             try
             {
                 var statusUpdate = new ChannelStatusUpdate { ChannelId = Channel.Id, Status = status };
+                bool requestResultReceived = false;
 
-                if (WsConnectionManager != null && WsConnectionManager.IsConnected(Channel.Id))
+                if (WsConnectionManager != null && WsConnectionManager.IsConnected(WsChannelId))
                 {
-                    if (await WsConnectionManager.Send(Channel.Id, _user.Identity, statusUpdate))
+                    WsConnectionManager.MessageReceived += (a, o) => 
                     {
-                        var requestResult = await WsConnectionManager.Receive<RequestResult>(Channel.Id);
-
-                        if (requestResult != null)
+                        if (o.Source == WsChannelId && o.Type == Transport.Ws.Events.WsMessageType.Data)
                         {
-                            result = requestResult.Result;
+                            try
+                            {
+                                var requestResult = JsonConvert.DeserializeObject<RequestResult>(o.Message, new JsonSerializerSettings
+                                {
+                                    Error = HandleDeserializationError
+                                });
+
+                                if (requestResult != null)
+                                {
+                                    result = requestResult.Result;
+                                    requestResultReceived = true;
+                                }
+                            }
+                            catch (Exception e)
+                            {
+                                MsgLogger.Exception($"{GetType().Name} - SetChannelStatus", e);
+                            }
+                        }
+                    };
+
+                    var waitWatch = new Stopwatch();
+                    int minWaitTime = 10;
+                    
+                    waitWatch.Start();
+                    
+                    requestResultReceived = false;
+
+                    if (await WsConnectionManager.Send(WsChannelId, _user.Identity, statusUpdate))
+                    {
+                        while (waitWatch.ElapsedMilliseconds < TimeSpan.FromSeconds(_timeout).TotalMilliseconds && !requestResultReceived)
+                        {
+                            await Task.Delay(minWaitTime);
                         }
                     }
                 }

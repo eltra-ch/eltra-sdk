@@ -44,9 +44,13 @@ namespace EltraConnector.SyncAgent
 
             _channelControllerAdapter = new DeviceChannelControllerAdapter(this) { WsConnectionManager = _wsConnectionManager };
 
-            _channelHeartbeat = new ChannelHeartbeat(_channelControllerAdapter, updateInterval, timeout);
-            _commandExecutor = new CommandExecutor(_channelControllerAdapter);
+            _channelControllerAdapter.WsChannelId = _channelControllerAdapter.Channel.Id + "_CommandExec";
 
+            _commandExecutor = new CommandExecutor(_channelControllerAdapter,
+                _channelControllerAdapter.WsChannelId, "CommandsExecution", identity);
+
+            _channelHeartbeat = new ChannelHeartbeat("CommandsExecution", _commandExecutor.WsChannelId, _channelControllerAdapter, updateInterval, timeout);
+            
             RegisterEvents();
         }
 

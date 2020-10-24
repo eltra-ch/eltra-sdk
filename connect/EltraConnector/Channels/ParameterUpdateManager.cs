@@ -82,45 +82,50 @@ namespace EltraConnector.Channels
                 {
                     if (WsConnectionManager.IsConnected(WsChannelId))
                     {
-                        var json = await WsConnectionManager.Receive(WsChannelId);
+                        WsConnectionManager.MessageReceived += (a, o) => {
 
-                        var parameterChangedTask = Task.Run(() =>
-                        {
-                            if (WsConnection.IsJson(json))
+                            if (o.Source == WsChannelId && o.Type == Transport.Ws.Events.WsMessageType.Data)
                             {
-                                var parameterSet = JsonConvert.DeserializeObject<ParameterValueUpdateSet>(json, new JsonSerializerSettings
+                                try
                                 {
-                                    Error = HandleDeserializationError
-                                });
-
-                                if (parameterSet != null && parameterSet.Count > 0)
-                                {
-                                    foreach (var parameterEntry in parameterSet.Items)
-                                    {
-                                        OnParameterValueChanged(new ParameterValueChangedEventArgs(parameterEntry.NodeId,
-                                                                                                   parameterEntry.Index,
-                                                                                                   parameterEntry.SubIndex,
-                                                                                                   parameterEntry.ParameterValue));
-                                    }
-                                }
-                                else
-                                {
-                                    var parameterEntry = JsonConvert.DeserializeObject<ParameterValueUpdate>(json, new JsonSerializerSettings
+                                    var parameterSet = JsonConvert.DeserializeObject<ParameterValueUpdateSet>(o.Message, new JsonSerializerSettings
                                     {
                                         Error = HandleDeserializationError
                                     });
 
-                                    if (parameterEntry != null)
+                                    if (parameterSet != null && parameterSet.Count > 0)
                                     {
-                                        OnParameterValueChanged(new ParameterValueChangedEventArgs(parameterEntry.NodeId,
-                                                                                                   parameterEntry.Index,
-                                                                                                   parameterEntry.SubIndex, parameterEntry.ParameterValue));
+                                        foreach (var parameterEntry in parameterSet.Items)
+                                        {
+                                            OnParameterValueChanged(new ParameterValueChangedEventArgs(parameterEntry.NodeId,
+                                                                                                       parameterEntry.Index,
+                                                                                                       parameterEntry.SubIndex,
+                                                                                                       parameterEntry.ParameterValue));
+                                        }
+                                    }
+                                    else
+                                    {
+                                        var parameterEntry = JsonConvert.DeserializeObject<ParameterValueUpdate>(o.Message, new JsonSerializerSettings
+                                        {
+                                            Error = HandleDeserializationError
+                                        });
+
+                                        if (parameterEntry != null)
+                                        {
+                                            OnParameterValueChanged(new ParameterValueChangedEventArgs(parameterEntry.NodeId,
+                                                                                                       parameterEntry.Index,
+                                                                                                       parameterEntry.SubIndex, parameterEntry.ParameterValue));
+                                        }
                                     }
                                 }
+                                catch(Exception e)
+                                {
+                                    MsgLogger.Exception($"{GetType().Name} - Execute", e);
+                                }
                             }
-                        });
+                        };
 
-                        parameterChangedTasks.Add(parameterChangedTask);
+                        await WsConnectionManager.Receive(WsChannelId);
                     }
                 }
                 catch (Exception e)

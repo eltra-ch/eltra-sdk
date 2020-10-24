@@ -96,7 +96,7 @@ namespace EltraConnector.Channels
 
         protected WsConnectionManager WsConnectionManager => _wsConnectionManager;
 
-        protected string WsChannelId => _wsChannelId;
+        public string WsChannelId => _wsChannelId;
 
         protected string WsChannelName => _wsChannelName;
 

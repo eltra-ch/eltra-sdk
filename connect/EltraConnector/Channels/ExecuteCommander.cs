@@ -7,7 +7,6 @@ using EltraCommon.Logger;
 using EltraCommon.Contracts.CommandSets;
 using EltraConnector.Transport.Ws;
 using EltraCommon.Contracts.Channels;
-using EltraCommon.Threads;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using EltraConnector.Events;
@@ -19,8 +18,6 @@ namespace EltraConnector.Channels
     {
         #region Private fields
 
-        const string ChannelName = "ExecuteCommander";
-
         private readonly UserChannelControllerAdapter _channelAdapter;
         private readonly List<DeviceCommand> _deviceCommands;        
         private int _nodeId;
@@ -29,8 +26,8 @@ namespace EltraConnector.Channels
 
         #region Constructors
 
-        public ExecuteCommander(UserChannelControllerAdapter channelAdapter)
-            : base(channelAdapter.WsConnectionManager, channelAdapter.ChannelId + "_ExecCommander", ChannelName,
+        public ExecuteCommander(UserChannelControllerAdapter channelAdapter, string wsChannelName, string wsChannelId)
+            : base(channelAdapter.WsConnectionManager, wsChannelId, wsChannelName,
                   channelAdapter.ChannelId, 0, channelAdapter.User.Identity)
         {
             _deviceCommands = new List<DeviceCommand>();           
@@ -38,8 +35,8 @@ namespace EltraConnector.Channels
             _channelAdapter = channelAdapter;
         }
 
-        public ExecuteCommander(UserChannelControllerAdapter channelAdapter, int nodeId)
-            : base(channelAdapter.WsConnectionManager, channelAdapter.ChannelId + $"_ExecCommander_{nodeId}", ChannelName,
+        public ExecuteCommander(UserChannelControllerAdapter channelAdapter, int nodeId, string wsChannelName, string wsChannelId)
+            : base(channelAdapter.WsConnectionManager, wsChannelId, wsChannelName,
                   channelAdapter.ChannelId, nodeId, channelAdapter.User.Identity)
         {
             _nodeId = nodeId;

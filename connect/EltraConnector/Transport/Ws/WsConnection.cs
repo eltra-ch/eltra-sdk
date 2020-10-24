@@ -16,7 +16,7 @@ namespace EltraConnector.Transport.Ws
 
         private CancellationTokenSource _cancellationTokenSource;
         private CancellationTokenSource _disconnectTokenSource;
-
+        
         #endregion
 
         #region Constructors
@@ -30,6 +30,12 @@ namespace EltraConnector.Transport.Ws
             UniqueId = uniqueId;
             ChannelName = channelName;
         }
+
+        #endregion
+
+        #region Events
+
+        public event EventHandler<string> MessageReceived;
 
         #endregion
 
@@ -261,21 +267,9 @@ namespace EltraConnector.Transport.Ws
 
             try
             {
-                if(await Send(identity, typeof(T).FullName, JsonConvert.SerializeObject(obj)))
+                if (await Send(identity, typeof(T).FullName, JsonConvert.SerializeObject(obj)))
                 {
-                    if(obj is WsMessageAck)
-                    {
-                        result = true;
-                    }
-                    else
-                    { 
-                        var ack = await ReadWsMessage();
-
-                        if(ack!=null && ack.Data=="ACK")
-                        {
-                            result = true;
-                        }
-                    }
+                    result = true;
                 }
             }
             catch (Exception e)
@@ -359,7 +353,13 @@ namespace EltraConnector.Transport.Ws
 
                             if (!string.IsNullOrEmpty(result))
                             {
+                                MessageReceived?.Invoke(this, result);
+
                                 break;
+                            }
+                            else
+                            {
+                                MsgLogger.WriteWarning($"{GetType().Name} - ReadMessage", "empty message received");
                             }
 
                             buffer = new byte[bufferSize];
@@ -425,17 +425,10 @@ namespace EltraConnector.Transport.Ws
             {
                 var wsMsg = await ReadWsMessage();
 
-                if(wsMsg is WsMessageAck)
+                if(wsMsg != null)
                 {
                     result = wsMsg.Data;
-                }
-                else if(wsMsg!=null)
-                {
-                    if (await Send(new UserIdentity(), new WsMessageAck()))
-                    {
-                        result = wsMsg.Data;
-                        LastCloseStatus = null;
-                    }
+                    LastCloseStatus = null;
                 }
                 else if (IsConnected)
                 {

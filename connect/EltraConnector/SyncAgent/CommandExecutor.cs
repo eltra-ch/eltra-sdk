@@ -4,28 +4,30 @@ using System.Threading.Tasks;
 using EltraCommon.Contracts.CommandSets;
 using EltraCommon.Contracts.Channels;
 using EltraCommon.Logger;
-using EltraCommon.Threads;
 using EltraConnector.Controllers;
 using EltraConnector.Events;
 using EltraConnector.Transport.Ws;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
+using EltraConnector.Channels;
+using EltraCommon.Contracts.Users;
+using EltraCommon.Contracts.Results;
 
 namespace EltraConnector.SyncAgent
 {
-    class CommandExecutor : EltraThread
+    class CommandExecutor : WsChannelThread
     {
         #region Private fields
 
         private readonly DeviceChannelControllerAdapter _channelControllerAdapter;
         private bool _stopping;
-        private string _wsChannelId;
-
+        
         #endregion
 
         #region Constructors
 
-        public CommandExecutor(DeviceChannelControllerAdapter adapter)
+        public CommandExecutor(DeviceChannelControllerAdapter adapter, string wsChannelId, string wsChannelName, UserIdentity identity)
+            : base(adapter.WsConnectionManager, wsChannelId, wsChannelName, adapter.ChannelId, identity)
         {
             _channelControllerAdapter = adapter;
         }
@@ -34,7 +36,6 @@ namespace EltraConnector.SyncAgent
 
         #region Events
 
-        public event EventHandler<SignInRequestEventArgs> SignInRequested;
         public event EventHandler<AgentChannelStatusChangedEventArgs> RemoteChannelStatusChanged;
 
         #endregion
@@ -46,30 +47,13 @@ namespace EltraConnector.SyncAgent
             RemoteChannelStatusChanged?.Invoke(this, args);
         }
 
-        private bool OnSignInRequested()
-        {
-            var args = new SignInRequestEventArgs();
+        #endregion
 
-            SignInRequested?.Invoke(this, args);
-
-            return args.SignInResult;
-        }
+        #region Properties
 
         #endregion
 
         #region Methods
-
-        private async Task SendSessionIdentyfication(string commandExecUuid)
-        {
-            var wsConnectionManager = _channelControllerAdapter?.WsConnectionManager;
-
-            if (wsConnectionManager != null && wsConnectionManager.IsConnected(commandExecUuid))
-            {
-                var sessionIdent = new ChannelIdentification() { Id = _channelControllerAdapter.Channel.Id };
-                
-                await wsConnectionManager.Send(commandExecUuid, _channelControllerAdapter.User.Identity, sessionIdent);
-            }
-        }
 
         private void HandleDeserializationError(object sender, ErrorEventArgs errorArgs)
         {
@@ -80,40 +64,17 @@ namespace EltraConnector.SyncAgent
             errorArgs.ErrorContext.Handled = true;
         }
 
-        private async Task Connect(string sessionUuid, string channelName)
-        {
-            var wsConnectionManager = _channelControllerAdapter?.WsConnectionManager;
-
-            if (wsConnectionManager != null)
-            {
-                if (wsConnectionManager.CanConnect(sessionUuid))
-                {
-                    if (OnSignInRequested())
-                    {
-                        if (await wsConnectionManager.Connect(sessionUuid, channelName))
-                        {
-                            await SendSessionIdentyfication(sessionUuid);
-                        }
-                    }
-                }
-            }
-        }
-
         protected override async Task Execute()
         {
             const int ReconnectTimeout = 5000;
             
-            _wsChannelId = _channelControllerAdapter.Channel.Id + "_CommandExec";
-
-            string channelName = "CommandsExecution";
-            
-            await Connect(_wsChannelId, channelName);
+            await ConnectToWsChannel();
 
             _stopping = false;
 
             while (ShouldRun())
             {
-                bool result = await ProcessRequest(_wsChannelId);
+                bool result = await ProcessRequest(WsChannelId);
 
                 if (!_stopping)
                 {
@@ -122,9 +83,11 @@ namespace EltraConnector.SyncAgent
                         await Task.Delay(ReconnectTimeout);
                     }
 
-                    await Connect(_wsChannelId, channelName);
+                    await ReconnectToWsChannel();
                 }
             }
+
+            await DisconnectFromWsChannel();
         }
 
         private async Task<bool> ProcessWebSocketRequest(string sessionUuid)
@@ -154,25 +117,37 @@ namespace EltraConnector.SyncAgent
                     }
                     else
                     {
-                        var channelStatusUpdate = JsonConvert.DeserializeObject<ChannelStatusUpdate>(json, new JsonSerializerSettings
+                        var requestResult = JsonConvert.DeserializeObject<RequestResult>(json, new JsonSerializerSettings
                         {
                             Error = HandleDeserializationError
                         });
 
-                        if (channelStatusUpdate != null)
+                        if (requestResult != null)
                         {
-                            if (channelStatusUpdate.ChannelId != _channelControllerAdapter.Channel.Id)
-                            {
-                                MsgLogger.WriteDebug($"{GetType().Name} - Execute", $"session {channelStatusUpdate.ChannelId}, status changed to {channelStatusUpdate.Status}");
-
-                                OnRemoteChannelStatusChanged(new AgentChannelStatusChangedEventArgs() { Id = channelStatusUpdate.ChannelId, Status = channelStatusUpdate.Status });
-                            }
-
-                            result = true;
+                            MsgLogger.WriteDebug($"{GetType().Name} - Execute", $"request result received result = {requestResult.Result}, error code = {requestResult.ErrorCode}");
                         }
                         else
                         {
-                            MsgLogger.WriteLine($"{GetType().Name} - Execute - Unknown message received");
+                            var channelStatusUpdate = JsonConvert.DeserializeObject<ChannelStatusUpdate>(json, new JsonSerializerSettings
+                            {
+                                Error = HandleDeserializationError
+                            });
+
+                            if (channelStatusUpdate != null)
+                            {
+                                if (channelStatusUpdate.ChannelId != _channelControllerAdapter.Channel.Id)
+                                {
+                                    MsgLogger.WriteDebug($"{GetType().Name} - Execute", $"session {channelStatusUpdate.ChannelId}, status changed to {channelStatusUpdate.Status}");
+
+                                    OnRemoteChannelStatusChanged(new AgentChannelStatusChangedEventArgs() { Id = channelStatusUpdate.ChannelId, Status = channelStatusUpdate.Status });
+                                }
+
+                                result = true;
+                            }
+                            else
+                            {
+                                MsgLogger.WriteLine($"{GetType().Name} - Execute - Unknown message received");
+                            }
                         }
                     }
                 }
@@ -224,7 +199,7 @@ namespace EltraConnector.SyncAgent
             _stopping = true;
             var wsConnectionManager = _channelControllerAdapter?.WsConnectionManager;
 
-            Task.Run(async () => { await wsConnectionManager.Disconnect(_wsChannelId); }).GetAwaiter().GetResult();
+            Task.Run(async () => { await wsConnectionManager.Disconnect(WsChannelId); }).GetAwaiter().GetResult();
 
             bool result = base.Stop();
 

@@ -1,4 +1,9 @@
 ﻿using EltraCommon.Contracts.Users;
+using EltraCommon.Contracts.Ws;
+using EltraCommon.Logger;
+using EltraConnector.Transport.Ws.Events;
+using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -27,6 +32,81 @@ namespace EltraConnector.Transport.Ws
 
         #endregion
 
+        #region Events
+
+        public event EventHandler<WsConnectionMessageEventArgs> MessageReceived;
+
+        #endregion
+
+        #region
+
+        private void OnMessageReceived(object sender, string jsonMsg)
+        {
+            if(sender is WsConnection connection)
+            {
+                try
+                {
+                    string data = string.Empty;
+                    WsMessageType type = WsMessageType.Unknown;
+
+                    if (WsConnection.IsJson(jsonMsg))
+                    {
+                        var msg = JsonConvert.DeserializeObject<WsMessage>(jsonMsg);
+
+                        if (msg is WsMessage)
+                        {
+                            if (msg.TypeName == typeof(WsMessage).FullName)
+                            {
+                                type = WsMessageType.WsMessage;
+                                data = msg.Data;
+                            }
+                            else if (!string.IsNullOrEmpty(msg.TypeName))
+                            {
+                                type = WsMessageType.Data;
+                                data = msg.Data;
+                            }
+                            else
+                            {
+                                type = WsMessageType.Json;
+                                data = jsonMsg;
+                            }
+                        }
+                        else
+                        {
+                            type = WsMessageType.Json;
+                            data = jsonMsg;
+                        }
+                    }
+                    else
+                    {
+                        type = WsMessageType.Text;
+                        data = jsonMsg;
+                    }
+
+                    var keepAliveMsg = new WsMessageKeepAlive();
+
+                    if (!string.IsNullOrEmpty(data) && data != keepAliveMsg.Data)
+                    {
+                        try
+                        {
+                            MessageReceived?.Invoke(this, new WsConnectionMessageEventArgs()
+                            { Source = connection.UniqueId, Message = data, Type = type });
+                        }
+                        catch(Exception e)
+                        {
+                            MsgLogger.Exception($"{GetType().Name} - OnMessageReceived", e);
+                        }                        
+                    }
+                }
+                catch (Exception e)
+                {
+                    MsgLogger.Exception($"{GetType().Name} - OnMessageReceived - parsing", e);
+                }
+            }
+        }
+
+        #endregion
+
         #region Methods
 
         public async Task<bool> Connect(string uniqueId, string channelName)
@@ -37,8 +117,10 @@ namespace EltraConnector.Transport.Ws
             if(connection == null)
             {
                 connection = new WsConnection(uniqueId, channelName);
+                
+                connection.MessageReceived += OnMessageReceived;
 
-                if(await connection.Connect(WsHostUrlConverter.ToWsUrl(HostUrl)))
+                if (await connection.Connect(WsHostUrlConverter.ToWsUrl(HostUrl)))
                 {
                     _connectionList.Add(connection);
                     result = true;

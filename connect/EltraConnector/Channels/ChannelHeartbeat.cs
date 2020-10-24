@@ -13,8 +13,6 @@ namespace EltraConnector.Channels
     {
         #region Private fields
 
-        const string ChannelName = "SessionUpdate";
-
         private readonly ChannelControllerAdapter _channelControllerAdapter;
         private readonly uint _updateInterval;
         private readonly uint _timeout;
@@ -24,10 +22,15 @@ namespace EltraConnector.Channels
 
         #region Constructors
 
-        public ChannelHeartbeat(ChannelControllerAdapter channelControllerAdapter, uint updateInterval, uint timeout)
-            : base(channelControllerAdapter.WsConnectionManager, 
-                  channelControllerAdapter.Channel.Id, ChannelName,
-                  channelControllerAdapter.Channel.Id, channelControllerAdapter.User.Identity)
+        public ChannelHeartbeat(string channelName, 
+                                string channelId, 
+                                ChannelControllerAdapter channelControllerAdapter, 
+                                uint updateInterval, 
+                                uint timeout)
+            : base(channelControllerAdapter.WsConnectionManager,
+                  channelId, channelName,
+                  channelControllerAdapter.Channel.Id, 
+                  channelControllerAdapter.User.Identity)
         {
             _updateInterval = updateInterval;
             _timeout = timeout;
@@ -74,11 +77,11 @@ namespace EltraConnector.Channels
         protected override async Task Execute()
         {
             const int minWaitTime = 10;
-            const int reconnectTimeout = 3;
+            const int reconnectTimeout = 30;
 
             uint updateIntervalInSec = _updateInterval;
 
-            await ConnectToWsChannel();
+            Status = Events.WsChannelStatus.Started;
 
             while (ShouldRun())
             {
@@ -112,32 +115,13 @@ namespace EltraConnector.Channels
                 {
                     await Task.Delay(minWaitTime);
                 }
-
-                if (ShouldRun())
-                {
-                    await ReconnectToWsChannel();
-                }
             }
-
-            await DisconnectFromWsChannel();
 
             ChannelStatus = ChannelStatus.Offline;
+            
+            Status = Events.WsChannelStatus.Stopped;
 
             MsgLogger.WriteLine($"Sync agent working thread finished successfully!");
-        }
-
-        protected override async Task<bool> ReconnectToWsChannel()
-        {
-            bool result = await base.ReconnectToWsChannel();
-
-            if (result)
-            {
-                var updateResult = await _channelControllerAdapter.Update();
-
-                ChannelStatus = updateResult ? ChannelStatus.Online : ChannelStatus.Offline;
-            }
-
-            return result;
         }
 
         #endregion
