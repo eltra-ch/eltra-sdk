@@ -400,7 +400,10 @@ namespace EltraConnector.UserAgent
 
                 if (result)
                 {
-                    result = _channelHeartbeat.Status == WsChannelStatus.Started;
+                    if (_channelHeartbeat != null)
+                    {
+                        result = _channelHeartbeat.Status == WsChannelStatus.Started;
+                    }
                 }
             }
 

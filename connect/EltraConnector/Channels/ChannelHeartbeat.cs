@@ -5,7 +5,6 @@ using System;
 using EltraConnector.Controllers.Base;
 using EltraConnector.Events;
 using EltraCommon.Contracts.Channels;
-using EltraConnector.Transport.Ws;
 
 namespace EltraConnector.Channels
 {
@@ -52,6 +51,8 @@ namespace EltraConnector.Channels
             }
         }
 
+        public bool UseWebSocket { get; set; }
+
         #endregion
 
         #region Events
@@ -74,11 +75,17 @@ namespace EltraConnector.Channels
         protected override async Task Execute()
         {
             const int minWaitTime = 10;
-            const int reconnectTimeout = 3;
 
             uint updateIntervalInSec = _updateInterval;
 
-            await ConnectToWsChannel();
+            if (UseWebSocket)
+            {
+                await ConnectToWsChannel();
+            }
+            else
+            {
+                Status = Events.WsChannelStatus.Started;
+            }
 
             while (ShouldRun())
             {
@@ -97,29 +104,27 @@ namespace EltraConnector.Channels
 
                 waitWatch.Start();
 
-                int sessionUpdateTimeout;
+                int channelStatusUpdateTimeout = (int)TimeSpan.FromSeconds(updateIntervalInSec).TotalMilliseconds;
 
-                if (WsConnectionManager.IsConnected(WsChannelId))
-                {
-                    sessionUpdateTimeout = (int)TimeSpan.FromSeconds(updateIntervalInSec).TotalMilliseconds;
-                }
-                else
-                {
-                    sessionUpdateTimeout = (int)TimeSpan.FromSeconds(reconnectTimeout).TotalMilliseconds;
-                }
-
-                while (waitWatch.ElapsedMilliseconds < sessionUpdateTimeout && ShouldRun())
+                while (waitWatch.ElapsedMilliseconds < channelStatusUpdateTimeout && ShouldRun())
                 {
                     await Task.Delay(minWaitTime);
                 }
 
-                if (ShouldRun())
+                if (UseWebSocket && ShouldRun())
                 {
                     await ReconnectToWsChannel();
                 }
             }
 
-            await DisconnectFromWsChannel();
+            if (UseWebSocket)
+            {
+                await DisconnectFromWsChannel();
+            }
+            else
+            {
+                Status = Events.WsChannelStatus.Stopped;
+            }
 
             ChannelStatus = ChannelStatus.Offline;
 
