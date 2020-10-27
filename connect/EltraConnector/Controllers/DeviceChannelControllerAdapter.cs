@@ -88,12 +88,12 @@ namespace EltraConnector.Controllers
 
         internal Task<bool> PayloadExists(DeviceToolPayload payload)
         {
-            return _deviceControllerAdapter.PayloadExists(payload);
+            return DeviceControllerAdapter.PayloadExists(payload);
         }
 
         internal Task<bool> UploadPayload(DeviceToolPayload payload)
         {
-            return _deviceControllerAdapter.UploadPayload(payload);
+            return DeviceControllerAdapter.UploadPayload(payload);
         }
 
         private void OnParametersUpdated(object sender, ParameterUpdateEventArgs args)

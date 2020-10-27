@@ -154,7 +154,7 @@ namespace EltraConnector.Controllers
             {
                 MsgLogger.WriteLine($"upload payload version='{payload.FileName}'");
 
-                var postResult = await Transporter.Post(Url, "api/description/upload-payload", JsonConvert.SerializeObject(payload));
+                var postResult = await Transporter.Post(Url, "api/description/payload-upload", JsonConvert.SerializeObject(payload));
 
                 if (postResult.StatusCode == HttpStatusCode.OK)
                 {

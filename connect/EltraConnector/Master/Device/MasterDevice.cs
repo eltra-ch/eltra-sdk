@@ -9,6 +9,7 @@ using EltraConnector.Master.Device.ParameterConnection;
 using EltraConnector.SyncAgent;
 using System;
 using System.Collections.Generic;
+using System.IO.Compression;
 using System.Threading.Tasks;
 
 #pragma warning disable 1591
@@ -114,13 +115,15 @@ namespace EltraConnector.Master.Device
             {
                 if(Status == DeviceStatus.Ready)
                 {
-                    AddDeviceTools(deviceDescriptionFile);
-
                     CreateConnectionManager();
 
-                    UploadToolset();
+                    AddDeviceTools(deviceDescriptionFile);
 
                     OnInitialized();
+                }
+                else if(Status == DeviceStatus.Registered)
+                {
+                    UploadToolset();
                 }
             };
 
@@ -280,7 +283,8 @@ namespace EltraConnector.Master.Device
                         {
                             if (UpdatePayloadContent(payload))
                             {
-                                payload.ChannelId = ChannelId;
+                                payload.ToolId = tool.Id;
+                                payload.ChannelId = agent.ChannelId;
                                 payload.NodeId = NodeId;
 
                                 if (!await agent.PayloadExists(payload))

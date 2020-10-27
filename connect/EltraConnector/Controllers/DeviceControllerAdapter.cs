@@ -479,12 +479,12 @@ namespace EltraConnector.Controllers
 
         internal Task<bool> UploadPayload(DeviceToolPayload payload)
         {
-            return _descriptionContollerAdapter.UploadPayload(payload);
+            return DescriptionContollerAdapter.UploadPayload(payload);
         }
 
         internal Task<bool> PayloadExists(DeviceToolPayload payload)
         {
-            return _descriptionContollerAdapter.PayloadExists(payload);
+            return DescriptionContollerAdapter.PayloadExists(payload);
         }
 
         #endregion        
