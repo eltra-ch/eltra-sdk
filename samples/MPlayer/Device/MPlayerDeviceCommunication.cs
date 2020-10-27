@@ -9,7 +9,6 @@ using System.Diagnostics;
 using EltraCommon.Logger;
 using EltraCommon.ObjectDictionary.Xdd.DeviceDescription.Profiles.Application.Parameters;
 using System.Runtime.InteropServices;
-using System.Linq;
 using static MPlayerMaster.MPlayerDefinitions;
 
 namespace MPlayerMaster

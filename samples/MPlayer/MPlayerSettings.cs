@@ -128,6 +128,14 @@ namespace MPlayerMaster
             }
         }
 
+        public string NavigoPluginsPath
+        {
+            get
+            {
+                return Configuration["NavigoPluginsPath"];
+            }
+        }
+
         private IConfiguration Configuration
         {
             get => _configuration ?? (_configuration = new ConfigurationBuilder()

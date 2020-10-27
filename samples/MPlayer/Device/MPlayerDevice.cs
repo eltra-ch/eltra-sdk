@@ -1,6 +1,9 @@
 ﻿using EltraCommon.Contracts.Parameters;
+using EltraCommon.Contracts.ToolSet;
+using EltraCommon.Logger;
 using EltraConnector.Master.Device;
 using System;
+using System.Threading.Tasks;
 
 namespace MPlayerMaster
 {
@@ -55,5 +58,14 @@ namespace MPlayerMaster
 
             return result;
         }
+
+        protected override void OnInitialized()
+        {
+            UploadToolset();
+
+            base.OnInitialized();
+        }
+
+        
     }
 }
