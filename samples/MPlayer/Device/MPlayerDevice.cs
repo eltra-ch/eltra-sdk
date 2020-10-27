@@ -58,14 +58,5 @@ namespace MPlayerMaster
 
             return result;
         }
-
-        protected override void OnInitialized()
-        {
-            UploadToolset();
-
-            base.OnInitialized();
-        }
-
-        
     }
 }
