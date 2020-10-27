@@ -114,8 +114,6 @@ namespace EltraConnector.Master.Device
             {
                 MsgLogger.WriteLine($"Connected: device='{device.Family}', node id = {device.NodeId}, serial number=0x{device.Identification.SerialNumber:X}");
 
-                device.Status = DeviceStatus.Ready;
-
                 await CloudAgent.RegisterDevice(device);
             }
         }

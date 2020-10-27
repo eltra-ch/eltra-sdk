@@ -18,6 +18,7 @@ using EltraCommon.Contracts.History;
 using System.Threading;
 using EltraCommon.Contracts.Users;
 using EltraConnector.Transport.Ws;
+using EltraCommon.Contracts.ToolSet;
 
 namespace EltraConnector.Controllers
 {
@@ -105,7 +106,7 @@ namespace EltraConnector.Controllers
 
             RegistrationStateChanged?.Invoke(this, e);
         }
-        
+
         #endregion
 
         #region Methods
@@ -474,6 +475,16 @@ namespace EltraConnector.Controllers
             }
             
             return result;
+        }
+
+        internal Task<bool> UploadPayload(DeviceToolPayload payload)
+        {
+            return _descriptionContollerAdapter.UploadPayload(payload);
+        }
+
+        internal Task<bool> PayloadExists(DeviceToolPayload payload)
+        {
+            return _descriptionContollerAdapter.PayloadExists(payload);
         }
 
         #endregion        

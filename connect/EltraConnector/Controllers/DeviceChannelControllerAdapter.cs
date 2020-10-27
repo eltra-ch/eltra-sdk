@@ -9,6 +9,7 @@ using EltraCommon.Logger;
 using EltraCommon.Contracts.CommandSets;
 using EltraConnector.SyncAgent;
 using EltraConnector.Controllers.Events;
+using EltraCommon.Contracts.ToolSet;
 
 namespace EltraConnector.Controllers
 {
@@ -83,6 +84,16 @@ namespace EltraConnector.Controllers
             {
                 MsgLogger.WriteError($"{GetType().Name} - OnDeviceRegistrationStateChanged", $"Device ({device.Family}) registration failed!");
             }
+        }
+
+        internal Task<bool> PayloadExists(DeviceToolPayload payload)
+        {
+            return _deviceControllerAdapter.PayloadExists(payload);
+        }
+
+        internal Task<bool> UploadPayload(DeviceToolPayload payload)
+        {
+            return _deviceControllerAdapter.UploadPayload(payload);
         }
 
         private void OnParametersUpdated(object sender, ParameterUpdateEventArgs args)

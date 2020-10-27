@@ -9,6 +9,8 @@ using System.Web;
 using EltraCommon.Helpers;
 using EltraCommon.Contracts.Results;
 using EltraCommon.Contracts.Devices;
+using EltraCommon.Contracts.ToolSet;
+using System.Threading;
 
 namespace EltraConnector.Controllers
 {
@@ -139,6 +141,53 @@ namespace EltraConnector.Controllers
             catch (Exception e)
             {
                 MsgLogger.Exception($"{GetType().Name} - GetIdentity", e);
+            }
+
+            return result;
+        }
+
+        internal async Task<bool> UploadPayload(DeviceToolPayload payload)
+        {
+            bool result = false;
+
+            try
+            {
+                MsgLogger.WriteLine($"upload payload version='{payload.FileName}'");
+
+                var postResult = await Transporter.Post(Url, "api/description/upload-payload", JsonConvert.SerializeObject(payload));
+
+                if (postResult.StatusCode == HttpStatusCode.OK)
+                {
+                    result = true;
+                }
+            }
+            catch (Exception e)
+            {
+                MsgLogger.Exception($"{GetType().Name} - Upload", e);
+            }
+
+            return result;
+        }
+
+        internal async Task<bool> PayloadExists(DeviceToolPayload payload)
+        {
+            bool result = false;
+
+            try
+            {
+                var query = HttpUtility.ParseQueryString(string.Empty);
+
+                query["callerId"] = payload.ChannelId;
+                query["nodeId"] = $"{payload.NodeId}";
+                query["hashCode"] = payload.HashCode;
+
+                var url = UrlHelper.BuildUrl(Url, "api/description/payload-exists", query);
+
+                result = await Transporter.Get(url, CancellationToken.None);
+            }
+            catch (Exception e)
+            {
+                MsgLogger.Exception($"{GetType().Name} - PayloadExists", e);
             }
 
             return result;

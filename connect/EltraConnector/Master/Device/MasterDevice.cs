@@ -1,5 +1,7 @@
 ﻿using EltraCommon.Contracts.Devices;
 using EltraCommon.Contracts.Parameters;
+using EltraCommon.Contracts.ToolSet;
+using EltraCommon.Logger;
 using EltraCommon.ObjectDictionary.Common.DeviceDescription.Profiles.Application.Parameters;
 using EltraCommon.ObjectDictionary.DeviceDescription;
 using EltraConnector.Master.Device.Commands;
@@ -68,13 +70,18 @@ namespace EltraConnector.Master.Device
             Initialized?.Invoke(this, new EventArgs());
         }
 
-        protected virtual async void OnCloudAgentChanged()
+        protected virtual void OnCloudAgentChanged()
         {
             if (CloudAgent != null)
             {
                 CreateCommunication();
 
-                await ReadDeviceDescriptionFile();
+                Task.Run(async () => {
+                    if(!await ReadDeviceDescriptionFile())
+                    {
+                        MsgLogger.WriteError($"{GetType().Name} - OnCloudAgentChanged", "Read device description failed!");
+                    }
+                });
             }
         }
 
@@ -110,6 +117,8 @@ namespace EltraConnector.Master.Device
                     AddDeviceTools(deviceDescriptionFile);
 
                     CreateConnectionManager();
+
+                    UploadToolset();
 
                     OnInitialized();
                 }
@@ -250,6 +259,56 @@ namespace EltraConnector.Master.Device
             }
 
             return result;
+        }
+
+        protected virtual bool UpdatePayloadContent(DeviceToolPayload payload)
+        {
+            return false;
+        }
+
+        private void UploadToolset()
+        {
+            Task.Run(async () => {
+
+                var agent = CloudAgent;
+
+                foreach (var tool in ToolSet.Tools)
+                {
+                    if (tool.Status == DeviceToolStatus.Enabled)
+                    {
+                        foreach (var payload in tool.PayloadSet)
+                        {
+                            if (UpdatePayloadContent(payload))
+                            {
+                                payload.ChannelId = ChannelId;
+                                payload.NodeId = NodeId;
+
+                                if (!await agent.PayloadExists(payload))
+                                {
+                                    if (!await agent.UploadPayload(payload))
+                                    {
+                                        MsgLogger.WriteError($"{GetType().Name} - UploadToolset", $"UploadPayload {ChannelId}:{NodeId}, file name = {payload.FileName} failed!");
+                                    }
+                                    else
+                                    {
+                                        MsgLogger.WriteFlow($"{GetType().Name} - UploadToolset", $"payload {payload.FileName}, successfully uploaded");
+                                    }
+                                }
+                                else
+                                {
+                                    MsgLogger.WriteFlow($"{GetType().Name} - UploadToolset", $"payload {payload.FileName}, already uploaded");
+                                }
+                            }
+                            else
+                            {
+                                MsgLogger.WriteError($"{GetType().Name} - UploadToolset", $"payload update failed, {payload.FileName}");
+                            }
+                        }
+                    }
+                }
+
+            });
+
         }
 
         #endregion

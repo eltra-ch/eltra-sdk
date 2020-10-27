@@ -15,7 +15,6 @@ using EltraCommon.Contracts.Devices;
 using EltraCommon.Contracts.History;
 using System.Net;
 using EltraConnector.Controllers.Events;
-using System.Runtime.CompilerServices;
 
 namespace EltraConnector.Controllers
 {

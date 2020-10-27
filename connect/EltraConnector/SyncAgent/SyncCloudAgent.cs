@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using EltraConnector.Controllers.Base.Events;
 using EltraCommon.Contracts.Devices;
 using EltraConnector.Channels;
+using EltraCommon.Contracts.ToolSet;
 
 #pragma warning disable 1591
 
@@ -311,6 +312,16 @@ namespace EltraConnector.SyncAgent
             MsgLogger.WriteDebug($"{GetType().Name} - Stop", "Auth controller stopped 4/4");
 
             return base.Stop();
+        }
+
+        public Task<bool> PayloadExists(DeviceToolPayload payload)
+        {
+            return _channelControllerAdapter.PayloadExists(payload);
+        }
+
+        public Task<bool> UploadPayload(DeviceToolPayload payload)
+        {
+            return _channelControllerAdapter.UploadPayload(payload);
         }
 
         #endregion
