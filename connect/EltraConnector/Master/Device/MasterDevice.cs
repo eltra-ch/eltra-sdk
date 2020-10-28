@@ -1,6 +1,7 @@
 ﻿using EltraCommon.Contracts.Devices;
 using EltraCommon.Contracts.Parameters;
 using EltraCommon.Contracts.ToolSet;
+using EltraCommon.Helpers;
 using EltraCommon.Logger;
 using EltraCommon.ObjectDictionary.Common.DeviceDescription.Profiles.Application.Parameters;
 using EltraCommon.ObjectDictionary.DeviceDescription;
@@ -9,7 +10,8 @@ using EltraConnector.Master.Device.ParameterConnection;
 using EltraConnector.SyncAgent;
 using System;
 using System.Collections.Generic;
-using System.IO.Compression;
+using System.Diagnostics;
+using System.IO;
 using System.Threading.Tasks;
 
 #pragma warning disable 1591
@@ -21,6 +23,7 @@ namespace EltraConnector.Master.Device
         #region Private fields
 
         private SyncCloudAgent _cloudAgent;
+        private List<DeviceToolPayload> _deviceToolPayloadList;
 
         #endregion
 
@@ -55,6 +58,8 @@ namespace EltraConnector.Master.Device
         }
 
         public string DeviceDescriptionFilePath { get; set; }
+
+        public List<DeviceToolPayload> DeviceToolPayloadList => _deviceToolPayloadList ?? (_deviceToolPayloadList = new List<DeviceToolPayload>());
 
         #endregion
 
@@ -214,9 +219,8 @@ namespace EltraConnector.Master.Device
 
         protected virtual void StartConnectionManagersAsync(ref List<Task> tasks)
         {
-
         }
-
+            
         public override async void RunAsync()
         {
             var tasks = new List<Task>();
@@ -264,9 +268,74 @@ namespace EltraConnector.Master.Device
             return result;
         }
 
+        protected bool AddLocalPayload(string fullPath)
+        {
+            bool result = false;
+
+            try
+            {
+                if (File.Exists(fullPath))
+                {
+                    var fileInfo = new FileInfo(fullPath);
+                    var fileVersionInfo = FileVersionInfo.GetVersionInfo(fullPath);
+                    var payload = new DeviceToolPayload();
+
+                    var bytes = File.ReadAllBytes(fullPath);
+
+                    payload.FileName = fileInfo.Name;
+                    payload.Version = fileVersionInfo.FileVersion;
+                    payload.Content = Convert.ToBase64String(bytes);
+                    payload.HashCode = CryptHelpers.ToMD5(payload.Content);
+
+                    MsgLogger.WriteFlow($"{GetType().Name} - AddLocalPayload", $"payload added, file name = {payload.FileName}, hashCode = {payload.HashCode}, version = {payload.Version}");
+
+                    DeviceToolPayloadList.Add(payload);
+
+                    result = true;
+                }
+            }
+            catch (Exception e)
+            {
+                MsgLogger.Exception($"{GetType().Name} - AddLocalPayload", e);
+            }
+
+            return result;
+        }
+
+        private DeviceToolPayload FindLocalPayload(DeviceToolPayload payload)
+        {
+            DeviceToolPayload result = null;
+
+            foreach (var deviceToolPayload in DeviceToolPayloadList)
+            {
+                if(deviceToolPayload.HashCode == payload.HashCode && deviceToolPayload.Content.Length > 0)
+                {
+                    result = deviceToolPayload;
+                    break;
+                }
+            }
+
+            return result;
+        }
+
         protected virtual bool UpdatePayloadContent(DeviceToolPayload payload)
         {
-            return false;
+            bool result = false;
+            var deviceToolPayload = FindLocalPayload(payload);
+
+            if (deviceToolPayload != null)
+            {
+                payload.Content = deviceToolPayload.Content;
+                payload.Version = deviceToolPayload.Version;
+
+                result = true;
+            }
+            else
+            {
+                MsgLogger.WriteWarning($"{GetType().Name} - UpdatePayloadContent", $"local payload not found, file name = {payload.FileName}, hashCode = {payload.HashCode}, version = {payload.Version}");
+            }
+
+            return result;
         }
 
         private void UploadToolset()
@@ -295,12 +364,12 @@ namespace EltraConnector.Master.Device
                                     }
                                     else
                                     {
-                                        MsgLogger.WriteFlow($"{GetType().Name} - UploadToolset", $"payload {payload.FileName}, successfully uploaded");
+                                        MsgLogger.WriteFlow($"{GetType().Name} - UploadToolset", $"payload name = {payload.FileName}, version = {payload.Version}, successfully uploaded");
                                     }
                                 }
                                 else
                                 {
-                                    MsgLogger.WriteFlow($"{GetType().Name} - UploadToolset", $"payload {payload.FileName}, already uploaded");
+                                    MsgLogger.WriteFlow($"{GetType().Name} - UploadToolset", $"payload name = {payload.FileName}, version = {payload.Version}, already uploaded");
                                 }
                             }
                             else

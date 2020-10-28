@@ -1,11 +1,7 @@
 ﻿using EltraCommon.Contracts.Parameters;
-using EltraCommon.Contracts.ToolSet;
-using EltraCommon.Helpers;
-using EltraCommon.Logger;
 using EltraConnector.Master.Device;
 using System;
 using System.IO;
-using System.Threading.Tasks;
 
 namespace MPlayerMaster
 {
@@ -18,7 +14,16 @@ namespace MPlayerMaster
         {
             _settings = settings;
 
-            Identification.SerialNumber = 0x100;
+            Identification.SerialNumber = 0x101;
+
+            AddLocalPayloads();
+        }
+
+        private void AddLocalPayloads()
+        {
+            string path = Path.Combine(_settings.NavigoPluginsPath, "EltraNavigoMPlayer.dll");
+
+            AddLocalPayload(path);
         }
 
         protected override void OnStatusChanged()
@@ -56,24 +61,6 @@ namespace MPlayerMaster
                 default:
                     result = 1000;
                     break;
-            }
-
-            return result;
-        }
-
-        protected override bool UpdatePayloadContent(DeviceToolPayload payload)
-        {
-            bool result = base.UpdatePayloadContent(payload);
-            string path = Path.Combine(_settings.NavigoPluginsPath, payload.FileName);
-
-            if (File.Exists(path))
-            {
-                var bytes = File.ReadAllBytes(path);
-
-                payload.Content = Convert.ToBase64String(bytes);
-                payload.HashCode = CryptHelpers.ToMD5(payload.Content);
-                
-                result = true;
             }
 
             return result;
