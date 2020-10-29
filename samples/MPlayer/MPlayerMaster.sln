@@ -5,9 +5,7 @@ VisualStudioVersion = 16.0.30204.135
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MPlayerMaster", "MPlayerMaster.csproj", "{A6B58520-EBA0-4CCF-BFA8-EF82174E075A}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EltraCommon", "..\..\xternals\common\EltraCommon\EltraCommon.csproj", "{6F9A5209-F8E3-45B1-8E08-45653D5168FA}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EltraConnector", "..\..\connect\EltraConnector\EltraConnector.csproj", "{2634641F-5428-48EF-91BA-59DDCD80B322}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EposMasterConsole", "..\Maxon\Epos4\EposMasterConsole\EposMasterConsole.csproj", "{AD781432-F72B-497F-ACCA-5C76FC4972E4}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -19,14 +17,10 @@ Global
 		{A6B58520-EBA0-4CCF-BFA8-EF82174E075A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A6B58520-EBA0-4CCF-BFA8-EF82174E075A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A6B58520-EBA0-4CCF-BFA8-EF82174E075A}.Release|Any CPU.Build.0 = Release|Any CPU
-		{6F9A5209-F8E3-45B1-8E08-45653D5168FA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{6F9A5209-F8E3-45B1-8E08-45653D5168FA}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{6F9A5209-F8E3-45B1-8E08-45653D5168FA}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{6F9A5209-F8E3-45B1-8E08-45653D5168FA}.Release|Any CPU.Build.0 = Release|Any CPU
-		{2634641F-5428-48EF-91BA-59DDCD80B322}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{2634641F-5428-48EF-91BA-59DDCD80B322}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{2634641F-5428-48EF-91BA-59DDCD80B322}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{2634641F-5428-48EF-91BA-59DDCD80B322}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AD781432-F72B-497F-ACCA-5C76FC4972E4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AD781432-F72B-497F-ACCA-5C76FC4972E4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AD781432-F72B-497F-ACCA-5C76FC4972E4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AD781432-F72B-497F-ACCA-5C76FC4972E4}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
