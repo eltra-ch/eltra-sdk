@@ -1,0 +1,100 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<ContentView xmlns="http://xamarin.com/schemas/2014/forms" 
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:d="http://xamarin.com/schemas/2014/forms/design"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d"
+             xmlns:views="clr-namespace:EltraNavigoStreema.Views.StreemaControl"
+             xmlns:behaviors1="clr-namespace:EltraNavigoStreema.Views.Devices.Streema.StreemaControl.Behaviors"
+             xmlns:converters1="clr-namespace:EltraNavigoStreema.Views.Devices.Streema.StreemaControl.Converters"
+             xmlns:station="clr-namespace:EltraNavigoStreema.Views.Devices.Streema.StreemaControl.Station" 
+			 xmlns:behaviors2="clr-namespace:EltraXamCommon.Controls.Behaviors;assembly=EltraXamCommon" 
+             xmlns:converters2="clr-namespace:EltraXamCommon.Controls.Converters;assembly=EltraXamCommon"
+             x:DataType="views:StreemaControlViewModel"
+             x:Class="EltraNavigoStreema.Views.StreemaControl.StreemaControlView">
+
+    <ContentView.Behaviors>
+        <behaviors2:ToolViewShow/>
+    </ContentView.Behaviors>
+    
+    <ContentView.Content>
+        <ScrollView>
+            <Grid>
+                <Grid.Resources>
+                    <converters2:NegateBooleanConverter x:Key="NegateBooleanConverter"/>
+                    <Style TargetType="Button">
+                        <Setter Property="FontSize" Value="12"/>
+                        <Setter Property="BackgroundColor" Value="{StaticResource NavigationPrimary}"/>
+                        <Setter Property="BorderColor" Value="White"/>
+                        <Setter Property="TextColor" Value="White"/>                        
+                    </Style>
+                </Grid.Resources>
+
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="24"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="24"/>
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="24"/>   <!-- 0 header --> 
+                    <RowDefinition Height="Auto"/> <!-- 1 buttons -->
+                    <RowDefinition Height="Auto"/> <!-- 2 activity -->
+                    <RowDefinition Height="Auto"/> <!-- 3 status -->
+                    <RowDefinition Height="Auto"/> <!-- 4 slider -->
+                    <RowDefinition Height="24"/>   <!-- 5 footer -->
+                </Grid.RowDefinitions>
+
+                <Grid Grid.Row="1" Grid.Column="1">
+                    <StackLayout BindableLayout.ItemsSource="{Binding StationList}">
+                        <BindableLayout.ItemTemplate>
+                            <DataTemplate>
+                                <station:StreemaStationView/>
+                            </DataTemplate>
+                        </BindableLayout.ItemTemplate>
+                    </StackLayout>
+                </Grid>
+
+                <Frame Grid.Row="2" Grid.Column="1" Padding="4">
+                    <ActivityIndicator IsRunning="{Binding IsBusy}" VerticalOptions="Center" HorizontalOptions="Center" />
+                </Frame>
+                
+                <Frame Grid.Row="3" Grid.Column="1" Padding="0">
+                    <Frame.Resources>
+                        <converters1:StatusWordToImageConverter x:Key="StatusWordToImageConverter"></converters1:StatusWordToImageConverter>
+                    </Frame.Resources>
+                    <Image HeightRequest="24" Source="{Binding StatusWordValue, Converter={StaticResource StatusWordToImageConverter}}"/>             
+                </Frame>
+
+                <Frame Grid.Row="4" Grid.Column="1" BorderColor="{StaticResource NavigationPrimary}">
+                    <StackLayout Orientation="Vertical">
+                        <StackLayout.Resources>
+                            <converters2:NegateBooleanConverter x:Key="NegateBooleanConverter"/>
+                        </StackLayout.Resources>
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="2"/>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+                            <Slider Grid.Column="0" Value="{Binding VolumeValue}" Minimum="0" Maximum="100" IsEnabled="{Binding IsMuteActive, Converter={StaticResource NegateBooleanConverter}}">
+                                <Slider.Behaviors>
+                                    <behaviors1:MasterVolumeSliderBehavior/>
+                                </Slider.Behaviors>
+                            </Slider>
+                            <CheckBox Grid.Column="2" IsChecked="{Binding IsMuteActive}"/>
+                            <Label Grid.Column="3" Text="Mute" VerticalOptions="Center"/>
+                        </Grid>
+                        <StackLayout Orientation="Horizontal" HorizontalOptions="Center">
+                            <Label Text="Volume"/>
+                            <Label Text="{Binding VolumeValue}" IsVisible="{Binding IsMuteActive, Converter={StaticResource NegateBooleanConverter}}"/>
+                            <Label Text="0" IsVisible="{Binding IsMuteActive}"/>
+                            <Label Text="%"/>
+                        </StackLayout>
+                    </StackLayout>
+                </Frame>
+
+            </Grid>
+        </ScrollView>
+    </ContentView.Content>
+</ContentView>

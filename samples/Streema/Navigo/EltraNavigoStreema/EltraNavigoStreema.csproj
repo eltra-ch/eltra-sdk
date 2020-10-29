@@ -1,0 +1,36 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="Resources\music_32px.png" />
+    <None Remove="Resources\state_blue.png" />
+    <None Remove="Resources\state_green.png" />
+    <None Remove="Resources\state_grey.png" />
+    <None Remove="Resources\state_red.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\music_32px.png" />
+    <EmbeddedResource Include="Resources\state_blue.png" />
+    <EmbeddedResource Include="Resources\state_green.png" />
+    <EmbeddedResource Include="Resources\state_grey.png" />
+    <EmbeddedResource Include="Resources\state_red.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="EltraXamCommon" Version="1.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Update="Views\Streema\StreemaControl\Station\StreemaStationView.xaml.cs">
+      <DependentUpon>%(Filename)</DependentUpon>
+    </Compile>
+    <Compile Update="Views\Streema\StreemaControl\StreemaControlView.xaml.cs">
+      <DependentUpon>%(Filename)</DependentUpon>
+    </Compile>
+  </ItemGroup>
+
+</Project>

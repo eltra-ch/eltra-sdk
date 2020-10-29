@@ -1,0 +1,43 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<ContentView xmlns="http://xamarin.com/schemas/2014/forms"  
+			 xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="EltraNavigoStreema.Views.Devices.Streema.StreemaControl.Station.StreemaStationView" 
+             xmlns:station="clr-namespace:EltraNavigoStreema.Views.Devices.Streema.StreemaControl.Station" 
+			 xmlns:parameters1="clr-namespace:EltraXamCommon.Controls.Parameters;assembly=EltraXamCommon"
+             x:DataType="station:StreemaStationViewModel">
+	<ContentView.Content>
+		<Grid>
+			<Grid.RowDefinitions>
+				<RowDefinition Height="Auto"/>
+				<RowDefinition Height="Auto"/>
+			</Grid.RowDefinitions>
+			<StackLayout Grid.Row="0" HeightRequest="48" Orientation="Horizontal">
+				<Image Source="{Binding ControlButtonImage}"/>
+				<Button BackgroundColor="{StaticResource NavigationPrimary}" BorderColor="White" TextColor="White" BorderWidth="2" VerticalOptions="FillAndExpand" HorizontalOptions="FillAndExpand"   Text="{Binding ControlButtonText}" Command="{Binding ControlButtonCommand}">
+					<Button.HeightRequest>
+						<OnPlatform x:TypeArguments="x:Double" iOS="48"/>
+					</Button.HeightRequest>
+					<Button.Triggers>
+						<DataTrigger TargetType="Button" Binding="{Binding IsActiveStation}" Value="True">
+							<Setter Property="BorderColor" Value="OrangeRed" />
+						</DataTrigger>
+					</Button.Triggers>
+				</Button>
+				<Button Text="Edit" Command="{Binding EditButtonCommand}" VerticalOptions="FillAndExpand">
+					<Button.Triggers>
+						<DataTrigger TargetType="Button" Binding="{Binding IsStationEditVisible}" Value="False">
+							<Setter Property="Text" Value="∨" />
+						</DataTrigger>
+						<DataTrigger TargetType="Button" Binding="{Binding IsStationEditVisible}" Value="True">
+							<Setter Property="Text" Value="∧" />
+						</DataTrigger>
+					</Button.Triggers>
+				</Button>
+			</StackLayout>
+			<FlexLayout Grid.Row="1" Wrap="Wrap" JustifyContent="Start" AlignItems="Start" HeightRequest="82"  IsVisible="{Binding IsStationEditVisible}">
+				<parameters1:ParameterEditView WidthRequest="400" BindingContext="{Binding StationIdParameter}"/>
+				<parameters1:ParameterEditView BindingContext="{Binding StationVolumeScalingParameter}"/>
+			</FlexLayout>
+		</Grid>
+	</ContentView.Content>
+</ContentView>
