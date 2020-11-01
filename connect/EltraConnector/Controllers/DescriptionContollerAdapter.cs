@@ -179,7 +179,9 @@ namespace EltraConnector.Controllers
 
                 query["callerId"] = payload.ChannelId;
                 query["nodeId"] = $"{payload.NodeId}";
+                query["uniqueId"] = payload.Id;
                 query["hashCode"] = payload.HashCode;
+                query["mode"] = $"{payload.Mode}";
 
                 var url = UrlHelper.BuildUrl(Url, "api/description/payload-exists", query);
 
