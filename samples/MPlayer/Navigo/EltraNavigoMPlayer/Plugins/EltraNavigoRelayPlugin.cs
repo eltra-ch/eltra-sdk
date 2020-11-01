@@ -4,9 +4,11 @@ using EltraXamCommon.Plugins;
 using Prism.Services.Dialogs;
 using System.Collections.Generic;
 using Xamarin.Forms;
+using Xamarin.Forms.Internals;
 
 namespace EltraNavigoMPlayer.Plugins
 {
+    [Preserve(AllMembers = true)]
     public class EltraNavigoMPlayerPlugin : IEltraNavigoPlugin
     {
         public IDialogService DialogService { get; set; }

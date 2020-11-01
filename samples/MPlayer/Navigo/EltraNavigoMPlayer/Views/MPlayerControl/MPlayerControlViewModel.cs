@@ -14,9 +14,11 @@ using System.Windows.Input;
 using EltraConnector.UserAgent.Definitions;
 using static EltraNavigoMPlayer.Views.MPlayerControl.Converters.StatusWordToImageConverter;
 using System.Reflection;
+using Xamarin.Forms.Internals;
 
 namespace EltraNavigoMPlayer.Views.MPlayerControl
 {
+    [Preserve(AllMembers = true)]
     public class MPlayerControlViewModel : ToolViewModel
     {
         #region Private fields

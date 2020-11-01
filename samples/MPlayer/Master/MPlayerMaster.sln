@@ -5,6 +5,10 @@ VisualStudioVersion = 16.0.30204.135
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MPlayerMaster", "MPlayerMaster.csproj", "{A6B58520-EBA0-4CCF-BFA8-EF82174E075A}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EltraCommon", "..\..\..\xternals\common\EltraCommon\EltraCommon.csproj", "{96E20722-A791-468A-BA64-4D011E70471E}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EltraConnector", "..\..\..\connect\EltraConnector\EltraConnector.csproj", "{302E0838-C2C1-4FF0-8416-31D82FDA4D70}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +19,14 @@ Global
 		{A6B58520-EBA0-4CCF-BFA8-EF82174E075A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A6B58520-EBA0-4CCF-BFA8-EF82174E075A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A6B58520-EBA0-4CCF-BFA8-EF82174E075A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{96E20722-A791-468A-BA64-4D011E70471E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{96E20722-A791-468A-BA64-4D011E70471E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{96E20722-A791-468A-BA64-4D011E70471E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{96E20722-A791-468A-BA64-4D011E70471E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{302E0838-C2C1-4FF0-8416-31D82FDA4D70}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{302E0838-C2C1-4FF0-8416-31D82FDA4D70}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{302E0838-C2C1-4FF0-8416-31D82FDA4D70}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{302E0838-C2C1-4FF0-8416-31D82FDA4D70}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

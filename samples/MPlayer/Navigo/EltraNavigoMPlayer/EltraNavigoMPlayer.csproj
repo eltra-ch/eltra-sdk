@@ -1,7 +1,14 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
+	<AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
     <TargetFramework>netstandard2.0</TargetFramework>
+  </PropertyGroup>
+  
+
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <OutputPath>C:\Users\dsien\AppData\Local\Packages\56594Eltra.EltraNavigo_gsp01nqvnhw8c\LocalState\</OutputPath>
   </PropertyGroup>
 
   <ItemGroup>
@@ -23,7 +30,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="EltraXamCommon" Version="1.0.0" />
+    <PackageReference Include="EltraXamCommon" Version="1.0.2" />
     <PackageReference Include="Xamarin.Forms" Version="4.8.0.1560" />
   </ItemGroup>
 
