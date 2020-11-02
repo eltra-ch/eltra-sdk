@@ -28,7 +28,7 @@
 				<version versionType="SW" readOnly="true">0x0100</version>
 				<version versionType="HW" readOnly="true">0x0210</version>
 				<version versionType="APPNB" readOnly="true">0x0001</version>
-				<version versionType="APPVER" readOnly="true">0x000D</version>
+				<version versionType="APPVER" readOnly="true">0x000E</version>
 			</DeviceIdentity>
 			<DeviceManager>
 				<userLevelList>
@@ -55,7 +55,7 @@
 				<DeviceTools>
           <DeviceTool uniqueID="C999F6E2-1FF8-44E1-977C-5B8826E3B9CA" name="MPlayerTool" status="Enabled">
             <Payload uniqueID="4FE48376-7143-4CB5-8287-03B5498ABC59" 
-                     hashCode="9B6201FA7E5D40626F2323E5C526AF14" 
+                     hashCode="28CC580EE7513FDFA93C9CFC97432409" 
                      mode="development"
                      fileName="EltraNavigoMPlayer.dll" version="1.0.0.0"/>
           </DeviceTool>

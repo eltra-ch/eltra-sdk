@@ -2,6 +2,7 @@
 using EltraCommon.ObjectDictionary.Common.DeviceDescription.Profiles.Application.Parameters.Events;
 using EltraCommon.ObjectDictionary.Xdd.DeviceDescription.Profiles.Application.Parameters;
 using EltraConnector.UserAgent.Definitions;
+using EltraUiCommon.Controls;
 using EltraXamCommon.Controls;
 using EltraXamCommon.Controls.Parameters;
 using EltraXamCommon.Controls.Toast;
@@ -12,7 +13,7 @@ using Xamarin.Forms;
 
 namespace EltraNavigoMPlayer.Views.MPlayerControl.Station
 {
-    public class MPlayerStationViewModel : ToolViewModel
+    public class MPlayerStationViewModel : XamToolViewModel
     {
         #region Private fields
 

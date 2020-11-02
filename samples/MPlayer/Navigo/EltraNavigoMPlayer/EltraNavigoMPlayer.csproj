@@ -30,8 +30,14 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="EltraXamCommon" Version="1.0.2" />
     <PackageReference Include="Xamarin.Forms" Version="4.8.0.1560" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\..\connect\EltraConnector\EltraConnector.csproj" />
+    <ProjectReference Include="..\..\..\..\xternals\common\EltraCommon\EltraCommon.csproj" />
+    <ProjectReference Include="..\..\..\..\xternals\common\EltraUiCommon\EltraUiCommon.csproj" />
+    <ProjectReference Include="..\..\..\..\xternals\common\EltraXamCommon\EltraXamCommon.csproj" />
   </ItemGroup>
 
   <ItemGroup>

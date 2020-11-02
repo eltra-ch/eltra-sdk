@@ -19,7 +19,7 @@ using Xamarin.Forms.Internals;
 namespace EltraNavigoMPlayer.Views.MPlayerControl
 {
     [Preserve(AllMembers = true)]
-    public class MPlayerControlViewModel : ToolViewModel
+    public class MPlayerControlViewModel : XamToolViewModel
     {
         #region Private fields
 
