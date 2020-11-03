@@ -3,6 +3,7 @@ using EltraCommon.ObjectDictionary.Common.DeviceDescription.Profiles.Application
 using EltraCommon.ObjectDictionary.Xdd.DeviceDescription.Profiles.Application.Parameters;
 using EltraConnector.UserAgent.Definitions;
 using EltraUiCommon.Controls;
+using EltraUiCommon.Controls.Parameters;
 using EltraXamCommon.Controls;
 using EltraXamCommon.Controls.Parameters;
 using EltraXamCommon.Controls.Toast;
