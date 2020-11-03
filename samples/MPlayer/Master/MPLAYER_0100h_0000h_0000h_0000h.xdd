@@ -54,9 +54,10 @@
 			<DeviceInteraction>
 				<DeviceTools>
           <DeviceTool uniqueID="C999F6E2-1FF8-44E1-977C-5B8826E3B9CA" name="MPlayerTool" status="Enabled">
-            <Payload uniqueID="4FE48376-7143-4CB5-8287-03B5498ABC59" 
+            <Payload uniqueID="53AC0C08-8359-40CC-A70C-E4DA4CF5D22F" 
                      hashCode="28CC580EE7513FDFA93C9CFC97432409" 
                      mode="development"
+                     type="xamarin.forms"
                      fileName="EltraNavigoMPlayer.dll" version="1.0.0.0"/>
           </DeviceTool>
 				</DeviceTools>

@@ -40,8 +40,8 @@ namespace EltraNavigoMPlayer.Views.MPlayerControl.Station
             _previousStationIndex = 0;
             _stationIndex = stationIndex;
 
-            _stationIdParameter = new ParameterEditViewModel(this, $"PARAM_Station_{stationIndex+1}_Id");   
-            _stationVolumeScalingParameter = new ParameterEditViewModel(this, $"PARAM_Station_{stationIndex+1}_VolumeScaling");
+            _stationIdParameter = new XamParameterEditViewModel(this, $"PARAM_Station_{stationIndex+1}_Id");   
+            _stationVolumeScalingParameter = new XamParameterEditViewModel(this, $"PARAM_Station_{stationIndex+1}_VolumeScaling");
 
             DeviceInitialized += OnDeviceInitialized;
         }
