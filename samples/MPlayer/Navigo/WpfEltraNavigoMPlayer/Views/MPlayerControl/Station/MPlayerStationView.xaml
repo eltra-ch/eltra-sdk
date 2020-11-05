@@ -1,18 +1,21 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
 <UserControl xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
-             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:Behaviors="http://schemas.microsoft.com/xaml/behaviors"  
-			 xmlns:parameters="clr-namespace:EltraXamCommon.Controls.Parameters;assembly=EltraXamCommon" 
-			 x:Class="EltraNavigoMPlayer.Views.MPlayerControl.Station.MPlayerStationView" 
-             xmlns:station="clr-namespace:EltraNavigoMPlayer.Views.MPlayerControl.Station" 
-             xmlns:parameters1="clr-namespace:EltraWpfCommon.Controls.Parameters;assembly=EltraWpfCommon">
-	
-		<Grid>
-        <Grid.Resources>
+             x:Class="EltraNavigoMPlayer.Views.MPlayerControl.Station.MPlayerStationView" 
+             xmlns:parameters="clr-namespace:EltraWpfCommon.Controls.Parameters;assembly=EltraWpfCommon">
+
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/Resources/ResourceDictionary.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </UserControl.Resources>
+    
+    <Grid>
+            <Grid.Resources>                
             <BooleanToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
-        </Grid.Resources>
+            </Grid.Resources>
 			<Grid.RowDefinitions>
 				<RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
@@ -52,9 +55,9 @@
 					</Button.Triggers>-->
 				</Button>
 			</StackPanel>
-			<StackPanel Grid.Row="2" Height="82"  IsVisible="{Binding IsStationEditVisible}">
-                <parameters1:ParameterEditView Width="400" DataContext="{Binding StationIdParameter}" IsEnabled="{Binding IsEnabled}"/>
-                <parameters1:ParameterEditView DataContext="{Binding StationVolumeScalingParameter}" IsEnabled="{Binding IsEnabled}"/>
+			<StackPanel Grid.Row="2" Height="82" Visibility="{Binding IsStationEditVisible, Converter={StaticResource BoolToVisibilityConverter}}">
+                <parameters:ParameterEditView Width="400" DataContext="{Binding StationIdParameter}" IsEnabled="{Binding IsEnabled}"/>
+                <parameters:ParameterEditView DataContext="{Binding StationVolumeScalingParameter}" IsEnabled="{Binding IsEnabled}"/>
 			</StackPanel>
 		</Grid>
 	

@@ -6,7 +6,7 @@ using System.Windows.Media.Imaging;
 
 namespace EltraNavigoMPlayer.Views.MPlayerControl.Converters
 {
-    class StatusWordToImageConverter : IValueConverter
+    public class StatusWordToImageConverter : IValueConverter
     {
         internal enum StatusWordEnums
         {

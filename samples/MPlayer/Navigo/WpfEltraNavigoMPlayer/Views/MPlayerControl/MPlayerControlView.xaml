@@ -3,26 +3,39 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:Behaviors="http://schemas.microsoft.com/xaml/behaviors" 
-             xmlns:converters2="clr-namespace:EltraWpfCommon.Controls.Converters;assembly=EltraWpfCommon" 
-             xmlns:converters1="clr-namespace:EltraNavigoMPlayer.Views.MPlayerControl.Converters" 
-             xmlns:station="clr-namespace:EltraNavigoMPlayer.Views.MPlayerControl.Station" xmlns:behaviors="clr-namespace:EltraNavigoMPlayer.Views.MPlayerControl.Behaviors"
-             mc:Ignorable="d"
-             x:Class="EltraNavigoMPlayer.Views.MPlayerControl.MPlayerControlView"
-             IsVisible="{Binding IsVisible}">
+             xmlns:converters="clr-namespace:EltraNavigoMPlayer.Views.MPlayerControl.Converters" 
+             xmlns:station="clr-namespace:EltraNavigoMPlayer.Views.MPlayerControl.Station" 
+             xmlns:behaviors="clr-namespace:EltraNavigoMPlayer.Views.MPlayerControl.Behaviors"
+             xmlns:commonConverters="clr-namespace:EltraWpfCommon.Controls.Converters;assembly=EltraWpfCommon" 
+             xmlns:commonBehaviors="clr-namespace:EltraWpfCommon.Controls.Behaviors;assembly=EltraWpfCommon"
+             mc:Ignorable="d"              
+             x:Class="EltraNavigoMPlayer.Views.MPlayerControl.MPlayerControlView">
+    
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/Resources/ResourceDictionary.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </UserControl.Resources>
 
-    <!--<ContentView.Behaviors>
-        <behaviors:ToolViewShow/>
-    </ContentView.Behaviors>-->
-
+    <UserControl.Visibility>
+        <Binding Path="IsVisible" Converter="{StaticResource BooleanToVisibilityConverter}"/>
+    </UserControl.Visibility>
+    
+    <Behaviors:Interaction.Behaviors>
+        <commonBehaviors:ToolViewShowBehavior/>
+    </Behaviors:Interaction.Behaviors>
+    
     <ScrollViewer>
-		<Grid>
+        <Grid>
 			<Grid.Resources>
-				<converters2:NegateBooleanConverter x:Key="NegateBooleanConverter"/>
+				<commonConverters:NegateBooleanConverter x:Key="NegateBooleanConverter"/>
 				<Style TargetType="Button">
 					<Setter Property="FontSize" Value="12"/>
-					<Setter Property="BackgroundColor" Value="{StaticResource NavigationPrimary}"/>
-					<Setter Property="BorderColor" Value="White"/>
-					<Setter Property="TextColor" Value="White"/>                        
+					<Setter Property="Background" Value="{StaticResource NavigationPrimary}"/>
+					<Setter Property="BorderBrush" Value="White"/>
+					<Setter Property="Foreground" Value="White"/>                        
 				</Style>
 			</Grid.Resources>
 
@@ -43,8 +56,8 @@
 
             <Border Grid.Row="1" Grid.Column="1" Padding="0">
                 <Border.Resources>
-					<converters1:StatusWordToImageConverter x:Key="StatusWordToImageConverter"></converters1:StatusWordToImageConverter>
-				</Border.Resources>
+                    <converters:StatusWordToImageConverter x:Key="StatusWordToImageConverter"/>
+                </Border.Resources>
 				<Image Height="24" HorizontalAlignment="Right" Source="{Binding StatusWordValue, Converter={StaticResource StatusWordToImageConverter}}"/>
 			</Border>
 			
@@ -72,7 +85,7 @@
             <Border Grid.Row="5" Grid.Column="1" BorderBrush="{StaticResource NavigationPrimary}">
 				<StackPanel Orientation="Vertical">
 					<StackPanel.Resources>
-						<converters2:NegateBooleanConverter x:Key="NegateBooleanConverter"/>
+						<commonConverters:NegateBooleanConverter x:Key="NegateBooleanConverter"/>
 					</StackPanel.Resources>
 					<Grid>
 						<Grid.ColumnDefinitions>
@@ -92,8 +105,8 @@
                     
 					<StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
 						<Label Content="Volume"/>
-                        <Label Content="{Binding VolumeValue}" IsVisible="{Binding IsMuteActive, Converter={StaticResource NegateBooleanConverter}}" IsEnabled="{Binding IsEnabled}"/>
-                        <Label Content="0" IsVisible="{Binding IsMuteActive}"/>
+                        <Label Content="{Binding VolumeValue}" Visibility="{Binding IsMuteActive, Converter={StaticResource NegateBooleanConverter}}" IsEnabled="{Binding IsEnabled}"/>
+                        <Label Content="0" Visibility="{Binding IsMuteActive, Converter={StaticResource BooleanToVisibilityConverter}}"/>
                         <Label Content="%"/>
 					</StackPanel>
 				</StackPanel>

@@ -11,6 +11,10 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EltraUiCommon", "..\..\..\.
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EltraWpfCommon", "..\..\..\..\xternals\common\EltraWpfCommon\EltraWpfCommon.csproj", "{929AB79B-4857-4432-A905-53BF1BCCE41A}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EltraNavigoMPlayer", "..\EltraNavigoMPlayer\EltraNavigoMPlayer.csproj", "{134F9803-750D-4A18-9A09-BB344361DDCB}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EltraXamCommon", "..\..\..\..\xternals\common\EltraXamCommon\EltraXamCommon.csproj", "{F27AD80F-9B0F-44EA-AD57-465D4FC077BD}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -33,6 +37,14 @@ Global
 		{929AB79B-4857-4432-A905-53BF1BCCE41A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{929AB79B-4857-4432-A905-53BF1BCCE41A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{929AB79B-4857-4432-A905-53BF1BCCE41A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{134F9803-750D-4A18-9A09-BB344361DDCB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{134F9803-750D-4A18-9A09-BB344361DDCB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{134F9803-750D-4A18-9A09-BB344361DDCB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{134F9803-750D-4A18-9A09-BB344361DDCB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F27AD80F-9B0F-44EA-AD57-465D4FC077BD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F27AD80F-9B0F-44EA-AD57-465D4FC077BD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F27AD80F-9B0F-44EA-AD57-465D4FC077BD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F27AD80F-9B0F-44EA-AD57-465D4FC077BD}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
