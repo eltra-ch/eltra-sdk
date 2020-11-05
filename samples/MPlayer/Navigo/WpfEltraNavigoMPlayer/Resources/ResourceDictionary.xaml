@@ -1,6 +1,5 @@
 ﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-                    xmlns:local="clr-namespace:WpfEltraNavigoMPlayer.Resources">
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
     
     <Brush x:Key="NavigationPrimary">#2196F3</Brush>
     
