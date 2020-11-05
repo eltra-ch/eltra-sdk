@@ -1,0 +1,104 @@
+﻿<UserControl xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:Behaviors="http://schemas.microsoft.com/xaml/behaviors" 
+             xmlns:converters2="clr-namespace:EltraWpfCommon.Controls.Converters;assembly=EltraWpfCommon" 
+             xmlns:converters1="clr-namespace:EltraNavigoMPlayer.Views.MPlayerControl.Converters" 
+             xmlns:station="clr-namespace:EltraNavigoMPlayer.Views.MPlayerControl.Station" xmlns:behaviors="clr-namespace:EltraNavigoMPlayer.Views.MPlayerControl.Behaviors"
+             mc:Ignorable="d"
+             x:Class="EltraNavigoMPlayer.Views.MPlayerControl.MPlayerControlView"
+             IsVisible="{Binding IsVisible}">
+
+    <!--<ContentView.Behaviors>
+        <behaviors:ToolViewShow/>
+    </ContentView.Behaviors>-->
+
+    <ScrollViewer>
+		<Grid>
+			<Grid.Resources>
+				<converters2:NegateBooleanConverter x:Key="NegateBooleanConverter"/>
+				<Style TargetType="Button">
+					<Setter Property="FontSize" Value="12"/>
+					<Setter Property="BackgroundColor" Value="{StaticResource NavigationPrimary}"/>
+					<Setter Property="BorderColor" Value="White"/>
+					<Setter Property="TextColor" Value="White"/>                        
+				</Style>
+			</Grid.Resources>
+
+			<Grid.ColumnDefinitions>
+				<ColumnDefinition Width="24"/>
+				<ColumnDefinition Width="Auto"/>
+				<ColumnDefinition Width="24"/>
+			</Grid.ColumnDefinitions>
+			<Grid.RowDefinitions>
+				<RowDefinition Height="24"/>   <!-- 0 header -->
+				<RowDefinition Height="Auto"/> <!-- 1 status -->
+				<RowDefinition Height="Auto"/> <!-- 2 buttons -->
+				<RowDefinition Height="Auto"/> <!-- 3 turn off -->
+				<RowDefinition Height="Auto"/> <!-- 4 activity -->
+				<RowDefinition Height="Auto"/> <!-- 5 slider -->
+				<RowDefinition Height="24"/>   <!-- 6 footer -->
+			</Grid.RowDefinitions>
+
+            <Border Grid.Row="1" Grid.Column="1" Padding="0">
+                <Border.Resources>
+					<converters1:StatusWordToImageConverter x:Key="StatusWordToImageConverter"></converters1:StatusWordToImageConverter>
+				</Border.Resources>
+				<Image Height="24" HorizontalAlignment="Right" Source="{Binding StatusWordValue, Converter={StaticResource StatusWordToImageConverter}}"/>
+			</Border>
+			
+			<Grid Grid.Row="2" Grid.Column="1">
+				<ItemsControl ItemsSource="{Binding StationList}">
+					<ItemsControl.ItemTemplate>
+						<DataTemplate>
+							<station:MPlayerStationView/>
+						</DataTemplate>
+					</ItemsControl.ItemTemplate>
+				</ItemsControl>
+			</Grid>
+
+			<Grid Grid.Row="3" Grid.Column="1">
+				<StackPanel Orientation="Vertical">
+                    <Border Padding="0,18,0,0"/>
+					<Button Height="48" Content="Turn Off" Command="{Binding TurnOffButtonCommand}" Background="IndianRed" IsEnabled="{Binding IsEnabled}"/>
+				</StackPanel>
+			</Grid>
+
+            <Border Grid.Row="4" Grid.Column="1" Padding="4">
+				<!--<ActivityIndicator IsRunning="{Binding IsBusy}" VerticalOptions="Center" HorizontalOptions="Center" />-->
+			</Border>
+
+            <Border Grid.Row="5" Grid.Column="1" BorderBrush="{StaticResource NavigationPrimary}">
+				<StackPanel Orientation="Vertical">
+					<StackPanel.Resources>
+						<converters2:NegateBooleanConverter x:Key="NegateBooleanConverter"/>
+					</StackPanel.Resources>
+					<Grid>
+						<Grid.ColumnDefinitions>
+							<ColumnDefinition Width="*"/>
+							<ColumnDefinition Width="2"/>
+							<ColumnDefinition Width="Auto"/>
+							<ColumnDefinition Width="Auto"/>
+						</Grid.ColumnDefinitions>
+						<Slider Grid.Column="0" Value="{Binding VolumeValue}" Minimum="0" Maximum="100" IsEnabled="{Binding IsMuteActive, Converter={StaticResource NegateBooleanConverter}}">
+                            <Behaviors:Interaction.Behaviors>
+                                <behaviors:MasterVolumeSliderBehavior/>
+                            </Behaviors:Interaction.Behaviors>
+                        </Slider>
+						<CheckBox Grid.Column="2" IsChecked="{Binding IsMuteActive}" IsEnabled="{Binding IsEnabled}"/>
+						<Label Grid.Column="3" Content="Mute" VerticalAlignment="Center" IsEnabled="{Binding IsEnabled}"/>
+					</Grid>
+                    
+					<StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+						<Label Content="Volume"/>
+                        <Label Content="{Binding VolumeValue}" IsVisible="{Binding IsMuteActive, Converter={StaticResource NegateBooleanConverter}}" IsEnabled="{Binding IsEnabled}"/>
+                        <Label Content="0" IsVisible="{Binding IsMuteActive}"/>
+                        <Label Content="%"/>
+					</StackPanel>
+				</StackPanel>
+			</Border>
+
+		</Grid>
+    </ScrollViewer>
+</UserControl>
