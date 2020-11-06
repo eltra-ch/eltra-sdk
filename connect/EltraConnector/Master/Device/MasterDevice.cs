@@ -268,7 +268,7 @@ namespace EltraConnector.Master.Device
             return result;
         }
 
-        protected bool AddLocalPayload(string fullPath)
+        protected bool AddLocalPayload(string fullPath, string id, DeviceToolPayloadMode mode)
         {
             bool result = false;
 
@@ -282,6 +282,8 @@ namespace EltraConnector.Master.Device
 
                     var bytes = File.ReadAllBytes(fullPath);
 
+                    payload.Id = id;
+                    payload.Mode = mode;
                     payload.FileName = fileInfo.Name;
                     payload.Version = fileVersionInfo.FileVersion;
                     payload.Content = Convert.ToBase64String(bytes);
@@ -302,16 +304,61 @@ namespace EltraConnector.Master.Device
             return result;
         }
 
+        protected bool UpdatePayloadFromFile(string fullPath, DeviceToolPayload payload)
+        {
+            bool result = false;
+
+            try
+            {
+                if (File.Exists(fullPath))
+                {
+                    var fileInfo = new FileInfo(fullPath);
+                    var fileVersionInfo = FileVersionInfo.GetVersionInfo(fullPath);
+
+                    var bytes = File.ReadAllBytes(fullPath);
+
+                    payload.Version = fileVersionInfo.FileVersion;
+                    payload.Content = Convert.ToBase64String(bytes);
+                    payload.HashCode = CryptHelpers.ToMD5(payload.Content);
+
+                    MsgLogger.WriteFlow($"{GetType().Name} - UpdatePayloadFromFile", $"payload added, file name = {payload.FileName}, hashCode = {payload.HashCode}, version = {payload.Version}");
+
+                    DeviceToolPayloadList.Add(payload);
+
+                    result = true;
+                }
+            }
+            catch (Exception e)
+            {
+                MsgLogger.Exception($"{GetType().Name} - UpdatePayloadFromFile", e);
+            }
+
+            return result;
+        }
+
         private DeviceToolPayload FindLocalPayload(DeviceToolPayload payload)
         {
             DeviceToolPayload result = null;
 
             foreach (var deviceToolPayload in DeviceToolPayloadList)
             {
-                if(deviceToolPayload.HashCode == payload.HashCode && deviceToolPayload.Content.Length > 0)
+                if (deviceToolPayload.Mode == DeviceToolPayloadMode.Development)
                 {
-                    result = deviceToolPayload;
-                    break;
+                    if (deviceToolPayload.Id == payload.Id && deviceToolPayload.Content.Length > 0)
+                    {
+                        result = deviceToolPayload;
+                        break;
+                    }
+                }
+                else
+                {
+                    if (deviceToolPayload.Id == payload.Id &&
+                        deviceToolPayload.HashCode == payload.HashCode &&
+                        deviceToolPayload.Content.Length > 0)
+                    {
+                        result = deviceToolPayload;
+                        break;
+                    }
                 }
             }
 
