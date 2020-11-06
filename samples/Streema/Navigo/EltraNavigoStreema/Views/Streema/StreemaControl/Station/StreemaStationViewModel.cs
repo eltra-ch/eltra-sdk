@@ -1,6 +1,7 @@
 ﻿using EltraCommon.ObjectDictionary.Common.DeviceDescription.Profiles.Application.Parameters;
 using EltraCommon.ObjectDictionary.Common.DeviceDescription.Profiles.Application.Parameters.Events;
 using EltraCommon.ObjectDictionary.Xdd.DeviceDescription.Profiles.Application.Parameters;
+using EltraUiCommon.Controls;
 using EltraXamCommon.Controls;
 using EltraXamCommon.Controls.Parameters;
 using EltraXamCommon.Controls.Toast;
@@ -11,7 +12,7 @@ using Xamarin.Forms;
 
 namespace EltraNavigoStreema.Views.Devices.Streema.StreemaControl.Station
 {
-    public class StreemaStationViewModel : ToolViewModel
+    public class StreemaStationViewModel : XamToolViewModel
     {
         #region Private fields
 
@@ -21,8 +22,8 @@ namespace EltraNavigoStreema.Views.Devices.Streema.StreemaControl.Station
         private XddParameter _activeStationParameter;
         private ImageSource _controlButtonImage;
         private bool _isStationEditVisible;
-        private ParameterEditViewModel _stationIdParameter;
-        private ParameterEditViewModel _stationVolumeScalingParameter;
+        private XamParameterEditViewModel _stationIdParameter;
+        private XamParameterEditViewModel _stationVolumeScalingParameter;
         private bool _isActiveStation;
 
         #endregion
@@ -34,8 +35,8 @@ namespace EltraNavigoStreema.Views.Devices.Streema.StreemaControl.Station
         {
             _stationIndex = stationIndex;
 
-            _stationIdParameter = new ParameterEditViewModel(this, $"PARAM_Station_{stationIndex+1}_Id");   
-            _stationVolumeScalingParameter = new ParameterEditViewModel(this, $"PARAM_Station_{stationIndex+1}_VolumeScaling");
+            _stationIdParameter = new XamParameterEditViewModel(this, $"PARAM_Station_{stationIndex+1}_Id");   
+            _stationVolumeScalingParameter = new XamParameterEditViewModel(this, $"PARAM_Station_{stationIndex+1}_VolumeScaling");
 
             DeviceInitialized += OnDeviceInitialized;
         }
@@ -82,12 +83,12 @@ namespace EltraNavigoStreema.Views.Devices.Streema.StreemaControl.Station
             set => SetProperty(ref _isStationEditVisible, value);
         }
 
-        public ParameterEditViewModel StationIdParameter
+        public XamParameterEditViewModel StationIdParameter
         {
             get => _stationIdParameter;
         }
 
-        public ParameterEditViewModel StationVolumeScalingParameter
+        public XamParameterEditViewModel StationVolumeScalingParameter
         {
             get => _stationVolumeScalingParameter;
         }

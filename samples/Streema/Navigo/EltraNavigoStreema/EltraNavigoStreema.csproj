@@ -21,7 +21,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="EltraXamCommon" Version="1.0.0" />
+    <PackageReference Include="EltraXamCommon" Version="1.0.5" />
   </ItemGroup>
 
   <ItemGroup>

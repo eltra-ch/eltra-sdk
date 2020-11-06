@@ -1,5 +1,5 @@
 ﻿using EltraNavigoStreema.Views.StreemaControl;
-using EltraXamCommon.Controls;
+using EltraUiCommon.Controls;
 using EltraXamCommon.Plugins;
 using Prism.Services.Dialogs;
 using System.Collections.Generic;

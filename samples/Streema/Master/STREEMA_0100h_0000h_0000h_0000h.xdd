@@ -53,7 +53,13 @@
 			<DeviceHardware/>
 			<DeviceInteraction>
 				<DeviceTools>
-					<DeviceTool Uuid="A8BEC143-7BBE-4C3B-A425-6C2D38C32E1A" Name="StreemaTool" Status="Enabled"/>
+                  <DeviceTool Uuid="A8BEC143-7BBE-4C3B-A425-6C2D38C32E1A" Name="StreemaTool" Status="Enabled">
+                    <Payload uniqueID="36228672-25BF-45AA-98F1-A9DECC1C01B5"
+                             hashCode="28CC580EE7513FDFA93C9CFC97432409"
+                             mode="development"
+                             type="xamarin.forms"
+                             fileName="EltraNavigoStreema.dll" version="1.0.0.0"/>
+                  </DeviceTool>
 				</DeviceTools>
 			</DeviceInteraction>
 			<ApplicationProcess>

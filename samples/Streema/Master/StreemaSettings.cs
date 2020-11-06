@@ -128,6 +128,18 @@ namespace StreemaMaster
             }
         }
 
+        public string NavigoPluginsPath
+        {
+            get
+            {
+                return Configuration["NavigoPluginsPath"];
+            }
+            set
+            {
+                Configuration["NavigoPluginsPath"] = value;
+            }
+        }
+
         public string PlayUrl
         {
             get

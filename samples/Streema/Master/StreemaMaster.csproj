@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
@@ -12,7 +12,7 @@
   </ItemGroup>
 
 	<ItemGroup>
-      <PackageReference Include="Eltra.Connector" Version="1.6.5" />
+      <PackageReference Include="Eltra.Connector" Version="1.6.7" />
       <PackageReference Include="Microsoft.Extensions.Configuration" Version="3.1.9" />
       <PackageReference Include="Microsoft.Extensions.Configuration.FileExtensions" Version="3.1.9" />
       <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="3.1.9" />

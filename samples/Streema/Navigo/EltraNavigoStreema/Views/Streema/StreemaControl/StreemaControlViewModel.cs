@@ -14,7 +14,7 @@ using System.Reflection;
 
 namespace EltraNavigoStreema.Views.StreemaControl
 {
-    public class StreemaControlViewModel : ToolViewModel
+    public class StreemaControlViewModel : XamToolViewModel
     {
         #region Private fields
 
