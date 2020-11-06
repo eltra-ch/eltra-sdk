@@ -8,7 +8,7 @@
 
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <OutputPath>C:\Users\dsien\AppData\Local\Packages\56594Eltra.EltraNavigo_gsp01nqvnhw8c\LocalState\</OutputPath>
+    <OutputPath></OutputPath>
   </PropertyGroup>
 
   <ItemGroup>

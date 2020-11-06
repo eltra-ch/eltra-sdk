@@ -2,6 +2,7 @@
 using EltraConnector.Master.Device;
 using System;
 using System.IO;
+using EltraCommon.Contracts.ToolSet;
 
 namespace MPlayerMaster
 {
@@ -15,18 +16,20 @@ namespace MPlayerMaster
             _settings = settings;
 
             Identification.SerialNumber = 0x101;
-
-            AddLocalPayloads();
         }
 
-        private void AddLocalPayloads()
+        protected override bool UpdatePayloadContent(DeviceToolPayload payload)
         {
-            string path = Path.Combine(Environment.CurrentDirectory, _settings.NavigoPluginsPath, "EltraNavigoMPlayer.dll");
+            bool result = false;
 
-            if(File.Exists(path))
+            if (payload.FileName == "EltraNavigoMPlayer.dll")
             {
-                AddLocalPayload(path);
+                string path = Path.Combine(Environment.CurrentDirectory, _settings.NavigoPluginsPath, "EltraNavigoMPlayer.dll");
+
+                result = UpdatePayloadFromFile(path, payload);
             }
+
+            return result;
         }
 
         protected override void OnStatusChanged()
