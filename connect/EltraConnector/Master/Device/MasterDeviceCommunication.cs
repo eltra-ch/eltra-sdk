@@ -87,6 +87,16 @@ namespace EltraConnector.Master.Device
             return false;
         }
 
+        public virtual bool GetObject(string loginName, ushort objectIndex, byte objectSubindex, ref byte[] data)
+        {
+            return GetObject(objectIndex, objectSubindex, ref data);
+        }
+
+        public virtual bool SetObject(string loginName, ushort objectIndex, byte objectSubindex, byte[] data)
+        {
+            return SetObject(objectIndex, objectSubindex, data);
+        }
+
         protected bool UpdateParameterDictionaryValue<T>(ushort objectIndex, byte objectSubindex, T newValue)
         {
             bool result = false;

@@ -98,7 +98,7 @@ namespace EltraConnector.Controllers.Base
             return result;
         }
 
-        public async Task<Channel> GetChannel(string uuid, UserIdentity identity)
+        public async Task<Channel> GetChannel(string uuid)
         {
             Channel result = null;
 
@@ -106,9 +106,7 @@ namespace EltraConnector.Controllers.Base
             {
                 var query = HttpUtility.ParseQueryString(string.Empty);
 
-                query["callerId"] = uuid;
-                query["login"] = identity.Login;
-                query["password"] = identity.Password;
+                query["channelId"] = uuid;
 
                 var url = UrlHelper.BuildUrl(Url, "api/channel/channel", query);
 

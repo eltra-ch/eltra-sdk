@@ -40,7 +40,7 @@ namespace TestMaster
             return result;
         }
 
-        public override bool Execute(string source)
+        public override bool Execute(string sourceChannelId, string sourceLoginName)
         {
             bool result = false;
             var eposDevice = Device as TestDevice;
@@ -53,7 +53,7 @@ namespace TestMaster
 
             if (communication is TestDeviceCommunication deviceCommunication)
             {
-                var commandResult = deviceCommunication.StartCounting(eposDevice.CloudAgent, source, step, delay);
+                var commandResult = deviceCommunication.StartCounting(eposDevice.CloudAgent, sourceChannelId, step, delay);
 
                 SetParameterValue("ErrorCode", communication.LastErrorCode);
                 SetParameterValue("Result", commandResult);

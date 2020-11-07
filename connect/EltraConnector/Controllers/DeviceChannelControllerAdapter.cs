@@ -338,7 +338,7 @@ namespace EltraConnector.Controllers
 
                                     try
                                     {
-                                        result = clonedDeviceCommand.Execute(executeCommand.SourceChannelId);
+                                        result = clonedDeviceCommand.Execute(executeCommand.SourceChannelId, executeCommand.SourceLoginName);
                                     }
                                     catch (Exception e)
                                     {

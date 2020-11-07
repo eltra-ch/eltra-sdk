@@ -254,17 +254,17 @@ namespace EltraConnector.SyncAgent
             return result;
         }
 
-        public async Task<Channel> GetSession(string uuid, UserIdentity identity)
+        public async Task<Channel> GetChannel(string uuid)
         {
             Channel result = null;
 
             try
             {
-                result = await _channelControllerAdapter.GetChannel(uuid, identity);
+                result = await _channelControllerAdapter.GetChannel(uuid);
             }
             catch (Exception e)
             {
-                MsgLogger.Exception($"{GetType().Name} - GetSession", e);
+                MsgLogger.Exception($"{GetType().Name} - GetChannel", e);
             }
 
             return result;

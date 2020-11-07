@@ -32,7 +32,7 @@ namespace TestMaster
             return result;
         }
 
-        public override bool Execute(string source)
+        public override bool Execute(string sourceChannelId, string sourceLoginName)
         {
             bool result = false;
             var eposDevice = Device as TestDevice;

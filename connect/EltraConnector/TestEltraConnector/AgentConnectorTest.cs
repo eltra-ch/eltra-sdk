@@ -42,7 +42,7 @@ namespace TestEltraConnector
         {
             return new UserIdentity()
             {
-                Login = Guid.NewGuid().ToString(),
+                Login = Guid.NewGuid().ToString() + "@eltra.ch",
                 Password = "123456",
                 Name = "Unit test user",
                 Role = "developer"

@@ -33,7 +33,7 @@ namespace EltraConnector.Master.Device.Commands
             return result;
         }
 
-        public override bool Execute(string source)
+        public override bool Execute(string sourceChannelId, string sourceLoginName)
         {
             bool result = false;
             var device = Device as MasterDevice;
@@ -54,7 +54,7 @@ namespace EltraConnector.Master.Device.Commands
 
                 if (manager != null)
                 {
-                    commandResult = manager.RegisterParameter(source, index, subIndex, (ParameterUpdatePriority)priority);
+                    commandResult = manager.RegisterParameter(sourceChannelId, index, subIndex, (ParameterUpdatePriority)priority);
                 }
 
                 SetParameterValue("Result", commandResult);

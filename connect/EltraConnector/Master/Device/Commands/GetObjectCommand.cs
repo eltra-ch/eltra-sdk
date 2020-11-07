@@ -36,7 +36,7 @@ namespace EltraConnector.Master.Device.Commands
             return result;
         }
 
-        public override bool Execute(string source)
+        public override bool Execute(string sourceChannelId, string sourceLoginName)
         {
             bool result = false;
             var device = Device as MasterDevice;
@@ -59,7 +59,7 @@ namespace EltraConnector.Master.Device.Commands
 
             if (communication != null)
             {
-                var commandResult = communication.GetObject(index, subIndex, ref data);
+                var commandResult = communication.GetObject(sourceLoginName, index, subIndex, ref data);
 
                 if (typeCode != TypeCode.Object)
                 {
