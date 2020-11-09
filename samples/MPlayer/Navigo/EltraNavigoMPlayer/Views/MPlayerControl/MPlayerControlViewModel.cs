@@ -130,6 +130,8 @@ namespace EltraNavigoMPlayer.Views.MPlayerControl
                         Device = Device
                     };
 
+                    stationViewModel.DialogRequested += (o, e) => { OnDialogRequested(e.ViewModel, e.Parameters); };
+
                     stationList.Add(stationViewModel);
                 }
 

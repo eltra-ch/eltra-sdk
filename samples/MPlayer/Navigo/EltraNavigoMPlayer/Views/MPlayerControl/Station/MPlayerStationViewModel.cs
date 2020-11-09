@@ -1,7 +1,6 @@
 ﻿using EltraCommon.ObjectDictionary.Common.DeviceDescription.Profiles.Application.Parameters;
 using EltraCommon.ObjectDictionary.Common.DeviceDescription.Profiles.Application.Parameters.Events;
 using EltraCommon.ObjectDictionary.Xdd.DeviceDescription.Profiles.Application.Parameters;
-using EltraConnector.Agent;
 using EltraConnector.UserAgent.Definitions;
 using EltraUiCommon.Controls;
 using EltraUiCommon.Controls.Parameters;
@@ -15,6 +14,8 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using Xamarin.Forms;
+using Prism.Services.Dialogs;
+using MPlayerMaster.Views.Dialogs;
 
 namespace EltraNavigoMPlayer.Views.MPlayerControl.Station
 {
@@ -106,6 +107,8 @@ namespace EltraNavigoMPlayer.Views.MPlayerControl.Station
         {
             Task.Run(async () =>
             {
+                IsBusy = true;
+
                 var queryStationCommand = await Device.GetCommand("QueryStation");
 
                 if(queryStationCommand!=null)
@@ -128,6 +131,8 @@ namespace EltraNavigoMPlayer.Views.MPlayerControl.Station
                         SearchResults = searchResults;
                     }
                 }
+
+                IsBusy = false;
             });
 
         });
@@ -430,6 +435,20 @@ namespace EltraNavigoMPlayer.Views.MPlayerControl.Station
             }
 
             return result;
+        }
+
+        internal void OnSearchResultTapped(RadioStationEntry entry)
+        {
+            IsBusy = true;
+
+            var parameters = new DialogParameters
+                    {
+                        { "entry", entry }
+                    };
+
+            OnDialogRequested(new StationDialogViewModel(), parameters);
+
+            IsBusy = false;
         }
 
         #endregion

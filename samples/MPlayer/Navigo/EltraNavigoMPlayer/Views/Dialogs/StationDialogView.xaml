@@ -1,0 +1,47 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<Grid xmlns="http://xamarin.com/schemas/2014/forms" 
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:d="http://xamarin.com/schemas/2014/forms/design"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:prism="http://prismlibrary.com"
+             mc:Ignorable="d"
+             Padding="8"
+             BackgroundColor="White"
+             xmlns:contracts="clr-namespace:MPlayerCommon.Contracts;assembly=MPlayerCommon"
+             prism:ViewModelLocator.AutowireViewModel="True"
+             x:Class="MPlayerMaster.Views.Dialogs.StationDialogView">
+    <Grid.Resources>
+        <Color x:Key="NavigationPrimary">#2196F3</Color>
+        <Style x:Key="BorderLikeFrame" TargetType="Frame">
+            <Setter Property="BorderColor" Value="Transparent"/>
+            <Setter Property="Padding" Value="1"/>
+            <Setter Property="HasShadow" Value="{DynamicResource AppFrameShadowStyle}"/>
+        </Style>
+    </Grid.Resources>
+
+    <Grid>
+      <StackLayout Orientation="Vertical">
+            <StackLayout BindingContext="{Binding RadioStationEntry}">
+                <Frame Padding="2"/>
+                <Label Text="{Binding Name}" VerticalOptions="Center" HorizontalOptions="CenterAndExpand"/>
+                <Frame Padding="2"/>
+                <Label Text="{Binding Description}" VerticalOptions="Center" HorizontalOptions="CenterAndExpand"/>
+                <Frame Padding="2"/>
+                <Label Text="{Binding Genre}" VerticalOptions="Center" HorizontalOptions="CenterAndExpand"/>
+                <Frame Padding="2"/>
+                <Label Text="{Binding Country}" VerticalOptions="Center" HorizontalOptions="CenterAndExpand"/>
+                <Frame Padding="2"/>
+                <Label Text="{Binding Language}" VerticalOptions="Center" HorizontalOptions="CenterAndExpand"/>
+                <Frame Padding="2"/>
+                <StackLayout BindableLayout.ItemsSource="{Binding Urls}">
+                    <Frame Padding="2"/>
+                    <Label Text="{Binding}" VerticalOptions="Center" HorizontalOptions="CenterAndExpand"/>
+                </StackLayout>
+            </StackLayout>
+          
+            <StackLayout Orientation="Horizontal">
+                <Button Text="Close" Command="{Binding CloseCommand}" HorizontalOptions="FillAndExpand"/>
+            </StackLayout>
+        </StackLayout>
+  </Grid>
+</Grid>
