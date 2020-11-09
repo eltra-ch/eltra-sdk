@@ -1,5 +1,6 @@
 ﻿using EltraCommon.Logger;
 using EltraCommon.ObjectDictionary.Common.DeviceDescription.Profiles.Application.Parameters;
+using MPlayerMaster.Parser;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;

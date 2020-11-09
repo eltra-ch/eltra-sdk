@@ -4,7 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace MPlayerMaster
+namespace MPlayerMaster.Parser
 {
     class MPlayerConsoleParser
     {

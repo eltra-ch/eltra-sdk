@@ -3,8 +3,9 @@ using EltraConnector.Master.Device;
 using System;
 using System.IO;
 using EltraCommon.Contracts.ToolSet;
+using MPlayerMaster.Device.Commands;
 
-namespace MPlayerMaster
+namespace MPlayerMaster.Device
 {
     internal class MPlayerDevice : MasterDevice
     {
@@ -15,7 +16,9 @@ namespace MPlayerMaster
         {
             _settings = settings;
 
-            Identification.SerialNumber = 0x101;
+            Identification.SerialNumber = 0x102;
+
+            AddCommand(new QueryStationCommand(this));
         }
 
         protected override bool UpdatePayloadContent(DeviceToolPayload payload)

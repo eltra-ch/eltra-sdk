@@ -3,12 +3,14 @@
   <PropertyGroup>
 	<AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
     <TargetFramework>netstandard2.0</TargetFramework>
+	<AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
   </PropertyGroup>
   
 
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <OutputPath></OutputPath>
+    <OutputPath>C:\Users\dsien\AppData\Local\Packages\56594Eltra.EltraNavigo_gsp01nqvnhw8c\LocalState\</OutputPath>
+	
   </PropertyGroup>
 
   <ItemGroup>
@@ -30,14 +32,12 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="EltraXamCommon" Version="1.0.6" />
     <PackageReference Include="Xamarin.Forms" Version="4.8.0.1560" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\..\..\connect\EltraConnector\EltraConnector.csproj" />
-    <ProjectReference Include="..\..\..\..\xternals\common\EltraCommon\EltraCommon.csproj" />
-    <ProjectReference Include="..\..\..\..\xternals\common\EltraUiCommon\EltraUiCommon.csproj" />
-    <ProjectReference Include="..\..\..\..\xternals\common\EltraXamCommon\EltraXamCommon.csproj" />
+    <ProjectReference Include="..\..\Common\MPlayerCommon\MPlayerCommon.csproj" />
   </ItemGroup>
 
   <ItemGroup>

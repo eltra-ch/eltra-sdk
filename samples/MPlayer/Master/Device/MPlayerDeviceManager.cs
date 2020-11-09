@@ -1,6 +1,6 @@
 ﻿using EltraConnector.Master.Device;
 
-namespace MPlayerMaster
+namespace MPlayerMaster.Device
 {
     class MPlayerDeviceManager : MasterDeviceManager
     {

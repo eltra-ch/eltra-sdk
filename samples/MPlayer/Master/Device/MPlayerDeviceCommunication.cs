@@ -11,8 +11,12 @@ using EltraCommon.ObjectDictionary.Xdd.DeviceDescription.Profiles.Application.Pa
 using System.Runtime.InteropServices;
 
 using static MPlayerMaster.MPlayerDefinitions;
+using System.IO;
+using MPlayerMaster.RsdParser;
+using MPlayerCommon.Contracts;
+using Newtonsoft.Json;
 
-namespace MPlayerMaster
+namespace MPlayerMaster.Device
 {
     public class MPlayerDeviceCommunication : MasterDeviceCommunication
     {
@@ -28,8 +32,11 @@ namespace MPlayerMaster
         private Parameter _volumeParameter;
         private XddParameter _muteParameter;
         private Parameter _statusWordParameter;
+
         private Parameter _controlWordParameter;
         private Parameter _stationsCountParameter;
+
+        private List<RadioStationEntry> _radioStations;
         private MPlayerSettings _settings;
         private ushort _maxStationsCount;
 
@@ -49,6 +56,7 @@ namespace MPlayerMaster
             _streamTitleParameters = new List<Parameter>();
             _volumeScalingParameters = new List<Parameter>();
             _processIdParameters = new List<Parameter>();
+            _radioStations = new List<RadioStationEntry>();
         }
 
         #endregion
@@ -91,7 +99,22 @@ namespace MPlayerMaster
                 Settings = _settings
             };
 
+            ReadRadioStations();
+
             return result;
+        }
+
+        private void ReadRadioStations()
+        {
+            if(File.Exists(_settings.RsdZipFile))
+            {
+                var parser = new RsdFileParser() { SerializeToJsonFile = false };
+
+                if(parser.ConvertRsdZipFileToJson(_settings.RsdZipFile))
+                {
+                    _radioStations = parser.Output;
+                }
+            }
         }
 
         protected override async void OnInitialized()
@@ -598,6 +621,40 @@ namespace MPlayerMaster
             if(_statusWordParameter!=null)
             {
                 result = _statusWordParameter.SetValue((ushort)status);
+            }
+
+            return result;
+        }
+
+        public string QueryStation(string query)
+        {
+            string result = string.Empty;
+            const int minQueryLength = 3;
+
+            try
+            {
+                if (_radioStations != null && _radioStations.Count > 0 && query.Length > minQueryLength)
+                {
+                    var radioStations = new List<RadioStationEntry>();
+
+                    foreach (var radioStation in _radioStations)
+                    {
+                        if (radioStation.Name.Contains(query) ||
+                            radioStation.Description.Contains(query) ||
+                            radioStation.Genre.Contains(query) ||
+                            radioStation.Country.Contains(query) ||
+                            radioStation.Language.Contains(query))
+                        {
+                            radioStations.Add(radioStation);
+                        }
+                    }
+
+                    result = System.Text.Json.JsonSerializer.Serialize(radioStations);
+                }
+            }
+            catch(Exception e)
+            {
+                MsgLogger.Exception($"{GetType().Name} - QueryStation", e);
             }
 
             return result;

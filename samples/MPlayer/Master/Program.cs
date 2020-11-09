@@ -7,6 +7,7 @@ using EltraConnector.Master.Definitions;
 using EltraConnector.Master.Events;
 using EltraConnector.Master.Device.Connection;
 using EltraCommon.Logger;
+using MPlayerMaster.Device;
 
 namespace MPlayerMaster
 {

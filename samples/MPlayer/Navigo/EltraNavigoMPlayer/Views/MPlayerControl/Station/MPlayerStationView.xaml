@@ -3,8 +3,8 @@
 			 xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml" 
 			 xmlns:parameters="clr-namespace:EltraXamCommon.Controls.Parameters;assembly=EltraXamCommon" 
 			 x:Class="EltraNavigoMPlayer.Views.MPlayerControl.Station.MPlayerStationView" 
-             xmlns:station="clr-namespace:EltraNavigoMPlayer.Views.MPlayerControl.Station"
-			 x:DataType="station:MPlayerStationViewModel">
+             xmlns:station="clr-namespace:EltraNavigoMPlayer.Views.MPlayerControl.Station" xmlns:contracts="clr-namespace:MPlayerCommon.Contracts;assembly=MPlayerCommon"
+             x:DataType="station:MPlayerStationViewModel">
 	<ContentView.Content>
 		<Grid>
 			<Grid.RowDefinitions>
@@ -47,10 +47,30 @@
 					</Button.Triggers>
 				</Button>
 			</StackLayout>
-			<FlexLayout Grid.Row="2" Wrap="Wrap" JustifyContent="Start" AlignItems="Start" HeightRequest="82"  IsVisible="{Binding IsStationEditVisible}">
-                <parameters:ParameterEditView WidthRequest="400" BindingContext="{Binding StationIdParameter}" IsEnabled="{Binding IsEnabled}"/>
-                <parameters:ParameterEditView BindingContext="{Binding StationVolumeScalingParameter}" IsEnabled="{Binding IsEnabled}"/>
-			</FlexLayout>
-		</Grid>
+
+            <Grid Grid.Row="2" IsVisible="{Binding IsStationEditVisible}">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="224"/>
+                </Grid.RowDefinitions>
+
+                <parameters:ParameterEditView Grid.Row="0" BindingContext="{Binding StationVolumeScalingParameter}" IsEnabled="{Binding IsEnabled}"/>
+                <parameters:ParameterEditView Grid.Row="1" WidthRequest="400" BindingContext="{Binding StationIdParameter}" IsEnabled="{Binding IsEnabled}"/>
+                
+                <SearchBar x:Name="searchBar" Grid.Row="2"
+					   SearchCommand="{Binding PerformSearch}"
+					   SearchCommandParameter="{Binding Text, Source={x:Reference searchBar}}"/>
+
+                <ListView Grid.Row="3" x:Name="searchResults" ItemsSource="{Binding SearchResults}">
+                    <ListView.ItemTemplate>
+                        <DataTemplate x:DataType="contracts:RadioStationEntry">
+                            <TextCell Text="{Binding Name}" Detail="{Binding Description}" />
+                        </DataTemplate>
+                    </ListView.ItemTemplate>
+                </ListView>
+            </Grid>
+        </Grid>
 	</ContentView.Content>
 </ContentView>

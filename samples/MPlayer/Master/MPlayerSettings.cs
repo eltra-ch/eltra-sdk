@@ -136,6 +136,14 @@ namespace MPlayerMaster
             }
         }
 
+        public string RsdZipFile
+        {
+            get
+            {
+                return Configuration["RsdZipFile"];
+            }
+        }
+
         private IConfiguration Configuration
         {
             get => _configuration ?? (_configuration = new ConfigurationBuilder()

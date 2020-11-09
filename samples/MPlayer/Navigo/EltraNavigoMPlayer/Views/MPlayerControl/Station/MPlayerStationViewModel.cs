@@ -1,13 +1,17 @@
 ﻿using EltraCommon.ObjectDictionary.Common.DeviceDescription.Profiles.Application.Parameters;
 using EltraCommon.ObjectDictionary.Common.DeviceDescription.Profiles.Application.Parameters.Events;
 using EltraCommon.ObjectDictionary.Xdd.DeviceDescription.Profiles.Application.Parameters;
+using EltraConnector.Agent;
 using EltraConnector.UserAgent.Definitions;
 using EltraUiCommon.Controls;
 using EltraUiCommon.Controls.Parameters;
 using EltraXamCommon.Controls;
 using EltraXamCommon.Controls.Parameters;
 using EltraXamCommon.Controls.Toast;
+using MPlayerCommon.Contracts;
+using Newtonsoft.Json;
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using Xamarin.Forms;
@@ -96,6 +100,51 @@ namespace EltraNavigoMPlayer.Views.MPlayerControl.Station
         public ParameterEditViewModel StationVolumeScalingParameter
         {
             get => _stationVolumeScalingParameter;
+        }
+
+        public ICommand PerformSearch => new Command<string>((string query) =>
+        {
+            Task.Run(async () =>
+            {
+                var queryStationCommand = await Device.GetCommand("QueryStation");
+
+                if(queryStationCommand!=null)
+                {
+                    string queryResult = string.Empty;
+
+                    queryStationCommand.SetParameterValue("Query", query);
+
+                    var executeResult = await queryStationCommand.Execute();
+
+                    if (executeResult != null)
+                    {
+                        executeResult.GetParameterValue("Result", ref queryResult);
+                    }
+
+                    if (!string.IsNullOrEmpty(queryResult))
+                    {
+                        var searchResults = JsonConvert.DeserializeObject<List<RadioStationEntry>>(queryResult);
+
+                        SearchResults = searchResults;
+                    }
+                }
+            });
+
+        });
+
+        private List<RadioStationEntry> _searchResults;
+
+        public List<RadioStationEntry> SearchResults
+        {
+            get
+            {
+                return _searchResults;
+            }
+            set
+            {
+                _searchResults = value;
+                OnPropertyChanged("SearchResults");
+            }
         }
 
         #endregion

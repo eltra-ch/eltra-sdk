@@ -5,13 +5,7 @@ VisualStudioVersion = 16.0.30611.23
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EltraNavigoMPlayer", "EltraNavigoMPlayer.csproj", "{F86100D0-C0FA-448D-82CE-1F07B0C2B94C}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EltraUiCommon", "..\..\..\..\xternals\common\EltraUiCommon\EltraUiCommon.csproj", "{E2DBE709-7D67-4806-A44A-DA40D9C488DE}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EltraXamCommon", "..\..\..\..\xternals\common\EltraXamCommon\EltraXamCommon.csproj", "{331EFB77-92C0-40F8-9ED2-EA7F0F57D8CD}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EltraCommon", "..\..\..\..\xternals\common\EltraCommon\EltraCommon.csproj", "{D1409C7C-7921-4775-A381-F5A7B66D74C8}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EltraConnector", "..\..\..\..\connect\EltraConnector\EltraConnector.csproj", "{572E533B-2343-4015-A754-14C9FA6E2DEB}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MPlayerCommon", "..\..\Common\MPlayerCommon\MPlayerCommon.csproj", "{458433E7-0710-48A6-B8A0-2172D87B6F02}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -23,22 +17,10 @@ Global
 		{F86100D0-C0FA-448D-82CE-1F07B0C2B94C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F86100D0-C0FA-448D-82CE-1F07B0C2B94C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F86100D0-C0FA-448D-82CE-1F07B0C2B94C}.Release|Any CPU.Build.0 = Release|Any CPU
-		{E2DBE709-7D67-4806-A44A-DA40D9C488DE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{E2DBE709-7D67-4806-A44A-DA40D9C488DE}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{E2DBE709-7D67-4806-A44A-DA40D9C488DE}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{E2DBE709-7D67-4806-A44A-DA40D9C488DE}.Release|Any CPU.Build.0 = Release|Any CPU
-		{331EFB77-92C0-40F8-9ED2-EA7F0F57D8CD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{331EFB77-92C0-40F8-9ED2-EA7F0F57D8CD}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{331EFB77-92C0-40F8-9ED2-EA7F0F57D8CD}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{331EFB77-92C0-40F8-9ED2-EA7F0F57D8CD}.Release|Any CPU.Build.0 = Release|Any CPU
-		{D1409C7C-7921-4775-A381-F5A7B66D74C8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{D1409C7C-7921-4775-A381-F5A7B66D74C8}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{D1409C7C-7921-4775-A381-F5A7B66D74C8}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{D1409C7C-7921-4775-A381-F5A7B66D74C8}.Release|Any CPU.Build.0 = Release|Any CPU
-		{572E533B-2343-4015-A754-14C9FA6E2DEB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{572E533B-2343-4015-A754-14C9FA6E2DEB}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{572E533B-2343-4015-A754-14C9FA6E2DEB}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{572E533B-2343-4015-A754-14C9FA6E2DEB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{458433E7-0710-48A6-B8A0-2172D87B6F02}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{458433E7-0710-48A6-B8A0-2172D87B6F02}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{458433E7-0710-48A6-B8A0-2172D87B6F02}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{458433E7-0710-48A6-B8A0-2172D87B6F02}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
