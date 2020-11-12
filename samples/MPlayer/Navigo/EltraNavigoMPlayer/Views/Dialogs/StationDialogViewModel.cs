@@ -1,4 +1,6 @@
-﻿using EltraXamCommon.Dialogs;
+﻿using EltraCommon.ObjectDictionary.Xdd.DeviceDescription.Profiles.Application.Parameters;
+using EltraNavigoMPlayer.Views.Dialogs;
+using EltraXamCommon.Dialogs;
 using MPlayerCommon.Contracts;
 using Prism.Commands;
 using Prism.Services.Dialogs;
@@ -10,7 +12,7 @@ namespace MPlayerMaster.Views.Dialogs
         #region Private fields
 
         private bool _isBusy;
-        private RadioStationEntry _radioStationEntry;
+        private RadioStationEntryViewModel _radioStationEntryViewModel;
         private IDialogParameters _parameters;
 
         #endregion
@@ -33,10 +35,10 @@ namespace MPlayerMaster.Views.Dialogs
             set => SetProperty(ref _isBusy, value);
         }
 
-        public RadioStationEntry RadioStationEntry
+        public RadioStationEntryViewModel RadioStationEntryViewModel
         {
-            get => _radioStationEntry;
-            set => SetProperty(ref _radioStationEntry, value);
+            get => _radioStationEntryViewModel;
+            set => SetProperty(ref _radioStationEntryViewModel, value);
         }
 
         #endregion
@@ -59,16 +61,24 @@ namespace MPlayerMaster.Views.Dialogs
             SendCloseRequest();
         }
 
-        private void OnRequestApply()
+        private async void OnRequestApply()
         {
-            SendCloseRequest(new DialogParameters() { { "result", "apply" } });
+            bool result = await RadioStationEntryViewModel.Apply();
+
+            SendCloseRequest(new DialogParameters() { { "command", "apply" }, { "result", result } });
         }
 
         public override void OnDialogOpened(IDialogParameters parameters)
         {
             _parameters = parameters;
+            
+            var radioStationEntry = parameters.GetValue<RadioStationEntry>("entry");
+            var stationParameterEntry = parameters.GetValue<XddParameter>("stationIdParameter");
 
-            RadioStationEntry = parameters.GetValue<RadioStationEntry>("entry");
+            if (radioStationEntry != null)
+            {
+                RadioStationEntryViewModel = new RadioStationEntryViewModel(radioStationEntry, stationParameterEntry);
+            }
         }
         
         #endregion

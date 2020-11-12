@@ -446,11 +446,10 @@ namespace EltraNavigoMPlayer.Views.MPlayerControl.Station
         {
             IsBusy = true;
 
-            bool apply = false;
             var parameters = new DialogParameters
                     {
                         { "entry", entry },
-                        { "apply", apply }
+                        { "stationIdParameter", StationIdParameter.Parameter }
                     };
 
             ShowDialog(new StationDialogViewModel(), parameters);

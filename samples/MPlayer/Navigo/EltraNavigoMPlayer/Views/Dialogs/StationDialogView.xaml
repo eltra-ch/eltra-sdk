@@ -20,18 +20,28 @@
     </Grid.Resources>
 
     <Grid>
-        <StackLayout Orientation="Vertical">
-            <StackLayout BindingContext="{Binding RadioStationEntry}">
-                <Label Text="{Binding Name}" VerticalOptions="Center" HorizontalOptions="CenterAndExpand"/>
+        <StackLayout Orientation="Vertical" Padding="4">
+            <StackLayout BindingContext="{Binding RadioStationEntryViewModel}">
+                <Label Text="{Binding Name}" FontAttributes="Bold" VerticalOptions="Center" HorizontalOptions="CenterAndExpand"/>
                 <Label Text="{Binding Description}" VerticalOptions="Center" HorizontalOptions="CenterAndExpand"/>
                 <Label Text="{Binding Genre}" VerticalOptions="Center" HorizontalOptions="CenterAndExpand"/>
-                <Label Text="{Binding Country}" VerticalOptions="Center" HorizontalOptions="CenterAndExpand"/>
-                <Label Text="{Binding Language}" VerticalOptions="Center" HorizontalOptions="CenterAndExpand"/>
-                <StackLayout>
+                <Label Text="{Binding Country}" FontAttributes="Italic" VerticalOptions="Center" HorizontalOptions="CenterAndExpand"/>
+                <Label Text="{Binding Language}" FontAttributes="Italic" VerticalOptions="Center" HorizontalOptions="CenterAndExpand"/>
+                <StackLayout Padding="4">
                     <Label Text="What url should be used?" />
-                    <StackLayout BindableLayout.ItemsSource="{Binding Urls}">
-                        <RadioButton Text="{Binding}" GroupName="stationUrls" />
-                    </StackLayout>
+
+                    <ListView ItemsSource="{Binding Urls}" VerticalOptions="Start">
+                        <ListView.ItemTemplate>
+                            <DataTemplate>
+                                <ViewCell>
+                                    <StackLayout>
+                                        <RadioButton Text="{Binding Url}" GroupName="stationUrls" IsChecked="{Binding IsChecked}"/>
+                                    </StackLayout>
+                                </ViewCell>
+                            </DataTemplate>
+                        </ListView.ItemTemplate>
+                    </ListView>
+                    
                 </StackLayout>
             </StackLayout>
           
