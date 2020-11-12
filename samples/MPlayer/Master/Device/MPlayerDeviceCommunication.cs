@@ -629,6 +629,7 @@ namespace MPlayerMaster.Device
         {
             string result = string.Empty;
             const int minQueryLength = 3;
+            const int maxRadioStationEntries = 25;
 
             try
             {
@@ -652,7 +653,17 @@ namespace MPlayerMaster.Device
                                     radioStation.Language.ToLower().Contains(lowQueryWord))
                                 {
                                     radioStations.Add(radioStation);
+
+                                    if(radioStations.Count > maxRadioStationEntries)
+                                    {
+                                        break;
+                                    }
                                 }
+                            }
+
+                            if (radioStations.Count > maxRadioStationEntries)
+                            {
+                                break;
                             }
                         }
                     }

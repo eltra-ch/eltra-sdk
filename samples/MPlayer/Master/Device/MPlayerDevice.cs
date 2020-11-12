@@ -23,14 +23,9 @@ namespace MPlayerMaster.Device
 
         protected override bool UpdatePayloadContent(DeviceToolPayload payload)
         {
-            bool result = false;
+            string path = Path.Combine(Environment.CurrentDirectory, _settings.NavigoPluginsPath, payload.FileName);
 
-            if (payload.FileName == "EltraNavigoMPlayer.dll")
-            {
-                string path = Path.Combine(Environment.CurrentDirectory, _settings.NavigoPluginsPath, "EltraNavigoMPlayer.dll");
-
-                result = UpdatePayloadFromFile(path, payload);
-            }
+            bool result = UpdatePayloadFromFile(path, payload);
 
             return result;
         }

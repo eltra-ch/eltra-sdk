@@ -20,7 +20,7 @@
     </Grid.Resources>
 
     <Grid>
-      <StackLayout Orientation="Vertical">
+        <StackLayout Orientation="Vertical">
             <StackLayout BindingContext="{Binding RadioStationEntry}">
                 <Label Text="{Binding Name}" VerticalOptions="Center" HorizontalOptions="CenterAndExpand"/>
                 <Label Text="{Binding Description}" VerticalOptions="Center" HorizontalOptions="CenterAndExpand"/>
@@ -30,7 +30,7 @@
                 <StackLayout>
                     <Label Text="What url should be used?" />
                     <StackLayout BindableLayout.ItemsSource="{Binding Urls}">
-                        <RadioButton Text="{Binding}" GroupName="stationUrls" IsChecked="True" />
+                        <RadioButton Text="{Binding}" GroupName="stationUrls" />
                     </StackLayout>
                 </StackLayout>
             </StackLayout>
