@@ -2,9 +2,7 @@
 using EltraUiCommon.Controls;
 using EltraXamCommon.Dialogs;
 using EltraXamCommon.Plugins;
-using EltraXamCommon.Plugins.Events;
 using MPlayerMaster.Views.Dialogs;
-using System;
 using System.Collections.Generic;
 using Xamarin.Forms;
 using Xamarin.Forms.Internals;
@@ -12,12 +10,13 @@ using Xamarin.Forms.Internals;
 namespace EltraNavigoMPlayer.Plugins
 {
     [Preserve(AllMembers = true)]
-    public class EltraNavigoMPlayerPlugin : IEltraNavigoPluginService
+    public class EltraNavigoMPlayerPlugin : EltraNavigoPluginService
     {
         #region Private fields
 
         private MPlayerControlViewModel _mPlayerControlViewModel;
         private MPlayerControlView _mPlayerControlView;
+        private StationDialogViewModel _stationDialogViewModel;
 
         #endregion
 
@@ -33,11 +32,10 @@ namespace EltraNavigoMPlayer.Plugins
             get => _mPlayerControlView ?? (_mPlayerControlView = new MPlayerControlView());
         }
 
-        #endregion
-
-        #region Events
-
-        public event EventHandler<DialogRequestedEventArgs> DialogRequested;
+        private StationDialogViewModel StationDialogViewModel
+        {
+            get => _stationDialogViewModel ?? (_stationDialogViewModel = new StationDialogViewModel());
+        }
 
         #endregion
 
@@ -47,17 +45,12 @@ namespace EltraNavigoMPlayer.Plugins
         {
             var result = new MPlayerControlViewModel();
 
-            result.DialogRequested += (o, e) => { OnDialogRequested(e); };
+            result.PluginService = this;
 
             return result;
         }
 
-        protected virtual void OnDialogRequested(DialogRequestedEventArgs e)
-        {
-            DialogRequested?.Invoke(this, e);
-        }
-
-        public List<ToolViewModel> GetViewModels()
+        public override List<ToolViewModel> GetViewModels()
         {
             var result = new List<ToolViewModel>();
 
@@ -66,7 +59,7 @@ namespace EltraNavigoMPlayer.Plugins
             return result;
         }
 
-        public ContentView GetView(ToolViewModel viewModel)
+        public override View ResolveView(ToolViewModel viewModel)
         {
             ContentView result = null;
 
@@ -78,12 +71,12 @@ namespace EltraNavigoMPlayer.Plugins
             return result;
         }
 
-        public List<XamDialogViewModel> GetDialogViewModels()
+        public override List<XamDialogViewModel> GetDialogViewModels()
         {
-            return new List<XamDialogViewModel>() { new StationDialogViewModel() };
+            return new List<XamDialogViewModel>() { StationDialogViewModel };
         }
 
-        public View ResolveDialogView(XamDialogViewModel viewModel)
+        public override View ResolveDialogView(XamDialogViewModel viewModel)
         {
             View result = null;
             

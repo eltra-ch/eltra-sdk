@@ -11,6 +11,7 @@ namespace MPlayerMaster.Views.Dialogs
 
         private bool _isBusy;
         private RadioStationEntry _radioStationEntry;
+        private IDialogParameters _parameters;
 
         #endregion
 
@@ -19,6 +20,7 @@ namespace MPlayerMaster.Views.Dialogs
         public StationDialogViewModel()
         {
             CloseCommand = new DelegateCommand(() => OnRequestClose());
+            ApplyCommand = new DelegateCommand(() => OnRequestApply());
         }
 
         #endregion
@@ -42,6 +44,7 @@ namespace MPlayerMaster.Views.Dialogs
         #region Commands
 
         public DelegateCommand CloseCommand { get; }
+        public DelegateCommand ApplyCommand { get; }
 
         #endregion
 
@@ -53,11 +56,18 @@ namespace MPlayerMaster.Views.Dialogs
 
         private void OnRequestClose()
         {
-            SendRequestClose();
+            SendCloseRequest();
+        }
+
+        private void OnRequestApply()
+        {
+            SendCloseRequest(new DialogParameters() { { "result", "apply" } });
         }
 
         public override void OnDialogOpened(IDialogParameters parameters)
         {
+            _parameters = parameters;
+
             RadioStationEntry = parameters.GetValue<RadioStationEntry>("entry");
         }
         

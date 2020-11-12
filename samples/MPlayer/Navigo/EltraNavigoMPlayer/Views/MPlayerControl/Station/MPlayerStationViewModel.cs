@@ -437,16 +437,23 @@ namespace EltraNavigoMPlayer.Views.MPlayerControl.Station
             return result;
         }
 
+        protected override void OnDialogClosed(object sender, IDialogResult dialogResult)
+        {
+            System.Diagnostics.Debug.Print("");
+        }
+
         internal void OnSearchResultTapped(RadioStationEntry entry)
         {
             IsBusy = true;
 
+            bool apply = false;
             var parameters = new DialogParameters
                     {
-                        { "entry", entry }
+                        { "entry", entry },
+                        { "apply", apply }
                     };
 
-            OnDialogRequested(new StationDialogViewModel(), parameters);
+            ShowDialog(new StationDialogViewModel(), parameters);
 
             IsBusy = false;
         }

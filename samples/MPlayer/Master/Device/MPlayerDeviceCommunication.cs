@@ -14,7 +14,6 @@ using static MPlayerMaster.MPlayerDefinitions;
 using System.IO;
 using MPlayerMaster.RsdParser;
 using MPlayerCommon.Contracts;
-using Newtonsoft.Json;
 
 namespace MPlayerMaster.Device
 {
@@ -637,15 +636,24 @@ namespace MPlayerMaster.Device
                 {
                     var radioStations = new List<RadioStationEntry>();
 
-                    foreach (var radioStation in _radioStations)
+                    var queryWords = query.Split(new char[] { ' ', ';', ';' });
+
+                    if (queryWords.Length > 0)
                     {
-                        if (radioStation.Name.Contains(query) ||
-                            radioStation.Description.Contains(query) ||
-                            radioStation.Genre.Contains(query) ||
-                            radioStation.Country.Contains(query) ||
-                            radioStation.Language.Contains(query))
+                        foreach (var queryWord in queryWords)
                         {
-                            radioStations.Add(radioStation);
+                            var lowQueryWord = queryWord.ToLower();
+
+                            foreach (var radioStation in _radioStations)
+                            {
+                                if (radioStation.Name.ToLower().Contains(lowQueryWord) ||
+                                    radioStation.Genre.ToLower().Contains(lowQueryWord) ||
+                                    radioStation.Country.ToLower().Contains(lowQueryWord) ||
+                                    radioStation.Language.ToLower().Contains(lowQueryWord))
+                                {
+                                    radioStations.Add(radioStation);
+                                }
+                            }
                         }
                     }
 
