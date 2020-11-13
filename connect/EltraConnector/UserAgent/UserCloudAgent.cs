@@ -783,7 +783,10 @@ namespace EltraConnector.UserAgent
                     var tempPath = Path.GetTempPath();
                     var localPath = Path.Combine(tempPath, payload.HashCode + ".xdd");
 
-                    File.WriteAllText(localPath, payload.Content);
+                    if (!File.Exists(localPath))
+                    {
+                        File.WriteAllText(localPath, payload.Content);
+                    }
                 }
             }
             catch (Exception e)
