@@ -144,6 +144,21 @@ namespace MPlayerMaster
             }
         }
 
+        public string MPlayerProcessName
+        {
+            get
+            {
+                return Configuration["MPlayerProcessName"];
+            }
+        }
+        public string MPlayerProcessPath
+        {
+            get
+            {
+                return Configuration["MPlayerProcessPath"];
+            }
+        }
+        
         private IConfiguration Configuration
         {
             get => _configuration ?? (_configuration = new ConfigurationBuilder()

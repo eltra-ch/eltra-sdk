@@ -32,11 +32,11 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="EltraXamCommon" Version="1.0.9" />
     <PackageReference Include="Xamarin.Forms" Version="4.8.0.1687" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\..\..\xternals\common\EltraXamCommon\EltraXamCommon.csproj" />
     <ProjectReference Include="..\..\Common\MPlayerCommon\MPlayerCommon.csproj" />
   </ItemGroup>
 

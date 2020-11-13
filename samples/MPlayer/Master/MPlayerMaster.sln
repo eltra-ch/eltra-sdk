@@ -7,10 +7,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MPlayerMaster", "MPlayerMas
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MPlayerCommon", "..\Common\MPlayerCommon\MPlayerCommon.csproj", "{4F21D429-6C62-4FE8-8DCF-38A81100174A}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Common", "Common", "{AB38BC56-7D1F-419B-8790-4A37274BEA6B}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EltraConnector", "..\..\..\connect\EltraConnector\EltraConnector.csproj", "{532823ED-D633-410A-B8EB-A77AD3C3490F}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -25,16 +21,9 @@ Global
 		{4F21D429-6C62-4FE8-8DCF-38A81100174A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4F21D429-6C62-4FE8-8DCF-38A81100174A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4F21D429-6C62-4FE8-8DCF-38A81100174A}.Release|Any CPU.Build.0 = Release|Any CPU
-		{532823ED-D633-410A-B8EB-A77AD3C3490F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{532823ED-D633-410A-B8EB-A77AD3C3490F}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{532823ED-D633-410A-B8EB-A77AD3C3490F}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{532823ED-D633-410A-B8EB-A77AD3C3490F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
-	EndGlobalSection
-	GlobalSection(NestedProjects) = preSolution
-		{532823ED-D633-410A-B8EB-A77AD3C3490F} = {AB38BC56-7D1F-419B-8790-4A37274BEA6B}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {557D5953-C783-4F41-B460-CF09AD3AC4F9}

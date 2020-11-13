@@ -13,9 +13,6 @@ namespace MPlayerMaster
     {
         #region Private fields
 
-        private readonly string _mplayerProcessFullPath;
-        private readonly string _mplayerProcessName;
-
         private MPlayerConsoleParser _parser;
 
         #endregion
@@ -23,17 +20,7 @@ namespace MPlayerMaster
         #region Constructors
 
         public MPlayerRunner()
-        {
-            if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
-            {
-                _mplayerProcessFullPath = "/usr/bin/mplayer";
-                _mplayerProcessName = "mplayer";
-            }
-            else
-            {
-                _mplayerProcessFullPath = "C:\\MPlayer\\mplayer.exe";
-                _mplayerProcessName = "mplayer.exe";
-            }
+        {            
         }
 
         #endregion
@@ -100,7 +87,7 @@ namespace MPlayerMaster
 
                 startInfo.Arguments = Settings.AppArgs + $" {url}";
                 startInfo.Arguments = startInfo.Arguments.Trim();
-                startInfo.FileName = _mplayerProcessFullPath;
+                startInfo.FileName = Settings.MPlayerProcessPath;
 
                 p.StartInfo = startInfo;
 
@@ -200,9 +187,9 @@ namespace MPlayerMaster
 
         private void CloseBruteForce()
         {
-            MsgLogger.WriteFlow($"close '{_mplayerProcessName}' brute force");
+            MsgLogger.WriteFlow($"close '{Settings.MPlayerProcessName}' brute force");
 
-            foreach (var p in Process.GetProcessesByName(_mplayerProcessName))
+            foreach (var p in Process.GetProcessesByName(Settings.MPlayerProcessName))
             {
                 p.Kill();
             }
