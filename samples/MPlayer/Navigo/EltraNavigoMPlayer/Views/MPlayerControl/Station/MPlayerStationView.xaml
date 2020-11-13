@@ -11,8 +11,9 @@
 			<Grid.RowDefinitions>
 				<RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
-				<RowDefinition Height="Auto"/>
-			</Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
             <StackLayout Grid.Row="0" Orientation="Vertical">
                 <Label Text="{Binding ControlButtonText}" IsEnabled="{Binding IsEnabled}"/>
                 <Label Text="{Binding StationStreamTitle}" IsVisible="{Binding IsActiveStation}" IsEnabled="{Binding IsEnabled}"/>
@@ -54,21 +55,50 @@
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition/>
+                </Grid.ColumnDefinitions>
+
+                <StackLayout Grid.Row="0" Grid.Column="0" Orientation="Horizontal" Padding="0">
+                    <Label Text="{Binding StationVolumeScalingParameter.Label}" IsEnabled="{Binding IsEnabled}" VerticalOptions="Center"/>
+                </StackLayout>
+
+                <StackLayout Grid.Row="0" Grid.Column="1" Orientation="Horizontal" Padding="0">
+                    <parameters:ParameterEditView  BindingContext="{Binding StationVolumeScalingParameter}" IsEnabled="{Binding IsEnabled}" HorizontalOptions="StartAndExpand"/>
+                </StackLayout>
+
+                <StackLayout Grid.Row="1" Grid.Column="0" Orientation="Horizontal" Padding="0">
+                    <Label FontAttributes="Bold" Text="{Binding StationIdParameter.Label}" IsEnabled="{Binding IsEnabled}" VerticalOptions="Center"/>
+                </StackLayout>
+
+                <StackLayout Grid.Row="1" Grid.Column="1" Orientation="Horizontal" Padding="0">
+                    <parameters:ParameterEditView WidthRequest="400" BindingContext="{Binding StationIdParameter}" IsEnabled="{Binding IsEnabled}" HorizontalOptions="StartAndExpand"/>
+                </StackLayout>
+
+                <StackLayout Grid.Row="2" Grid.Column="0" Orientation="Horizontal" Padding="0">
+                    <Label Text="Search URL" IsEnabled="{Binding IsEnabled}" VerticalOptions="Center"/>
+                </StackLayout>
+
+                <StackLayout Grid.Row="2" Grid.Column="1" Padding="5,4,14,0">
+                    <SearchBar x:Name="searchBar" 
+					       SearchCommand="{Binding PerformSearch}"
+					       SearchCommandParameter="{Binding Text, Source={x:Reference searchBar}}"/>
+                </StackLayout>
+            </Grid>
+
+            <Grid Grid.Row="3" IsVisible="{Binding IsStationEditVisible}">
+                <Grid.RowDefinitions>
                     <RowDefinition Height="224"/>
                 </Grid.RowDefinitions>
 
-                <parameters:ParameterEditView Grid.Row="0" BindingContext="{Binding StationVolumeScalingParameter}" IsEnabled="{Binding IsEnabled}"/>
-                <parameters:ParameterEditView Grid.Row="1" WidthRequest="400" BindingContext="{Binding StationIdParameter}" IsEnabled="{Binding IsEnabled}"/>
-                
-                <SearchBar x:Name="searchBar" Grid.Row="2"
-					   SearchCommand="{Binding PerformSearch}"
-					   SearchCommandParameter="{Binding Text, Source={x:Reference searchBar}}"/>
-
-                <ListView Grid.Row="3" x:Name="searchResults" ItemsSource="{Binding SearchResults}">
+                <ListView Grid.Row="0" x:Name="searchResults" ItemsSource="{Binding SearchResults}">
                     <ListView.Behaviors>
                         <behaviors:SearchResultsBehavior/>
                     </ListView.Behaviors>
-                    
+
                     <ListView.ItemTemplate>
                         <DataTemplate x:DataType="contracts:RadioStationEntry">
                             <ViewCell>

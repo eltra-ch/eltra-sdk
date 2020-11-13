@@ -27,7 +27,7 @@
                 <Label Text="{Binding Genre}" VerticalOptions="Center" HorizontalOptions="CenterAndExpand"/>
                 <Label Text="{Binding Country}" FontAttributes="Italic" VerticalOptions="Center" HorizontalOptions="CenterAndExpand"/>
                 <Label Text="{Binding Language}" FontAttributes="Italic" VerticalOptions="Center" HorizontalOptions="CenterAndExpand"/>
-                <StackLayout Padding="4">
+                <StackLayout Padding="4" HeightRequest="144">
                     <Label Text="What url should be used?" />
 
                     <ListView ItemsSource="{Binding Urls}" VerticalOptions="Start">
@@ -43,6 +43,7 @@
                     </ListView>
                     
                 </StackLayout>
+                <ActivityIndicator IsRunning="{Binding IsBusy}" VerticalOptions="Center" HorizontalOptions="Center" />
             </StackLayout>
           
             <StackLayout Orientation="Horizontal">

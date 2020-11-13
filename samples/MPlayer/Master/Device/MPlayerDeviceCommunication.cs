@@ -641,29 +641,27 @@ namespace MPlayerMaster.Device
 
                     if (queryWords.Length > 0)
                     {
-                        foreach (var queryWord in queryWords)
+                        foreach (var radioStation in _radioStations)
                         {
-                            var lowQueryWord = queryWord.ToLower();
-
-                            foreach (var radioStation in _radioStations)
+                            bool contains = true;
+                            foreach (var queryWord in queryWords)
                             {
-                                if (radioStation.Name.ToLower().Contains(lowQueryWord) ||
-                                    radioStation.Genre.ToLower().Contains(lowQueryWord) ||
-                                    radioStation.Country.ToLower().Contains(lowQueryWord) ||
-                                    radioStation.Language.ToLower().Contains(lowQueryWord))
-                                {
-                                    radioStations.Add(radioStation);
+                                var search = new RadioStationEntrySearch(radioStation);
 
-                                    if(radioStations.Count > maxRadioStationEntries)
-                                    {
-                                        break;
-                                    }
+                                if (!search.Contains(queryWord))
+                                {
+                                    contains = false;
                                 }
                             }
 
-                            if (radioStations.Count > maxRadioStationEntries)
+                            if (contains)
                             {
-                                break;
+                                radioStations.Add(radioStation);
+
+                                if (radioStations.Count > maxRadioStationEntries)
+                                {
+                                    break;
+                                }
                             }
                         }
                     }

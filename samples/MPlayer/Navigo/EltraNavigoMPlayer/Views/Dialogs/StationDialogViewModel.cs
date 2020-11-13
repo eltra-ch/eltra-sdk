@@ -63,7 +63,11 @@ namespace MPlayerMaster.Views.Dialogs
 
         private async void OnRequestApply()
         {
+            IsBusy = true;
+
             bool result = await RadioStationEntryViewModel.Apply();
+
+            IsBusy = false;
 
             SendCloseRequest(new DialogParameters() { { "command", "apply" }, { "result", result } });
         }

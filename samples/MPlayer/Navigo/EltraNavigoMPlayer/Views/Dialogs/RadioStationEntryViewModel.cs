@@ -73,6 +73,8 @@ namespace EltraNavigoMPlayer.Views.Dialogs
         {
             bool result = false;
 
+            IsBusy = true;
+
             foreach(var url in Urls)
             {
                 if(url.IsChecked)
@@ -87,6 +89,8 @@ namespace EltraNavigoMPlayer.Views.Dialogs
                     break;
                 }
             }
+
+            IsBusy = false;
 
             return result;
         }
