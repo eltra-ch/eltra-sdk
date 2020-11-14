@@ -159,9 +159,12 @@ namespace EltraNavigoMPlayer.Views.MPlayerControl.Station
 
         #region Events handling
 
-        private void OnStationIdChanged(object sender, ParameterChangedEventArgs e)
+        private void OnStationIdWritten(object sender, ParameterWrittenEventArgs e)
         {
-            OnControlButtonPressed();
+            if (e.Result)
+            {
+                OnControlButtonPressed();
+            }
         }
 
         private void OnDeviceInitialized(object sender, EventArgs e)
@@ -273,7 +276,7 @@ namespace EltraNavigoMPlayer.Views.MPlayerControl.Station
             var result = base.Show();
 
             StationIdParameter.InitModelData();
-            StationIdParameter.Changed += OnStationIdChanged; 
+            StationIdParameter.Written += OnStationIdWritten; 
 
             StationVolumeScalingParameter.InitModelData();
             
@@ -282,7 +285,7 @@ namespace EltraNavigoMPlayer.Views.MPlayerControl.Station
 
         public override Task Hide()
         {
-            StationIdParameter.Changed -= OnStationIdChanged;
+            StationIdParameter.Written -= OnStationIdWritten;
 
             return base.Hide();
         }
