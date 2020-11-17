@@ -163,6 +163,8 @@ namespace EltraNavigoMPlayer.Views.MPlayerControl.Station
         {
             if (e.Result)
             {
+                StationIdParameter.InitModelData();
+
                 OnControlButtonPressed();
             }
         }

@@ -79,7 +79,17 @@
                 <StackLayout Grid.Row="2" Padding="0,4,0,0">
                     <SearchBar x:Name="searchBar" FontSize="12" Placeholder="Search Station"
 					       SearchCommand="{Binding PerformSearch}"
-					       SearchCommandParameter="{Binding Text, Source={x:Reference searchBar}}"/>
+					       SearchCommandParameter="{Binding Text, Source={x:Reference searchBar}}">
+
+                        <SearchBar.Margin>
+                            <OnPlatform x:TypeArguments="Thickness">
+                                <On Platform="iOS" Value="0, 0, 0, 0" />
+                                <On Platform="Android" Value="0, 0, 0, 0" />
+                                <On Platform="UWP" Value="5, 0, 12, 0" />
+                            </OnPlatform>
+                        </SearchBar.Margin>
+                        
+                    </SearchBar>
                 </StackLayout>
             </Grid>
 
@@ -93,19 +103,32 @@
                         <behaviors:SearchResultsBehavior/>
                     </ListView.Behaviors>
 
+                    <ListView.Margin>
+                        <OnPlatform x:TypeArguments="Thickness">
+                            <On Platform="iOS" Value="0, 0, 0, 0" />
+                            <On Platform="Android" Value="0, 0, 0, 0" />
+                            <On Platform="UWP" Value="5, 0, 12, 0" />
+                        </OnPlatform>
+                    </ListView.Margin>
+
                     <ListView.ItemTemplate>
                         <DataTemplate x:DataType="contracts:RadioStationEntry">
                             <ViewCell>
-                                <StackLayout Orientation="Horizontal">
-                                    <StackLayout.Resources>
+                                <Grid>
+                                    <Grid.Resources>
                                         <Style TargetType="Label">
                                             <Setter Property="FontSize" Value="12"/>
                                         </Style>
-                                    </StackLayout.Resources>
-                                    <Label Text="{Binding Name}"/>
-                                    <Label Text="{Binding Genre}" TextColor="CadetBlue"/>
-                                    <Label Text="{Binding Country}" FontAttributes="Italic"/>
-                                </StackLayout>
+                                    </Grid.Resources>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                    </Grid.ColumnDefinitions>
+                                    <Label Grid.Column="0" Text="{Binding Name}"/>
+                                    <Label Grid.Column="1" Text="{Binding Genre}" TextColor="CadetBlue" FontSize="10" HorizontalTextAlignment="Center"/>
+                                    <Label Grid.Column="2" Text="{Binding Country}" FontAttributes="Italic"/>
+                                </Grid>
                             </ViewCell>
                         </DataTemplate>
                     </ListView.ItemTemplate>
