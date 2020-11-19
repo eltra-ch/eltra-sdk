@@ -5,7 +5,6 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using System.Runtime.InteropServices;
 
 namespace MPlayerMaster
 {
@@ -84,9 +83,12 @@ namespace MPlayerMaster
                 startInfo.RedirectStandardOutput = true;
 
                 startInfo.WindowStyle = ProcessWindowStyle.Normal;
+                
+                GetPlayListFlag(url, out string playlistFlag);
 
-                startInfo.Arguments = Settings.AppArgs + $" {url}";
+                startInfo.Arguments = Settings.AppArgs + playlistFlag + $" {url}";
                 startInfo.Arguments = startInfo.Arguments.Trim();
+
                 startInfo.FileName = Settings.MPlayerProcessPath;
 
                 p.StartInfo = startInfo;
@@ -120,6 +122,25 @@ namespace MPlayerMaster
             }
 
             return result;
+        }
+
+        private static string GetPlayListFlag(string url, out string playlistFlag)
+        {
+            playlistFlag = string.Empty;
+
+            url = url.TrimEnd();
+            
+            string[] playlistExtensions = { ".asx", ".m3u", ".m3u8", ".pls", ".plst", ".qtl", ".ram", ".wax", ".wpl", ".xspf" };
+            foreach (var playlistExtension in playlistExtensions)
+            {
+                if (url.EndsWith(playlistExtension))
+                {
+                    playlistFlag = "-playlist";
+                    break;
+                }
+            }
+
+            return playlistFlag;
         }
 
         public bool Stop()

@@ -228,7 +228,11 @@ namespace MPlayerMaster.Device
             {
                 Console.WriteLine($"Active Station Changed = {activeStationValue}");
 
-                SetActiveStationAsync(activeStationValue);
+                Task.Run(async ()=>
+                {
+                    await SetActiveStationAsync(activeStationValue);
+                });
+                
             }
         }
         private void OnVolumeChanged(object sender, ParameterChangedEventArgs e)
@@ -478,7 +482,7 @@ namespace MPlayerMaster.Device
 
         private Task SetActiveStationAsync(Parameter activeStation)
         {
-            Task result = null;
+            Task result = Task.CompletedTask;
 
             if (activeStation != null)
             {
