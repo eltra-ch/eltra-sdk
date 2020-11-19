@@ -135,7 +135,7 @@ namespace MPlayerMaster
             {
                 if (url.EndsWith(playlistExtension))
                 {
-                    playlistFlag = "-playlist";
+                    playlistFlag = " -playlist ";
                     break;
                 }
             }
