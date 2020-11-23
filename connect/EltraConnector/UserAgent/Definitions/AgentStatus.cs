@@ -40,6 +40,18 @@
         /// <summary>
         /// Offline
         /// </summary>
-        Offline
+        Offline,
+        /// <summary>
+        /// SignedIn
+        /// </summary>
+        SignedIn,
+        /// <summary>
+        /// SignedUp
+        /// </summary>
+        SignedUp,
+        /// <summary>
+        /// SignedOut
+        /// </summary>
+        SignedOut
     }
 }

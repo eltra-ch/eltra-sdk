@@ -173,8 +173,15 @@ namespace EltraConnector.Agent
             
             Status = AgentStatus.Starting;
 
-            _deviceAgent = new DeviceAgent(Host, Identity, _updateInterval, _timeout);
-            
+            if(_deviceAgent!=null)
+            {
+                _deviceAgent = new DeviceAgent(Host, _deviceAgent.ChannelId, Identity, _updateInterval, _timeout);
+            }
+            else
+            {
+                _deviceAgent = new DeviceAgent(Host, Identity, _updateInterval, _timeout);
+            }
+
             RegisterEvents();
 
             bool result = await EnsureAgentReady();
@@ -205,7 +212,14 @@ namespace EltraConnector.Agent
 
             Status = AgentStatus.Starting;
 
-            _deviceAgent = new DeviceAgent(Host, Identity, _updateInterval, _timeout);
+            if (_deviceAgent != null)
+            {
+                _deviceAgent = new DeviceAgent(Host, _deviceAgent.ChannelId, Identity, _updateInterval, _timeout);
+            }
+            else
+            {
+                _deviceAgent = new DeviceAgent(Host, Identity, _updateInterval, _timeout);
+            }
 
             RegisterEvents();
 
@@ -246,16 +260,24 @@ namespace EltraConnector.Agent
             if (await Authentication.SignIn(identity))
             {
                 Identity = identity;
+            
                 result = true;
+
+                Status = AgentStatus.SignedIn;
             }
             else if (createAccount)
             {
                 if (await Authentication.SignUp(identity))
                 {
+                    Status = AgentStatus.SignedUp;
+
                     if (await Authentication.SignIn(identity))
                     {
                         Identity = identity;
+                        
                         result = true;
+
+                        Status = AgentStatus.SignedIn;
                     }
                 }
             }
@@ -270,6 +292,11 @@ namespace EltraConnector.Agent
         public async Task<bool> SignOut()
         {
             bool result = await Authentication.SignOut();
+
+            if(result)
+            {
+                Status = AgentStatus.SignedOut;
+            }
             
             return result;
         }
