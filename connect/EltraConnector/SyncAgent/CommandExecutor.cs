@@ -150,7 +150,7 @@ namespace EltraConnector.SyncAgent
                     }
                     else
                     {
-                        MsgLogger.WriteLine($"{GetType().Name} - ProcessWebSocketRequest - message received");
+                        MsgLogger.WriteError($"{GetType().Name} - ProcessWebSocketRequest", "Unknown message {json} received");
                     }
                 }
             }

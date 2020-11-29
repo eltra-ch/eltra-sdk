@@ -84,9 +84,9 @@ namespace EltraConnector.Channels
                     {
                         var json = await WsConnectionManager.Receive(WsChannelId);
 
-                        var parameterChangedTask = Task.Run(() =>
+                        if (WsConnection.IsJson(json))
                         {
-                            if (WsConnection.IsJson(json))
+                            var parameterChangedTask = Task.Run(() =>
                             {
                                 var parameterSet = JsonConvert.DeserializeObject<ParameterValueUpdateSet>(json, new JsonSerializerSettings
                                 {
@@ -117,10 +117,10 @@ namespace EltraConnector.Channels
                                                                                                    parameterEntry.SubIndex, parameterEntry.ParameterValue));
                                     }
                                 }
-                            }
-                        });
+                            });
 
-                        parameterChangedTasks.Add(parameterChangedTask);
+                            parameterChangedTasks.Add(parameterChangedTask);
+                        }
                     }
                 }
                 catch (Exception e)
