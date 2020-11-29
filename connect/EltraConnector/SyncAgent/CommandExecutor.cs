@@ -80,19 +80,19 @@ namespace EltraConnector.SyncAgent
             errorArgs.ErrorContext.Handled = true;
         }
 
-        private async Task Connect(string sessionUuid, string channelName)
+        private async Task Connect(string channelId, string channelName)
         {
             var wsConnectionManager = _channelControllerAdapter?.WsConnectionManager;
 
             if (wsConnectionManager != null)
             {
-                if (wsConnectionManager.CanConnect(sessionUuid))
+                if (wsConnectionManager.CanConnect(channelId))
                 {
                     if (OnSignInRequested())
                     {
-                        if (await wsConnectionManager.Connect(sessionUuid, channelName))
+                        if (await wsConnectionManager.Connect(channelId, channelName))
                         {
-                            await SendSessionIdentyfication(sessionUuid);
+                            await SendSessionIdentyfication(channelId);
                         }
                     }
                 }
@@ -135,58 +135,75 @@ namespace EltraConnector.SyncAgent
             try
             {
                 var wsConnectionManager = _channelControllerAdapter?.WsConnectionManager;
+                
                 var json = await wsConnectionManager.Receive(sessionUuid);
 
                 if (WsConnection.IsJson(json))
                 {
-                    var executeCommands = JsonConvert.DeserializeObject<List<ExecuteCommand>>(json, new JsonSerializerSettings
+                    result = await ProcessJsonCommand(json);
+                }
+                else
+                {
+                    if(json == "ACK" || json == "KEEPALIVE")
                     {
-                        Error = HandleDeserializationError
-                    });
-
-                    if (executeCommands != null)
-                    {
-                        int processedCommands = await _channelControllerAdapter.ExecuteCommands(executeCommands);
-
-                        MsgLogger.WriteDebug($"{GetType().Name} - ProcessWebSocketRequest", $"executed: received commends = {executeCommands.Count}, processed commands = {processedCommands}");
-
                         result = true;
                     }
                     else
                     {
-                        var channelStatusUpdate = JsonConvert.DeserializeObject<ChannelStatusUpdate>(json, new JsonSerializerSettings
-                        {
-                            Error = HandleDeserializationError
-                        });
-
-                        if (channelStatusUpdate != null)
-                        {
-                            if (channelStatusUpdate.ChannelId != _channelControllerAdapter.Channel.Id)
-                            {
-                                MsgLogger.WriteDebug($"{GetType().Name} - Execute", $"session {channelStatusUpdate.ChannelId}, status changed to {channelStatusUpdate.Status}");
-
-                                OnRemoteChannelStatusChanged(new AgentChannelStatusChangedEventArgs() { Id = channelStatusUpdate.ChannelId, Status = channelStatusUpdate.Status });
-                            }
-
-                            result = true;
-                        }
-                        else
-                        {
-                            MsgLogger.WriteLine($"{GetType().Name} - Execute - Unknown message received");
-                        }
+                        MsgLogger.WriteLine($"{GetType().Name} - ProcessWebSocketRequest - message received");
                     }
-                }
-                else
-                {
-                    MsgLogger.WriteLine($"{GetType().Name} - Execute - message received");
                 }
             }
             catch (Exception e)
             {
-                MsgLogger.Exception($"{GetType().Name} - Execute", e);
+                MsgLogger.Exception($"{GetType().Name} - ProcessWebSocketRequest", e);
             }
 
             await Task.Delay(executeIntervalWs);
+
+            return result;
+        }
+
+        private async Task<bool> ProcessJsonCommand(string json)
+        {
+            bool result = false;
+
+            var executeCommands = JsonConvert.DeserializeObject<List<ExecuteCommand>>(json, new JsonSerializerSettings
+            {
+                Error = HandleDeserializationError
+            });
+
+            if (executeCommands != null)
+            {
+                int processedCommands = await _channelControllerAdapter.ExecuteCommands(executeCommands);
+
+                MsgLogger.WriteFlow($"{GetType().Name} - ProcessWebSocketRequest", $"executed: received commends = {executeCommands.Count}, processed commands = {processedCommands}");
+
+                result = true;
+            }
+            else
+            {
+                var channelStatusUpdate = JsonConvert.DeserializeObject<ChannelStatusUpdate>(json, new JsonSerializerSettings
+                {
+                    Error = HandleDeserializationError
+                });
+
+                if (channelStatusUpdate != null)
+                {
+                    if (channelStatusUpdate.ChannelId != _channelControllerAdapter.Channel.Id)
+                    {
+                        MsgLogger.WriteDebug($"{GetType().Name} - Execute", $"session {channelStatusUpdate.ChannelId}, status changed to {channelStatusUpdate.Status}");
+
+                        OnRemoteChannelStatusChanged(new AgentChannelStatusChangedEventArgs() { Id = channelStatusUpdate.ChannelId, Status = channelStatusUpdate.Status });
+                    }
+
+                    result = true;
+                }
+                else
+                {
+                    MsgLogger.WriteError($"{GetType().Name} - Execute",  $"Unknown message {json} received");
+                }
+            }
 
             return result;
         }

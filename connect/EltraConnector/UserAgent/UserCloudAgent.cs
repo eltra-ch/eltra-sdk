@@ -353,7 +353,7 @@ namespace EltraConnector.UserAgent
 
             while (!token.IsCancellationRequested)
             {
-                if (await RegisterSession())
+                if (await RegisterChannel())
                 {
                     result = true;
                     break;
@@ -495,24 +495,24 @@ namespace EltraConnector.UserAgent
             }
         }
 
-        private async Task<bool> UpdateSession()
+        private async Task<bool> UpdateChannel()
         {
             return await _channelAdapter.Update();
         }
 
-        private async Task<bool> RegisterSession()
+        private async Task<bool> RegisterChannel()
         {
             bool result = false;
 
             if (await SignIn(_identity))
             {
-                result = await UpdateSession();
+                result = await UpdateChannel();
             }
             else if (await SignUp(_identity))
             {
                 if (await SignIn(_identity))
                 {
-                    result = await UpdateSession();
+                    result = await UpdateChannel();
                 }
             }
 
@@ -618,6 +618,9 @@ namespace EltraConnector.UserAgent
             {
                 foreach (var device in channel.Devices)
                 {
+                    device.ChannelId = channel.Id;
+                    device.ChannelLocalHost = channel.LocalHost;
+
                     await UpdateDeviceDescriptionFile(device);
                 }
             }
@@ -716,7 +719,11 @@ namespace EltraConnector.UserAgent
                     RemoveCommandFromExecuted(result);
                 }
             }
-            
+            else
+            {
+                MsgLogger.WriteError($"{GetType().Name} - ExecuteCommand", $"push command '{command.Id}' failed!");
+            }
+
             return result;
         }
 

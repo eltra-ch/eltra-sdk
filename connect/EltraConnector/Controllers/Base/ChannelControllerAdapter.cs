@@ -13,6 +13,7 @@ using System.Net;
 using System.Threading.Tasks;
 using System.Web;
 using System.Threading;
+using EltraConnector.Helpers;
 
 namespace EltraConnector.Controllers.Base
 {
@@ -69,11 +70,13 @@ namespace EltraConnector.Controllers.Base
 
         public string ChannelId => Channel.Id;
 
-        public Channel Channel => _channel ?? (_channel = new Channel { Id = _uuid, UserName = _user.Identity.Name, Timeout = _timeout, UpdateInterval = _updateInterval });
+        public Channel Channel => _channel ?? (_channel = new Channel { Id = _uuid, UserName = _user.Identity.Name, Timeout = _timeout, UpdateInterval = _updateInterval, LocalHost = "127.0.0.1" });
 
         public WsConnectionManager WsConnectionManager { get; set; }
 
         public User User => _user;
+
+        public int UdpPort { get; set; }
 
         #endregion
 
@@ -194,6 +197,21 @@ namespace EltraConnector.Controllers.Base
             return result;
         }
 
+        private void UpdateChannelLocalHost(ChannelBase channel)
+        {
+            if (channel != null && UdpPort > 0)
+            {
+                channel.LocalHost = $"{IpHelper.GetLocalIpAddress()}:{UdpPort}";
+            }
+        }
+        private void UpdateChannelStatusLocalHost(ChannelStatusUpdate channelStatus)
+        {
+            if (channelStatus != null && UdpPort > 0)
+            {
+                channelStatus.LocalHost = $"{IpHelper.GetLocalIpAddress()}:{UdpPort}";
+            }
+        }
+
         public async Task<bool> RegisterChannel()
         {
             bool result = false;
@@ -203,6 +221,8 @@ namespace EltraConnector.Controllers.Base
                 var path = "api/channel/register";
 
                 var channelBase = (ChannelBase)Channel;
+
+                UpdateChannelLocalHost(channelBase);
 
                 var postResult = await Transporter.Post(Url, path, channelBase.ToJson());
 
@@ -284,6 +304,8 @@ namespace EltraConnector.Controllers.Base
             try
             {
                 var statusUpdate = new ChannelStatusUpdate { ChannelId = Channel.Id, Status = status };
+
+                UpdateChannelStatusLocalHost(statusUpdate);
 
                 if (WsConnectionManager != null && WsConnectionManager.IsConnected(Channel.Id))
                 {

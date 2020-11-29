@@ -1,10 +1,12 @@
-﻿using EltraCommon.Contracts.Users;
+﻿using EltraConnector.Transport.Ws.Converters;
+using EltraConnector.Transport.Ws.Interfaces;
+using EltraCommon.Contracts.Users;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace EltraConnector.Transport.Ws
 {
-    class WsConnectionManager
+    class WsConnectionManager : IConnectionManager
     {
         #region Private fields
 
@@ -135,19 +137,6 @@ namespace EltraConnector.Transport.Ws
             return result;
         }
 
-        private async Task<bool> Send(string uniqueId, UserIdentity identity, string typeName, string data)
-        {
-            bool result = false;
-            var connection = FindConnection(uniqueId);
-
-            if (connection != null)
-            {
-                result = await connection.Send(identity, typeName, data);
-            }
-
-            return result;
-        }
-
         public async Task<bool> Send<T>(string uniqueId, UserIdentity identity, T obj)
         {
             bool result = false;
@@ -198,6 +187,19 @@ namespace EltraConnector.Transport.Ws
                     result = connection;
                     break;
                 }
+            }
+
+            return result;
+        }
+
+        protected async Task<bool> Send(string uniqueId, UserIdentity identity, string typeName, string data)
+        {
+            bool result = false;
+            var connection = FindConnection(uniqueId);
+
+            if (connection != null)
+            {
+                result = await connection.Send(identity, typeName, data);
             }
 
             return result;

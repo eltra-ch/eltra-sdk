@@ -3,6 +3,7 @@ using System.Net.WebSockets;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using EltraConnector.Transport.Ws.Interfaces;
 using EltraCommon.Contracts.Users;
 using EltraCommon.Contracts.Ws;
 using EltraCommon.Logger;
@@ -10,7 +11,7 @@ using Newtonsoft.Json;
 
 namespace EltraConnector.Transport.Ws
 {
-    class WsConnection
+    class WsConnection : IConnection
     {
         #region Private fields
 
@@ -263,7 +264,9 @@ namespace EltraConnector.Transport.Ws
             {
                 if(await Send(identity, typeof(T).FullName, JsonConvert.SerializeObject(obj)))
                 {
-                    if(obj is WsMessageAck)
+                    result = true;
+
+                    /*if (obj is WsMessageAck)
                     {
                         result = true;
                     }
@@ -275,7 +278,7 @@ namespace EltraConnector.Transport.Ws
                         {
                             result = true;
                         }
-                    }
+                    }*/
                 }
             }
             catch (Exception e)

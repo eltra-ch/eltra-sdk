@@ -11,6 +11,9 @@ using EltraConnector.Controllers.Base.Events;
 using EltraCommon.Contracts.Devices;
 using EltraConnector.Channels;
 using EltraCommon.Contracts.ToolSet;
+using EltraConnector.Transport.Udp;
+using EltraConnector.Helpers;
+using System.Net.Sockets;
 
 #pragma warning disable 1591
 
@@ -26,6 +29,8 @@ namespace EltraConnector.SyncAgent
         private readonly CommandExecutor _commandExecutor;
         private readonly WsConnectionManager _wsConnectionManager;
         private readonly Authentication _authentication;
+        private readonly EltraUdpServer _eltraUdpServer;
+
         private bool _good;
 
         #endregion
@@ -34,16 +39,19 @@ namespace EltraConnector.SyncAgent
 
         public SyncCloudAgent(string url, UserIdentity identity, uint updateInterval, uint timeout)
         {
+            var rnd = new Random();
+
             Url = url;
             Identity = identity;
             UpdateInterval = updateInterval;
-            Timeout = timeout; 
+            Timeout = timeout;
             
             _good = true;
             _authentication = new Authentication(url);
             _wsConnectionManager = new WsConnectionManager() { HostUrl = url };
+            _eltraUdpServer = new EltraUdpServer() { Host = "0.0.0.0", Port = rnd.Next(5100, 5199) };
 
-            _channelControllerAdapter = new DeviceChannelControllerAdapter(this) { WsConnectionManager = _wsConnectionManager };
+            _channelControllerAdapter = new DeviceChannelControllerAdapter(this) { WsConnectionManager = _wsConnectionManager, UdpPort = _eltraUdpServer.Port };
 
             _channelHeartbeat = new ChannelHeartbeat(_channelControllerAdapter, updateInterval, timeout);
             _commandExecutor = new CommandExecutor(_channelControllerAdapter);
@@ -63,6 +71,11 @@ namespace EltraConnector.SyncAgent
         #endregion
 
         #region Events handling
+
+        private void OnUdpServerErrorRaised(object sender, SocketError e)
+        {
+            MsgLogger.WriteError($"{GetType().Name} - OnUdpServerErrorRaised", $"Udp server error occured  = {e}!");
+        }
 
         private void OnAdapterGoodChanged(object sender, GoodChangedEventArgs e)
         {
@@ -151,6 +164,8 @@ namespace EltraConnector.SyncAgent
 
             _channelControllerAdapter.GoodChanged += OnAdapterGoodChanged;
             _authentication.GoodChanged += OnAdapterGoodChanged;
+
+            _eltraUdpServer.ErrorRaised += OnUdpServerErrorRaised; 
         }
 
         private async Task<bool> RegisterSession()
@@ -176,7 +191,7 @@ namespace EltraConnector.SyncAgent
 
             return result;
         }
-        
+                
         public async Task<bool> RegisterDevice(EltraDevice deviceNode)
         {
             bool result = false;
@@ -216,12 +231,14 @@ namespace EltraConnector.SyncAgent
 
             _channelHeartbeat.Start();
             _commandExecutor.Start();
+            _eltraUdpServer.Start();
 
             Wait();
 
             _commandExecutor.Stop();
             _channelHeartbeat.Stop();
-            
+            _eltraUdpServer.Stop();
+
             MsgLogger.WriteLine($"Sync agent working thread finished successfully!");
 
             SetStopped();

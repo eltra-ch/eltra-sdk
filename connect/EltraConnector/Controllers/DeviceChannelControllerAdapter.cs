@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Net.Sockets;
 using System.Threading.Tasks;
+
 using EltraConnector.Controllers.Base;
 using EltraConnector.Events;
 using EltraCommon.Contracts.Devices;
@@ -10,6 +12,8 @@ using EltraCommon.Contracts.CommandSets;
 using EltraConnector.SyncAgent;
 using EltraConnector.Controllers.Events;
 using EltraCommon.Contracts.ToolSet;
+using EltraConnector.Transport.Udp;
+using EltraConnector.Transport.Udp.Response;
 
 namespace EltraConnector.Controllers
 {
@@ -17,12 +21,15 @@ namespace EltraConnector.Controllers
     {
         #region Private fields
 
+        const string UdpHost = "0.0.0.0";
+        
         private readonly SyncCloudAgent _agent;
 
         private DeviceControllerAdapter _deviceControllerAdapter;
         private ParameterControllerAdapter _parameterControllerAdapter;
         private List<EltraDevice> _devices;
-        
+        private EltraUdpServer _eltraUdpServer;
+
         #endregion
 
         #region Constructors
@@ -32,7 +39,7 @@ namespace EltraConnector.Controllers
         {
             _agent = agent;
         }
-        
+
         #endregion
 
         #region Properties
@@ -63,11 +70,23 @@ namespace EltraConnector.Controllers
             }
         }
 
+        private EltraUdpServer EltraUdpServer => _eltraUdpServer ?? (_eltraUdpServer = new EltraUdpServer() { Host = "0.0.0.0", Port = UdpPort });
+
         #endregion
 
         #endregion
 
         #region Events handling
+
+        private void OnUdpServerErrorRaised(object sender, SocketError e)
+        {
+            MsgLogger.WriteError($"{GetType().Name} - OnUdpServerErrorRaised", $"Socket error ({e})!");
+        }
+
+        private void OnUdpServerMessageReceived(object sender, ReceiveResponse e)
+        {
+            e.Handled = true;
+        }
 
         protected virtual void OnDeviceRegistrationStateChanged(object sender, RegistrationEventArgs e)
         {
@@ -84,16 +103,6 @@ namespace EltraConnector.Controllers
             {
                 MsgLogger.WriteError($"{GetType().Name} - OnDeviceRegistrationStateChanged", $"Device ({device.Family}) registration failed!");
             }
-        }
-
-        internal Task<bool> PayloadExists(DeviceToolPayload payload)
-        {
-            return DeviceControllerAdapter.PayloadExists(payload);
-        }
-
-        internal Task<bool> UploadPayload(DeviceToolPayload payload)
-        {
-            return DeviceControllerAdapter.UploadPayload(payload);
         }
 
         private void OnParametersUpdated(object sender, ParameterUpdateEventArgs args)
@@ -120,6 +129,16 @@ namespace EltraConnector.Controllers
         #endregion
 
         #region Methods
+
+        internal Task<bool> PayloadExists(DeviceToolPayload payload)
+        {
+            return DeviceControllerAdapter.PayloadExists(payload);
+        }
+
+        internal Task<bool> UploadPayload(DeviceToolPayload payload)
+        {
+            return DeviceControllerAdapter.UploadPayload(payload);
+        }
 
         private ParameterControllerAdapter CreateParameterControllerAdapter()
         {
@@ -511,11 +530,31 @@ namespace EltraConnector.Controllers
             return status == DeviceStatus.Registered || status == DeviceStatus.Ready;
         }
 
+        public override bool Start()
+        {
+            bool result = base.Start();
+
+            if (result)
+            {
+                EltraUdpServer.MessageReceived += OnUdpServerMessageReceived;
+                EltraUdpServer.ErrorRaised += OnUdpServerErrorRaised;
+
+                result = EltraUdpServer.Start();
+            }
+
+            return result; 
+        }
+
         public override bool Stop()
         {
+            EltraUdpServer.MessageReceived -= OnUdpServerMessageReceived;
+            EltraUdpServer.ErrorRaised -= OnUdpServerErrorRaised;
+
+            EltraUdpServer.Stop();
+
             _deviceControllerAdapter?.Stop();
             _parameterControllerAdapter?.Stop();
-
+            
             Task.Run( ()=> UnregisterChannel()).GetAwaiter().GetResult();
 
             return base.Stop();

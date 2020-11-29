@@ -23,8 +23,10 @@ namespace EltraConnector.Controllers
         #region Private fields
                 
         private readonly UserIdentity _userIdentity;        
-        private readonly string _commandExecUuid;
-                
+        private string _commandExecUuid;
+        private WsConnectionManager _wsConnectionManager;
+        private bool _master;
+
         #endregion
 
         #region Constructors
@@ -33,12 +35,9 @@ namespace EltraConnector.Controllers
             : base(url, channel)
         {
             _userIdentity = userIdentity;
+            _master = master;
 
             if (!master)
-            {
-                _commandExecUuid = channel.Id + "_CommandsExecution";
-            }
-            else
             {
                 _commandExecUuid = channel.Id + "_ExecCommander";
             }
@@ -48,7 +47,24 @@ namespace EltraConnector.Controllers
 
         #region Properties
 
-        public WsConnectionManager WsConnectionManager { get; set; }
+        public WsConnectionManager WsConnectionManager 
+        { 
+            get => _wsConnectionManager;
+            set
+            {
+                _wsConnectionManager = value;
+
+                OnWsConnectionManagerChanged();
+            } 
+        }
+
+        #endregion
+
+        #region Events handling
+
+        private void OnWsConnectionManagerChanged()
+        {
+        }
 
         #endregion
 
@@ -148,12 +164,16 @@ namespace EltraConnector.Controllers
 
             try
             {
-                var deviceNode = execCommand?.Command?.Device;
-                var device = deviceNode;
+                var device = execCommand?.Command?.Device;
 
                 if (device != null)
                 {
                     MsgLogger.WriteLine($"push command='{execCommand.Command.Name}' to device='{device.Family}':0x{device.NodeId}");
+
+                    if(_master)
+                    {
+                        _commandExecUuid = device.ChannelId + $"_ExecCommander_{device.NodeId}";
+                    }
 
                     if (WsConnectionManager != null && WsConnectionManager.IsConnected(_commandExecUuid))
                     {

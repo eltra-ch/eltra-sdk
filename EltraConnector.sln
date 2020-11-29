@@ -13,6 +13,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EltraXamCommon", "xternals\
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EltraUiCommon", "xternals\common\EltraUiCommon\EltraUiCommon.csproj", "{10E1C41B-B85C-437E-BBF9-D1FC9787A5B5}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TestMaster", "samples\UnitTests\TestMaster\TestMaster.csproj", "{19B5EA1B-7FD4-4EB6-A0C3-B3ECBE4D631A}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -39,6 +41,10 @@ Global
 		{10E1C41B-B85C-437E-BBF9-D1FC9787A5B5}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{10E1C41B-B85C-437E-BBF9-D1FC9787A5B5}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{10E1C41B-B85C-437E-BBF9-D1FC9787A5B5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{19B5EA1B-7FD4-4EB6-A0C3-B3ECBE4D631A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{19B5EA1B-7FD4-4EB6-A0C3-B3ECBE4D631A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{19B5EA1B-7FD4-4EB6-A0C3-B3ECBE4D631A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{19B5EA1B-7FD4-4EB6-A0C3-B3ECBE4D631A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

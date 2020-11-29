@@ -32,8 +32,8 @@ namespace ConsoleApp1
 
             var runner = Task.Run(async () =>
             {
-                connector.Host = "https://eltra.ch";
-                //connector.Host = "http://localhost:5001";
+                //connector.Host = "https://eltra.ch";
+                connector.Host = "http://localhost:5001";
 
                 Console.WriteLine("Sign-in ...");
 

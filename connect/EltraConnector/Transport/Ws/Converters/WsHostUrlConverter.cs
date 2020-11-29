@@ -1,4 +1,4 @@
-﻿namespace EltraConnector.Transport.Ws
+﻿namespace EltraConnector.Transport.Ws.Converters
 {
     class WsHostUrlConverter
     {
