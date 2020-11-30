@@ -77,7 +77,7 @@ namespace EltraConnector.Transport.Udp
 
         public void Stop()
         {
-            if (!_listenerTask.IsCompleted)
+            if (_listenerTask!=null && !_listenerTask.IsCompleted)
             {
                 Cancel();
 
