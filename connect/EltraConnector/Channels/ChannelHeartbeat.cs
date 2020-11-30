@@ -75,6 +75,8 @@ namespace EltraConnector.Channels
         protected override async Task Execute()
         {
             const int minWaitTime = 10;
+            const int reconnectIntervalWs = 1000;
+            const int executeIntervalWs = 1;
 
             uint updateIntervalInSec = _updateInterval;
 
@@ -114,6 +116,15 @@ namespace EltraConnector.Channels
                 if (UseWebSocket && ShouldRun())
                 {
                     await ReconnectToWsChannel();
+
+                    if (WsConnectionManager.IsConnected(WsChannelId))
+                    {
+                        await Task.Delay(executeIntervalWs);
+                    }
+                    else
+                    {
+                        await Task.Delay(reconnectIntervalWs);
+                    }
                 }
             }
 

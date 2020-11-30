@@ -18,11 +18,12 @@ namespace EltraConnector.Master
     /// </summary>
     public class EltraMasterConnector : IDisposable
     {
-        #region Constructors
+        #region Private fields
 
         private MasterStatus _status = MasterStatus.Undefined;
         private CancellationTokenSource _cancellationTokenSource;
         private bool disposedValue;
+        private Authentication _authentication;
 
         #endregion
 
@@ -70,6 +71,11 @@ namespace EltraConnector.Master
             }
         }
 
+        /// <summary>
+        /// Authentication
+        /// </summary>
+        protected Authentication Authentication => _authentication ?? (_authentication = CreateAuthentication());
+
         #endregion
 
         #region Events
@@ -112,6 +118,11 @@ namespace EltraConnector.Master
 
         #region Methods
 
+        private Authentication CreateAuthentication()
+        {
+            return new Authentication(Host);
+        }
+
         /// <summary>
         /// Sign in user
         /// </summary>
@@ -121,24 +132,20 @@ namespace EltraConnector.Master
         public async Task<bool> SignIn(UserIdentity identity, bool createAccount = false)
         {
             bool result = false;
-            var authentication = new Authentication(Host);
 
-            if (authentication != null)
+            if (await Authentication.SignIn(identity))
             {
-                if (await authentication.SignIn(identity))
+                Identity = identity;
+                result = true;
+            }
+            else if (createAccount)
+            {
+                if (await Authentication.SignUp(identity))
                 {
-                    Identity = identity;
-                    result = true;
-                }
-                else if (createAccount)
-                {
-                    if (await authentication.SignUp(identity))
+                    if (await Authentication.SignIn(identity))
                     {
-                        if (await authentication.SignIn(identity))
-                        {
-                            Identity = identity;
-                            result = true;
-                        }
+                        Identity = identity;
+                        result = true;
                     }
                 }
             }
@@ -152,13 +159,7 @@ namespace EltraConnector.Master
         /// <returns>true on success</returns>
         public async Task<bool> SignOut()
         {
-            bool result = false;
-            var authentication = new Authentication(Host);
-
-            if (authentication != null)
-            {
-                result = await authentication.SignOut();
-            }
+            var result = await Authentication.SignOut();
 
             return result;
         }
@@ -170,13 +171,7 @@ namespace EltraConnector.Master
         /// <returns></returns>
         public async Task<UserIdentity> CreateAlias(string role)
         {
-            UserIdentity result = null;
-            var authentication = new Authentication(Host);
-
-            if (authentication != null)
-            {
-                result = await authentication.CreateAlias(role);
-            }
+            var result = await Authentication.CreateAlias(role);
 
             return result;
         }
@@ -187,14 +182,8 @@ namespace EltraConnector.Master
         /// <returns></returns>
         public async Task<bool> CreateAlias(UserIdentity identity)
         {
-            bool result = false;
-            var authentication = new Authentication(Host);
-
-            if (authentication != null)
-            {
-                result = await authentication.CreateAlias(identity);
-            }
-
+            bool result = await Authentication.CreateAlias(identity);
+            
             return result;
         }
 

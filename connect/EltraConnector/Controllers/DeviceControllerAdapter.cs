@@ -122,7 +122,7 @@ namespace EltraConnector.Controllers
 
         private ParameterControllerAdapter CreateParameterAdapter()
         {
-            var adapter = new ParameterControllerAdapter(Url, Channel);
+            var adapter = new ParameterControllerAdapter(_userIdentity, Url, Channel);
 
             AddChild(adapter);
 
@@ -131,7 +131,7 @@ namespace EltraConnector.Controllers
 
         private DescriptionControllerAdapter CreateDescriptionAdapter()
         {
-            var adapter = new DescriptionControllerAdapter(Url);
+            var adapter = new DescriptionControllerAdapter(_userIdentity, Url);
 
             AddChild(adapter);
 
@@ -153,7 +153,7 @@ namespace EltraConnector.Controllers
 
             var url = UrlHelper.BuildUrl(Url, $"api/device/unregister/{Channel.Id}/{device.NodeId}", query);
 
-            bool result = await Transporter.Delete(url, CancellationToken.None);
+            bool result = await Transporter.Delete(_userIdentity, url, CancellationToken.None);
 
             if (result)
             {
@@ -174,7 +174,7 @@ namespace EltraConnector.Controllers
                 query["channelId"] = channelId;
 
                 var url = UrlHelper.BuildUrl(Url, "api/channel/devices", query);
-                var json = await Transporter.Get(url);
+                var json = await Transporter.Get(_userIdentity, url);
 
                 result = JsonConvert.DeserializeObject<List<EltraDevice>>(json);
 
@@ -232,7 +232,7 @@ namespace EltraConnector.Controllers
                     deviceNode.ChannelId = Channel.Id;
 
                     var path = "api/device/register";
-                    var postResult = await Transporter.Post(Url, path, deviceNode.ToJson());
+                    var postResult = await Transporter.Post(_userIdentity, Url, path, deviceNode.ToJson());
 
                     if (postResult.StatusCode == System.Net.HttpStatusCode.OK)
                     {
@@ -326,7 +326,7 @@ namespace EltraConnector.Controllers
 
                 var url = UrlHelper.BuildUrl(Url, "api/device/status", query);
 
-                var json = await Transporter.Get(url);
+                var json = await Transporter.Get(_userIdentity, url);
 
                 if(!string.IsNullOrEmpty(json))
                 {

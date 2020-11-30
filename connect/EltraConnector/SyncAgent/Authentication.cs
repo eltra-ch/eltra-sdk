@@ -7,7 +7,10 @@ using EltraConnector.Controllers.Base.Events;
 
 namespace EltraConnector.SyncAgent
 {
-    class Authentication
+    /// <summary>
+    /// Authentication
+    /// </summary>
+    public class Authentication
     {
         #region Private fields
 
@@ -20,6 +23,10 @@ namespace EltraConnector.SyncAgent
 
         #region Constructors
 
+        /// <summary>
+        /// Authentication
+        /// </summary>
+        /// <param name="url"></param>
         public Authentication(string url)
         {
             _good = true;
@@ -33,6 +40,9 @@ namespace EltraConnector.SyncAgent
 
         #region Properties
 
+        /// <summary>
+        /// Good
+        /// </summary>
         public bool Good
         {
             get => _good;
@@ -47,6 +57,9 @@ namespace EltraConnector.SyncAgent
 
         #region Events
 
+        /// <summary>
+        /// Good flag changed
+        /// </summary>
         public event EventHandler<GoodChangedEventArgs> GoodChanged;
 
         #endregion
@@ -67,6 +80,11 @@ namespace EltraConnector.SyncAgent
 
         #region Methods
 
+        /// <summary>
+        /// Sign-in
+        /// </summary>
+        /// <param name="identity"></param>
+        /// <returns></returns>
         public async Task<bool> SignIn(UserIdentity identity)
         {
             bool result = false;
@@ -85,6 +103,10 @@ namespace EltraConnector.SyncAgent
             return result;
         }
 
+        /// <summary>
+        /// Sign-out
+        /// </summary>
+        /// <returns></returns>
         public async Task<bool> SignOut()
         {
             bool result = false;
@@ -101,6 +123,10 @@ namespace EltraConnector.SyncAgent
             return result;
         }
 
+        /// <summary>
+        /// Sign-off
+        /// </summary>
+        /// <returns></returns>
         public async Task<bool> SignOff()
         {
             bool result = false;
@@ -117,6 +143,11 @@ namespace EltraConnector.SyncAgent
             return result;
         }
 
+        /// <summary>
+        /// Sign-up
+        /// </summary>
+        /// <param name="identity"></param>
+        /// <returns></returns>
         public async Task<bool> SignUp(UserIdentity identity)
         {
             bool result = false;
@@ -165,6 +196,9 @@ namespace EltraConnector.SyncAgent
             return result;
         }
 
+        /// <summary>
+        /// Stop
+        /// </summary>
         public void Stop()
         {
             _authControllerAdapter?.Stop();

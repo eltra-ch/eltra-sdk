@@ -88,7 +88,7 @@ namespace EltraConnector.Controllers
 
                     var url = UrlHelper.BuildUrl(Url, "api/command/commands", query);
 
-                    var json = await Transporter.Get(url);
+                    var json = await Transporter.Get(_userIdentity, url);
 
                     var commandSet = JsonConvert.DeserializeObject<DeviceCommandSet>(json);
 
@@ -127,7 +127,7 @@ namespace EltraConnector.Controllers
 
                     var url = UrlHelper.BuildUrl(Url, "api/command/command", query);
 
-                    var json = await Transporter.Get(url);
+                    var json = await Transporter.Get(_userIdentity, url);
 
                     var command = JsonConvert.DeserializeObject<DeviceCommand>(json);
 
@@ -184,7 +184,7 @@ namespace EltraConnector.Controllers
                     }
                     else
                     {
-                        var postResult = await Transporter.Post(Url, "api/command/push", execCommand.ToJson());
+                        var postResult = await Transporter.Post(_userIdentity, Url, "api/command/push", execCommand.ToJson());
 
                         if (postResult.StatusCode == HttpStatusCode.OK)
                         {
@@ -229,7 +229,7 @@ namespace EltraConnector.Controllers
             {
                 MsgLogger.WriteLine($"set command='{status.CommandName}' status='{status.Status}' for device with nodeid={status.NodeId}");
 
-                var postResult = await Transporter.Post(Url, "api/command/status", JsonConvert.SerializeObject(status));
+                var postResult = await Transporter.Post(_userIdentity, Url, "api/command/status", JsonConvert.SerializeObject(status));
 
                 if (postResult.StatusCode == HttpStatusCode.OK)
                 {
@@ -269,7 +269,7 @@ namespace EltraConnector.Controllers
                     
                     var url = UrlHelper.BuildUrl(Url, "api/command/pull", query);
 
-                    var json = await Transporter.Get(url);
+                    var json = await Transporter.Get(_userIdentity, url);
 
                     if (!string.IsNullOrEmpty(json))
                     {
@@ -313,7 +313,7 @@ namespace EltraConnector.Controllers
                     
                     var url = UrlHelper.BuildUrl(Url, "api/command/pop", query);
 
-                    var json = await Transporter.Get(url);
+                    var json = await Transporter.Get(_userIdentity, url);
 
                     result = JsonConvert.DeserializeObject<ExecuteCommand>(json);
 
@@ -353,7 +353,7 @@ namespace EltraConnector.Controllers
 
                 var url = UrlHelper.BuildUrl(Url, "api/command/status", query);
 
-                var json = await Transporter.Get(url);
+                var json = await Transporter.Get(_userIdentity, url);
 
                 var executeCommandStatus = JsonConvert.DeserializeObject<ExecuteCommandStatus>(json);
 

@@ -21,8 +21,6 @@ namespace EltraConnector.Controllers
     {
         #region Private fields
 
-        const string UdpHost = "0.0.0.0";
-        
         private readonly SyncCloudAgent _agent;
 
         private DeviceControllerAdapter _deviceControllerAdapter;
@@ -142,7 +140,7 @@ namespace EltraConnector.Controllers
 
         private ParameterControllerAdapter CreateParameterControllerAdapter()
         {
-            var adapter = new ParameterControllerAdapter(Url, Channel);
+            var adapter = new ParameterControllerAdapter(_agent.Identity, Url, Channel);
 
             AddChild(adapter);
 

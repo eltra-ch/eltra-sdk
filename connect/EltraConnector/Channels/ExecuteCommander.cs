@@ -93,7 +93,8 @@ namespace EltraConnector.Channels
         protected override async Task Execute()
         {
             const int executeIntervalRest = 100;
-            const int executeIntervalWs = 10;
+            const int executeIntervalWs = 1;
+            const int reconnectIntervalWs = 1000;
 
             MsgLogger.WriteDebug($"{GetType().Name} - Execute", $"create exec channel '{WsChannelName}', uuid='{WsChannelId}'");
 
@@ -110,74 +111,8 @@ namespace EltraConnector.Channels
                         MsgLogger.WriteDebug($"{GetType().Name} - Execute", $"channel '{WsChannelName}', uuid='{WsChannelId}' - receive...");
 
                         var json = await WsConnectionManager.Receive(WsChannelId);
-
-                        try
-                        {
-                            if (WsConnection.IsJson(json))
-                            {
-                                var executeCommands = JsonConvert.DeserializeObject<List<ExecuteCommand>>(json, new JsonSerializerSettings
-                                {
-                                    Error = HandleDeserializationError
-                                });
-
-                                if (executeCommands != null)
-                                {
-                                    MsgLogger.WriteDebug($"{GetType().Name} - Execute", $"channel '{WsChannelName}', uuid='{WsChannelId}' - received {executeCommands.Count} commands");
-
-                                    foreach (var executeCommand in executeCommands)
-                                    {
-                                        await WsPopCommand(executeCommand);
-                                    }
-                                }
-                                else
-                                {
-                                    var executeCommandStatusList = JsonConvert.DeserializeObject<List<ExecuteCommandStatus>>(json, new JsonSerializerSettings
-                                    {
-                                        Error = HandleDeserializationError
-                                    });
-
-                                    if (executeCommandStatusList != null)
-                                    {
-                                        MsgLogger.WriteDebug($"{GetType().Name} - Execute", $"channel '{WsChannelName}', uuid='{WsChannelId}' - received {executeCommandStatusList.Count} command status");
-
-                                        foreach (var executeCommandStatus in executeCommandStatusList)
-                                        {
-                                            await WsPopCommand(executeCommandStatus);
-                                        }
-                                    }
-                                    else
-                                    {
-                                        var channelStatusUpdate = JsonConvert.DeserializeObject<ChannelStatusUpdate>(json, new JsonSerializerSettings
-                                        {
-                                            Error = HandleDeserializationError
-                                        });
-
-                                        if (channelStatusUpdate != null)
-                                        {
-                                            if (channelStatusUpdate.ChannelId != _channelAdapter.ChannelId)
-                                            {
-                                                MsgLogger.WriteDebug($"{GetType().Name} - Execute", $"session {channelStatusUpdate.ChannelId}, status changed to {channelStatusUpdate.Status}");
-
-                                                OnRemoteChannelStatusChanged(new AgentChannelStatusChangedEventArgs() { Id = channelStatusUpdate.ChannelId, Status = channelStatusUpdate.Status });
-                                            }
-                                        }
-                                        else
-                                        {
-                                            MsgLogger.WriteDebug($"{GetType().Name} - Execute", $"channel '{WsChannelName}', uuid='{WsChannelId}' - received 0 commands");
-                                        }
-                                    }
-
-                                }
-                            }
-                            else if (string.IsNullOrEmpty(json) && WsConnectionManager.IsConnected(WsChannelId))
-                            {
-                                MsgLogger.WriteLine($"empty string received");
-                            }
-                        }
-                        catch (Exception e)
-                        {
-                            MsgLogger.Exception($"{GetType().Name} - Execute", e);
-                        }
+                        
+                        await ProcessWsMessage(json);
 
                         if (ShouldRun())
                         {
@@ -205,12 +140,100 @@ namespace EltraConnector.Channels
                 if (ShouldRun())
                 {
                     await ReconnectToWsChannel();
+
+                    if (WsConnectionManager.IsConnected(WsChannelId))
+                    {
+                        await Task.Delay(executeIntervalWs);
+                    }
+                    else
+                    {
+                        await Task.Delay(reconnectIntervalWs);
+                    }
                 }
             }
 
             await DisconnectFromWsChannel();
 
             MsgLogger.WriteDebug($"{GetType().Name} - Execute", $"exec channel '{WsChannelName}', uuid='{WsChannelId}' closed");
+        }
+
+        private async Task ProcessWsMessage(string json)
+        {
+            try
+            {
+                if (WsConnection.IsJson(json))
+                {
+                    await ProcessJsonMessage(json);
+                }
+                else if (string.IsNullOrEmpty(json) && WsConnectionManager.IsConnected(WsChannelId))
+                {
+                    MsgLogger.WriteLine($"empty string received");
+                }
+                else if (!string.IsNullOrEmpty(json))
+                {
+                    MsgLogger.WriteDebug($"{GetType().Name} - Execute", $"unknown message '{json}' received");
+                }
+            }
+            catch (Exception e)
+            {
+                MsgLogger.Exception($"{GetType().Name} - Execute", e);
+            }
+        }
+
+        private async Task ProcessJsonMessage(string json)
+        {
+            var executeCommands = JsonConvert.DeserializeObject<List<ExecuteCommand>>(json, new JsonSerializerSettings
+            {
+                Error = HandleDeserializationError
+            });
+
+            if (executeCommands != null)
+            {
+                MsgLogger.WriteDebug($"{GetType().Name} - Execute", $"channel '{WsChannelName}', uuid='{WsChannelId}' - received {executeCommands.Count} commands");
+
+                foreach (var executeCommand in executeCommands)
+                {
+                    await WsPopCommand(executeCommand);
+                }
+            }
+            else
+            {
+                var executeCommandStatusList = JsonConvert.DeserializeObject<List<ExecuteCommandStatus>>(json, new JsonSerializerSettings
+                {
+                    Error = HandleDeserializationError
+                });
+
+                if (executeCommandStatusList != null)
+                {
+                    MsgLogger.WriteDebug($"{GetType().Name} - Execute", $"channel '{WsChannelName}', uuid='{WsChannelId}' - received {executeCommandStatusList.Count} command status");
+
+                    foreach (var executeCommandStatus in executeCommandStatusList)
+                    {
+                        await WsPopCommand(executeCommandStatus);
+                    }
+                }
+                else
+                {
+                    var channelStatusUpdate = JsonConvert.DeserializeObject<ChannelStatusUpdate>(json, new JsonSerializerSettings
+                    {
+                        Error = HandleDeserializationError
+                    });
+
+                    if (channelStatusUpdate != null)
+                    {
+                        if (channelStatusUpdate.ChannelId != _channelAdapter.ChannelId)
+                        {
+                            MsgLogger.WriteDebug($"{GetType().Name} - Execute", $"session {channelStatusUpdate.ChannelId}, status changed to {channelStatusUpdate.Status}");
+
+                            OnRemoteChannelStatusChanged(new AgentChannelStatusChangedEventArgs() { Id = channelStatusUpdate.ChannelId, Status = channelStatusUpdate.Status });
+                        }
+                    }
+                    else
+                    {
+                        MsgLogger.WriteDebug($"{GetType().Name} - Execute", $"channel '{WsChannelName}', uuid='{WsChannelId}' - received 0 commands");
+                    }
+                }
+            }
         }
 
         private List<DeviceCommand> GetProcessingCommands()

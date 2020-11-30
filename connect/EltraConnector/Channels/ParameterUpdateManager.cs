@@ -69,6 +69,7 @@ namespace EltraConnector.Channels
         protected override async Task Execute()
         {
             const int executeIntervalWs = 1;
+            const int reconnectIntervalWs = 1000;
 
             Status = WsChannelStatus.Starting;
 
@@ -121,6 +122,10 @@ namespace EltraConnector.Channels
 
                             parameterChangedTasks.Add(parameterChangedTask);
                         }
+                        else
+                        {
+                            MsgLogger.WriteDebug($"{GetType().Name} - Execute", $"unknown message '{json}' received");
+                        }
                     }
                 }
                 catch (Exception e)
@@ -131,8 +136,15 @@ namespace EltraConnector.Channels
                 if (ShouldRun())
                 {
                     await ReconnectToWsChannel();
-                    
-                    await Task.Delay(executeIntervalWs);
+
+                    if (WsConnectionManager.IsConnected(WsChannelId))
+                    {
+                        await Task.Delay(executeIntervalWs);
+                    }
+                    else
+                    {
+                        await Task.Delay(reconnectIntervalWs);
+                    }   
                 }
             }
 

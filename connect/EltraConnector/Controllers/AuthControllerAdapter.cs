@@ -13,9 +13,16 @@ namespace EltraConnector.Controllers
 {
     internal class AuthControllerAdapter : CloudControllerAdapter
     {
+        #region Private fields
+
+        private UserIdentity _identity;
+
+        #endregion
+
         #region Constructors
 
-        public AuthControllerAdapter(string url) : base(url)
+        public AuthControllerAdapter(string url) 
+            : base(url)
         {
         }
 
@@ -31,11 +38,13 @@ namespace EltraConnector.Controllers
             {
                 if (identity != null)
                 {
+                    _identity = identity;
+
                     var path = "api/user/sign-in";
 
                     var json = JsonConvert.SerializeObject(identity);
 
-                    var response = await Transporter.Post(Url, path, json);
+                    var response = await Transporter.Post(identity, Url, path, json);
 
                     if (response.StatusCode == HttpStatusCode.OK)
                     {
@@ -67,7 +76,7 @@ namespace EltraConnector.Controllers
                 var url = UrlHelper.BuildUrl(Url, "api/user/sign-out", query);
                 var cancellationTokenSource = new CancellationTokenSource();
 
-                result = await Transporter.Get(url, cancellationTokenSource.Token);
+                result = await Transporter.Get(_identity, url, cancellationTokenSource.Token);
             }
             catch (Exception e)
             {
@@ -88,7 +97,7 @@ namespace EltraConnector.Controllers
                 var url = UrlHelper.BuildUrl(Url, "api/user/remove", query);
                 var cancellationTokenSource = new CancellationTokenSource();
 
-                result = await Transporter.Get(url, cancellationTokenSource.Token);
+                result = await Transporter.Get(_identity, url, cancellationTokenSource.Token);
             }
             catch (Exception e)
             {
@@ -108,7 +117,7 @@ namespace EltraConnector.Controllers
 
                 var json = JsonConvert.SerializeObject(identity);
 
-                var response = await Transporter.Post(Url, path, json);
+                var response = await Transporter.Post(identity, Url, path, json);
 
                 if (response.StatusCode == HttpStatusCode.OK)
                 {
@@ -135,7 +144,7 @@ namespace EltraConnector.Controllers
 
                 var url = UrlHelper.BuildUrl(Url, "api/user/create-alias", query);
                 
-                var json = await Transporter.Get(url);
+                var json = await Transporter.Get(_identity, url);
 
                 if (!string.IsNullOrEmpty(json))
                 {
@@ -160,7 +169,7 @@ namespace EltraConnector.Controllers
 
                 var json = JsonConvert.SerializeObject(identity);
 
-                var response = await Transporter.Post(Url, path, json);
+                var response = await Transporter.Post(_identity, Url, path, json);
 
                 if (response.StatusCode == HttpStatusCode.OK)
                 {

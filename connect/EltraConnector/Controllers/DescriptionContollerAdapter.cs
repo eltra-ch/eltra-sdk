@@ -11,16 +11,29 @@ using EltraCommon.Contracts.Results;
 using EltraCommon.Contracts.Devices;
 using EltraCommon.Contracts.ToolSet;
 using System.Threading;
+using EltraCommon.Contracts.Users;
 
 namespace EltraConnector.Controllers
 {
     internal class DescriptionControllerAdapter : CloudControllerAdapter
     {
-        public DescriptionControllerAdapter(string url)
+        #region Private fields
+
+        private UserIdentity _identity;
+
+        #endregion
+
+        #region Constructors
+
+        public DescriptionControllerAdapter(UserIdentity identity, string url)
             : base(url)
         {
-
+            _identity = identity;
         }
+
+        #endregion
+
+        #region Methods
 
         public async Task<bool> Upload(DeviceDescriptionPayload deviceDescription)
         {
@@ -30,7 +43,7 @@ namespace EltraConnector.Controllers
             {
                 MsgLogger.WriteLine($"upload device description version='{deviceDescription.Version}'");
 
-                var postResult = await Transporter.Post(Url, "api/description/upload", JsonConvert.SerializeObject(deviceDescription));
+                var postResult = await Transporter.Post(_identity, Url, "api/description/upload", JsonConvert.SerializeObject(deviceDescription));
 
                 if (postResult.StatusCode == HttpStatusCode.OK)
                 {
@@ -59,7 +72,7 @@ namespace EltraConnector.Controllers
 
                 var url = UrlHelper.BuildUrl(Url, "api/description/exists", query);
 
-                var json = await Transporter.Get(url);
+                var json = await Transporter.Get(_identity, url);
 
                 if (!string.IsNullOrEmpty(json))
                 {
@@ -95,7 +108,7 @@ namespace EltraConnector.Controllers
 
                 var url = UrlHelper.BuildUrl(Url, "api/description/download", query);
 
-                var json = await Transporter.Get(url);
+                var json = await Transporter.Get(_identity, url);
 
                 if (!string.IsNullOrEmpty(json))
                 {
@@ -131,7 +144,7 @@ namespace EltraConnector.Controllers
 
                 var url = UrlHelper.BuildUrl(Url, "api/description/get-identity", query);
 
-                var json = await Transporter.Get(url);
+                var json = await Transporter.Get(_identity, url);
 
                 if (!string.IsNullOrEmpty(json))
                 {
@@ -154,7 +167,7 @@ namespace EltraConnector.Controllers
             {
                 MsgLogger.WriteLine($"upload payload version='{payload.FileName}'");
 
-                var postResult = await Transporter.Post(Url, "api/description/payload-upload", JsonConvert.SerializeObject(payload));
+                var postResult = await Transporter.Post(_identity, Url, "api/description/payload-upload", JsonConvert.SerializeObject(payload));
 
                 if (postResult.StatusCode == HttpStatusCode.OK)
                 {
@@ -186,7 +199,7 @@ namespace EltraConnector.Controllers
 
                 var url = UrlHelper.BuildUrl(Url, "api/description/payload-exists", query);
 
-                result = await Transporter.Get(url, CancellationToken.None);
+                result = await Transporter.Get(_identity, url, CancellationToken.None);
             }
             catch (Exception e)
             {
@@ -195,5 +208,7 @@ namespace EltraConnector.Controllers
 
             return result;
         }
+
+        #endregion
     }
 }

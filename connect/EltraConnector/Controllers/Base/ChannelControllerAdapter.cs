@@ -23,6 +23,7 @@ namespace EltraConnector.Controllers.Base
 
         private Channel _channel;
         private readonly User _user;
+        private readonly UserIdentity _identity;
         private readonly string _uuid;
         private readonly uint _timeout;
         private readonly uint _updateInterval;
@@ -38,6 +39,7 @@ namespace EltraConnector.Controllers.Base
             _updateInterval = updateInterval;
             _uuid = Guid.NewGuid().ToString();
             _user = new User(identity) { Status = UserStatus.Unlocked };
+            _identity = identity;
         }
 
         public ChannelControllerAdapter(string url, string uuid, UserIdentity identity, uint updateInterval, uint timeout)
@@ -47,6 +49,7 @@ namespace EltraConnector.Controllers.Base
             _updateInterval = updateInterval;
             _uuid = uuid;
             _user = new User(identity) { Status = UserStatus.Unlocked };
+            _identity = identity;
         }
 
         #endregion
@@ -113,7 +116,7 @@ namespace EltraConnector.Controllers.Base
 
                 var url = UrlHelper.BuildUrl(Url, "api/channel/channel", query);
 
-                var json = await Transporter.Get(url);
+                var json = await Transporter.Get(_identity, url);
 
                 result = JsonConvert.DeserializeObject<Channel>(json);
             }
@@ -139,7 +142,7 @@ namespace EltraConnector.Controllers.Base
 
                 var url = UrlHelper.BuildUrl(Url, "api/channel/bind", query);
 
-                result = await Transporter.Get(url, CancellationToken.None);
+                result = await Transporter.Get(_identity, url, CancellationToken.None);
             }
             catch (Exception e)
             {
@@ -162,7 +165,7 @@ namespace EltraConnector.Controllers.Base
 
                 var url = UrlHelper.BuildUrl(Url, "api/channel/unbind", query);
 
-                result = await Transporter.Get(url, CancellationToken.None);
+                result = await Transporter.Get(_identity, url, CancellationToken.None);
             }
             catch (Exception e)
             {
@@ -182,7 +185,7 @@ namespace EltraConnector.Controllers.Base
 
                 var url = UrlHelper.BuildUrl(Url, "api/channel/channels", query);
 
-                var json = await Transporter.Get(url);
+                var json = await Transporter.Get(_identity, url);
 
                 if(!string.IsNullOrEmpty(json))
                 {
@@ -224,7 +227,7 @@ namespace EltraConnector.Controllers.Base
 
                 UpdateChannelLocalHost(channelBase);
 
-                var postResult = await Transporter.Post(Url, path, channelBase.ToJson());
+                var postResult = await Transporter.Post(_identity, Url, path, channelBase.ToJson());
 
                 if (postResult.StatusCode == HttpStatusCode.OK)
                 {
@@ -281,7 +284,7 @@ namespace EltraConnector.Controllers.Base
 
                 var url = UrlHelper.BuildUrl(Url, "api/channel/status", query);
 
-                var json = await Transporter.Get(url);
+                var json = await Transporter.Get(_identity, url);
 
                 if (!string.IsNullOrEmpty(json))
                 {
@@ -325,7 +328,7 @@ namespace EltraConnector.Controllers.Base
 
                     var json = JsonConvert.SerializeObject(statusUpdate);
 
-                    var response = await Transporter.Put(Url, path, json);
+                    var response = await Transporter.Put(_identity, Url, path, json);
 
                     if (response.StatusCode == HttpStatusCode.OK)
                     {

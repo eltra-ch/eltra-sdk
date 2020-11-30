@@ -13,6 +13,7 @@ namespace EltraConnector.Controllers.Base
 
         private bool _good;
         private List<CloudControllerAdapter> _children;
+        private static CloudTransporter _cloudTransporter;
 
         #endregion
 
@@ -25,8 +26,6 @@ namespace EltraConnector.Controllers.Base
             _good = true;
             _children = new List<CloudControllerAdapter>();
 
-            Transporter = new CloudTransporter();
-
             RegisterEvents();
         }
 
@@ -36,7 +35,7 @@ namespace EltraConnector.Controllers.Base
 
         public string Url { get; }
 
-        protected CloudTransporter Transporter { get; }
+        protected CloudTransporter Transporter => _cloudTransporter ?? (_cloudTransporter = new CloudTransporter());
 
         public bool Good 
         {
