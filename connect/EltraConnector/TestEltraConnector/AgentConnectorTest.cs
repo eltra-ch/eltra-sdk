@@ -13,6 +13,9 @@ namespace TestEltraConnector
 {
     public class AgentConnectorTest : IDisposable
     {
+        private string _host = "https://eltra.ch";
+        //private string _host = "http://localhost:5001";
+
         private AgentConnector _connector;
         private static UserIdentity _identity;
         private AgentConnectorTestData _testData;
@@ -22,10 +25,7 @@ namespace TestEltraConnector
 
         public AgentConnectorTest()
         {
-            string host = "https://eltra.ch";
-            //string host = "http://localhost:5001";
-
-            _connector = new AgentConnector() { Host = host };            
+            _connector = new AgentConnector() { Host = _host };            
         }
 
         private AgentConnectorTestData TestData
@@ -87,6 +87,30 @@ namespace TestEltraConnector
             Assert.True(signInResult, "Sign-in failed.");
 
             await _connector.SignOut();
+        }
+
+        [Fact]
+        public async Task Authentication_ConnectConcurrently2ConnectorsToTestMasterShouldSucceed()
+        {
+            //Arrange
+            bool signInResult1 = await _connector.SignIn(Identity, true);
+            var secondConnector = new AgentConnector() { Host = _host };
+            var secondIdentity = CreateUserIdentity();
+            bool signInResult2 = await secondConnector.SignIn(secondIdentity, true);
+
+            //Act
+            var result1 = await _connector.Connect();
+
+            var result2 = await secondConnector.Connect();
+
+            //Assert
+            Assert.True(signInResult1, "Sign-in first connector failed.");
+            Assert.True(signInResult2, "Sign-in second connector failed.");
+            Assert.True(result1, "Connect first connector failed.");
+            Assert.True(result2, "Connect second connector failed.");
+            
+            await _connector.SignOut();
+            await secondConnector.SignOut();
         }
 
         [Fact]
