@@ -1,6 +1,5 @@
 ﻿using EltraCommon.ObjectDictionary.DeviceDescription;
 using EltraCommon.Logger;
-using EltraConnector.Controllers.Base;
 using Newtonsoft.Json;
 using System;
 using System.Threading.Tasks;
@@ -12,6 +11,7 @@ using EltraCommon.Contracts.Devices;
 using EltraCommon.Contracts.ToolSet;
 using System.Threading;
 using EltraCommon.Contracts.Users;
+using EltraCommon.Transport;
 
 namespace EltraConnector.Controllers
 {

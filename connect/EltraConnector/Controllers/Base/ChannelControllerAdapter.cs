@@ -14,6 +14,7 @@ using System.Threading.Tasks;
 using System.Web;
 using System.Threading;
 using EltraConnector.Helpers;
+using EltraCommon.Transport;
 
 namespace EltraConnector.Controllers.Base
 {

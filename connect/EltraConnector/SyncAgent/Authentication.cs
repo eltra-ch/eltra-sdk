@@ -3,7 +3,7 @@ using EltraCommon.Logger;
 using EltraCommon.Contracts.Users;
 using EltraConnector.Controllers;
 using System;
-using EltraConnector.Controllers.Base.Events;
+using EltraCommon.Transport.Events;
 
 namespace EltraConnector.SyncAgent
 {
@@ -71,7 +71,7 @@ namespace EltraConnector.SyncAgent
             GoodChanged?.Invoke(this, new GoodChangedEventArgs() { Good = Good });
         }
 
-        private void OnAuthControllerAdapterGoodChanged(object sender, Controllers.Base.Events.GoodChangedEventArgs e)
+        private void OnAuthControllerAdapterGoodChanged(object sender, GoodChangedEventArgs e)
         {
             Good = e.Good;
         }

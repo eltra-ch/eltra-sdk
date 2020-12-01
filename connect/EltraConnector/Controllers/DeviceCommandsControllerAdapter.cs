@@ -5,7 +5,6 @@ using System.Web;
 using System.Net;
 using Newtonsoft.Json;
 
-using EltraConnector.Controllers.Base;
 using EltraConnector.Extensions;
 
 using EltraCommon.Contracts.CommandSets;
@@ -15,6 +14,7 @@ using EltraCommon.Helpers;
 using EltraCommon.Contracts.Devices;
 using EltraConnector.Transport.Ws;
 using EltraCommon.Contracts.Users;
+using EltraCommon.Transport;
 
 namespace EltraConnector.Controllers
 {

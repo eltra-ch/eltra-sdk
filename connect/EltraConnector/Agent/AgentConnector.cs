@@ -12,6 +12,7 @@ using EltraConnector.UserAgent.Definitions;
 using EltraConnector.SyncAgent;
 using System.Diagnostics;
 using EltraConnector.Interfaces;
+using EltraCommon.Transport;
 
 namespace EltraConnector.Agent
 {
@@ -48,6 +49,11 @@ namespace EltraConnector.Agent
         #endregion
 
         #region Properties
+
+        /// <summary>
+        /// Cloud adapter
+        /// </summary>
+        public CloudControllerAdapter CloudAdapter => _deviceAgent?.Adapter;
 
         /// <summary>
         /// ELTRA Cloud IoT Service host name

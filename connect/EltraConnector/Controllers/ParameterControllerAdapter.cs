@@ -16,6 +16,7 @@ using EltraCommon.Contracts.History;
 using System.Net;
 using EltraConnector.Controllers.Events;
 using EltraCommon.Contracts.Users;
+using EltraCommon.Transport;
 
 namespace EltraConnector.Controllers
 {

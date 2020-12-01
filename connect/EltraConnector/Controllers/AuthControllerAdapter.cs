@@ -2,12 +2,12 @@
 using System.Net;
 using System.Threading.Tasks;
 using System.Web;
-using EltraConnector.Controllers.Base;
 using EltraCommon.Helpers;
 using EltraCommon.Logger;
 using EltraCommon.Contracts.Users;
 using Newtonsoft.Json;
 using System.Threading;
+using EltraCommon.Transport;
 
 namespace EltraConnector.Controllers
 {

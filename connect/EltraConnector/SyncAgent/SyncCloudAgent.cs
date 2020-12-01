@@ -7,13 +7,12 @@ using EltraCommon.Contracts.Channels;
 using EltraCommon.Logger;
 using EltraCommon.Contracts.Users;
 using System.Threading.Tasks;
-using EltraConnector.Controllers.Base.Events;
 using EltraCommon.Contracts.Devices;
 using EltraConnector.Channels;
 using EltraCommon.Contracts.ToolSet;
 using EltraConnector.Transport.Udp;
-using EltraConnector.Helpers;
 using System.Net.Sockets;
+using EltraCommon.Transport.Events;
 
 #pragma warning disable 1591
 

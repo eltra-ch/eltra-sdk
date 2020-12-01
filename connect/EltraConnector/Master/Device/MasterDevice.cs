@@ -59,6 +59,8 @@ namespace EltraConnector.Master.Device
 
         public string DeviceDescriptionFilePath { get; set; }
 
+        public string DeviceToolPayloadsPath { get; set; }
+
         public List<DeviceToolPayload> DeviceToolPayloadList => _deviceToolPayloadList ?? (_deviceToolPayloadList = new List<DeviceToolPayload>());
 
         #endregion
@@ -327,6 +329,10 @@ namespace EltraConnector.Master.Device
 
                     result = true;
                 }
+                else
+                {
+                    MsgLogger.WriteError($"{GetType().Name} - UpdatePayloadFromFile", $"path = '{fullPath}' doesn't exist! cannot add payload!");
+                }
             }
             catch (Exception e)
             {
@@ -368,18 +374,34 @@ namespace EltraConnector.Master.Device
         protected virtual bool UpdatePayloadContent(DeviceToolPayload payload)
         {
             bool result = false;
-            var deviceToolPayload = FindLocalPayload(payload);
 
-            if (deviceToolPayload != null)
+            if (!string.IsNullOrEmpty(DeviceToolPayloadsPath) && Directory.Exists(DeviceToolPayloadsPath))
             {
-                payload.Content = deviceToolPayload.Content;
-                payload.Version = deviceToolPayload.Version;
+                string path = Path.Combine(DeviceToolPayloadsPath, payload.FileName);
 
-                result = true;
+                result = UpdatePayloadFromFile(path, payload);
+
+                if(!result)
+                {
+                    MsgLogger.WriteError($"{GetType().Name} - UpdatePayloadContent", $"update file '{path}' failed!");
+                }
             }
-            else
+
+            if (!result)
             {
-                MsgLogger.WriteWarning($"{GetType().Name} - UpdatePayloadContent", $"local payload not found, file name = {payload.FileName}, hashCode = {payload.HashCode}, version = {payload.Version}");
+                var deviceToolPayload = FindLocalPayload(payload);
+
+                if (deviceToolPayload != null)
+                {
+                    payload.Content = deviceToolPayload.Content;
+                    payload.Version = deviceToolPayload.Version;
+
+                    result = true;
+                }
+                else
+                {
+                    MsgLogger.WriteWarning($"{GetType().Name} - UpdatePayloadContent", $"local payload not found, file name = {payload.FileName}, hashCode = {payload.HashCode}, version = {payload.Version}");
+                }
             }
 
             return result;

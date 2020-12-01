@@ -22,6 +22,7 @@ using EltraCommon.ObjectDictionary.DeviceDescription;
 using System.IO;
 using EltraConnector.Channels.Events;
 using EltraConnector.Channels;
+using EltraCommon.Transport;
 
 namespace EltraConnector.UserAgent
 {
@@ -215,6 +216,8 @@ namespace EltraConnector.UserAgent
         #endregion
 
         #region Properties
+
+        public CloudControllerAdapter Adapter => _channelAdapter;
 
         public Channel Channel => _channelAdapter.Channel;
 

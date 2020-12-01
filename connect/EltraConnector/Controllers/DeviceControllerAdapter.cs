@@ -19,6 +19,7 @@ using System.Threading;
 using EltraCommon.Contracts.Users;
 using EltraConnector.Transport.Ws;
 using EltraCommon.Contracts.ToolSet;
+using EltraCommon.Transport;
 
 namespace EltraConnector.Controllers
 {
