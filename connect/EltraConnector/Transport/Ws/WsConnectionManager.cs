@@ -3,10 +3,15 @@ using EltraConnector.Transport.Ws.Interfaces;
 using EltraCommon.Contracts.Users;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using System;
+using EltraConnector.Transport.Ws.Events;
 
 namespace EltraConnector.Transport.Ws
 {
-    class WsConnectionManager : IConnectionManager
+    /// <summary>
+    /// WsConnectionManager
+    /// </summary>
+    public class WsConnectionManager : IConnectionManager
     {
         #region Private fields
 
@@ -14,14 +19,11 @@ namespace EltraConnector.Transport.Ws
 
         #endregion
 
-        #region Properties
-
-        public string HostUrl { get; set; }
-
-        #endregion
-
         #region Constructors
 
+        /// <summary>
+        /// WsConnectionManager
+        /// </summary>
         public WsConnectionManager()
         {
             _connectionList = new List<WsConnection>();
@@ -29,8 +31,58 @@ namespace EltraConnector.Transport.Ws
 
         #endregion
 
+        #region Properties
+
+        /// <summary>
+        /// HostUrl
+        /// </summary>
+        public string HostUrl { get; set; }
+
+        #endregion
+
+        #region Events
+
+        /// <summary>
+        /// MessageReceived
+        /// </summary>
+        public event EventHandler<WsConnectionMessageEventArgs> MessageReceived;
+        /// <summary>
+        /// MessageSent
+        /// </summary>
+        public event EventHandler<WsConnectionMessageEventArgs> MessageSent;
+        /// <summary>
+        /// ErrorOccured
+        /// </summary>
+        public event EventHandler<WsConnectionMessageEventArgs> ErrorOccured;
+
+        #endregion
+
+        #region Events handling
+
+        private void OnConnectionMessageReceived(object source, WsConnectionMessageEventArgs e)
+        {
+            MessageReceived?.Invoke(source, e);
+        }
+        private void OnConnectionMessageSent(object source, WsConnectionMessageEventArgs e)
+        {
+            MessageSent?.Invoke(source, e);
+        }
+
+        private void OnConnectionErrorOccured(object source, WsConnectionMessageEventArgs e)
+        {
+            ErrorOccured?.Invoke(source, e);
+        }
+
+        #endregion
+
         #region Methods
 
+        /// <summary>
+        /// Connect
+        /// </summary>
+        /// <param name="uniqueId"></param>
+        /// <param name="channelName"></param>
+        /// <returns></returns>
         public async Task<bool> Connect(string uniqueId, string channelName)
         {
             bool result = false;
@@ -42,6 +94,8 @@ namespace EltraConnector.Transport.Ws
 
                 if(await connection.Connect(WsHostUrlConverter.ToWsUrl(HostUrl)))
                 {
+                    RegisterConnectionEvents(connection);
+
                     _connectionList.Add(connection);
                     result = true;
                 }
@@ -57,6 +111,11 @@ namespace EltraConnector.Transport.Ws
             return result;
         }
 
+        /// <summary>
+        /// IsConnected
+        /// </summary>
+        /// <param name="uniqueId"></param>
+        /// <returns></returns>
         public bool IsConnected(string uniqueId)
         {
             bool result = false;
@@ -70,6 +129,11 @@ namespace EltraConnector.Transport.Ws
             return result;
         }
 
+        /// <summary>
+        /// CanConnect
+        /// </summary>
+        /// <param name="uniqueId"></param>
+        /// <returns></returns>
         public bool CanConnect(string uniqueId)
         {
             bool result = true;
@@ -83,6 +147,11 @@ namespace EltraConnector.Transport.Ws
             return result;
         }
 
+        /// <summary>
+        /// IsDisconnecting
+        /// </summary>
+        /// <param name="uniqueId"></param>
+        /// <returns></returns>
         public bool IsDisconnecting(string uniqueId)
         {
             bool result = false;
@@ -96,6 +165,11 @@ namespace EltraConnector.Transport.Ws
             return result;
         }
 
+        /// <summary>
+        /// Disconnect
+        /// </summary>
+        /// <param name="uniqueId"></param>
+        /// <returns></returns>
         public async Task<bool> Disconnect(string uniqueId)
         {
             bool result = false;
@@ -107,6 +181,8 @@ namespace EltraConnector.Transport.Ws
 
                 if (result)
                 {
+                    UnregisterConnectionEvents(connection);
+
                     _connectionList.Remove(connection);
                 }
             }
@@ -114,6 +190,10 @@ namespace EltraConnector.Transport.Ws
             return result;
         }
 
+        /// <summary>
+        /// DisconnectAll
+        /// </summary>
+        /// <returns></returns>
         public async Task<bool> DisconnectAll()
         {
             bool result = true;
@@ -130,6 +210,8 @@ namespace EltraConnector.Transport.Ws
                 }
                 else
                 {
+                    UnregisterConnectionEvents(connection);
+
                     _connectionList.Remove(connection);
                 }
             }
@@ -137,6 +219,34 @@ namespace EltraConnector.Transport.Ws
             return result;
         }
 
+        private void RegisterConnectionEvents(WsConnection connection)
+        {
+            if (connection != null)
+            {
+                connection.MessageReceived += OnConnectionMessageReceived;
+                connection.MessageSent += OnConnectionMessageSent;
+                connection.ErrorOccured += OnConnectionErrorOccured;
+            }
+        }
+
+        private void UnregisterConnectionEvents(WsConnection connection)
+        {
+            if (connection != null)
+            {
+                connection.MessageReceived -= OnConnectionMessageReceived;
+                connection.MessageSent -= OnConnectionMessageSent;
+                connection.ErrorOccured -= OnConnectionErrorOccured;
+            }
+        }
+
+        /// <summary>
+        /// Send
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="uniqueId"></param>
+        /// <param name="identity"></param>
+        /// <param name="obj"></param>
+        /// <returns></returns>
         public async Task<bool> Send<T>(string uniqueId, UserIdentity identity, T obj)
         {
             bool result = false;
@@ -150,6 +260,11 @@ namespace EltraConnector.Transport.Ws
             return result;
         }
 
+        /// <summary>
+        /// Receive
+        /// </summary>
+        /// <param name="uniqueId"></param>
+        /// <returns></returns>
         public async Task<string> Receive(string uniqueId)
         {
             string result = string.Empty;
@@ -163,6 +278,12 @@ namespace EltraConnector.Transport.Ws
             return result;
         }
 
+        /// <summary>
+        /// Receive
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="uniqueId"></param>
+        /// <returns></returns>
         public async Task<T> Receive<T>(string uniqueId)
         {
             T result = default;
@@ -192,6 +313,14 @@ namespace EltraConnector.Transport.Ws
             return result;
         }
 
+        /// <summary>
+        /// Send
+        /// </summary>
+        /// <param name="uniqueId"></param>
+        /// <param name="identity"></param>
+        /// <param name="typeName"></param>
+        /// <param name="data"></param>
+        /// <returns></returns>
         protected async Task<bool> Send(string uniqueId, UserIdentity identity, string typeName, string data)
         {
             bool result = false;

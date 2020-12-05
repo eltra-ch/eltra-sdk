@@ -386,6 +386,10 @@ namespace EltraConnector.Master.Device
                     MsgLogger.WriteError($"{GetType().Name} - UpdatePayloadContent", $"update file '{path}' failed!");
                 }
             }
+            else
+            {
+                MsgLogger.WriteWarning($"{GetType().Name} - UpdatePayloadContent", $"payloads path not found '{DeviceToolPayloadsPath}'");
+            }
 
             if (!result)
             {

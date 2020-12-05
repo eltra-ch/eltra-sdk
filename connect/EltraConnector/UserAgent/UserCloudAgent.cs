@@ -84,7 +84,11 @@ namespace EltraConnector.UserAgent
             _identity = masterAgent.Identity;
             _channel = new Channel() { Status = ChannelStatus.Offline };
             _executedCommands = new List<DeviceCommand>();
-            _channelAdapter = new UserChannelControllerAdapter(masterAgent.Url, deviceNode.ChannelId, masterAgent.Identity, updateInterval, timeout) { UseWebSockets = true };
+
+            _channelAdapter = new UserChannelControllerAdapter(masterAgent.Url, deviceNode.ChannelId, masterAgent.Identity, updateInterval, timeout)
+            {
+                WsConnectionManager = masterAgent.WsConnectionManager 
+            };
 
             Initialize(masterAgent, deviceNode);
         }

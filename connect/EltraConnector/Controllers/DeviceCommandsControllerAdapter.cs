@@ -168,12 +168,12 @@ namespace EltraConnector.Controllers
 
                 if (device != null)
                 {
-                    MsgLogger.WriteLine($"push command='{execCommand.Command.Name}' to device='{device.Family}':0x{device.NodeId}");
-
                     if(_master)
                     {
                         _commandExecUuid = device.ChannelId + $"_ExecCommander_{device.NodeId}";
                     }
+
+                    var start = MsgLogger.BeginTimeMeasure();
 
                     if (WsConnectionManager != null && WsConnectionManager.IsConnected(_commandExecUuid))
                     {
@@ -190,7 +190,9 @@ namespace EltraConnector.Controllers
                         {
                             result = true;
                         }
-                    }                    
+                    }
+
+                    MsgLogger.EndTimeMeasure($"{GetType().Name} - PushCommand", start, $"push command='{execCommand.Command.Name}' to device='{device.Family}':0x{device.NodeId}");
                 }
             }
             catch (Exception e)

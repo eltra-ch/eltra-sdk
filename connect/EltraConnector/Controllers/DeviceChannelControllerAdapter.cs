@@ -149,7 +149,10 @@ namespace EltraConnector.Controllers
 
         private DeviceControllerAdapter CreateDeviceController()
         {
-            var adapter = new DeviceControllerAdapter(Url, Channel, _agent.Identity, true);
+            var adapter = new DeviceControllerAdapter(Url, Channel, _agent.Identity, true) 
+            { 
+                WsConnectionManager = WsConnectionManager 
+            };
 
             AddChild(adapter);
 
@@ -330,6 +333,8 @@ namespace EltraConnector.Controllers
             {
                 if (executeCommand != null)
                 {
+                    var s = MsgLogger.BeginTimeMeasure();
+
                     var sourceChannelId = executeCommand.SourceChannelId;
                     var commandName = executeCommand.Command?.Name;
 
@@ -355,7 +360,11 @@ namespace EltraConnector.Controllers
 
                                     try
                                     {
+                                        var start = MsgLogger.BeginTimeMeasure();
+
                                         result = clonedDeviceCommand.Execute(executeCommand.SourceChannelId, executeCommand.SourceLoginName);
+
+                                        MsgLogger.EndTimeMeasure($"{GetType().Name} - ExecuteCommand", start, $"command '{executeCommand.Command.Name}' executed, result = {result}");
                                     }
                                     catch (Exception e)
                                     {
@@ -364,6 +373,8 @@ namespace EltraConnector.Controllers
 
                                     if (result)
                                     {
+                                        var start = MsgLogger.BeginTimeMeasure();
+
                                         MsgLogger.WriteDebug($"{GetType().Name} - ExecuteCommand", $"Sync Response Command '{commandName}'");
 
                                         executeCommand.Command?.Sync(clonedDeviceCommand);
@@ -383,6 +394,8 @@ namespace EltraConnector.Controllers
                                         {
                                             MsgLogger.WriteError($"{GetType().Name} - ExecuteCommand", $"Set command '{commandName}' status to exectuted failed!");
                                         }
+
+                                        MsgLogger.EndTimeMeasure($"{GetType().Name} - ExecuteCommand", start, $"command '{executeCommand.Command.Name}' state synchronized, result = {result}");
                                     }
                                     else
                                     {
@@ -424,6 +437,8 @@ namespace EltraConnector.Controllers
                     {
                         MsgLogger.WriteError($"{GetType().Name} - ExecuteCommand", $"Command '{commandName}' not found!");
                     }
+
+                    MsgLogger.EndTimeMeasure($"{GetType().Name} - ExecuteCommand", s, $"command '{executeCommand.Command?.Name}' executed, result = {result}");
                 }
             }
             catch(Exception e)
@@ -431,6 +446,8 @@ namespace EltraConnector.Controllers
                 result = false;
                 MsgLogger.Exception($"{GetType().Name} - ExecuteCommand", e);
             }
+
+            
 
             return result;
         }
@@ -490,6 +507,8 @@ namespace EltraConnector.Controllers
         {
             int result = 0;
 
+            var start = MsgLogger.BeginTimeMeasure();
+
             try
             {
                 int executedCommandCount = 0;
@@ -517,6 +536,8 @@ namespace EltraConnector.Controllers
             {
                 MsgLogger.Exception($"{GetType().Name} - ExecuteCommands", e);
             }
+
+            MsgLogger.EndTimeMeasure($"{GetType().Name} - ExecuteCommands", start, $"commands executed, count = {executeCommands.Count}");
 
             return result;
         }

@@ -8,6 +8,7 @@ using EltraCommon.Contracts.Users;
 using EltraCommon.Contracts.Ws;
 using EltraCommon.Logger;
 using Newtonsoft.Json;
+using EltraConnector.Transport.Ws.Events;
 
 namespace EltraConnector.Transport.Ws
 {
@@ -89,6 +90,51 @@ namespace EltraConnector.Transport.Ws
         }
 
         public WebSocketCloseStatus? LastCloseStatus { get; set; }
+
+        #endregion
+
+        #region Events
+
+        public event EventHandler<WsConnectionMessageEventArgs> MessageReceived;
+        public event EventHandler<WsConnectionMessageEventArgs> MessageSent;
+        public event EventHandler<WsConnectionMessageEventArgs> ErrorOccured;
+
+        #endregion
+
+        #region Events handling
+
+        private void OnMessageReceived(WsMessage wsMessage)
+        {
+            if (wsMessage != null)
+            {
+                MessageReceived?.Invoke(this, new WsConnectionMessageEventArgs() 
+                { Source = UniqueId, Message = JsonConvert.SerializeObject(wsMessage), Type = WsMessageType.WsMessage });
+            }
+        }
+
+        private void OnMessageReceived(string message)
+        {
+            MessageReceived?.Invoke(this, new WsConnectionMessageEventArgs() { Source = UniqueId, Message = message, Type = WsMessageType.Text });
+        }
+
+        private void OnMessageDataReceived(WsMessage wsMessage)
+        {
+            if (wsMessage != null)
+            {
+                MessageReceived?.Invoke(this, new WsConnectionMessageEventArgs()
+                { Source = UniqueId, Message = wsMessage.Data, Type = WsMessageType.Data });
+            }
+        }
+
+        private void OnMessageSent(string msg, WsMessageType type)
+        {
+            MessageSent?.Invoke(this, new WsConnectionMessageEventArgs() { Source = UniqueId, Message = msg, Type = type });
+        }
+
+        private void OnErrorOccured(string msg, WsMessageType type)
+        {
+            ErrorOccured?.Invoke(this, new WsConnectionMessageEventArgs() { Source = UniqueId, Message = msg, Type = type });
+        }
 
         #endregion
 
@@ -237,6 +283,8 @@ namespace EltraConnector.Transport.Ws
             catch (Exception e)
             {
                 MsgLogger.Exception($"{GetType().Name} - Send", e);
+
+                OnErrorOccured("send failed - exception", WsMessageType.Text);
             }
 
             return result;
@@ -252,8 +300,12 @@ namespace EltraConnector.Transport.Ws
 
                 Initialize();
             }
+            else
+            {
+                OnErrorOccured("broken connection, delay 100 ms", WsMessageType.Text);
 
-            await Task.Delay(100);
+                await Task.Delay(100);
+            }            
         }
 
         public async Task<bool> Send<T>(UserIdentity identity, T obj)
@@ -262,28 +314,24 @@ namespace EltraConnector.Transport.Ws
 
             try
             {
-                if(await Send(identity, typeof(T).FullName, JsonConvert.SerializeObject(obj)))
+                var msg = JsonConvert.SerializeObject(obj);
+
+                if (await Send(identity, typeof(T).FullName, msg))
                 {
+                    OnMessageSent(msg, WsMessageType.Json);
+
                     result = true;
-
-                    /*if (obj is WsMessageAck)
-                    {
-                        result = true;
-                    }
-                    else
-                    { 
-                        var ack = await ReadWsMessage();
-
-                        if(ack!=null && ack.Data=="ACK")
-                        {
-                            result = true;
-                        }
-                    }*/
+                }
+                else
+                {
+                    OnErrorOccured("send error occured", WsMessageType.Text);
                 }
             }
             catch (Exception e)
             {
                 MsgLogger.Exception($"{GetType().Name} - Send", e);
+
+                OnErrorOccured("send error occured - exception", WsMessageType.Text);
             }
 
             return result;
@@ -293,22 +341,30 @@ namespace EltraConnector.Transport.Ws
         {
             WsMessage result = null;
 
-            var json = await ReadMessage();
+            var textMsg = await ReadMessage();
 
-            if (!string.IsNullOrEmpty(json))
+            if (!string.IsNullOrEmpty(textMsg))
             {
-                var msg = JsonConvert.DeserializeObject<WsMessage>(json);
+                var wsMsg = JsonConvert.DeserializeObject<WsMessage>(textMsg);
 
-                if (msg is WsMessage)
+                if (wsMsg is WsMessage)
                 {
-                    if(msg.TypeName == typeof(WsMessage).FullName)
+                    if(wsMsg.TypeName == typeof(WsMessage).FullName)
                     {
-                        result = JsonConvert.DeserializeObject<WsMessage>(msg.Data);
+                        result = JsonConvert.DeserializeObject<WsMessage>(wsMsg.Data);
                     }
                     else
                     {
-                        result = msg;
+                        result = wsMsg;
                     }
+
+                    OnMessageReceived(result);
+                }
+                else
+                {
+                    MsgLogger.WriteDebug($"{GetType().Name}", $"received non ws message, {textMsg}");
+
+                    OnMessageReceived(textMsg);
                 }
             }
 
@@ -407,14 +463,20 @@ namespace EltraConnector.Transport.Ws
             catch (WebSocketException e)
             {
                 MsgLogger.Exception($"{GetType().Name} - ReadMessage", e.InnerException != null ? e.InnerException : e);
+
+                OnErrorOccured($"read message failed - exception, error code = {e.NativeErrorCode}", WsMessageType.Text);
             }
             catch (InvalidOperationException e)
             {               
                 MsgLogger.Exception($"{GetType().Name} - ReadMessage", e);
+
+                OnErrorOccured("read message failed - invalid operation", WsMessageType.Text);
             }
             catch (Exception e)
             {
                 MsgLogger.Exception($"{GetType().Name} - ReadMessage", e);
+
+                OnErrorOccured($"read message failed - exception = '{e.Message}'", WsMessageType.Text);
             }
 
             return result;
@@ -431,18 +493,24 @@ namespace EltraConnector.Transport.Ws
                 if(wsMsg is WsMessageAck)
                 {
                     result = wsMsg.Data;
+
+                    OnMessageDataReceived(wsMsg);
                 }
-                else if(wsMsg!=null)
+                else if(wsMsg != null)
                 {
                     if (await Send(new UserIdentity(), new WsMessageAck()))
                     {
                         result = wsMsg.Data;
                         LastCloseStatus = null;
                     }
+                    
+                    OnMessageDataReceived(wsMsg);
                 }
                 else if (IsConnected)
                 {
                     MsgLogger.WriteError($"{GetType().Name} - Receive", $"receive ws message failed!");
+
+                    OnErrorOccured($"non ws message received", WsMessageType.Text);
                 }
                 else
                 {
@@ -454,10 +522,14 @@ namespace EltraConnector.Transport.Ws
                 MsgLogger.Exception($"{GetType().Name} - Receive", e);
 
                 HandleBrokenConnection(e.WebSocketErrorCode);
+
+                OnErrorOccured($"receive failed, error code = {e.WebSocketErrorCode}", WsMessageType.Text);
             }
             catch (Exception e)
             {
                 MsgLogger.Exception($"{GetType().Name} - Receive", e);
+
+                OnErrorOccured($"receive failed, exception", WsMessageType.Text);
             }
 
             return result;
@@ -486,11 +558,15 @@ namespace EltraConnector.Transport.Ws
                 else if(string.IsNullOrEmpty(json) && IsConnected)
                 {                    
                     MsgLogger.WriteLine($"empty string received, close status='{Socket.CloseStatus}'");
+
+                    OnErrorOccured("receive error occured - empty string", WsMessageType.Text);
                 }                
             }
             catch (Exception e)
             {
                 MsgLogger.Exception($"{GetType().Name} - Receive", e);
+
+                OnErrorOccured("receive error occured", WsMessageType.Text);
             }
 
             return result;
