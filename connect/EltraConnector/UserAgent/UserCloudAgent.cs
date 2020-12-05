@@ -419,15 +419,13 @@ namespace EltraConnector.UserAgent
 
         private async Task StopChannel()
         {
-            _executeCommander?.Stop();
-           
-            await UnregisterSession();
-
-            _channelHeartbeat?.Stop();
-
             UnregisterParameterUpdateManagerEvents();
 
+            _channelHeartbeat?.Stop();
+            _executeCommander?.Stop();
             _parameterUpdateManager?.Stop();
+
+            await UnregisterSession();
         }
 
         private async Task Run(CancellationToken token)
