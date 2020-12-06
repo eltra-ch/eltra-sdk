@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Web;
-using EltraConnector.Controllers.Base;
+using EltraConnector.Controllers.Queue;
 using EltraCommon.Helpers;
 using EltraCommon.Contracts.Parameters;
 using EltraCommon.Contracts.Channels;
@@ -28,6 +28,7 @@ namespace EltraConnector.Controllers
         private readonly List<EltraDevice> _devices;
         private readonly List<Task> _runningTasks;
         private readonly UserIdentity _identity;
+        private readonly ParameterChangeQueue _parameterChangeQueue;
 
         #endregion
 
@@ -39,6 +40,7 @@ namespace EltraConnector.Controllers
             _identity = identity;
             _stopRequestEvent = new ManualResetEvent(false);
             _runningTasks = new List<Task>();
+            _parameterChangeQueue = new ParameterChangeQueue();
 
             _devices = new List<EltraDevice>();
         }
@@ -61,20 +63,30 @@ namespace EltraConnector.Controllers
                 var device = parameter.Device;
                 if (device != null)
                 {
-                    int nodeId = device.NodeId;
-                    var actualValue = parameter.ActualValue.Clone();
-                    var uniqueId = parameter.UniqueId;
-                    ushort index = parameter.Index;
-                    byte subIndex = parameter.SubIndex;
-
-                    Task.Run(async () =>
-                    {
-                        MsgLogger.WriteLine($"changed: {uniqueId}, new value = '{CreateShortLogValue(actualValue)}'");
-
-                        await UpdateParameterValue(nodeId, index, subIndex, actualValue);
-                    });
+                    QueueParameterChanged(new ParameterChangeQueueItem(device.NodeId, parameter));                    
                 }
             }
+        }
+        
+        private void QueueParameterChanged(ParameterChangeQueueItem queueItem)
+        {
+            queueItem.WorkingTask = Task.Run(async () =>
+            {
+                MsgLogger.WriteLine($"changed: {queueItem.UniqueId}, new value = '{CreateShortLogValue(queueItem.ActualValue)}'");
+
+                bool skipProcessing = _parameterChangeQueue.ShouldSkip(queueItem);
+
+                if (!skipProcessing)
+                {
+                    await UpdateParameterValue(queueItem.NodeId, queueItem.Index, queueItem.SubIndex, queueItem.ActualValue);
+                }
+                else
+                {
+                    MsgLogger.WriteDebug($"{GetType().Name} - QueueParameterChanged", "Skip parameter change processing, queue already has item with higher timestamp");
+                }                
+            });
+
+            _parameterChangeQueue.Add(queueItem);
         }
 
         private static string CreateShortLogValue(ParameterValue actualValue)
@@ -308,9 +320,22 @@ namespace EltraConnector.Controllers
 
                 var response = await Transporter.Put(_identity, Url, path, json);
 
-                if (response != null && response.StatusCode == HttpStatusCode.OK)
+                if (response != null)
                 {
-                    result = true;
+                    if (response.StatusCode == HttpStatusCode.OK)
+                    {
+                        MsgLogger.WriteDebug($"{GetType().Name} - UpdateParameterValue", $"Device Node id = {nodeId}, Parameter Index = 0x{index:X4}, Subindex = 0x{subIndex} value successfully written");
+
+                        result = true;
+                    }
+                    else
+                    {
+                        MsgLogger.WriteError($"{GetType().Name} - UpdateParameterValue", $"Device Node id = {nodeId}, Parameter Index = 0x{index:X4}, Subindex = 0x{subIndex} value write failed, status code = {response.StatusCode}!");
+                    }
+                }
+                else
+                {
+                    MsgLogger.WriteError($"{GetType().Name} - UpdateParameterValue", $"Device Node id = {nodeId}, Parameter Index = 0x{index:X4}, Subindex = 0x{subIndex} value write failed!");
                 }
             }
             catch (Exception)

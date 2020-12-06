@@ -31,6 +31,7 @@ namespace EltraConnector.Agent
         private UserIdentity _identity;
         private bool disposedValue;
         private AgentStatus _status;
+        private AgentStatus _previousStatus;
         private Authentication _authentication;
 
         #endregion
@@ -94,6 +95,24 @@ namespace EltraConnector.Agent
         { 
             get => _deviceAgent?.Channel;
         }
+
+        /// <summary>
+        /// Agent channel status
+        /// </summary>
+        public ChannelStatus ChannelStatus
+        {
+            get
+            {
+                var result = ChannelStatus.Undefined;
+
+                if (Channel != null)
+                {
+                    result = Channel.Status;
+                }
+
+                return result;
+            }
+        }
         
         /// <summary>
         /// Agent status
@@ -105,7 +124,9 @@ namespace EltraConnector.Agent
             {
                 if (_status != value)
                 {
+                    _previousStatus = _status;
                     _status = value;
+
                     OnStatusChanged();
                 }
             }
@@ -297,11 +318,16 @@ namespace EltraConnector.Agent
         /// <returns>true on success</returns>
         public async Task<bool> SignOut()
         {
-            bool result = await Authentication.SignOut();
+            bool result = false;
 
-            if(result)
+            if (Identity != null)
             {
-                Status = AgentStatus.SignedOut;
+                result = await Authentication.SignOut();
+
+                if (result)
+                {
+                    Status = AgentStatus.SignedOut;
+                }
             }
             
             return result;
@@ -438,7 +464,7 @@ namespace EltraConnector.Agent
 
                 if (result)
                 {
-                    Status = AgentStatus.Online;
+                    Status = _previousStatus;
                 }
             }
 
