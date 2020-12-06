@@ -52,7 +52,7 @@ namespace EltraConnector.SyncAgent
 
             _channelControllerAdapter = new DeviceChannelControllerAdapter(this) { WsConnectionManager = _wsConnectionManager, UdpPort = _eltraUdpServer.Port };
 
-            _channelHeartbeat = new ChannelHeartbeat(_channelControllerAdapter, updateInterval, timeout);
+            _channelHeartbeat = new ChannelHeartbeat(_channelControllerAdapter, updateInterval, timeout) { UseWebSocket = true };
             _commandExecutor = new CommandExecutor(_channelControllerAdapter, _eltraUdpServer);
 
             RegisterEvents();

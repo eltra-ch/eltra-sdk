@@ -280,7 +280,7 @@ namespace EltraConnector.UserAgent
             _url = url;
             _authentication = new Authentication(url);
 
-            _channelHeartbeat = new ChannelHeartbeat(_channelAdapter, updateInterval, _timeout);
+            _channelHeartbeat = new ChannelHeartbeat(_channelAdapter, updateInterval, _timeout) { UseWebSocket = true };
             _executeCommander = new ExecuteCommander(_channelAdapter);
             _parameterUpdateManager = new ParameterUpdateManager(_channelAdapter);
 

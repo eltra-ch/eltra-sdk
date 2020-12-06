@@ -300,6 +300,25 @@ namespace EltraConnector.Controllers.Base
             return result;
         }
 
+        private async Task<bool> SendStatusUpdateOverWebSocket(ChannelStatusUpdate statusUpdate)
+        {
+            bool result = false;
+
+            if (WsConnectionManager != null && WsConnectionManager.IsConnected(Channel.Id))
+            {
+                if (await WsConnectionManager.Send(Channel.Id, _user.Identity, statusUpdate))
+                {
+                    var requestResult = await WsConnectionManager.Receive<RequestResult>(Channel.Id);
+
+                    if (requestResult != null)
+                    {
+                        result = requestResult.Result;
+                    }
+                }
+            }
+
+            return result;
+        }
 
         protected async Task<bool> SetChannelStatus(ChannelStatus status)
         {
@@ -311,37 +330,43 @@ namespace EltraConnector.Controllers.Base
 
                 UpdateChannelStatusLocalHost(statusUpdate);
 
-                if (WsConnectionManager != null && WsConnectionManager.IsConnected(Channel.Id))
+                result = await SendStatusUpdateOverWebSocket(statusUpdate);
+
+                if (!result)
                 {
-                    if (await WsConnectionManager.Send(Channel.Id, _user.Identity, statusUpdate))
-                    {
-                        var requestResult = await WsConnectionManager.Receive<RequestResult>(Channel.Id);
-
-                        if (requestResult != null)
-                        {
-                            result = requestResult.Result;
-                        }
-                    }
-                }
-                else
-                {
-                    var path = "api/channel/status";
-
-                    var json = JsonConvert.SerializeObject(statusUpdate);
-
-                    var response = await Transporter.Put(_identity, Url, path, json);
-
-                    if (response.StatusCode == HttpStatusCode.OK)
-                    {
-                        var requestResult = JsonConvert.DeserializeObject<RequestResult>(response.Content);
-
-                        result = requestResult.Result;
-                    }
+                    result = await SendStatusUpdateOverRest(statusUpdate);
                 }
             }
             catch (Exception)
             {
                 result = false;
+            }
+
+            return result;
+        }
+
+        private async Task<bool> SendStatusUpdateOverRest(ChannelStatusUpdate statusUpdate)
+        {
+            bool result = false;
+
+            try
+            {
+                var path = "api/channel/status";
+
+                var json = JsonConvert.SerializeObject(statusUpdate);
+
+                var response = await Transporter.Put(_identity, Url, path, json);
+
+                if (response.StatusCode == HttpStatusCode.OK)
+                {
+                    var requestResult = JsonConvert.DeserializeObject<RequestResult>(response.Content);
+
+                    result = requestResult.Result;
+                }
+            }
+            catch(Exception e)
+            {
+                MsgLogger.Exception($"{GetType().Name} - SendStatusUpdateOverRest", e);
             }
 
             return result;
