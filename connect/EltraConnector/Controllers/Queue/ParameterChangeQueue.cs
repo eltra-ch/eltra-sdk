@@ -27,11 +27,11 @@ namespace EltraConnector.Controllers.Queue
             {
                 var toRemove = new List<ParameterChangeQueueItem>();
 
-                foreach (var qi in _parameterChangeQueue)
+                foreach (var queueItem in _parameterChangeQueue)
                 {
-                    if(qi.WorkingTask.IsCompleted)
+                    if(queueItem.WorkingTask.IsCompleted)
                     {
-                        toRemove.Add(qi);
+                        toRemove.Add(queueItem);
                     }
                 }
 
