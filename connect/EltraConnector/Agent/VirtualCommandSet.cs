@@ -61,7 +61,7 @@ namespace EltraConnector.Agent
         /// <summary>
         /// Agent connector instance
         /// </summary>
-        protected AgentConnector Connector => _connector;
+        public AgentConnector Connector => _connector;
         
         /// <summary>
         /// Device
