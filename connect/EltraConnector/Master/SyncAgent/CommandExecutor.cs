@@ -8,8 +8,6 @@ using EltraCommon.Threads;
 using EltraConnector.Controllers;
 using EltraConnector.Events;
 using EltraConnector.Transport.Ws;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Serialization;
 using EltraConnector.Transport.Udp.Response;
 using EltraConnector.Transport.Udp;
 using EltraConnector.Transport.Ws.Events;
@@ -25,8 +23,7 @@ namespace EltraConnector.SyncAgent
         private readonly EltraUdpServer _udpServer;
         private bool _stopping;
         private string _wsChannelId;
-        private JsonSerializerSettings _jsonSerializerSettings;
-
+        
         #endregion
 
         #region Constructors
@@ -35,7 +32,6 @@ namespace EltraConnector.SyncAgent
         {
             _udpServer = udpServer; 
             _channelControllerAdapter = adapter;
-            _jsonSerializerSettings = new JsonSerializerSettings { Error = HandleDeserializationError };
         }
 
         #endregion
@@ -81,15 +77,6 @@ namespace EltraConnector.SyncAgent
                 
                 await WsConnectionManager.Send(commandExecUuid, _channelControllerAdapter.User.Identity, sessionIdent);
             }
-        }
-
-        private void HandleDeserializationError(object sender, ErrorEventArgs errorArgs)
-        {
-            var msg = errorArgs.ErrorContext.Error.Message;
-
-            MsgLogger.WriteDebug($"{GetType().Name} - HandleDeserializationError", msg);
-
-            errorArgs.ErrorContext.Handled = true;
         }
 
         private async Task Connect(string channelId, string channelName)
@@ -264,8 +251,6 @@ namespace EltraConnector.SyncAgent
                 {
                 }
 
-                //executeCommands = JsonConvert.DeserializeObject<List<ExecuteCommand>>(json, _jsonSerializerSettings);
-
                 if (executeCommands != null)
                 {
                     int processedCommands = await _channelControllerAdapter.ExecuteCommands(executeCommands);
@@ -285,8 +270,6 @@ namespace EltraConnector.SyncAgent
                     catch (Exception)
                     {
                     }
-
-                    //var channelStatusUpdate = JsonConvert.DeserializeObject<ChannelStatusUpdate>(json, _jsonSerializerSettings);
 
                     if (channelStatusUpdate != null)
                     {
