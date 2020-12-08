@@ -7,11 +7,11 @@ using EltraCommon.Logger;
 using EltraCommon.Contracts.CommandSets;
 using EltraConnector.Transport.Ws;
 using EltraCommon.Contracts.Channels;
-using EltraCommon.Threads;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using EltraConnector.Events;
 using EltraCommon.Contracts.Devices;
+using EltraConnector.Transport.Ws.Events;
 
 namespace EltraConnector.Channels
 {
@@ -71,6 +71,20 @@ namespace EltraConnector.Channels
             RemoteChannelStatusChanged?.Invoke(this, args);
         }
 
+        private void OnWsMessageReceived(object sender, WsConnectionMessageEventArgs e)
+        {
+            if (sender is WsConnection connection && connection.UniqueId == WsChannelId)
+            {
+                Task.Run(async () =>
+                {
+                    if (e.Type == WsMessageType.Data)
+                    {
+                        await ProcessWsMessage(e.Message);
+                    }
+                });
+            }
+        }
+
         #endregion
 
         #region Properties
@@ -100,6 +114,8 @@ namespace EltraConnector.Channels
 
             await ConnectToWsChannel();
 
+            WsConnectionManager.MessageReceived += OnWsMessageReceived;
+
             while (ShouldRun())
             {
                 try
@@ -110,14 +126,18 @@ namespace EltraConnector.Channels
                     {
                         MsgLogger.WriteDebug($"{GetType().Name} - Execute", $"channel '{WsChannelName}', uuid='{WsChannelId}' - receive...");
 
-                        var json = await WsConnectionManager.Receive(WsChannelId);
-                        
-                        await ProcessWsMessage(json);
+                        string msg = string.Empty;
 
-                        if (ShouldRun())
+                        do
                         {
-                            await Task.Delay(executeIntervalWs);
+                            msg = await WsConnectionManager.Receive(WsChannelId);
+
+                            if (ShouldRun())
+                            {
+                                await Task.Delay(executeIntervalWs);
+                            }
                         }
+                        while ((msg == "KEEPALIVE" || msg == "ACK") && ShouldRun());
                     }
                     else if (UseRest)
                     {
@@ -151,6 +171,7 @@ namespace EltraConnector.Channels
                     }
                 }
             }
+            WsConnectionManager.MessageReceived -= OnWsMessageReceived;
 
             await DisconnectFromWsChannel();
 

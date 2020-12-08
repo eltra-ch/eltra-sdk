@@ -151,7 +151,8 @@ namespace EltraConnector.Controllers
         {
             var adapter = new DeviceControllerAdapter(Url, Channel, _agent.Identity, true) 
             { 
-                WsConnectionManager = WsConnectionManager 
+                WsConnectionManager = WsConnectionManager,
+                UdpServer = EltraUdpServer
             };
 
             AddChild(adapter);

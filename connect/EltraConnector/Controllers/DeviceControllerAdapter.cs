@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Web;
-using EltraConnector.Controllers.Base;
 using EltraConnector.Events;
 using EltraCommon.Contracts.CommandSets;
 using EltraCommon.Contracts.Channels;
@@ -10,7 +9,7 @@ using EltraCommon.Logger;
 using Newtonsoft.Json;
 using EltraCommon.Contracts.Devices;
 using EltraCommon.Helpers;
-using EltraConnector.Extensions;
+using EltraCommon.Extensions;
 using EltraCommon.ObjectDictionary.Common.DeviceDescription.Profiles.Application.Parameters;
 using EltraCommon.ObjectDictionary.DeviceDescription;
 using EltraCommon.ObjectDictionary.DeviceDescription.Factory;
@@ -20,6 +19,7 @@ using EltraCommon.Contracts.Users;
 using EltraConnector.Transport.Ws;
 using EltraCommon.Contracts.ToolSet;
 using EltraCommon.Transport;
+using EltraConnector.Transport.Udp;
 
 namespace EltraConnector.Controllers
 {
@@ -34,6 +34,7 @@ namespace EltraConnector.Controllers
         private readonly UserIdentity _userIdentity;
         private bool _master;
         private WsConnectionManager _wsConnectionManager;
+        private EltraUdpServer _udpServer;
 
         #endregion
 
@@ -68,6 +69,16 @@ namespace EltraConnector.Controllers
 
         public DescriptionControllerAdapter DescriptionContollerAdapter => _descriptionContollerAdapter ?? (_descriptionContollerAdapter = CreateDescriptionAdapter());
 
+        public EltraUdpServer UdpServer 
+        { 
+            get => _udpServer;
+            set 
+            {
+                _udpServer = value;
+                OnUdpServerChanged();
+            } 
+        }
+
         #endregion
 
         #region Events
@@ -81,6 +92,11 @@ namespace EltraConnector.Controllers
         private void OnWsConnectionManagerChanged()
         {
             DeviceCommandsAdapter.WsConnectionManager = WsConnectionManager;
+        }
+
+        private void OnUdpServerChanged()
+        {
+            DeviceCommandsAdapter.UdpServer = UdpServer;
         }
 
         protected virtual void OnRegistrationStateChanged(RegistrationEventArgs e)
@@ -115,6 +131,8 @@ namespace EltraConnector.Controllers
         private DeviceCommandsControllerAdapter CreateDeviceCommandsAdapter()
         {
             var adapter = new DeviceCommandsControllerAdapter(Url, Channel, _userIdentity, _master);
+
+            adapter.UdpServer = UdpServer;
 
            AddChild(adapter);
 

@@ -19,6 +19,20 @@ namespace TestEltraConnector
         public async Task<EltraDevice> GetDevice(int nodeId, string deviceLogin, string devicePassword)
         {
             EltraDevice result = null;
+
+            if(string.IsNullOrEmpty(Settings.Default.LoginName))
+            {
+                Settings.Default.LoginName = _identity.Login;
+                Settings.Default.Password = _identity.Password;
+                
+                Settings.Default.Save();
+            }
+            else
+            {
+                _identity.Login = Settings.Default.LoginName;
+                _identity.Password = Settings.Default.Password;
+            }
+
             bool signInResult = await _connector.SignIn(_identity, true);
 
             if (signInResult)

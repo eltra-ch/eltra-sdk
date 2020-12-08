@@ -9,6 +9,7 @@ using EltraConnector.Controllers.Base;
 using EltraCommon.Contracts.Parameters;
 using EltraCommon.Contracts.Parameters.Events;
 using EltraConnector.Channels.Events;
+using EltraConnector.Transport.Ws.Events;
 
 namespace EltraConnector.Channels
 {
@@ -18,8 +19,9 @@ namespace EltraConnector.Channels
 
         const string ChannelName = "ParameterUpdate";
 
-        private readonly ChannelControllerAdapter _channelAdapter;        
-        
+        private readonly ChannelControllerAdapter _channelAdapter;
+        private readonly List<Task> _parameterChangedTasks;
+
         #endregion
 
         #region Constructors
@@ -29,6 +31,7 @@ namespace EltraConnector.Channels
                   channelAdapter.ChannelId, 0, channelAdapter.User.Identity)
         {
             _channelAdapter = channelAdapter;
+            _parameterChangedTasks = new List<Task>();
         }
 
         public ParameterUpdateManager(ChannelControllerAdapter channelAdapter, int nodeId)
@@ -36,6 +39,7 @@ namespace EltraConnector.Channels
                   channelAdapter.ChannelId, nodeId, channelAdapter.User.Identity)
         {
             _channelAdapter = channelAdapter;
+            _parameterChangedTasks = new List<Task>();
         }
 
         #endregion
@@ -53,9 +57,68 @@ namespace EltraConnector.Channels
             ParameterValueChanged?.Invoke(this, e);
         }
 
+        private void OnWsMessageReceived(object sender, WsConnectionMessageEventArgs e)
+        {
+            if (sender is WsConnection connection && connection.UniqueId == WsChannelId)
+            {
+                if (e.Type == WsMessageType.Data && e.Message != "KEEPALIVE" && e.Message != "ACK")
+                {
+                    ProcessWsMessage(e.Message);
+                }
+            }
+        }
+
         #endregion
 
         #region Methods
+
+        private void ProcessWsMessage(string json)
+        {
+            if (WsConnection.IsJson(json))
+            {
+                var parameterChangedTask = Task.Run(() =>
+                {
+                    var parameterSet = JsonConvert.DeserializeObject<ParameterValueUpdateSet>(json, new JsonSerializerSettings
+                    {
+                        Error = HandleDeserializationError
+                    });
+
+                    if (parameterSet != null && parameterSet.Count > 0)
+                    {
+                        foreach (var parameterEntry in parameterSet.Items)
+                        {
+                            OnParameterValueChanged(new ParameterValueChangedEventArgs(parameterEntry.NodeId,
+                                                                                       parameterEntry.Index,
+                                                                                       parameterEntry.SubIndex,
+                                                                                       parameterEntry.ParameterValue));
+                        }
+                    }
+                    else
+                    {
+                        var parameterEntry = JsonConvert.DeserializeObject<ParameterValueUpdate>(json, new JsonSerializerSettings
+                        {
+                            Error = HandleDeserializationError
+                        });
+
+                        if (parameterEntry != null)
+                        {
+                            OnParameterValueChanged(new ParameterValueChangedEventArgs(parameterEntry.NodeId,
+                                                                                       parameterEntry.Index,
+                                                                                       parameterEntry.SubIndex, parameterEntry.ParameterValue));
+                        }
+                    }
+                });
+
+                lock (this)
+                {
+                    _parameterChangedTasks.Add(parameterChangedTask);
+                }
+            }
+            else
+            {
+                MsgLogger.WriteDebug($"{GetType().Name} - Execute", $"unknown message '{json}' received");
+            }
+        }
 
         private void HandleDeserializationError(object sender, ErrorEventArgs errorArgs)
         {
@@ -73,9 +136,9 @@ namespace EltraConnector.Channels
 
             Status = WsChannelStatus.Starting;
 
-            var parameterChangedTasks = new List<Task>();
-
             await ConnectToWsChannel();
+
+            WsConnectionManager.MessageReceived += OnWsMessageReceived;
 
             while (ShouldRun())
             {
@@ -83,49 +146,7 @@ namespace EltraConnector.Channels
                 {
                     if (WsConnectionManager.IsConnected(WsChannelId))
                     {
-                        var json = await WsConnectionManager.Receive(WsChannelId);
-
-                        if (WsConnection.IsJson(json))
-                        {
-                            var parameterChangedTask = Task.Run(() =>
-                            {
-                                var parameterSet = JsonConvert.DeserializeObject<ParameterValueUpdateSet>(json, new JsonSerializerSettings
-                                {
-                                    Error = HandleDeserializationError
-                                });
-
-                                if (parameterSet != null && parameterSet.Count > 0)
-                                {
-                                    foreach (var parameterEntry in parameterSet.Items)
-                                    {
-                                        OnParameterValueChanged(new ParameterValueChangedEventArgs(parameterEntry.NodeId,
-                                                                                                   parameterEntry.Index,
-                                                                                                   parameterEntry.SubIndex,
-                                                                                                   parameterEntry.ParameterValue));
-                                    }
-                                }
-                                else
-                                {
-                                    var parameterEntry = JsonConvert.DeserializeObject<ParameterValueUpdate>(json, new JsonSerializerSettings
-                                    {
-                                        Error = HandleDeserializationError
-                                    });
-
-                                    if (parameterEntry != null)
-                                    {
-                                        OnParameterValueChanged(new ParameterValueChangedEventArgs(parameterEntry.NodeId,
-                                                                                                   parameterEntry.Index,
-                                                                                                   parameterEntry.SubIndex, parameterEntry.ParameterValue));
-                                    }
-                                }
-                            });
-
-                            parameterChangedTasks.Add(parameterChangedTask);
-                        }
-                        else
-                        {
-                            MsgLogger.WriteDebug($"{GetType().Name} - Execute", $"unknown message '{json}' received");
-                        }
+                        await WsConnectionManager.Receive(WsChannelId);                        
                     }
                 }
                 catch (Exception e)
@@ -148,9 +169,15 @@ namespace EltraConnector.Channels
                 }
             }
 
-            Task.WaitAll(parameterChangedTasks.ToArray());
+            Task.WaitAll(_parameterChangedTasks.ToArray());
 
-            await DisconnectFromWsChannel();            
+            Status = WsChannelStatus.Stopping;
+
+            WsConnectionManager.MessageReceived -= OnWsMessageReceived;
+
+            await DisconnectFromWsChannel();
+
+            Status = WsChannelStatus.Stopped;
         }
 
         #endregion

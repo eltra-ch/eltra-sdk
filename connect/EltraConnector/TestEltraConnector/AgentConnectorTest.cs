@@ -13,8 +13,8 @@ namespace TestEltraConnector
 {
     public class AgentConnectorTest : IDisposable
     {
-        private string _host = "https://eltra.ch";
-        //private string _host = "http://localhost:5001";
+        //private string _host = "https://eltra.ch";
+        private string _host = "http://localhost:5001";
 
         private AgentConnector _connector;
         private static UserIdentity _identity;
@@ -310,7 +310,7 @@ namespace TestEltraConnector
             {
                 var unbindResult = await _connector.UnbindChannel(channel);
 
-                Assert.True(unbindResult, "Bind channels failed.");
+                Assert.True(unbindResult, "Un-bind channels failed.");
             }
 
             channels = await _connector.GetChannels();

@@ -1,5 +1,9 @@
-﻿using EltraConnector.Extensions;
+﻿using EltraCommon.Contracts.Users;
+using EltraCommon.Extensions;
+using EltraCommon.Logger;
+using EltraConnector.Transport.Udp.Contracts;
 using EltraConnector.Transport.Udp.Response;
+using Newtonsoft.Json;
 using System;
 using System.Net;
 using System.Net.Sockets;
@@ -26,13 +30,15 @@ namespace EltraConnector.Transport.Udp
         {
             _tokenSource = new CancellationTokenSource();
 
-            Host = "127.0.0.1";
+            Host = LocalHost;
             Port = 5100;
         }
 
         #endregion
 
         #region Properties
+
+        public static string LocalHost => "127.0.0.1";
 
         public string Host { get; set; }
 
@@ -123,6 +129,41 @@ namespace EltraConnector.Transport.Udp
             return result;
         }
 
+        public async Task<int> Send<T>(IPEndPoint endPoint, UserIdentity identity, T obj)
+        {
+            int result = 0;
+
+            try
+            {
+                var msg = JsonConvert.SerializeObject(obj);
+
+                result = await Send(endPoint, identity, typeof(T).FullName, msg);
+            }
+            catch (Exception e)
+            {
+                MsgLogger.Exception($"{GetType().Name} - Send", e);
+            }
+
+            return result;
+        }
+
+        private async Task<int> Send(IPEndPoint endPoint, UserIdentity identity, string className, string msg)
+        {
+            int bytesSent = -1;
+            var request = new UdpRequest() { Identity = identity, TypeName = className, Data = msg };
+
+            try
+            {
+                bytesSent = await Send(endPoint, JsonConvert.SerializeObject(request));
+            }
+            catch (Exception e)
+            {
+                MsgLogger.Exception($"{GetType().Name} - Send", e);
+            }
+
+            return bytesSent;
+        }
+
         public async Task<int> Send(IPEndPoint endPoint, string data)
         {
             int result = 0;
@@ -150,6 +191,7 @@ namespace EltraConnector.Transport.Udp
 
             return result;
         }
+
         protected async Task<int> Send(byte[] bytes, int length)
         {
             int result = 0;

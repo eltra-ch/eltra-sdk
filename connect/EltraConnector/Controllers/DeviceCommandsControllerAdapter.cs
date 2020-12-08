@@ -5,7 +5,7 @@ using System.Web;
 using System.Net;
 using Newtonsoft.Json;
 
-using EltraConnector.Extensions;
+using EltraCommon.Extensions;
 
 using EltraCommon.Contracts.CommandSets;
 using EltraCommon.Contracts.Channels;
@@ -15,17 +15,22 @@ using EltraCommon.Contracts.Devices;
 using EltraConnector.Transport.Ws;
 using EltraCommon.Contracts.Users;
 using EltraCommon.Transport;
+using EltraConnector.Transport.Udp;
+using EltraConnector.Transport.Udp.Contracts;
 
 namespace EltraConnector.Controllers
 {
     internal class DeviceCommandsControllerAdapter : CloudChannelControllerAdapter
     {
         #region Private fields
-                
-        private readonly UserIdentity _userIdentity;        
+
+        private readonly UserIdentity _userIdentity;
         private string _commandExecUuid;
         private WsConnectionManager _wsConnectionManager;
         private bool _master;
+        private EltraUdpClient _eltraUdpClient;
+        private List<UdpRequest> _udpRequestQueue = new List<UdpRequest>();
+        private EltraUdpServer _udpServer;
 
         #endregion
 
@@ -47,15 +52,25 @@ namespace EltraConnector.Controllers
 
         #region Properties
 
-        public WsConnectionManager WsConnectionManager 
-        { 
+        public WsConnectionManager WsConnectionManager
+        {
             get => _wsConnectionManager;
             set
             {
                 _wsConnectionManager = value;
 
                 OnWsConnectionManagerChanged();
-            } 
+            }
+        }
+
+        public EltraUdpServer UdpServer
+        {
+            get => _udpServer;
+            set
+            {
+                _udpServer = value;
+                OnUdpServerChanged();
+            }
         }
 
         #endregion
@@ -64,6 +79,33 @@ namespace EltraConnector.Controllers
 
         private void OnWsConnectionManagerChanged()
         {
+        }
+
+        private void OnUdpServerChanged()
+        {
+            if (UdpServer != null)
+            {
+                UdpServer.MessageReceived += (s, e) =>
+                {
+                    e.Handled = true;
+
+                    try
+                    {
+                        var udpRequest = System.Text.Json.JsonSerializer.Deserialize<UdpRequest>(e.Text);
+
+                        if (udpRequest is UdpRequest)
+                        {
+                            udpRequest.Endpoint = e.Endpoint;
+
+                            //_udpRequestQueue.Add(udpRequest);
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        MsgLogger.Exception($"{GetType().Name} - OnUdpServerChanged", ex);
+                    }
+                };
+            }
         }
 
         #endregion
@@ -175,20 +217,57 @@ namespace EltraConnector.Controllers
 
                     var start = MsgLogger.BeginTimeMeasure();
 
-                    if (WsConnectionManager != null && WsConnectionManager.IsConnected(_commandExecUuid))
+                    if(!_master)
                     {
-                        if(await WsConnectionManager.Send(_commandExecUuid, _userIdentity, execCommand))
+                        if (device.ChannelLocalHost != EltraUdpConnector.LocalHost)
+                        {
+                            if (_eltraUdpClient == null)
+                            {
+                                _eltraUdpClient = new EltraUdpClient() { Url = device.ChannelLocalHost };
+
+                                _eltraUdpClient.MessageReceived += (s, e) =>  
+                                {
+                                    var udpRequest = System.Text.Json.JsonSerializer.Deserialize<UdpRequest>(e.Text);
+
+                                    if(udpRequest is UdpRequest)
+                                    {
+                                        udpRequest.Endpoint = e.Endpoint;
+
+                                        if (udpRequest.TypeName == typeof(UdpAckRequest).FullName)
+                                        {
+                                            //_udpRequestQueue.Add(udpRequest);
+                                        }
+                                    }
+                                };
+                            }
+                        }
+                    }
+
+                    /*if(_eltraUdpClient!=null)
+                    {
+                        if(await _eltraUdpClient.Send(_userIdentity, execCommand) > 0)
                         {
                             result = true;
                         }
-                    }
-                    else
-                    {
-                        var postResult = await Transporter.Post(_userIdentity, Url, "api/command/push", execCommand.ToJson());
+                    }*/
 
-                        if (postResult.StatusCode == HttpStatusCode.OK)
+                    if (_udpRequestQueue.Count == 0)
+                    {
+                        if (WsConnectionManager != null && WsConnectionManager.IsConnected(_commandExecUuid))
                         {
-                            result = true;
+                            if (await WsConnectionManager.Send(_commandExecUuid, _userIdentity, execCommand))
+                            {
+                                result = true;
+                            }
+                        }
+                        else
+                        {
+                            var postResult = await Transporter.Post(_userIdentity, Url, "api/command/push", execCommand.ToJson());
+
+                            if (postResult.StatusCode == HttpStatusCode.OK)
+                            {
+                                result = true;
+                            }
                         }
                     }
 
@@ -227,20 +306,55 @@ namespace EltraConnector.Controllers
         {
             bool result = false;
 
-            try
+            /*if (_eltraUdpClient != null)
             {
-                MsgLogger.WriteLine($"set command='{status.CommandName}' status='{status.Status}' for device with nodeid={status.NodeId}");
-
-                var postResult = await Transporter.Post(_userIdentity, Url, "api/command/status", JsonConvert.SerializeObject(status));
-
-                if (postResult.StatusCode == HttpStatusCode.OK)
+                if (!_master)
                 {
-                    result = true;
+                    await _eltraUdpClient.Send(_userIdentity, status);
                 }
-            }
-            catch (Exception e)
+                else
+                {
+                    foreach(var udpRequest in _udpRequestQueue)
+                    {
+                        await UdpServer.Send(udpRequest.Endpoint, _userIdentity, status);
+                    }
+                }
+            }*/
+
+            if (_udpRequestQueue.Count == 0)
             {
-                MsgLogger.Exception($"{GetType().Name} - SetCommandStatus", e);
+                if (WsConnectionManager != null && WsConnectionManager.IsConnected(_commandExecUuid))
+                {
+                    MsgLogger.WriteLine($"set (WS) command='{status.CommandName}' status='{status.Status}' for device with nodeid={status.NodeId}");
+
+                    if (await WsConnectionManager.Send(_commandExecUuid, _userIdentity, status))
+                    {
+                        result = true;
+                    }
+                    else
+                    {
+                        MsgLogger.WriteError($"{GetType().Name} - SetCommandStatus",
+                            $"set (WS) command='{status.CommandName}' status='{status.Status}' for device with nodeid={status.NodeId} failed");
+                    }
+                }
+                else
+                {
+                    try
+                    {
+                        MsgLogger.WriteLine($"set (REST) command='{status.CommandName}' status='{status.Status}' for device with nodeid={status.NodeId}");
+
+                        var postResult = await Transporter.Post(_userIdentity, Url, "api/command/status", JsonConvert.SerializeObject(status));
+
+                        if (postResult.StatusCode == HttpStatusCode.OK)
+                        {
+                            result = true;
+                        }
+                    }
+                    catch (Exception e)
+                    {
+                        MsgLogger.Exception($"{GetType().Name} - SetCommandStatus", e);
+                    }
+                }
             }
 
             return result;
