@@ -12,6 +12,7 @@ using EltraCommon.Logger;
 using EltraConnector.SyncAgent;
 using EltraCommon.Contracts.History;
 using EltraCommon.Contracts.Parameters.Events;
+using EltraCommon.Contracts.Channels;
 
 namespace EltraConnector.UserAgent.Vcs
 {
@@ -24,6 +25,7 @@ namespace EltraConnector.UserAgent.Vcs
 
         private const int DefaultTimeout = 30000;
         private EltraDevice _deviceNode;
+        private Channel _deviceChannel;
 
         #endregion
 
@@ -93,6 +95,19 @@ namespace EltraConnector.UserAgent.Vcs
         #region Properties
 
         /// <summary>
+        /// Device Channel
+        /// </summary>
+        public Channel DeviceChannel
+        {
+            get => _deviceChannel;
+            set
+            {
+                _deviceChannel = value;
+                OnDeviceChannelChanged();
+            }
+        }
+
+        /// <summary>
         /// Device node instance
         /// </summary>
         public EltraDevice Device
@@ -120,7 +135,12 @@ namespace EltraConnector.UserAgent.Vcs
         /// Device changed event
         /// </summary>
         public event EventHandler DeviceChanged;
-        
+
+        /// <summary>
+        /// Device channel changed
+        /// </summary>
+        public event EventHandler<Channel> DeviceChannelChanged;
+
         #endregion
 
         #region Events handling
@@ -153,10 +173,18 @@ namespace EltraConnector.UserAgent.Vcs
             DeviceChanged?.Invoke(this, EventArgs.Empty);
         }
 
+        /// <summary>
+        /// OnDeviceChannelChanged
+        /// </summary>
+        protected virtual void OnDeviceChannelChanged()
+        {
+            DeviceChannelChanged?.Invoke(this, DeviceChannel);
+        }
+
         #endregion
-        
+
         #region Methods
-        
+
         private DeviceCommand FindBufferedVcsCommand(string commandName)
         {
             DeviceCommand result = null;

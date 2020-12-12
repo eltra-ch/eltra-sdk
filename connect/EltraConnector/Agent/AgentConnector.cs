@@ -13,6 +13,7 @@ using EltraConnector.SyncAgent;
 using System.Diagnostics;
 using EltraConnector.Interfaces;
 using EltraCommon.Transport;
+using EltraConnector.Events;
 
 namespace EltraConnector.Agent
 {
@@ -35,7 +36,6 @@ namespace EltraConnector.Agent
         private AgentStatus _status;
         private AgentStatus _previousStatus;
         private Authentication _authentication;
-
 
         #endregion
 
@@ -404,7 +404,7 @@ namespace EltraConnector.Agent
 
                         if (vcs == null)
                         {
-                            vcs = new DeviceVcs(_deviceAgent, device);
+                            vcs = new DeviceVcs(_deviceAgent, device) { DeviceChannel = channel };
 
                             vcs.DeviceChanged += (sender, args) => { DeviceDetected?.Invoke(this, new DeviceDetectedEventArgs() { Device = device }); };
 
@@ -412,6 +412,7 @@ namespace EltraConnector.Agent
                         }
                         else
                         {
+                            vcs.DeviceChannel = channel;
                             vcs.Device = device;
                         }
                     }
@@ -575,7 +576,25 @@ namespace EltraConnector.Agent
             return result;
         }
 
-        private DeviceVcs SearchDeviceVcs(EltraDevice device)
+        /// <summary>
+        /// GetChannel
+        /// </summary>
+        /// <param name="device"></param>
+        /// <returns></returns>
+        public Channel GetChannel(EltraDevice device)
+        {
+            Channel result = null;
+            var deviceVcs = FindDeviceVcs(device);
+
+            if(deviceVcs!=null)
+            {
+                result = deviceVcs.DeviceChannel;
+            }
+
+            return result;
+        }
+
+        private DeviceVcs FindDeviceVcs(EltraDevice device)
         {
             DeviceVcs result = null;
 
@@ -587,6 +606,13 @@ namespace EltraConnector.Agent
                     break;
                 }
             }
+
+            return result;
+        }
+
+        private DeviceVcs SearchDeviceVcs(EltraDevice device)
+        {
+            DeviceVcs result = FindDeviceVcs(device);
 
             if (result == null && device != null && _deviceAgent != null)
             {

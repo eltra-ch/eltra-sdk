@@ -11,8 +11,14 @@
         </member>
         <member name="M:EltraConnector.Agent.AgentConnector.#ctor">
             <summary>
-            
+            AgentConnector
             </summary>
+        </member>
+        <member name="M:EltraConnector.Agent.AgentConnector.#ctor(System.String)">
+            <summary>
+            AgentConnector
+            </summary>
+            <param name="channelId"></param>
         </member>
         <member name="P:EltraConnector.Agent.AgentConnector.CloudAdapter">
             <summary>
@@ -152,6 +158,13 @@
             </summary>
             <param name="disposing"></param>
         </member>
+        <member name="M:EltraConnector.Agent.AgentConnector.GetChannel(EltraCommon.Contracts.Devices.EltraDevice)">
+            <summary>
+            GetChannel
+            </summary>
+            <param name="device"></param>
+            <returns></returns>
+        </member>
         <member name="T:EltraConnector.Agent.Events.DeviceDetectedEventArgs">
             <summary>
             DeviceDetectedEventArgs - device detected event args
@@ -161,6 +174,27 @@
             <summary>
             {EltraDeviceNode} device instance
             </summary>
+        </member>
+        <member name="T:EltraConnector.Agent.Extensions.ChannelExtensions">
+            <summary>
+            ChannelExtensions
+            </summary>
+        </member>
+        <member name="M:EltraConnector.Agent.Extensions.ChannelExtensions.Unbind(EltraCommon.Contracts.Channels.Channel,EltraConnector.Agent.AgentConnector)">
+            <summary>
+            Unbind
+            </summary>
+            <param name="channel"></param>
+            <param name="connector"></param>
+            <returns></returns>
+        </member>
+        <member name="M:EltraConnector.Agent.Extensions.ChannelExtensions.Unbind(EltraCommon.Contracts.Channels.Channel,EltraConnector.Agent.VirtualCommandSet)">
+            <summary>
+            Unbind
+            </summary>
+            <param name="channel"></param>
+            <param name="vcs"></param>
+            <returns></returns>
         </member>
         <member name="T:EltraConnector.Agent.VirtualCommandSet">
             <summary>
@@ -179,6 +213,11 @@
             Device status changed
             </summary>
         </member>
+        <member name="E:EltraConnector.Agent.VirtualCommandSet.DeviceChannelStatusChanged">
+            <summary>
+            Device channel status changed
+            </summary>
+        </member>
         <member name="E:EltraConnector.Agent.VirtualCommandSet.DeviceChanged">
             <summary>
             Device changed
@@ -187,6 +226,11 @@
         <member name="P:EltraConnector.Agent.VirtualCommandSet.Connector">
             <summary>
             Agent connector instance
+            </summary>
+        </member>
+        <member name="P:EltraConnector.Agent.VirtualCommandSet.Channel">
+            <summary>
+            Channel
             </summary>
         </member>
         <member name="P:EltraConnector.Agent.VirtualCommandSet.Device">
@@ -441,6 +485,11 @@
             <param name="updateInterval"></param>
             <param name="timeout"></param>
         </member>
+        <member name="P:EltraConnector.UserAgent.Vcs.DeviceVcs.DeviceChannel">
+            <summary>
+            Device Channel
+            </summary>
+        </member>
         <member name="P:EltraConnector.UserAgent.Vcs.DeviceVcs.Device">
             <summary>
             Device node instance
@@ -456,9 +505,19 @@
             Device changed event
             </summary>
         </member>
+        <member name="E:EltraConnector.UserAgent.Vcs.DeviceVcs.DeviceChannelChanged">
+            <summary>
+            Device channel changed
+            </summary>
+        </member>
         <member name="M:EltraConnector.UserAgent.Vcs.DeviceVcs.OnDeviceChanged">
             <summary>
             OnDeviceChanged
+            </summary>
+        </member>
+        <member name="M:EltraConnector.UserAgent.Vcs.DeviceVcs.OnDeviceChannelChanged">
+            <summary>
+            OnDeviceChannelChanged
             </summary>
         </member>
         <member name="M:EltraConnector.UserAgent.Vcs.DeviceVcs.GetVcsCommand(System.String)">
@@ -777,6 +836,11 @@
         <member name="M:EltraConnector.Master.EltraMasterConnector.#ctor">
             <summary>
             EltraMasterConnector
+            </summary>
+        </member>
+        <member name="P:EltraConnector.Master.EltraMasterConnector.ChannelId">
+            <summary>
+            User defined channelId
             </summary>
         </member>
         <member name="P:EltraConnector.Master.EltraMasterConnector.Identity">

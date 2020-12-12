@@ -1,4 +1,6 @@
-﻿using EltraCommon.Contracts.Devices;
+﻿using EltraCommon.Contracts.Channels;
+using EltraCommon.Contracts.Channels.Events;
+using EltraCommon.Contracts.Devices;
 using System;
 
 namespace EltraConnector.Agent
@@ -12,6 +14,7 @@ namespace EltraConnector.Agent
 
         private AgentConnector _connector;
         private EltraDevice _device;
+        private Channel _channel;
 
         #endregion
 
@@ -24,10 +27,24 @@ namespace EltraConnector.Agent
         /// <param name="device"></param>
         public VirtualCommandSet(AgentConnector connector, EltraDevice device)
         {
-            _connector = connector;
-            _device = device;
+            if (connector != null)
+            {
+                _connector = connector;
 
-            _device.StatusChanged += OnDeviceStatusChanged;
+                if (device != null)
+                {
+                    _channel = _connector.GetChannel(device);
+
+                    if(_channel!=null)
+                    {
+                        _channel.StatusChanged += OnDeviceChannelStatusChanged;
+                    }
+
+                    _device = device;
+
+                    _device.StatusChanged += OnDeviceStatusChanged;
+                }
+            }
         }
 
         #endregion
@@ -38,11 +55,20 @@ namespace EltraConnector.Agent
         /// Device status changed
         /// </summary>
         public event EventHandler DeviceStatusChanged;
-        
+
+        /// <summary>
+        /// Device channel status changed
+        /// </summary>
+        public event EventHandler<ChannelStatusChangedEventArgs> DeviceChannelStatusChanged;
+
         /// <summary>
         /// Device changed
         /// </summary>
         public event EventHandler DeviceChanged;
+
+        #endregion
+
+        #region Event handler
 
         private void OnDeviceStatusChanged(object sender, EventArgs e)
         {
@@ -54,6 +80,11 @@ namespace EltraConnector.Agent
             DeviceChanged?.Invoke(this, new EventArgs());
         }
 
+        private void OnDeviceChannelStatusChanged(object sender, ChannelStatusChangedEventArgs e)
+        {
+            DeviceChannelStatusChanged?.Invoke(sender, e);
+        }
+
         #endregion
 
         #region Properties
@@ -62,6 +93,11 @@ namespace EltraConnector.Agent
         /// Agent connector instance
         /// </summary>
         public AgentConnector Connector => _connector;
+
+        /// <summary>
+        /// Channel
+        /// </summary>
+        public Channel Channel => _channel;
         
         /// <summary>
         /// Device
@@ -84,7 +120,7 @@ namespace EltraConnector.Agent
         {
             get
             {
-                DeviceStatus result = DeviceStatus.Undefined;
+                var result = DeviceStatus.Undefined;
 
                 if(_device!=null)
                 {
