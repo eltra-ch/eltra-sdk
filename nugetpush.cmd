@@ -3,9 +3,6 @@ nugetpush
 cd ..\..\..\
 cd .\connect\EltraConnector
 nugetpush
-cd ..\..\
-cd .\xternals\common\EltraCommon
-nugetpush
 cd ..\..\..\
 cd .\xternals\common\EltraUiCommon
 nugetpush
