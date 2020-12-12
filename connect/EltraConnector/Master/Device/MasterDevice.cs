@@ -85,6 +85,12 @@ namespace EltraConnector.Master.Device
                 CreateCommunication();
 
                 Task.Run(async () => {
+
+                    if(CloudAgent!=null)
+                    {
+                        ChannelId = CloudAgent.ChannelId;
+                    }
+
                     if(!await ReadDeviceDescriptionFile())
                     {
                         MsgLogger.WriteError($"{GetType().Name} - OnCloudAgentChanged", "Read device description failed!");

@@ -37,9 +37,9 @@ namespace EltraConnector.Controllers.Base
         public ChannelControllerAdapter(string url, UserIdentity identity, uint updateInterval, uint timeout)
             : base(url)
         {
-            _timeout = timeout;
-            _updateInterval = updateInterval;
             _uuid = Guid.NewGuid().ToString();
+            _timeout = timeout;
+            _updateInterval = updateInterval;            
             _user = new User(identity) { Status = UserStatus.Unlocked };
             _identity = identity;
         }
@@ -278,24 +278,31 @@ namespace EltraConnector.Controllers.Base
         {
             var result = ChannelStatus.Undefined;
 
-            try
+            if (!string.IsNullOrEmpty(channelId))
             {
-                var query = HttpUtility.ParseQueryString(string.Empty);
-
-                query["channelId"] = channelId;
-
-                var url = UrlHelper.BuildUrl(Url, "api/channel/status", query);
-
-                var json = await Transporter.Get(_identity, url);
-
-                if (!string.IsNullOrEmpty(json))
+                try
                 {
-                    result = JsonConvert.DeserializeObject<ChannelStatus>(json);
+                    var query = HttpUtility.ParseQueryString(string.Empty);
+
+                    query["channelId"] = channelId;
+
+                    var url = UrlHelper.BuildUrl(Url, "api/channel/status", query);
+
+                    var json = await Transporter.Get(_identity, url);
+
+                    if (!string.IsNullOrEmpty(json))
+                    {
+                        result = JsonConvert.DeserializeObject<ChannelStatus>(json);
+                    }
+                }
+                catch (Exception e)
+                {
+                    MsgLogger.Exception($"{GetType().Name} - GetChannelStatus", e);
                 }
             }
-            catch (Exception e)
+            else
             {
-                MsgLogger.Exception($"{GetType().Name} - GetChannelStatus", e);
+                MsgLogger.WriteError($"{GetType().Name} - GetChannelStatus", "channelId is not specified!");
             }
 
             return result;

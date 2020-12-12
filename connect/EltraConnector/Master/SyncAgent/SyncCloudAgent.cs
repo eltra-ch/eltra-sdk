@@ -36,7 +36,7 @@ namespace EltraConnector.SyncAgent
 
         #region Constructors
 
-        public SyncCloudAgent(string url, UserIdentity identity, uint updateInterval, uint timeout)
+        public SyncCloudAgent(string url, UserIdentity identity, string channelId, uint updateInterval, uint timeout)
         {
             var rnd = new Random();
 
@@ -50,7 +50,37 @@ namespace EltraConnector.SyncAgent
             _wsConnectionManager = new WsConnectionManager() { HostUrl = url };
             _eltraUdpServer = new EltraUdpServer() { Host = "0.0.0.0", Port = rnd.Next(5100, 5199) };
 
-            _channelControllerAdapter = new DeviceChannelControllerAdapter(this) { WsConnectionManager = _wsConnectionManager, UdpPort = _eltraUdpServer.Port };
+            _channelControllerAdapter = new DeviceChannelControllerAdapter(this, channelId) 
+            { 
+                WsConnectionManager = _wsConnectionManager, 
+                UdpPort = _eltraUdpServer.Port 
+            };
+
+            _channelHeartbeat = new ChannelHeartbeat(_channelControllerAdapter, updateInterval, timeout) { UseWebSocket = true };
+            _commandExecutor = new CommandExecutor(_channelControllerAdapter, _eltraUdpServer);
+
+            RegisterEvents();
+        }
+
+        public SyncCloudAgent(string url, UserIdentity identity, uint updateInterval, uint timeout)
+        {
+            var rnd = new Random();
+
+            Url = url;
+            Identity = identity;
+            UpdateInterval = updateInterval;
+            Timeout = timeout;
+
+            _good = true;
+            _authentication = new Authentication(url);
+            _wsConnectionManager = new WsConnectionManager() { HostUrl = url };
+            _eltraUdpServer = new EltraUdpServer() { Host = "0.0.0.0", Port = rnd.Next(5100, 5199) };
+
+            _channelControllerAdapter = new DeviceChannelControllerAdapter(this)
+            {
+                WsConnectionManager = _wsConnectionManager,
+                UdpPort = _eltraUdpServer.Port
+            };
 
             _channelHeartbeat = new ChannelHeartbeat(_channelControllerAdapter, updateInterval, timeout) { UseWebSocket = true };
             _commandExecutor = new CommandExecutor(_channelControllerAdapter, _eltraUdpServer);
@@ -206,16 +236,16 @@ namespace EltraConnector.SyncAgent
                     MsgLogger.WriteLine(
                         $"register(+) device='{device.Family}', node id = {device.NodeId}, serial number=0x{device.Identification.SerialNumber:X}");
 
-                    var registered = await _channelControllerAdapter.IsDeviceRegistered(device);
+                    result = await _channelControllerAdapter.RegisterDevice(deviceNode);
 
-                    if (!registered)
+                    if (result)
                     {
-                        await _channelControllerAdapter.RegisterDevice(deviceNode);
+                        Start();
                     }
-
-                    Start();
-                    
-                    result = true;
+                    else
+                    {
+                        MsgLogger.WriteError($"{GetType().Name} - RegisterDevice", $"register device = '{device.Family}', node id = { device.NodeId}, serial number = 0x{ device.Identification.SerialNumber:X} failed!");
+                    }
                 }
             }
             catch (Exception e)

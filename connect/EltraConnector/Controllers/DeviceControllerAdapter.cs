@@ -370,6 +370,8 @@ namespace EltraConnector.Controllers
                 {
                     var status = await GetDeviceStatus(channelDevice);
 
+                    channelDevice.ChannelId = Channel.Id;
+
                     if (status != DeviceStatus.Ready && status != DeviceStatus.Registered)
                     {
                         result = await RegisterDevice(channelDevice);

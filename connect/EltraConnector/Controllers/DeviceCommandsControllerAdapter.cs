@@ -282,7 +282,7 @@ namespace EltraConnector.Controllers
             return result;
         }
 
-        public async Task<bool> PushCommand(DeviceCommand command, string agentUuid, ExecCommandStatus status)
+        public async Task<bool> PushCommand(DeviceCommand command, string sourceChannelId, ExecCommandStatus status)
         {
             bool result = false;
             var device = command?.Device;
@@ -292,7 +292,7 @@ namespace EltraConnector.Controllers
                 var execCommand = new ExecuteCommand { Command = command, 
                                                        NodeId = device.NodeId,
                                                        TargetChannelId = device.ChannelId,
-                                                       SourceChannelId = agentUuid };
+                                                       SourceChannelId = sourceChannelId };
 
                 command.Status = status;
 

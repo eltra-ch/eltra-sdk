@@ -38,6 +38,12 @@ namespace EltraConnector.Controllers
             _agent = agent;
         }
 
+        public DeviceChannelControllerAdapter(SyncCloudAgent agent, string channelId)
+            : base(agent.Url, channelId, agent.Identity, agent.UpdateInterval, agent.Timeout)
+        {
+            _agent = agent;
+        }
+
         #endregion
 
         #region Properties
@@ -187,12 +193,18 @@ namespace EltraConnector.Controllers
 
             if (result)
             {
-                result = await DeviceControllerAdapter.RegisterDevice(device);
+                if (!await IsDeviceRegistered(device))
+                {
+                    result = await DeviceControllerAdapter.RegisterDevice(device);
+                }
             }
 
             if (result)
             {
-                AddDevice(device);
+                if (FindDevice(device.NodeId) == null)
+                {
+                    AddDevice(device);
+                }
             }
 
             return result;

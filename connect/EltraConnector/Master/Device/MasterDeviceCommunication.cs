@@ -62,7 +62,8 @@ namespace EltraConnector.Master.Device
 
         private void OnDeviceStatusChanged(object sender, EventArgs e)
         {
-            if (Device.Status == DeviceStatus.Registered)
+            if (Device.Status == DeviceStatus.Registered ||
+                Device.Status == DeviceStatus.Ready)
             {
                 OnInitialized();
             }

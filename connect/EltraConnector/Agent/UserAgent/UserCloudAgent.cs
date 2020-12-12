@@ -693,7 +693,6 @@ namespace EltraConnector.UserAgent
         public async Task<DeviceCommand> ExecuteCommand(DeviceCommand command)
         {
             const int minWaitTime = 10;
-            const int maxWaitTime = 10000;
             DeviceCommand result = null;
 
             if (await PushCommand(command, ExecCommandStatus.Waiting))
@@ -708,7 +707,7 @@ namespace EltraConnector.UserAgent
                 {
                     await Task.Delay(minWaitTime);
 
-                } while (command.Status == ExecCommandStatus.Waiting && waitWatch.ElapsedMilliseconds < maxWaitTime);
+                } while (command.Status == ExecCommandStatus.Waiting && waitWatch.ElapsedMilliseconds < command.Timeout);
 
                 if(command.Status != ExecCommandStatus.Waiting)
                 {

@@ -44,6 +44,11 @@ namespace EltraConnector.Master
         #region Properties
 
         /// <summary>
+        /// User defined channelId
+        /// </summary>
+        public string ChannelId { get; set; }
+
+        /// <summary>
         /// Authorization data
         /// </summary>
         public UserIdentity Identity { get; private set; }
@@ -206,7 +211,16 @@ namespace EltraConnector.Master
 
                 try
                 {
-                    var agent = new SyncCloudAgent(Host, Identity, ConnectionSettings.UpdateInterval, ConnectionSettings.Timeout);
+                    SyncCloudAgent agent;
+
+                    if (!string.IsNullOrEmpty(ChannelId))
+                    {
+                        agent = new SyncCloudAgent(Host, Identity, ChannelId, ConnectionSettings.UpdateInterval, ConnectionSettings.Timeout);
+                    }
+                    else
+                    {
+                        agent = new SyncCloudAgent(Host, Identity, ConnectionSettings.UpdateInterval, ConnectionSettings.Timeout);
+                    }
 
                     RegisterEvents(agent);
 
