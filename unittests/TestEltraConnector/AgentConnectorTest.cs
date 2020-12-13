@@ -11,7 +11,7 @@ using EltraCommon.ObjectDictionary.Common.DeviceDescription.Profiles.Application
 
 namespace TestEltraConnector
 {
-    [CollectionDefinition(nameof(BindingTest), DisableParallelization = true)]
+    [CollectionDefinition(nameof(AgentConnectorTest), DisableParallelization = true)]
     public class AgentConnectorTest : AgentTestBase
     {
         [Fact]
