@@ -12,6 +12,8 @@ using EltraConnector.Transport.Udp.Response;
 using EltraConnector.Transport.Udp;
 using EltraConnector.Transport.Ws.Events;
 using EltraConnector.Transport.Udp.Contracts;
+using EltraConnector.Transport.Ws.Interfaces;
+using EltraConnector.Master.Controllers;
 
 namespace EltraConnector.SyncAgent
 {
@@ -19,7 +21,7 @@ namespace EltraConnector.SyncAgent
     {
         #region Private fields
 
-        private readonly DeviceChannelControllerAdapter _channelControllerAdapter;
+        private readonly MasterChannelControllerAdapter _channelControllerAdapter;
         private readonly EltraUdpServer _udpServer;
         private bool _stopping;
         private string _wsChannelId;
@@ -28,7 +30,7 @@ namespace EltraConnector.SyncAgent
 
         #region Constructors
 
-        public CommandExecutor(DeviceChannelControllerAdapter adapter, EltraUdpServer udpServer)
+        public CommandExecutor(MasterChannelControllerAdapter adapter, EltraUdpServer udpServer)
         {
             _udpServer = udpServer; 
             _channelControllerAdapter = adapter;
@@ -63,7 +65,7 @@ namespace EltraConnector.SyncAgent
 
         #region Properties
 
-        private WsConnectionManager WsConnectionManager => _channelControllerAdapter.WsConnectionManager;
+        private IConnectionManager WsConnectionManager => _channelControllerAdapter.WsConnectionManager;
 
         #endregion
 

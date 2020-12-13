@@ -13,6 +13,8 @@ using EltraCommon.Contracts.ToolSet;
 using EltraConnector.Transport.Udp;
 using System.Net.Sockets;
 using EltraCommon.Transport.Events;
+using EltraConnector.Transport.Ws.Interfaces;
+using EltraConnector.Master.Controllers;
 
 #pragma warning disable 1591
 
@@ -22,11 +24,11 @@ namespace EltraConnector.SyncAgent
     {
         #region Private fields
 
-        private readonly DeviceChannelControllerAdapter _channelControllerAdapter;
+        private readonly MasterChannelControllerAdapter _channelControllerAdapter;
         
         private readonly ChannelHeartbeat _channelHeartbeat;
         private readonly CommandExecutor _commandExecutor;
-        private readonly WsConnectionManager _wsConnectionManager;
+        private readonly IConnectionManager _wsConnectionManager;
         private readonly Authentication _authentication;
         private readonly EltraUdpServer _eltraUdpServer;
 
@@ -50,7 +52,7 @@ namespace EltraConnector.SyncAgent
             _wsConnectionManager = new WsConnectionManager() { HostUrl = url };
             _eltraUdpServer = new EltraUdpServer() { Host = "0.0.0.0", Port = rnd.Next(5100, 5199) };
 
-            _channelControllerAdapter = new DeviceChannelControllerAdapter(this, channelId) 
+            _channelControllerAdapter = new MasterChannelControllerAdapter(this, channelId) 
             { 
                 WsConnectionManager = _wsConnectionManager, 
                 UdpPort = _eltraUdpServer.Port 
@@ -76,7 +78,7 @@ namespace EltraConnector.SyncAgent
             _wsConnectionManager = new WsConnectionManager() { HostUrl = url };
             _eltraUdpServer = new EltraUdpServer() { Host = "0.0.0.0", Port = rnd.Next(5100, 5199) };
 
-            _channelControllerAdapter = new DeviceChannelControllerAdapter(this)
+            _channelControllerAdapter = new MasterChannelControllerAdapter(this)
             {
                 WsConnectionManager = _wsConnectionManager,
                 UdpPort = _eltraUdpServer.Port
@@ -177,7 +179,7 @@ namespace EltraConnector.SyncAgent
 
         public string ChannelId => _channelControllerAdapter.Channel.Id;
 
-        public WsConnectionManager WsConnectionManager => _wsConnectionManager;
+        public IConnectionManager WsConnectionManager => _wsConnectionManager;
 
         #endregion
 

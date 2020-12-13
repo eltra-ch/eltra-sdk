@@ -4,6 +4,7 @@ using EltraCommon.Threads;
 using EltraConnector.Channels.Events;
 using EltraConnector.Events;
 using EltraConnector.Transport.Ws;
+using EltraConnector.Transport.Ws.Interfaces;
 using System;
 using System.Diagnostics;
 using System.Threading;
@@ -17,7 +18,7 @@ namespace EltraConnector.Channels
                 
         private readonly string _wsChannelName;
         private readonly string _wsChannelId;
-        private readonly WsConnectionManager _wsConnectionManager;
+        private readonly IConnectionManager _wsConnectionManager;
         
         private readonly int _nodeId;
         private readonly string _channelId;
@@ -31,7 +32,7 @@ namespace EltraConnector.Channels
 
         #region Constructors
 
-        public WsChannelThread(WsConnectionManager wsConnectionManager, string wsChannelId, string wsChannelName, string channelId, int nodeId, UserIdentity identity)
+        public WsChannelThread(IConnectionManager wsConnectionManager, string wsChannelId, string wsChannelName, string channelId, int nodeId, UserIdentity identity)
         {
             _wsConnectionManager = wsConnectionManager;
             _wsChannelId = wsChannelId;
@@ -41,7 +42,7 @@ namespace EltraConnector.Channels
             _identity = identity;
         }
 
-        public WsChannelThread(WsConnectionManager wsConnectionManager, string wsChannelId, string wsChannelName, string channelId, UserIdentity identity)
+        public WsChannelThread(IConnectionManager wsConnectionManager, string wsChannelId, string wsChannelName, string channelId, UserIdentity identity)
         {
             _wsConnectionManager = wsConnectionManager;
             _wsChannelId = wsChannelId;
@@ -94,7 +95,7 @@ namespace EltraConnector.Channels
             }
         }
 
-        protected WsConnectionManager WsConnectionManager => _wsConnectionManager;
+        protected IConnectionManager WsConnectionManager => _wsConnectionManager;
 
         protected string WsChannelId => _wsChannelId;
 

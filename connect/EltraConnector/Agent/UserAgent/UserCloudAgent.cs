@@ -3,8 +3,6 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
-
-using EltraConnector.Controllers;
 using EltraConnector.Events;
 using EltraConnector.UserAgent.Events;
 using EltraCommon.Logger;
@@ -23,6 +21,7 @@ using System.IO;
 using EltraConnector.Channels.Events;
 using EltraConnector.Channels;
 using EltraCommon.Transport;
+using EltraConnector.Agent.Controllers;
 
 namespace EltraConnector.UserAgent
 {
@@ -32,7 +31,7 @@ namespace EltraConnector.UserAgent
 
         private readonly List<DeviceCommand> _executedCommands;
         private readonly UserIdentity _identity;
-        private readonly UserChannelControllerAdapter _channelAdapter;
+        private readonly SlaveChannelControllerAdapter _channelAdapter;
         private readonly uint _timeout;
 
         private Task _agentTask;
@@ -61,7 +60,7 @@ namespace EltraConnector.UserAgent
             _identity = identity;
             _executedCommands = new List<DeviceCommand>();
             _channel = new Channel() { Status = ChannelStatus.Offline };
-            _channelAdapter = new UserChannelControllerAdapter(url, identity, updateInterval, timeout) { UseWebSockets = true };
+            _channelAdapter = new SlaveChannelControllerAdapter(url, identity, updateInterval, timeout) { UseWebSockets = true };
 
             Initialize(url, updateInterval);
         }
@@ -73,7 +72,7 @@ namespace EltraConnector.UserAgent
             _identity = identity;
             _channel = new Channel() { Status = ChannelStatus.Offline };
             _executedCommands = new List<DeviceCommand>();
-            _channelAdapter = new UserChannelControllerAdapter(url, uuid, identity, updateInterval, timeout) { UseWebSockets = true };
+            _channelAdapter = new SlaveChannelControllerAdapter(url, uuid, identity, updateInterval, timeout) { UseWebSockets = true };
 
             Initialize(url, updateInterval);
         }
@@ -85,7 +84,7 @@ namespace EltraConnector.UserAgent
             _channel = new Channel() { Status = ChannelStatus.Offline };
             _executedCommands = new List<DeviceCommand>();
 
-            _channelAdapter = new UserChannelControllerAdapter(masterAgent.Url, deviceNode.ChannelId, masterAgent.Identity, updateInterval, timeout)
+            _channelAdapter = new SlaveChannelControllerAdapter(masterAgent.Url, deviceNode.ChannelId, masterAgent.Identity, updateInterval, timeout)
             {
                 WsConnectionManager = masterAgent.WsConnectionManager 
             };

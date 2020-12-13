@@ -5,7 +5,6 @@ using EltraCommon.Helpers;
 using EltraCommon.Logger;
 using EltraConnector.Events;
 using EltraCommon.Extensions;
-using EltraConnector.Transport.Ws;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -16,6 +15,7 @@ using System.Threading;
 using EltraConnector.Helpers;
 using EltraCommon.Transport;
 using EltraConnector.Transport.Udp;
+using EltraConnector.Transport.Ws.Interfaces;
 
 namespace EltraConnector.Controllers.Base
 {
@@ -77,7 +77,7 @@ namespace EltraConnector.Controllers.Base
 
         public Channel Channel => _channel ?? (_channel = new Channel { Id = _uuid, UserName = _user.Identity.Name, Timeout = _timeout, UpdateInterval = _updateInterval, LocalHost = EltraUdpConnector.LocalHost });
 
-        public WsConnectionManager WsConnectionManager { get; set; }
+        public IConnectionManager WsConnectionManager { get; set; }
 
         public User User => _user;
 

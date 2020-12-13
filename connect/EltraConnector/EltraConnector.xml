@@ -1072,6 +1072,93 @@
             Type
             </summary>
         </member>
+        <member name="T:EltraConnector.Transport.Ws.Interfaces.IConnectionManager">
+            <summary>
+            Connection manager
+            </summary>
+        </member>
+        <member name="E:EltraConnector.Transport.Ws.Interfaces.IConnectionManager.MessageReceived">
+            <summary>
+            MessageReceived
+            </summary>
+        </member>
+        <member name="E:EltraConnector.Transport.Ws.Interfaces.IConnectionManager.MessageSent">
+            <summary>
+            MessageSent
+            </summary>
+        </member>
+        <member name="E:EltraConnector.Transport.Ws.Interfaces.IConnectionManager.ErrorOccured">
+            <summary>
+            ErrorOccured
+            </summary>
+        </member>
+        <member name="M:EltraConnector.Transport.Ws.Interfaces.IConnectionManager.Connect(System.String,System.String)">
+            <summary>
+            Connect to channel
+            </summary>
+            <param name="uniqueId"></param>
+            <param name="channelName"></param>
+            <returns></returns>
+        </member>
+        <member name="M:EltraConnector.Transport.Ws.Interfaces.IConnectionManager.IsConnected(System.String)">
+            <summary>
+            IsConnected
+            </summary>
+            <param name="uniqueId"></param>
+            <returns></returns>
+        </member>
+        <member name="M:EltraConnector.Transport.Ws.Interfaces.IConnectionManager.CanConnect(System.String)">
+            <summary>
+            CanConnect
+            </summary>
+            <param name="uniqueId"></param>
+            <returns></returns>
+        </member>
+        <member name="M:EltraConnector.Transport.Ws.Interfaces.IConnectionManager.IsDisconnecting(System.String)">
+            <summary>
+            IsDisconnecting
+            </summary>
+            <param name="uniqueId"></param>
+            <returns></returns>
+        </member>
+        <member name="M:EltraConnector.Transport.Ws.Interfaces.IConnectionManager.Disconnect(System.String)">
+            <summary>
+            Disconnect
+            </summary>
+            <param name="uniqueId"></param>
+            <returns></returns>
+        </member>
+        <member name="M:EltraConnector.Transport.Ws.Interfaces.IConnectionManager.DisconnectAll">
+            <summary>
+            DisconnectAll
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:EltraConnector.Transport.Ws.Interfaces.IConnectionManager.Send``1(System.String,EltraCommon.Contracts.Users.UserIdentity,``0)">
+            <summary>
+            Send
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="uniqueId"></param>
+            <param name="identity"></param>
+            <param name="obj"></param>
+            <returns></returns>
+        </member>
+        <member name="M:EltraConnector.Transport.Ws.Interfaces.IConnectionManager.Receive(System.String)">
+            <summary>
+            Receive
+            </summary>
+            <param name="uniqueId"></param>
+            <returns></returns>
+        </member>
+        <member name="M:EltraConnector.Transport.Ws.Interfaces.IConnectionManager.Receive``1(System.String)">
+            <summary>
+            Receive
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="uniqueId"></param>
+            <returns></returns>
+        </member>
         <member name="T:EltraConnector.Transport.Ws.WsConnectionManager">
             <summary>
             WsConnectionManager

@@ -7,13 +7,13 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EltraConnector", "connect\E
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EltraCommon", "xternals\common\EltraCommon\EltraCommon.csproj", "{88B5F3CF-1924-455B-AFB3-A6A0618B3D42}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TestEltraConnector", "connect\EltraConnector\TestEltraConnector\TestEltraConnector.csproj", "{DF75143E-0633-4F42-AB4D-E0B146730C20}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TestEltraConnector", "unittests\TestEltraConnector\TestEltraConnector.csproj", "{DF75143E-0633-4F42-AB4D-E0B146730C20}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EltraXamCommon", "xternals\common\EltraXamCommon\EltraXamCommon.csproj", "{027F6343-5B8B-4C3F-A030-7043E67E033E}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EltraUiCommon", "xternals\common\EltraUiCommon\EltraUiCommon.csproj", "{10E1C41B-B85C-437E-BBF9-D1FC9787A5B5}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TestMaster", "samples\UnitTests\TestMaster\TestMaster.csproj", "{19B5EA1B-7FD4-4EB6-A0C3-B3ECBE4D631A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TestMaster", "unittests\TestMaster\TestMaster.csproj", "{19B5EA1B-7FD4-4EB6-A0C3-B3ECBE4D631A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
