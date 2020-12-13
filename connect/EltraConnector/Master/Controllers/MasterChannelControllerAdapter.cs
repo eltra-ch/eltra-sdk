@@ -200,6 +200,10 @@ namespace EltraConnector.Master.Controllers
                 {
                     result = await DeviceControllerAdapter.RegisterDevice(device);
                 }
+                else
+                {
+                    result = await DeviceControllerAdapter.UpdateDevice(device);
+                }
             }
 
             if (result)

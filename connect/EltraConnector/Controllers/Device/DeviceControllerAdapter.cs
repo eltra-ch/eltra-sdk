@@ -279,6 +279,50 @@ namespace EltraConnector.Controllers.Device
             return result;
         }
 
+        public async Task<bool> UpdateDevice(EltraDevice deviceNode)
+        {
+            bool result = false;
+
+            try
+            {
+                var device = deviceNode;
+
+                if (await UploadDeviceDescription(device))
+                {
+                    deviceNode.ChannelId = Channel.Id;
+
+                    ChannelDevices.AddDevice(device);
+
+                    result = true;
+
+                    OnRegistrationStateChanged(new RegistrationEventArgs { Channel = Channel, Device = device, State = RegistrationState.Registered });
+                }
+                else
+                {
+                    OnRegistrationStateChanged(new RegistrationEventArgs
+                    {
+                        Channel = Channel,
+                        Device = device,
+                        State = RegistrationState.Failed,
+                        Reason = "upload device description failed",
+                    });
+                }
+            }
+            catch (Exception e)
+            {
+                OnRegistrationStateChanged(new RegistrationEventArgs
+                {
+                    Channel = Channel,
+                    Device = deviceNode,
+                    Exception = e,
+                    Reason = "exception",
+                    State = RegistrationState.Failed
+                });
+            }
+
+            return result;
+        }
+
         private async Task<bool> UploadDeviceDescription(EltraDevice device)
         {
             bool result = false;

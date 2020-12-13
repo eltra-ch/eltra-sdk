@@ -213,22 +213,27 @@ namespace EltraConnector.Controllers
 
             if(!_devices.Contains(device))
             {
-                if (ShouldRun())
-                {
-                    var task = Task.Run(async () =>
-                    {
-                        await StartUpdate(device);
-                    });
-
-                    _runningTasks.Add(task);
-                }
-
                 _devices.Add(device);
+
+                StartUpdateAsync(device);
 
                 result = true;
             }
 
             return result;
+        }
+
+        private void StartUpdateAsync(EltraDevice device)
+        {
+            if (ShouldRun())
+            {
+                var task = Task.Run(async () =>
+                {
+                    await StartUpdate(device);
+                });
+
+                _runningTasks.Add(task);
+            }
         }
 
         private bool ShouldRun()
