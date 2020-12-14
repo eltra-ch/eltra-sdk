@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using System;
 using EltraConnector.Transport.Ws.Events;
+using System.Threading;
 
 namespace EltraConnector.Transport.Ws
 {
@@ -15,6 +16,7 @@ namespace EltraConnector.Transport.Ws
     {
         #region Private fields
 
+        private readonly SemaphoreSlim _connectionLock;
         private List<WsConnection> _connectionList;
 
         #endregion
@@ -26,6 +28,7 @@ namespace EltraConnector.Transport.Ws
         /// </summary>
         public WsConnectionManager()
         {
+            _connectionLock = new SemaphoreSlim(1);
             _connectionList = new List<WsConnection>();
         }
 
@@ -96,7 +99,12 @@ namespace EltraConnector.Transport.Ws
                 {
                     RegisterConnectionEvents(connection);
 
+                    await _connectionLock.WaitAsync();
+
                     _connectionList.Add(connection);
+
+                    _connectionLock.Release();
+
                     result = true;
                 }
             }
@@ -181,10 +189,32 @@ namespace EltraConnector.Transport.Ws
 
                 if (result)
                 {
-                    UnregisterConnectionEvents(connection);
-
-                    _connectionList.Remove(connection);
+                    result = Remove(uniqueId);
                 }
+            }
+
+            return result;
+        }
+
+        /// <summary>
+        /// Remove connection from pool
+        /// </summary>
+        /// <param name="uniqueId"></param>
+        /// <returns></returns>
+        public bool Remove(string uniqueId)
+        {
+            bool result = false;
+            var connection = FindConnection(uniqueId);
+
+            if (connection != null)
+            {
+                UnregisterConnectionEvents(connection);
+
+                _connectionLock.Wait();
+
+                _connectionList.Remove(connection);
+
+                _connectionLock.Release();
             }
 
             return result;
@@ -198,7 +228,11 @@ namespace EltraConnector.Transport.Ws
         {
             bool result = true;
 
+            await _connectionLock.WaitAsync();
+
             var activeConnections = _connectionList.ToArray();
+
+            _connectionLock.Release();
 
             foreach (var connection in activeConnections)
             {
@@ -212,7 +246,11 @@ namespace EltraConnector.Transport.Ws
                 {
                     UnregisterConnectionEvents(connection);
 
+                    await _connectionLock.WaitAsync();
+
                     _connectionList.Remove(connection);
+
+                    _connectionLock.Release();
                 }
             }
 

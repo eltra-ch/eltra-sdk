@@ -61,6 +61,12 @@ namespace EltraConnector.Transport.Ws.Interfaces
         /// <returns></returns>
         Task<bool> Disconnect(string uniqueId);
         /// <summary>
+        /// Remove
+        /// </summary>
+        /// <param name="uniqueId"></param>
+        /// <returns></returns>
+        bool Remove(string uniqueId);
+        /// <summary>
         /// DisconnectAll
         /// </summary>
         /// <returns></returns>

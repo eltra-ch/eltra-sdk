@@ -115,7 +115,9 @@ namespace EltraConnector.Channels
 
             if (Status != WsChannelStatus.Started)
             {
-                const int minWaitTime = 1;
+                const int minWaitTime = 10;
+
+                Status = WsChannelStatus.Undefined;
 
                 var stopWatch = new Stopwatch();
                 bool result = false;
@@ -130,7 +132,8 @@ namespace EltraConnector.Channels
                     }
                 };
 
-                while (!result && stopWatch.ElapsedMilliseconds < _startupTimeout)
+                while (!result && stopWatch.ElapsedMilliseconds < _startupTimeout && 
+                    Status != WsChannelStatus.Stopped)
                 {
                     Thread.Sleep(minWaitTime);
                 }
@@ -145,7 +148,7 @@ namespace EltraConnector.Channels
 
             if (Status != WsChannelStatus.Stopped)
             {
-                const int minWaitTime = 1;
+                const int minWaitTime = 10;
 
                 var stopWatch = new Stopwatch();
                 
@@ -164,7 +167,7 @@ namespace EltraConnector.Channels
                     await DisconnectFromWsChannel();
                 });
 
-                while (!result && stopWatch.ElapsedMilliseconds < _shutdownTimeout)
+                while (!result && stopWatch.ElapsedMilliseconds < _shutdownTimeout && Status != WsChannelStatus.Stopped)
                 {
                     Thread.Sleep(minWaitTime);
                 }
@@ -206,6 +209,8 @@ namespace EltraConnector.Channels
             }
             else
             {
+                WsConnectionManager.Remove(WsChannelId);
+
                 Status = WsChannelStatus.Stopped;
             }
         }

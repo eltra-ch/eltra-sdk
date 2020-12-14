@@ -178,20 +178,6 @@ namespace EltraConnector.Transport.Ws
             return result;
         }
 
-        public async Task<bool> Abort()
-        {
-            bool result = false;
-
-            _cancellationTokenSource.Cancel();
-
-            if (IsConnected)
-            {
-                result = await Disconnect();
-            }
-
-            return result;
-        }
-
         public async Task<bool> Disconnect()
         {
             bool result = false;
@@ -205,9 +191,11 @@ namespace EltraConnector.Transport.Ws
                         _disconnectTokenSource.Cancel();
                     }
 
+                    _cancellationTokenSource.Cancel();
+
                     if (Socket.State == WebSocketState.Open)
                     {
-                        await Socket.CloseAsync(WebSocketCloseStatus.Empty, "", _cancellationTokenSource.Token);
+                        await Socket.CloseAsync(WebSocketCloseStatus.Empty, "", CancellationToken.None);
                     }
                     else if (Socket.State == WebSocketState.Closed)
                     {

@@ -9,8 +9,6 @@ namespace EltraConnector.Transport.Ws.Interfaces
         bool IsDisconnecting { get; }
         Task<bool> Connect(string url);
 
-        Task<bool> Abort();
-
         Task<bool> Disconnect();
 
         Task<bool> Send(UserIdentity identity, string typeName, string data);

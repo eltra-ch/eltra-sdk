@@ -110,6 +110,8 @@ namespace EltraConnector.UserAgent
 
         private void OnStatusChanged()
         {
+            MsgLogger.WriteLine($"agent status changed to {Status}");
+
             StatusChanged?.Invoke(this, new AgentStatusEventArgs() { Status = Status });
         }
 
@@ -309,9 +311,14 @@ namespace EltraConnector.UserAgent
         {
             bool result = false;
 
+            if(Status == AgentStatus.Stopped)
+            {
+                Status = AgentStatus.Undefined;
+            }
+
             _agentTask = Task.Run(() => Run(_agentCancelationTokenSource.Token));
 
-            const int minWaitTime = 1;
+            const int minWaitTime = 10;
             
             int startupTimeout = (int)TimeSpan.FromSeconds(_timeout).TotalMilliseconds;
             var stopWatch = new Stopwatch();
@@ -326,9 +333,12 @@ namespace EltraConnector.UserAgent
                 }
             };
 
-            while (!result && stopWatch.ElapsedMilliseconds < startupTimeout)
+            long elapsedMiliseconds = stopWatch.ElapsedMilliseconds;
+            while (!result && elapsedMiliseconds < startupTimeout && Status != AgentStatus.Stopped)
             {
                 Thread.Sleep(minWaitTime);
+
+                elapsedMiliseconds = stopWatch.ElapsedMilliseconds;
             }
 
             return result;
@@ -336,8 +346,13 @@ namespace EltraConnector.UserAgent
 
         public void Release()
         {
-            _agentCancelationTokenSource?.Cancel();      
-            _agentTask?.Wait();
+            int releaseTimeout = (int)TimeSpan.FromSeconds(_timeout).TotalMilliseconds;
+
+            _agentCancelationTokenSource?.Cancel();
+            
+            _agentTask?.Wait(releaseTimeout);
+
+            Status = AgentStatus.Undefined;
         }
 
         private void RegisterParameterUpdateManagerEvents()
@@ -392,16 +407,28 @@ namespace EltraConnector.UserAgent
                     _channelHeartbeat?.Start();
                 });
                 
-
                 RegisterParameterUpdateManagerEvents();
 
                 Task.WaitAll(new Task[] { t1, t2, t3 });
 
-                result = _parameterUpdateManager.Status == WsChannelStatus.Started;
+                if (_parameterUpdateManager != null)
+                {
+                    result = _parameterUpdateManager.Status == WsChannelStatus.Started;
+                }
 
                 if (result)
                 {
-                    result = _executeCommander.Status == WsChannelStatus.Started;
+                    if (_executeCommander != null)
+                    {
+                        result = _executeCommander.Status == WsChannelStatus.Started;
+                    }
+                }
+                else
+                {
+                    if (_parameterUpdateManager != null)
+                    {
+                        _parameterUpdateManager.Stop();
+                    }
                 }
 
                 if (result)
@@ -409,6 +436,18 @@ namespace EltraConnector.UserAgent
                     if (_channelHeartbeat != null)
                     {
                         result = _channelHeartbeat.Status == WsChannelStatus.Started;
+
+                        if(!result)
+                        {
+                            _channelHeartbeat.Stop();
+                        }
+                    }
+                }
+                else
+                {
+                    if (_executeCommander != null)
+                    {
+                        _executeCommander.Stop();
                     }
                 }
             }
@@ -420,8 +459,16 @@ namespace EltraConnector.UserAgent
         {
             UnregisterParameterUpdateManagerEvents();
 
+            MsgLogger.WriteDebug($"{GetType().Name} - StopChannel", $"stop heartbeat channel");
+
             _channelHeartbeat?.Stop();
+
+            MsgLogger.WriteDebug($"{GetType().Name} - StopChannel", $"stop execute commander channel");
+
             _executeCommander?.Stop();
+
+            MsgLogger.WriteDebug($"{GetType().Name} - StopChannel", $"stop parameter update channel");
+
             _parameterUpdateManager?.Stop();
 
             await UnregisterSession();
