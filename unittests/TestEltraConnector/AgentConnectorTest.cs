@@ -8,6 +8,7 @@ using EltraCommon.Contracts.Parameters;
 using EltraCommon.Contracts.CommandSets;
 using System.Linq;
 using EltraCommon.ObjectDictionary.Common.DeviceDescription.Profiles.Application.Parameters;
+using System.Threading;
 
 namespace TestEltraConnector
 {
@@ -740,6 +741,8 @@ namespace TestEltraConnector
 
             // push the data to remote device
             bool writeResult = await parameter.Write();
+
+            Thread.Sleep(1000);
 
             // read current value from device
             var parameterValue2 = await parameter.ReadValue();
