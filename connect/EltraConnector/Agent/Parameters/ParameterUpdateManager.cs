@@ -9,9 +9,10 @@ using EltraConnector.Controllers.Base;
 using EltraCommon.Contracts.Parameters;
 using EltraCommon.Contracts.Parameters.Events;
 using EltraConnector.Channels.Events;
-using EltraConnector.Transport.Ws.Events;
+using EltraConnector.Transport.Events;
+using EltraConnector.Channels;
 
-namespace EltraConnector.Channels
+namespace EltraConnector.Agent.Parameters
 {
     class ParameterUpdateManager : WsChannelThread
     {
@@ -27,7 +28,7 @@ namespace EltraConnector.Channels
         #region Constructors
 
         public ParameterUpdateManager(ChannelControllerAdapter channelAdapter)
-            : base(channelAdapter.WsConnectionManager, channelAdapter.ChannelId + "_ParameterUpdate", ChannelName,
+            : base(channelAdapter.ConnectionManager, channelAdapter.ChannelId + "_ParameterUpdate", ChannelName,
                   channelAdapter.ChannelId, 0, channelAdapter.User.Identity)
         {
             _channelAdapter = channelAdapter;
@@ -35,7 +36,7 @@ namespace EltraConnector.Channels
         }
 
         public ParameterUpdateManager(ChannelControllerAdapter channelAdapter, int nodeId)
-            : base(channelAdapter.WsConnectionManager, channelAdapter.ChannelId + $"_ParameterUpdate_{nodeId}", ChannelName,
+            : base(channelAdapter.ConnectionManager, channelAdapter.ChannelId + $"_ParameterUpdate_{nodeId}", ChannelName,
                   channelAdapter.ChannelId, nodeId, channelAdapter.User.Identity)
         {
             _channelAdapter = channelAdapter;
@@ -57,11 +58,11 @@ namespace EltraConnector.Channels
             ParameterValueChanged?.Invoke(this, e);
         }
 
-        private void OnWsMessageReceived(object sender, WsConnectionMessageEventArgs e)
+        private void OnMessageReceived(object sender, ConnectionMessageEventArgs e)
         {
             if (sender is WsConnection connection && connection.UniqueId == WsChannelId)
             {
-                if (e.Type == WsMessageType.Data && e.Message != "KEEPALIVE" && e.Message != "ACK")
+                if (e.Type == MessageType.Data && e.Message != "KEEPALIVE" && e.Message != "ACK")
                 {
                     ProcessWsMessage(e.Message);
                 }
@@ -136,29 +137,19 @@ namespace EltraConnector.Channels
 
             Status = WsChannelStatus.Starting;
 
-            await ConnectToWsChannel();
+            await ConnectToChannel();
 
-            WsConnectionManager.MessageReceived += OnWsMessageReceived;
+            ConnectionManager.MessageReceived += OnMessageReceived;
 
             while (ShouldRun())
             {
-                try
-                {
-                    if (WsConnectionManager.IsConnected(WsChannelId))
-                    {
-                        await WsConnectionManager.Receive(WsChannelId);                        
-                    }
-                }
-                catch (Exception e)
-                {
-                    MsgLogger.Exception($"{GetType().Name} - Execute", e);
-                }
+                await ConnectionManager.Receive(WsChannelId, ShouldRun);
 
                 if (ShouldRun())
                 {
                     await ReconnectToWsChannel();
 
-                    if (WsConnectionManager.IsConnected(WsChannelId))
+                    if (ConnectionManager.IsConnected(WsChannelId))
                     {
                         await Task.Delay(executeIntervalWs);
                     }
@@ -173,7 +164,7 @@ namespace EltraConnector.Channels
 
             Status = WsChannelStatus.Stopping;
 
-            WsConnectionManager.MessageReceived -= OnWsMessageReceived;
+            ConnectionManager.MessageReceived -= OnMessageReceived;
 
             await DisconnectFromWsChannel();
 

@@ -6,7 +6,6 @@ using EltraCommon.Contracts.CommandSets;
 using EltraCommon.Contracts.Channels;
 using EltraCommon.Contracts.Users;
 using EltraCommon.ObjectDictionary.Common.DeviceDescription.Profiles.Application.Parameters;
-using EltraConnector.Transport.Ws;
 using EltraCommon.Contracts.History;
 using EltraCommon.Contracts.Devices;
 using EltraCommon.ObjectDictionary.DeviceDescription;
@@ -20,8 +19,7 @@ namespace EltraConnector.Agent.Controllers
         #region Private fields
 
         private DeviceControllerAdapter _deviceControllerAdapter;
-        private bool _useWebSockets;
-
+        
         #endregion
 
         #region Constructors
@@ -42,44 +40,9 @@ namespace EltraConnector.Agent.Controllers
 
         private DeviceControllerAdapter DeviceAdapter => _deviceControllerAdapter ?? (_deviceControllerAdapter = CreateDeviceController());
 
-        public bool UseWebSockets 
-        { 
-            get => _useWebSockets; 
-            set 
-            {
-                if (_useWebSockets != value)
-                {
-                    _useWebSockets = value;
-
-                    OnUseWebSocketsChanged();
-                }
-            } 
-        }
-
         #endregion
 
         #region Events handling
-
-        private async void OnUseWebSocketsChanged()
-        {
-            if (UseWebSockets)
-            {
-                var wsConnectionManager = new WsConnectionManager() { HostUrl = Url };
-
-                WsConnectionManager = wsConnectionManager;
-
-                DeviceAdapter.WsConnectionManager = wsConnectionManager;
-            }
-            else
-            {
-                if(WsConnectionManager!=null)
-                {
-                    await WsConnectionManager.DisconnectAll();
-                }
-
-                WsConnectionManager = null;
-            }
-        }
 
         #endregion
 
@@ -87,7 +50,7 @@ namespace EltraConnector.Agent.Controllers
 
         private DeviceControllerAdapter CreateDeviceController()
         {
-            var result = new SlaveDeviceControllerAdapter(Url, Channel, User.Identity);
+            var result = new SlaveDeviceControllerAdapter(Url, Channel, User.Identity) { ConnectionManager = ConnectionManager };
             
             return result;
         }

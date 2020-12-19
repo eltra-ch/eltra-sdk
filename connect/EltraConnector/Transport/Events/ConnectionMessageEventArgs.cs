@@ -1,11 +1,11 @@
 ﻿using System;
 
-namespace EltraConnector.Transport.Ws.Events
+namespace EltraConnector.Transport.Events
 {
     /// <summary>
     /// WsMessageType
     /// </summary>
-    public enum WsMessageType
+    public enum MessageType
     {
         /// <summary>
         /// Unknown
@@ -30,9 +30,9 @@ namespace EltraConnector.Transport.Ws.Events
     }
 
     /// <summary>
-    /// WsConnectionMessageEventArgs
+    /// ConnectionMessageEventArgs
     /// </summary>
-    public class WsConnectionMessageEventArgs : EventArgs
+    public class ConnectionMessageEventArgs : EventArgs
     {
         /// <summary>
         /// Source
@@ -46,6 +46,6 @@ namespace EltraConnector.Transport.Ws.Events
         /// <summary>
         /// Type
         /// </summary>
-        public WsMessageType Type { get; set; }
+        public MessageType Type { get; set; }
     }
 }

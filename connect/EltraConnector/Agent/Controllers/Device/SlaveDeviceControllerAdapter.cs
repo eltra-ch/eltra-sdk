@@ -1,7 +1,7 @@
 ﻿using EltraCommon.Contracts.Channels;
 using EltraCommon.Contracts.Users;
+using EltraConnector.Agent.Controllers.Commands;
 using EltraConnector.Controllers;
-using EltraConnector.Controllers.Commands;
 using EltraConnector.Controllers.Device;
 
 namespace EltraConnector.Agent.Controllers.Device

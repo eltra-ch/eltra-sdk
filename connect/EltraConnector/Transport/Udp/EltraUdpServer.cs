@@ -23,6 +23,14 @@ namespace EltraConnector.Transport.Udp
 
         #region Properties
 
+        public bool IsRunning
+        {
+            get
+            {
+                return !(_listenerTask == null || _listenerTask.IsCompleted);
+            }
+        }
+
         #endregion
 
         #region Methods
@@ -41,7 +49,7 @@ namespace EltraConnector.Transport.Udp
 
         public bool Start()
         {
-            if (_listenerTask == null || _listenerTask.IsCompleted)
+            if (!IsRunning)
             {
                 _listenerTask = Task.Run(async () =>
                 {
@@ -75,16 +83,22 @@ namespace EltraConnector.Transport.Udp
             return !_listenerTask.IsCompleted;
         }
 
-        public void Stop()
+        public bool Stop()
         {
-            if (_listenerTask!=null && !_listenerTask.IsCompleted)
+            bool result = false;
+
+            if (IsRunning)
             {
                 Cancel();
 
                 _listenerTask.Wait();
 
                 _listenerTask = null;
+
+                result = true;
             }
+
+            return result;
         }
 
         #endregion

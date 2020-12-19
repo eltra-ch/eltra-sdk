@@ -35,15 +35,19 @@ namespace EltraConnector.Transport.Udp
 
         private void OnUrlChanged()
         {
-            if (_url.Contains(":"))
+            var url = _url.Replace("http://", "");
+            
+            url = url.Replace("https://", "");
+
+            if (url.Contains(":"))
             {
-                int separatorIndex = _url.IndexOf(":");
+                int separatorIndex = url.IndexOf(":");
 
-                Host = _url.Substring(0, separatorIndex);
+                Host = url.Substring(0, separatorIndex);
 
-                if (_url.Length > separatorIndex + 1)
+                if (url.Length > separatorIndex + 1)
                 {
-                    if (int.TryParse(_url.Substring(separatorIndex + 1), out var port))
+                    if (int.TryParse(url.Substring(separatorIndex + 1), out var port))
                     {
                         Port = port;
                     }
@@ -57,9 +61,43 @@ namespace EltraConnector.Transport.Udp
 
         protected override UdpClient CreateUdpClient()
         {
-            UdpClient result = new UdpClient();
+            var result = new UdpClient();
 
-            result.Connect(Host, Port);
+            return result;
+        }
+
+        public bool Connect()
+        {
+            bool result = false;
+
+            try
+            {
+                UdpClient.Connect(Host, Port);
+
+                result = true;
+            }
+            catch(Exception e)
+            {
+                MsgLogger.Exception($"{GetType().Name} - Connect", e);
+            }
+
+            return result;
+        }
+
+        public bool Disconnect()
+        {
+            bool result = false;
+
+            try
+            {
+                UdpClient.Close();
+
+                result = true;
+            }
+            catch (Exception e)
+            {
+                MsgLogger.Exception($"{GetType().Name} - Disconnect", e);
+            }
 
             return result;
         }
@@ -87,7 +125,7 @@ namespace EltraConnector.Transport.Udp
             return bytesSent;
         }
 
-        private async Task<int> Send(UserIdentity identity, string className, string msg)
+        public async Task<int> Send(UserIdentity identity, string className, string msg)
         {
             int bytesSent = -1;
             var request = new UdpRequest() { Identity = identity, TypeName = className, Data = msg };

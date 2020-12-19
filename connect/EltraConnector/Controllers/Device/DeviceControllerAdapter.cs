@@ -32,7 +32,7 @@ namespace EltraConnector.Controllers.Device
         private DeviceCommandsControllerAdapter _deviceCommandsControllerAdapter;
         private ParameterControllerAdapter _parameterControllerAdapter;
         private DescriptionControllerAdapter _descriptionContollerAdapter;
-        private IConnectionManager _wsConnectionManager;
+        private IConnectionManager _connectionManager;
         
         #endregion
 
@@ -48,13 +48,13 @@ namespace EltraConnector.Controllers.Device
 
         #region Properties
 
-        public IConnectionManager WsConnectionManager 
+        public IConnectionManager ConnectionManager 
         { 
-            get => _wsConnectionManager;
+            get => _connectionManager;
             set 
             {
-                _wsConnectionManager = value;
-                OnWsConnectionManagerChanged();
+                _connectionManager = value;
+                OnConnectionManagerChanged();
             }
         }
 
@@ -78,9 +78,9 @@ namespace EltraConnector.Controllers.Device
 
         #region Events handling
 
-        private void OnWsConnectionManagerChanged()
+        private void OnConnectionManagerChanged()
         {
-            DeviceCommandsAdapter.WsConnectionManager = WsConnectionManager;
+            DeviceCommandsAdapter.ConnectionManager = ConnectionManager;
         }
 
         

@@ -1,5 +1,5 @@
 ﻿using EltraCommon.Contracts.Users;
-using EltraConnector.Transport.Ws.Events;
+using EltraConnector.Transport.Events;
 using System;
 using System.Threading.Tasks;
 
@@ -15,19 +15,26 @@ namespace EltraConnector.Transport.Ws.Interfaces
         /// <summary>
         /// MessageReceived
         /// </summary>
-        event EventHandler<WsConnectionMessageEventArgs> MessageReceived;
+        event EventHandler<ConnectionMessageEventArgs> MessageReceived;
         /// <summary>
         /// MessageSent
         /// </summary>
-        event EventHandler<WsConnectionMessageEventArgs> MessageSent;
+        event EventHandler<ConnectionMessageEventArgs> MessageSent;
         /// <summary>
         /// ErrorOccured
         /// </summary>
-        event EventHandler<WsConnectionMessageEventArgs> ErrorOccured;
+        event EventHandler<ConnectionMessageEventArgs> ErrorOccured;
 
         #endregion
 
         #region Methods
+
+        /// <summary>
+        /// Connect
+        /// </summary>
+        /// <param name="connection"></param>
+        /// <returns></returns>
+        Task<bool> Connect(IConnection connection);
 
         /// <summary>
         /// Connect to channel
@@ -48,6 +55,13 @@ namespace EltraConnector.Transport.Ws.Interfaces
         /// <param name="uniqueId"></param>
         /// <returns></returns>
         bool CanConnect(string uniqueId);
+        
+        /// <summary>
+        /// Get specific connection
+        /// </summary>
+        /// <param name="uniqueId"></param>
+        /// <returns></returns>
+        IConnection GetConnection<T>(string uniqueId);
         /// <summary>
         /// IsDisconnecting
         /// </summary>
@@ -86,6 +100,15 @@ namespace EltraConnector.Transport.Ws.Interfaces
         /// <param name="uniqueId"></param>
         /// <returns></returns>
         Task<string> Receive(string uniqueId);
+
+        /// <summary>
+        /// Receive
+        /// </summary>
+        /// <param name="uniqueId"></param>
+        /// <param name="shouldRunFunc"></param>
+        /// <returns></returns>
+        Task<string> Receive(string uniqueId, Func<bool> shouldRunFunc);
+
         /// <summary>
         /// Receive
         /// </summary>
@@ -93,6 +116,16 @@ namespace EltraConnector.Transport.Ws.Interfaces
         /// <param name="uniqueId"></param>
         /// <returns></returns>
         Task<T> Receive<T>(string uniqueId);
+
+        /// <summary>
+        /// Lock
+        /// </summary>
+        Task Lock();
+
+        /// <summary>
+        /// Unlock
+        /// </summary>
+        void Unlock();
 
         #endregion
     }

@@ -70,6 +70,7 @@ namespace EltraConnector.Transport.Udp
 
         public event EventHandler<SocketError> ErrorRaised;
         public event EventHandler<ReceiveResponse> MessageReceived;
+        public event EventHandler<int> MessageSent;
 
         #endregion
 
@@ -78,6 +79,10 @@ namespace EltraConnector.Transport.Udp
         protected void OnMessageReceived(ReceiveResponse e)
         {
             MessageReceived?.Invoke(this, e);
+        }
+        protected void OnMessageSent(int length)
+        {
+            MessageSent?.Invoke(this, length);
         }
 
         private void OnSocketErrorCodeChanged(SocketError e)
@@ -147,7 +152,7 @@ namespace EltraConnector.Transport.Udp
             return result;
         }
 
-        private async Task<int> Send(IPEndPoint endPoint, UserIdentity identity, string className, string msg)
+        public async Task<int> Send(IPEndPoint endPoint, UserIdentity identity, string className, string msg)
         {
             int bytesSent = -1;
             var request = new UdpRequest() { Identity = identity, TypeName = className, Data = msg };
@@ -175,6 +180,8 @@ namespace EltraConnector.Transport.Udp
                 var bytes = Encoding.GetBytes(data);
 
                 result = await UdpClient.SendAsync(bytes, bytes.Length, endPoint).WithCancellation(_tokenSource.Token);
+
+                OnMessageSent(bytes.Length);
             }
             catch (SocketException e)
             {                
@@ -200,7 +207,9 @@ namespace EltraConnector.Transport.Udp
 
             try
             {
-                result = await UdpClient.SendAsync(bytes, length).WithCancellation(_tokenSource.Token);                
+                result = await UdpClient.SendAsync(bytes, length).WithCancellation(_tokenSource.Token);
+
+                OnMessageSent(length);
             }
             catch (SocketException e)
             {

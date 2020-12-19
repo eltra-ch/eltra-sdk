@@ -19,7 +19,7 @@ namespace EltraConnector.Controllers
         #region Private fields
 
         private readonly UserIdentity _userIdentity;
-        private IConnectionManager _wsConnectionManager;
+        private IConnectionManager _connectionManager;
         
         #endregion
 
@@ -35,26 +35,24 @@ namespace EltraConnector.Controllers
 
         #region Properties
 
-        public IConnectionManager WsConnectionManager
+        public IConnectionManager ConnectionManager
         {
-            get => _wsConnectionManager;
+            get => _connectionManager;
             set
             {
-                _wsConnectionManager = value;
+                _connectionManager = value;
 
-                OnWsConnectionManagerChanged();
+                OnConnectionManagerChanged();
             }
         }
 
         protected UserIdentity UserIdentity => _userIdentity;
 
-        protected string CommandExecUuid { get; set; }
-
         #endregion
 
         #region Events handling
 
-        private void OnWsConnectionManagerChanged()
+        private void OnConnectionManagerChanged()
         {
         }
 

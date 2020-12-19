@@ -29,6 +29,7 @@ namespace EltraConnector.Controllers.Base
         private readonly string _uuid;
         private readonly uint _timeout;
         private readonly uint _updateInterval;
+        private IConnectionManager _connectionManager;
 
         #endregion
 
@@ -68,6 +69,21 @@ namespace EltraConnector.Controllers.Base
         {
             ChannelRegistered?.Invoke(this, e);
         }
+        private void OnConnectionManagerChanged()
+        {
+            var t = Task.Run(async ()=> {
+
+                if (ConnectionManager != null)
+                {
+                    if (await ConnectionManager.Connect(Channel.Id, "SessionUpdate"))
+                    {
+                        await SendChannelIdentyficationRequest();
+                    }
+                }
+            });
+
+            t.Wait();
+        }
 
         #endregion
 
@@ -77,15 +93,35 @@ namespace EltraConnector.Controllers.Base
 
         public Channel Channel => _channel ?? (_channel = new Channel { Id = _uuid, UserName = _user.Identity.Name, Timeout = _timeout, UpdateInterval = _updateInterval, LocalHost = EltraUdpConnector.LocalHost });
 
-        public IConnectionManager WsConnectionManager { get; set; }
+        public IConnectionManager ConnectionManager 
+        { 
+            get => _connectionManager;
+            set
+            {
+                _connectionManager = value;
+                OnConnectionManagerChanged();
+            }
+        }
 
         public User User => _user;
-
-        public int UdpPort { get; set; }
 
         #endregion
 
         #region Methods
+
+        private async Task<bool> SendChannelIdentyficationRequest()
+        {
+            bool result = false;
+
+            if (ConnectionManager.IsConnected(Channel.Id))
+            {
+                var request = new ChannelIdentification() { Id = Channel.Id };
+
+                result = await ConnectionManager.Send(Channel.Id, _identity, request);
+            }
+
+            return result;
+        }
 
         public virtual async Task<bool> Update()
         {
@@ -100,6 +136,10 @@ namespace EltraConnector.Controllers.Base
                 if (await RegisterChannel())
                 {
                     result = await SetChannelStatus(ChannelStatus.Online);
+                }
+                else
+                {
+                    MsgLogger.WriteError($"{GetType().Name} - Update", $"register channel failed!");
                 }
             }
 
@@ -204,16 +244,38 @@ namespace EltraConnector.Controllers.Base
 
         private void UpdateChannelLocalHost(ChannelBase channel)
         {
-            if (channel != null && UdpPort > 0)
+            if (channel != null)
             {
-                channel.LocalHost = $"{IpHelper.GetLocalIpAddress()}:{UdpPort}";
+                var commandExecConnectionName = $"{ChannelId}_CommandExec";
+
+                var commandExecConnection = ConnectionManager.GetConnection<UdpServerConnection>(commandExecConnectionName);
+
+                if (commandExecConnection is UdpServerConnection connection)
+                {
+                    channel.LocalHost = connection.LocalHost;
+                }
+                else
+                {
+                    channel.LocalHost = EltraUdpConnector.LocalHost;
+                }
             }
         }
         private void UpdateChannelStatusLocalHost(ChannelStatusUpdate channelStatus)
         {
-            if (channelStatus != null && UdpPort > 0)
+            if (channelStatus != null)
             {
-                channelStatus.LocalHost = $"{IpHelper.GetLocalIpAddress()}:{UdpPort}";
+                var commandExecConnectionName = $"{ChannelId}_CommandExec";
+
+                var commandExecConnection = ConnectionManager.GetConnection<UdpServerConnection>(commandExecConnectionName);
+
+                if (commandExecConnection is UdpServerConnection connection)
+                {
+                    channelStatus.LocalHost = connection.LocalHost;
+                }
+                else
+                {
+                    channelStatus.LocalHost = EltraUdpConnector.LocalHost;
+                }
             }
         }
 
@@ -312,17 +374,21 @@ namespace EltraConnector.Controllers.Base
         {
             bool result = false;
 
-            if (WsConnectionManager != null && WsConnectionManager.IsConnected(Channel.Id))
+            if (ConnectionManager != null && ConnectionManager.IsConnected(Channel.Id))
             {
-                if (await WsConnectionManager.Send(Channel.Id, _user.Identity, statusUpdate))
+                await ConnectionManager.Lock();
+
+                if (await ConnectionManager.Send(Channel.Id, _user.Identity, statusUpdate))
                 {
-                    var requestResult = await WsConnectionManager.Receive<RequestResult>(Channel.Id);
+                    var requestResult = await ConnectionManager.Receive<RequestResult>(Channel.Id);
 
                     if (requestResult != null)
                     {
                         result = requestResult.Result;
                     }
                 }
+
+                ConnectionManager.Unlock();
             }
 
             return result;
@@ -330,7 +396,9 @@ namespace EltraConnector.Controllers.Base
 
         protected async Task<bool> SetChannelStatus(ChannelStatus status)
         {
-            bool result = false;
+            bool result;
+
+            MsgLogger.WriteLine($"{GetType().Name} - Update, set channel status {status}");
 
             try
             {
@@ -340,20 +408,25 @@ namespace EltraConnector.Controllers.Base
 
                 result = await SendStatusUpdateOverWebSocket(statusUpdate);
 
-                if (!result)
+                /*if (!result)
                 {
                     result = await SendStatusUpdateOverRest(statusUpdate);
-                }
+                }*/
             }
             catch (Exception)
             {
                 result = false;
             }
 
+            if (!result)
+            {
+                MsgLogger.WriteError($"{GetType().Name} - Update", $"set channel status failed!");
+            }
+
             return result;
         }
 
-        private async Task<bool> SendStatusUpdateOverRest(ChannelStatusUpdate statusUpdate)
+        /*private async Task<bool> SendStatusUpdateOverRest(ChannelStatusUpdate statusUpdate)
         {
             bool result = false;
 
@@ -378,7 +451,7 @@ namespace EltraConnector.Controllers.Base
             }
 
             return result;
-        }
+        }*/
 
         #endregion
     }

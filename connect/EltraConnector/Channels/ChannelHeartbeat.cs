@@ -24,7 +24,7 @@ namespace EltraConnector.Channels
         #region Constructors
 
         public ChannelHeartbeat(ChannelControllerAdapter channelControllerAdapter, uint updateInterval, uint timeout)
-            : base(channelControllerAdapter.WsConnectionManager, 
+            : base(channelControllerAdapter.ConnectionManager, 
                   channelControllerAdapter.Channel.Id, ChannelName,
                   channelControllerAdapter.Channel.Id, channelControllerAdapter.User.Identity)
         {
@@ -50,8 +50,6 @@ namespace EltraConnector.Channels
                 }
             }
         }
-
-        public bool UseWebSocket { get; set; }
 
         #endregion
 
@@ -80,14 +78,7 @@ namespace EltraConnector.Channels
 
             uint updateIntervalInSec = _updateInterval;
 
-            if (UseWebSocket)
-            {
-                await ConnectToWsChannel();
-            }
-            else
-            {
-                Status = Events.WsChannelStatus.Started;
-            }
+            await ConnectToChannel();
 
             while (ShouldRun())
             {
@@ -113,11 +104,11 @@ namespace EltraConnector.Channels
                     await Task.Delay(minWaitTime);
                 }
 
-                if (UseWebSocket && ShouldRun())
+                if (ShouldRun())
                 {
                     await ReconnectToWsChannel();
 
-                    if (WsConnectionManager.IsConnected(WsChannelId))
+                    if (ConnectionManager.IsConnected(WsChannelId))
                     {
                         await Task.Delay(executeIntervalWs);
                     }
@@ -128,14 +119,7 @@ namespace EltraConnector.Channels
                 }
             }
 
-            if (UseWebSocket)
-            {
-                await DisconnectFromWsChannel();
-            }
-            else
-            {
-                Status = Events.WsChannelStatus.Stopped;
-            }
+            await DisconnectFromWsChannel();
 
             ChannelStatus = ChannelStatus.Offline;
 

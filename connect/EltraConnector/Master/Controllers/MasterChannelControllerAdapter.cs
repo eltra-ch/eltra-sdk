@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Net.Sockets;
 using System.Threading.Tasks;
 
 using EltraConnector.Controllers.Base;
@@ -12,8 +11,6 @@ using EltraCommon.Contracts.CommandSets;
 using EltraConnector.SyncAgent;
 using EltraConnector.Controllers.Events;
 using EltraCommon.Contracts.ToolSet;
-using EltraConnector.Transport.Udp;
-using EltraConnector.Transport.Udp.Response;
 using EltraConnector.Controllers.Device;
 using EltraConnector.Controllers;
 using EltraConnector.Master.Controllers.Device;
@@ -29,8 +26,7 @@ namespace EltraConnector.Master.Controllers
         private DeviceControllerAdapter _deviceControllerAdapter;
         private ParameterControllerAdapter _parameterControllerAdapter;
         private List<EltraDevice> _devices;
-        private EltraUdpServer _eltraUdpServer;
-
+        
         #endregion
 
         #region Constructors
@@ -77,23 +73,11 @@ namespace EltraConnector.Master.Controllers
             }
         }
 
-        private EltraUdpServer EltraUdpServer => _eltraUdpServer ?? (_eltraUdpServer = new EltraUdpServer() { Host = "0.0.0.0", Port = UdpPort });
-
         #endregion
 
         #endregion
 
         #region Events handling
-
-        private void OnUdpServerErrorRaised(object sender, SocketError e)
-        {
-            MsgLogger.WriteError($"{GetType().Name} - OnUdpServerErrorRaised", $"Socket error ({e})!");
-        }
-
-        private void OnUdpServerMessageReceived(object sender, ReceiveResponse e)
-        {
-            e.Handled = true;
-        }
 
         protected virtual void OnDeviceRegistrationStateChanged(object sender, RegistrationEventArgs e)
         {
@@ -160,8 +144,7 @@ namespace EltraConnector.Master.Controllers
         {
             var adapter = new MasterDeviceControllerAdapter(Url, Channel, _agent.Identity) 
             { 
-                WsConnectionManager = WsConnectionManager,
-                UdpServer = EltraUdpServer
+                ConnectionManager = ConnectionManager
             };
 
             AddChild(adapter);
@@ -569,28 +552,8 @@ namespace EltraConnector.Master.Controllers
             return status == DeviceStatus.Registered || status == DeviceStatus.Ready;
         }
 
-        public override bool Start()
-        {
-            bool result = base.Start();
-
-            if (result)
-            {
-                EltraUdpServer.MessageReceived += OnUdpServerMessageReceived;
-                EltraUdpServer.ErrorRaised += OnUdpServerErrorRaised;
-
-                result = EltraUdpServer.Start();
-            }
-
-            return result; 
-        }
-
         public override bool Stop()
         {
-            EltraUdpServer.MessageReceived -= OnUdpServerMessageReceived;
-            EltraUdpServer.ErrorRaised -= OnUdpServerErrorRaised;
-
-            EltraUdpServer.Stop();
-
             _deviceControllerAdapter?.Stop();
             _parameterControllerAdapter?.Stop();
             

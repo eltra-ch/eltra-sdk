@@ -22,6 +22,10 @@ using EltraConnector.Channels.Events;
 using EltraConnector.Channels;
 using EltraCommon.Transport;
 using EltraConnector.Agent.Controllers;
+using EltraConnector.Agent.Controllers.Commands;
+using EltraConnector.Agent.Parameters;
+using EltraConnector.Transport.Ws.Interfaces;
+using EltraConnector.Transport;
 
 namespace EltraConnector.UserAgent
 {
@@ -44,9 +48,9 @@ namespace EltraConnector.UserAgent
         private ChannelStatus _remoteChannelStatus = ChannelStatus.Undefined;
         private string _remoteChannelId;
         private string _url;
-
+        private IConnectionManager _connectionManager;
         private ChannelHeartbeat _channelHeartbeat;
-        private ExecuteCommander _executeCommander;
+        private SlaveExecuteCommander _executeCommander;
         private ParameterUpdateManager _parameterUpdateManager;
 
         #endregion
@@ -60,7 +64,9 @@ namespace EltraConnector.UserAgent
             _identity = identity;
             _executedCommands = new List<DeviceCommand>();
             _channel = new Channel() { Status = ChannelStatus.Offline };
-            _channelAdapter = new SlaveChannelControllerAdapter(url, identity, updateInterval, timeout) { UseWebSockets = true };
+            _connectionManager = new ConnectionManager() { HostUrl = url };
+
+            _channelAdapter = new SlaveChannelControllerAdapter(url, identity, updateInterval, timeout) { ConnectionManager = _connectionManager };
 
             Initialize(url, updateInterval);
         }
@@ -72,7 +78,8 @@ namespace EltraConnector.UserAgent
             _identity = identity;
             _channel = new Channel() { Status = ChannelStatus.Offline };
             _executedCommands = new List<DeviceCommand>();
-            _channelAdapter = new SlaveChannelControllerAdapter(url, uuid, identity, updateInterval, timeout) { UseWebSockets = true };
+            _connectionManager = new ConnectionManager() { HostUrl = url };
+            _channelAdapter = new SlaveChannelControllerAdapter(url, uuid, identity, updateInterval, timeout) { ConnectionManager = _connectionManager };
 
             Initialize(url, updateInterval);
         }
@@ -86,7 +93,7 @@ namespace EltraConnector.UserAgent
 
             _channelAdapter = new SlaveChannelControllerAdapter(masterAgent.Url, deviceNode.ChannelId, masterAgent.Identity, updateInterval, timeout)
             {
-                WsConnectionManager = masterAgent.WsConnectionManager 
+                ConnectionManager = masterAgent.ConnectionManager 
             };
 
             Initialize(masterAgent, deviceNode);
@@ -281,8 +288,8 @@ namespace EltraConnector.UserAgent
             _url = url;
             _authentication = new Authentication(url);
 
-            _channelHeartbeat = new ChannelHeartbeat(_channelAdapter, updateInterval, _timeout) { UseWebSocket = true };
-            _executeCommander = new ExecuteCommander(_channelAdapter);
+            _channelHeartbeat = new ChannelHeartbeat(_channelAdapter, updateInterval, _timeout);
+            _executeCommander = new SlaveExecuteCommander(_channelAdapter);
             _parameterUpdateManager = new ParameterUpdateManager(_channelAdapter);
 
             RegisterEvents();
@@ -297,7 +304,7 @@ namespace EltraConnector.UserAgent
             _url = agent.Url;
             _authentication = new Authentication(agent.Url);
 
-            _executeCommander = new ExecuteCommander(_channelAdapter, node.NodeId);
+            _executeCommander = new SlaveExecuteCommander(_channelAdapter, node.NodeId);
             _parameterUpdateManager = new ParameterUpdateManager(_channelAdapter, node.NodeId);
 
             RegisterEvents();
@@ -369,7 +376,7 @@ namespace EltraConnector.UserAgent
         
         private async Task<bool> RegisterChannel(CancellationToken token)
         {
-            const int minWaitTime = 100;
+            const int minWaitTime = 300;
             bool result = false;
 
             while (!token.IsCancellationRequested)
@@ -378,6 +385,10 @@ namespace EltraConnector.UserAgent
                 {
                     result = true;
                     break;
+                }
+                else
+                {
+                    MsgLogger.WriteError($"{GetType().Name} - RegisterChannel", "Channel register failed!");
                 }
 
                 await Task.Delay(minWaitTime);

@@ -3,7 +3,6 @@ using EltraCommon.Contracts.Users;
 using EltraCommon.Threads;
 using EltraConnector.Channels.Events;
 using EltraConnector.Events;
-using EltraConnector.Transport.Ws;
 using EltraConnector.Transport.Ws.Interfaces;
 using System;
 using System.Diagnostics;
@@ -18,7 +17,7 @@ namespace EltraConnector.Channels
                 
         private readonly string _wsChannelName;
         private readonly string _wsChannelId;
-        private readonly IConnectionManager _wsConnectionManager;
+        private readonly IConnectionManager _connectionManager;
         
         private readonly int _nodeId;
         private readonly string _channelId;
@@ -32,9 +31,9 @@ namespace EltraConnector.Channels
 
         #region Constructors
 
-        public WsChannelThread(IConnectionManager wsConnectionManager, string wsChannelId, string wsChannelName, string channelId, int nodeId, UserIdentity identity)
+        public WsChannelThread(IConnectionManager connectionManager, string wsChannelId, string wsChannelName, string channelId, int nodeId, UserIdentity identity)
         {
-            _wsConnectionManager = wsConnectionManager;
+            _connectionManager = connectionManager;
             _wsChannelId = wsChannelId;
             _wsChannelName = wsChannelName;
             _channelId = channelId;
@@ -42,9 +41,9 @@ namespace EltraConnector.Channels
             _identity = identity;
         }
 
-        public WsChannelThread(IConnectionManager wsConnectionManager, string wsChannelId, string wsChannelName, string channelId, UserIdentity identity)
+        public WsChannelThread(IConnectionManager connectionManager, string wsChannelId, string wsChannelName, string channelId, UserIdentity identity)
         {
-            _wsConnectionManager = wsConnectionManager;
+            _connectionManager = connectionManager;
             _wsChannelId = wsChannelId;
             _wsChannelName = wsChannelName;
             _channelId = channelId;
@@ -95,7 +94,7 @@ namespace EltraConnector.Channels
             }
         }
 
-        protected IConnectionManager WsConnectionManager => _wsConnectionManager;
+        protected IConnectionManager ConnectionManager => _connectionManager;
 
         protected string WsChannelId => _wsChannelId;
 
@@ -178,21 +177,25 @@ namespace EltraConnector.Channels
             return result;
         }
 
-        protected async Task<bool> ConnectToWsChannel()
+        protected async Task<bool> ConnectToChannel()
         {
             bool result = false;
 
-            if (WsConnectionManager.CanConnect(WsChannelId))
+            if (ConnectionManager.CanConnect(WsChannelId))
             {
                 if (OnSignInRequested())
                 {
                     Status = WsChannelStatus.Starting;
 
-                    if (await WsConnectionManager.Connect(WsChannelId, WsChannelName))
+                    if (await ConnectionManager.Connect(WsChannelId, WsChannelName))
                     {
                         result = await SendChannelIdentyficationRequest();
                     }
                 }
+            }
+            else if(ConnectionManager.IsConnected(WsChannelId))
+            {
+                Status = WsChannelStatus.Started;
             }
 
             return result;
@@ -200,30 +203,27 @@ namespace EltraConnector.Channels
 
         protected async Task DisconnectFromWsChannel()
         {
-            if (WsConnectionManager.IsConnected(WsChannelId))
+            if (ConnectionManager.IsConnected(WsChannelId))
             {
-                if(await WsConnectionManager.Disconnect(WsChannelId))
-                {
-                    Status = WsChannelStatus.Stopped;
-                }
+                await ConnectionManager.Disconnect(WsChannelId);
             }
             else
             {
-                WsConnectionManager.Remove(WsChannelId);
-
-                Status = WsChannelStatus.Stopped;
+                ConnectionManager.Remove(WsChannelId);
             }
+
+            Status = WsChannelStatus.Stopped;
         }
 
         private async Task<bool> SendChannelIdentyficationRequest()
         {
             bool result = false;
 
-            if (WsConnectionManager.IsConnected(WsChannelId))
+            if (ConnectionManager.IsConnected(WsChannelId))
             {
                 var request = new ChannelIdentification() { Id = _channelId, NodeId = _nodeId };
 
-                result = await WsConnectionManager.Send(WsChannelId, _identity, request);
+                result = await ConnectionManager.Send(WsChannelId, _identity, request);
 
                 if(result)
                 {
@@ -242,13 +242,17 @@ namespace EltraConnector.Channels
         {
             bool result = false;
 
-            if (!WsConnectionManager.IsConnected(WsChannelId) && WsConnectionManager.CanConnect(WsChannelId))
+            if (ConnectionManager.IsConnected(WsChannelId))
+            {
+                Status = WsChannelStatus.Starting;
+            }
+            else if (ConnectionManager.CanConnect(WsChannelId))
             {
                 if (OnSignInRequested())
                 {
                     Status = WsChannelStatus.Starting;
 
-                    if (await WsConnectionManager.Connect(WsChannelId, WsChannelName))
+                    if (await ConnectionManager.Connect(WsChannelId, WsChannelName))
                     {
                         result = await SendChannelIdentyficationRequest();
                     }

@@ -1,6 +1,4 @@
-﻿using EltraConnector.Controllers;
-using EltraConnector.Events;
-using EltraConnector.Transport.Ws;
+﻿using EltraConnector.Events;
 using EltraCommon.Threads;
 using System;
 using EltraCommon.Contracts.Channels;
@@ -10,11 +8,12 @@ using System.Threading.Tasks;
 using EltraCommon.Contracts.Devices;
 using EltraConnector.Channels;
 using EltraCommon.Contracts.ToolSet;
-using EltraConnector.Transport.Udp;
 using System.Net.Sockets;
 using EltraCommon.Transport.Events;
 using EltraConnector.Transport.Ws.Interfaces;
 using EltraConnector.Master.Controllers;
+using EltraConnector.Transport;
+using EltraConnector.Master.Controllers.Commands;
 
 #pragma warning disable 1591
 
@@ -27,11 +26,10 @@ namespace EltraConnector.SyncAgent
         private readonly MasterChannelControllerAdapter _channelControllerAdapter;
         
         private readonly ChannelHeartbeat _channelHeartbeat;
-        private readonly CommandExecutor _commandExecutor;
-        private readonly IConnectionManager _wsConnectionManager;
+        private readonly MasterCommandExecutor _commandExecutor;
+        private readonly IConnectionManager _connectionManager;
         private readonly Authentication _authentication;
-        private readonly EltraUdpServer _eltraUdpServer;
-
+        
         private bool _good;
 
         #endregion
@@ -40,8 +38,6 @@ namespace EltraConnector.SyncAgent
 
         public SyncCloudAgent(string url, UserIdentity identity, string channelId, uint updateInterval, uint timeout)
         {
-            var rnd = new Random();
-
             Url = url;
             Identity = identity;
             UpdateInterval = updateInterval;
@@ -49,25 +45,18 @@ namespace EltraConnector.SyncAgent
             
             _good = true;
             _authentication = new Authentication(url);
-            _wsConnectionManager = new WsConnectionManager() { HostUrl = url };
-            _eltraUdpServer = new EltraUdpServer() { Host = "0.0.0.0", Port = rnd.Next(5100, 5199) };
+            _connectionManager = new ConnectionManager() { HostUrl = url };
 
-            _channelControllerAdapter = new MasterChannelControllerAdapter(this, channelId) 
-            { 
-                WsConnectionManager = _wsConnectionManager, 
-                UdpPort = _eltraUdpServer.Port 
-            };
+            _channelControllerAdapter = new MasterChannelControllerAdapter(this, channelId) { ConnectionManager = _connectionManager };
 
-            _channelHeartbeat = new ChannelHeartbeat(_channelControllerAdapter, updateInterval, timeout) { UseWebSocket = true };
-            _commandExecutor = new CommandExecutor(_channelControllerAdapter, _eltraUdpServer);
+            _channelHeartbeat = new ChannelHeartbeat(_channelControllerAdapter, updateInterval, timeout);
+            _commandExecutor = new MasterCommandExecutor(_channelControllerAdapter);
 
             RegisterEvents();
         }
 
         public SyncCloudAgent(string url, UserIdentity identity, uint updateInterval, uint timeout)
         {
-            var rnd = new Random();
-
             Url = url;
             Identity = identity;
             UpdateInterval = updateInterval;
@@ -75,17 +64,12 @@ namespace EltraConnector.SyncAgent
 
             _good = true;
             _authentication = new Authentication(url);
-            _wsConnectionManager = new WsConnectionManager() { HostUrl = url };
-            _eltraUdpServer = new EltraUdpServer() { Host = "0.0.0.0", Port = rnd.Next(5100, 5199) };
+            _connectionManager = new ConnectionManager() { HostUrl = url };
+            
+            _channelControllerAdapter = new MasterChannelControllerAdapter(this) { ConnectionManager = _connectionManager };
 
-            _channelControllerAdapter = new MasterChannelControllerAdapter(this)
-            {
-                WsConnectionManager = _wsConnectionManager,
-                UdpPort = _eltraUdpServer.Port
-            };
-
-            _channelHeartbeat = new ChannelHeartbeat(_channelControllerAdapter, updateInterval, timeout) { UseWebSocket = true };
-            _commandExecutor = new CommandExecutor(_channelControllerAdapter, _eltraUdpServer);
+            _channelHeartbeat = new ChannelHeartbeat(_channelControllerAdapter, updateInterval, timeout);
+            _commandExecutor = new MasterCommandExecutor(_channelControllerAdapter);
 
             RegisterEvents();
         }
@@ -179,7 +163,7 @@ namespace EltraConnector.SyncAgent
 
         public string ChannelId => _channelControllerAdapter.Channel.Id;
 
-        public IConnectionManager WsConnectionManager => _wsConnectionManager;
+        public IConnectionManager ConnectionManager => _connectionManager;
 
         #endregion
 
@@ -196,9 +180,7 @@ namespace EltraConnector.SyncAgent
             _commandExecutor.SignInRequested += OnSignInRequested;
 
             _channelControllerAdapter.GoodChanged += OnAdapterGoodChanged;
-            _authentication.GoodChanged += OnAdapterGoodChanged;
-
-            _eltraUdpServer.ErrorRaised += OnUdpServerErrorRaised; 
+            _authentication.GoodChanged += OnAdapterGoodChanged; 
         }
 
         private async Task<bool> RegisterSession()
@@ -264,14 +246,12 @@ namespace EltraConnector.SyncAgent
 
             _channelHeartbeat.Start();
             _commandExecutor.Start();
-            _eltraUdpServer.Start();
-
+            
             Wait();
 
             _commandExecutor.Stop();
             _channelHeartbeat.Stop();
-            _eltraUdpServer.Stop();
-
+            
             MsgLogger.WriteLine($"Sync agent working thread finished successfully!");
 
             SetStopped();
