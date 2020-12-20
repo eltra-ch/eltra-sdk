@@ -1,17 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
-using System.Net;
-using Newtonsoft.Json;
-
-using EltraCommon.Extensions;
 
 using EltraCommon.Contracts.CommandSets;
 using EltraCommon.Contracts.Channels;
 using EltraCommon.Logger;
 using EltraCommon.Contracts.Users;
-using EltraConnector.Transport.Udp;
-using EltraConnector.Transport.Udp.Contracts;
 using EltraConnector.Controllers;
 
 namespace EltraConnector.Master.Controllers.Commands
@@ -36,33 +29,6 @@ namespace EltraConnector.Master.Controllers.Commands
 
         #region Events handling
 
-        /*private void OnUdpServerChanged()
-        {
-            if (UdpServer != null)
-            {
-                UdpServer.MessageReceived += (s, e) =>
-                {
-                    e.Handled = true;
-
-                    try
-                    {
-                        var udpRequest = System.Text.Json.JsonSerializer.Deserialize<UdpRequest>(e.Text);
-
-                        if (udpRequest is UdpRequest)
-                        {
-                            udpRequest.Endpoint = e.Endpoint;
-
-                            //_udpRequestQueue.Add(udpRequest);
-                        }
-                    }
-                    catch (Exception ex)
-                    {
-                        MsgLogger.Exception($"{GetType().Name} - OnUdpServerChanged", ex);
-                    }
-                };
-            }
-        }*/
-
         #endregion
 
         #region Methods
@@ -76,29 +42,23 @@ namespace EltraConnector.Master.Controllers.Commands
                 var device = execCommand?.Command?.Device;
 
                 if (device != null)
-                {
-                    var commandExecUuid = device.ChannelId + $"_ExecCommander_{device.NodeId}";
+                {   
+                    var wsChannelId = GetActiveChannelName(execCommand.SourceChannelId, device.NodeId);
 
-                    var start = MsgLogger.BeginTimeMeasure();
-
-                    if (ConnectionManager != null && ConnectionManager.IsConnected(commandExecUuid))
+                    if (!string.IsNullOrEmpty(wsChannelId))
                     {
-                        if (await ConnectionManager.Send(commandExecUuid, _userIdentity, execCommand))
+                        var start = MsgLogger.BeginTimeMeasure();
+
+                        if (ConnectionManager != null && ConnectionManager.IsConnected(wsChannelId))
                         {
-                            result = true;
+                            if (await ConnectionManager.Send(wsChannelId, _userIdentity, execCommand))
+                            {
+                                result = true;
+                            }
                         }
+
+                        MsgLogger.EndTimeMeasure($"{GetType().Name} - PushCommand", start, $"push command='{execCommand.Command.Name}' to device='{device.Family}':0x{device.NodeId}");
                     }
-                    /*TODO remove else
-                    {
-                        var postResult = await Transporter.Post(_userIdentity, Url, "api/command/push", execCommand.ToJson());
-
-                        if (postResult.StatusCode == HttpStatusCode.OK)
-                        {
-                            result = true;
-                        }
-                    }*/
- 
-                    MsgLogger.EndTimeMeasure($"{GetType().Name} - PushCommand", start, $"push command='{execCommand.Command.Name}' to device='{device.Family}':0x{device.NodeId}");
                 }
             }
             catch (Exception e)
@@ -109,45 +69,56 @@ namespace EltraConnector.Master.Controllers.Commands
             return result;
         }
 
+        private string GetActiveChannelName(string channelId, int nodeId)
+        {
+            string result = string.Empty;
+
+            if (ConnectionManager != null)
+            {
+                var wsChannelId = channelId + $"_ExecCommander_{nodeId}";
+
+                if (!ConnectionManager.IsConnected(wsChannelId))
+                {
+                    wsChannelId = channelId + "_CommandExec";
+
+                    if (ConnectionManager.IsConnected(wsChannelId))
+                    {
+                        result = wsChannelId;
+                    }
+                }
+                else
+                {
+                    result = wsChannelId;
+                }
+            }
+
+            return result;
+        }
+
         public override async Task<bool> SetCommandStatus(ExecuteCommandStatus status)
         {
             bool result = false;
 
-            var commandExecUuid = status.ChannelId + $"_ExecCommander_{status.NodeId}";
-
-            if (ConnectionManager != null && ConnectionManager.IsConnected(commandExecUuid))
+            if (ConnectionManager != null && status != null)
             {
-                MsgLogger.WriteLine($"set (WS) command='{status.CommandName}' status='{status.Status}' for device with nodeid={status.NodeId}");
+                var wsChannelId = GetActiveChannelName(status.ChannelId, status.NodeId);
 
-                if (await ConnectionManager.Send(commandExecUuid, _userIdentity, status))
+                if (!string.IsNullOrEmpty(wsChannelId))
                 {
-                    result = true;
-                }
-                else
-                {
-                    MsgLogger.WriteError($"{GetType().Name} - SetCommandStatus",
-                        $"set (WS) command='{status.CommandName}' status='{status.Status}' for device with nodeid={status.NodeId} failed");
-                }
-            }
-            /*TODO remove else
-            {
-                try
-                {
-                    MsgLogger.WriteLine($"set (REST) command='{status.CommandName}' status='{status.Status}' for device with nodeid={status.NodeId}");
+                    MsgLogger.WriteLine($"set (WS) command='{status.CommandName}' status='{status.Status}' for device with nodeid={status.NodeId}");
 
-                    var postResult = await Transporter.Post(_userIdentity, Url, "api/command/status", JsonConvert.SerializeObject(status));
-
-                    if (postResult.StatusCode == HttpStatusCode.OK)
+                    if (await ConnectionManager.Send(wsChannelId, _userIdentity, status))
                     {
                         result = true;
                     }
+                    else
+                    {
+                        MsgLogger.WriteError($"{GetType().Name} - SetCommandStatus",
+                            $"set (WS) command='{status.CommandName}' status='{status.Status}' for device with nodeid={status.NodeId} failed");
+                    }
                 }
-                catch (Exception e)
-                {
-                    MsgLogger.Exception($"{GetType().Name} - SetCommandStatus", e);
-                }
-            }*/
-
+            }
+            
             return result;
         }
 

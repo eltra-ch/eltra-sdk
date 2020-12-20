@@ -83,12 +83,11 @@ namespace EltraConnector.Transport.Rest
         public Task<T> Receive<T>()
         {
             return (Task<T>)Task.Run(() => { return null; });
-            //throw new NotImplementedException();
         }
 
         public Task<bool> Send(UserIdentity identity, string typeName, string data)
         {
-            throw new NotImplementedException();
+            return Task.FromResult(false);
         }
 
         public async Task<bool> Send<T>(UserIdentity identity, T obj)

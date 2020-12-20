@@ -291,6 +291,26 @@ namespace EltraConnector.Master.Controllers.Commands
             return result;
         }
 
+        private ChannelIdentification ParseChannelIdentification(string json)
+        {
+            ChannelIdentification result = null;
+
+            try
+            {
+                var channelIdentification = JsonSerializer.Deserialize<ChannelIdentification>(json);
+
+                if (channelIdentification != null)
+                {
+                    result = channelIdentification;
+                }
+            }
+            catch (Exception)
+            {
+            }
+
+            return result;
+        }
+
         private async Task<bool> ProcessJsonCommand(string json)
         {
             bool result = false;
@@ -328,6 +348,8 @@ namespace EltraConnector.Master.Controllers.Commands
                         if (executeCommandStatus != null)
                         {
                             MsgLogger.WriteFlow($"{GetType().Name} - ProcessJsonCommand", $"command {executeCommandStatus.CommandName} status changed = {executeCommandStatus.Status}");
+                            
+                            result = true;
                         }
                         else
                         {
@@ -346,7 +368,17 @@ namespace EltraConnector.Master.Controllers.Commands
                             }
                             else
                             {
-                                MsgLogger.WriteError($"{GetType().Name} - ProcessJsonCommand", $"Unknown message {json} received");
+                                var channelIdentification = ParseChannelIdentification(json);
+
+                                if (channelIdentification != null)
+                                {
+                                    MsgLogger.WriteDebug($"{GetType().Name} - ProcessJsonCommand", $"identification, channel = {channelIdentification.Id} node id = {channelIdentification.NodeId}");
+                                    result = true;
+                                }
+                                else
+                                {
+                                    MsgLogger.WriteError($"{GetType().Name} - ProcessJsonCommand", $"Unknown message {json} received");
+                                }
                             }
                         }
                     }

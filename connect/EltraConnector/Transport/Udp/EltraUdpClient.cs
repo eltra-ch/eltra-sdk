@@ -3,7 +3,6 @@ using EltraCommon.Logger;
 using EltraConnector.Transport.Udp.Contracts;
 using Newtonsoft.Json;
 using System;
-using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -59,9 +58,9 @@ namespace EltraConnector.Transport.Udp
 
         #region Methods
 
-        protected override UdpClient CreateUdpClient()
+        protected override UdpClientWrapper CreateUdpClient()
         {
-            var result = new UdpClient();
+            var result = new UdpClientWrapper();
 
             return result;
         }
@@ -90,6 +89,8 @@ namespace EltraConnector.Transport.Udp
 
             try
             {
+                Abort();
+
                 UdpClient.Close();
 
                 result = true;
@@ -106,20 +107,27 @@ namespace EltraConnector.Transport.Udp
         {
             UTF8Encoding enc = new UTF8Encoding();
             var bytes = enc.GetBytes(text);
+            int bytesSent = 0;
 
-            int bytesSent = await Send(bytes, bytes.Length);
-
-            if(bytesSent > 0)
+            if (!IsCanceled)
             {
-                _ = Task.Run(async () =>
-                  {
-                      var response = await Receive();
+                bytesSent = await Send(bytes, bytes.Length);
 
-                      if(response != null)
+                if (bytesSent > 0)
+                {
+                    _ = Task.Run(async () =>
                       {
-                          OnMessageReceived(response);
-                      }
-                  });
+                          if (!IsCanceled)
+                          {
+                              var response = await Receive();
+
+                              if (response != null)
+                              {
+                                  OnMessageReceived(response);
+                              }
+                          }
+                      });
+                }
             }
 
             return bytesSent;
@@ -130,13 +138,16 @@ namespace EltraConnector.Transport.Udp
             int bytesSent = -1;
             var request = new UdpRequest() { Identity = identity, TypeName = className, Data = msg };
 
-            try
+            if (!IsCanceled)
             {
-                bytesSent = await Send(JsonConvert.SerializeObject(request));
-            }
-            catch (Exception e)
-            {
-                MsgLogger.Exception($"{GetType().Name} - Send", e);
+                try
+                {
+                    bytesSent = await Send(JsonConvert.SerializeObject(request));
+                }
+                catch (Exception e)
+                {
+                    MsgLogger.Exception($"{GetType().Name} - Send", e);
+                }
             }
 
             return bytesSent;
@@ -146,15 +157,18 @@ namespace EltraConnector.Transport.Udp
         {
             int result = 0;
 
-            try
+            if (!IsCanceled)
             {
-                var msg = JsonConvert.SerializeObject(obj);
+                try
+                {
+                    var msg = JsonConvert.SerializeObject(obj);
 
-                result = await Send(identity, typeof(T).FullName, msg);
-            }
-            catch (Exception e)
-            {
-                MsgLogger.Exception($"{GetType().Name} - Send", e);
+                    result = await Send(identity, typeof(T).FullName, msg);
+                }
+                catch (Exception e)
+                {
+                    MsgLogger.Exception($"{GetType().Name} - Send", e);
+                }
             }
 
             return result;

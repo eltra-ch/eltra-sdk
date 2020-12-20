@@ -55,10 +55,7 @@ namespace EltraConnector.Extensions
             {
                 if (!string.IsNullOrEmpty(status.ChannelId))
                 {
-                    if (!string.IsNullOrEmpty(status.LocalHost))
-                    {
-                        result = true;
-                    }                        
+                    result = true;           
                 }   
             }
 

@@ -1,5 +1,4 @@
 ﻿using EltraCommon.Contracts.Users;
-using EltraCommon.Extensions;
 using EltraCommon.Logger;
 using EltraConnector.Transport.Udp.Contracts;
 using EltraConnector.Transport.Udp.Response;
@@ -8,19 +7,19 @@ using System;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
-using System.Threading;
 using System.Threading.Tasks;
 
 namespace EltraConnector.Transport.Udp
 {
-    internal class EltraUdpConnector
+    internal class EltraUdpConnector : IDisposable
     {
         #region Private fields
 
-        private UdpClient _udpClient;        
-        private CancellationTokenSource _tokenSource;
+        private UdpClientWrapper _udpClient;        
+        
         private Encoding _encoding;
         private SocketError _socketErrorCode;
+        private bool disposedValue;
 
         #endregion
 
@@ -28,8 +27,6 @@ namespace EltraConnector.Transport.Udp
 
         public EltraUdpConnector()
         {
-            _tokenSource = new CancellationTokenSource();
-
             Host = LocalHost;
             Port = 5100;
         }
@@ -44,11 +41,11 @@ namespace EltraConnector.Transport.Udp
 
         public int Port { get; set; }
 
-        protected UdpClient UdpClient => _udpClient ?? (_udpClient = CreateUdpClient());
+        protected UdpClientWrapper UdpClient => _udpClient ?? (_udpClient = CreateUdpClient());
 
         protected Encoding Encoding => _encoding ?? (_encoding = new UTF8Encoding());
 
-        public bool IsCanceled => _tokenSource.IsCancellationRequested;
+        public bool IsCanceled => UdpClient.IsCanceled;
 
         public SocketError SocketErrorCode 
         {
@@ -97,9 +94,9 @@ namespace EltraConnector.Transport.Udp
 
         #region Methods
 
-        protected virtual UdpClient CreateUdpClient()
+        protected virtual UdpClientWrapper CreateUdpClient()
         {
-            var result = new UdpClient(new IPEndPoint(IPAddress.Parse(Host), Port));
+            var result = new UdpClientWrapper(Host, Port);
 
             return result;
         }
@@ -112,11 +109,14 @@ namespace EltraConnector.Transport.Udp
 
             try
             {
-                var receiveResult = await UdpClient.ReceiveAsync().WithCancellation(_tokenSource.Token);
+                var receiveResult = await UdpClient.Receive();
 
-                var txt = Encoding.GetString(receiveResult.Buffer, 0, receiveResult.Buffer.Length);
+                if (receiveResult != null && receiveResult.Buffer != null)
+                {
+                    var txt = Encoding.GetString(receiveResult.Buffer, 0, receiveResult.Buffer.Length);
 
-                result = new ReceiveResponse() { Endpoint = receiveResult.RemoteEndPoint, Text = txt };
+                    result = new ReceiveResponse() { Endpoint = receiveResult.RemoteEndPoint, Text = txt };
+                }
             }
             catch (SocketException e)
             {
@@ -179,7 +179,7 @@ namespace EltraConnector.Transport.Udp
             {
                 var bytes = Encoding.GetBytes(data);
 
-                result = await UdpClient.SendAsync(bytes, bytes.Length, endPoint).WithCancellation(_tokenSource.Token);
+                result = await UdpClient.Send(bytes, bytes.Length, endPoint);
 
                 OnMessageSent(bytes.Length);
             }
@@ -207,7 +207,7 @@ namespace EltraConnector.Transport.Udp
 
             try
             {
-                result = await UdpClient.SendAsync(bytes, length).WithCancellation(_tokenSource.Token);
+                result = await UdpClient.Send(bytes, length);
 
                 OnMessageSent(length);
             }
@@ -227,9 +227,35 @@ namespace EltraConnector.Transport.Udp
             return result;
         }
 
-        public void Cancel()
+        public void Abort()
         {
-            _tokenSource.Cancel();
+            UdpClient.Abort();
+        }
+
+        #endregion
+
+        #region Dispose
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!disposedValue)
+            {
+                if (disposing)
+                {
+                    Abort();
+
+                    UdpClient.Dispose();
+                }
+
+                disposedValue = true;
+            }
+        }
+
+        public void Dispose()
+        {
+            Dispose(disposing: true);
+
+            GC.SuppressFinalize(this);
         }
 
         #endregion

@@ -24,7 +24,9 @@ namespace EltraConnector.Transport.Factory
                     result.Add(new RestConnection() { Url = url, UniqueId = uniqueId, ChannelName = channelName });
                     break;
                 case "CommandsExecution":
+#if _UDP
                     result.Add(new UdpServerConnection() { Url = url, ChannelName = channelName, UniqueId = uniqueId });
+#endif
                     result.Add(new WsConnection(uniqueId, channelName) { Url = url });
                     result.Add(new RestConnection() { Url = url, UniqueId = uniqueId, ChannelName = channelName });
                     break;

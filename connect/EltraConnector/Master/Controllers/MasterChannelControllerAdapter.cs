@@ -14,6 +14,7 @@ using EltraCommon.Contracts.ToolSet;
 using EltraConnector.Controllers.Device;
 using EltraConnector.Controllers;
 using EltraConnector.Master.Controllers.Device;
+using EltraConnector.Master.Controllers.Commands;
 
 namespace EltraConnector.Master.Controllers
 {
@@ -22,11 +23,13 @@ namespace EltraConnector.Master.Controllers
         #region Private fields
 
         private readonly SyncCloudAgent _agent;
+        private readonly ExecuteCommandCache _executeCommandCache;
 
         private DeviceControllerAdapter _deviceControllerAdapter;
         private ParameterControllerAdapter _parameterControllerAdapter;
         private List<EltraDevice> _devices;
         
+
         #endregion
 
         #region Constructors
@@ -34,12 +37,16 @@ namespace EltraConnector.Master.Controllers
         public MasterChannelControllerAdapter(SyncCloudAgent agent)
             : base(agent.Url, agent.Identity, agent.UpdateInterval, agent.Timeout)
         {
+            _executeCommandCache = new ExecuteCommandCache();
+
             _agent = agent;
         }
 
         public MasterChannelControllerAdapter(SyncCloudAgent agent, string channelId)
             : base(agent.Url, channelId, agent.Identity, agent.UpdateInterval, agent.Timeout)
         {
+            _executeCommandCache = new ExecuteCommandCache();
+
             _agent = agent;
         }
 
@@ -334,7 +341,7 @@ namespace EltraConnector.Master.Controllers
 
             try
             {
-                if (executeCommand != null)
+                if (executeCommand != null && _executeCommandCache.CanExecute(executeCommand))
                 {
                     var s = MsgLogger.BeginTimeMeasure();
 
@@ -449,8 +456,6 @@ namespace EltraConnector.Master.Controllers
                 result = false;
                 MsgLogger.Exception($"{GetType().Name} - ExecuteCommand", e);
             }
-
-            
 
             return result;
         }

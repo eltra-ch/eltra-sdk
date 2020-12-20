@@ -152,6 +152,24 @@ namespace EltraConnector.Transport
             return result;
         }
 
+        private bool ConnectionExists(IConnection connection)
+        {
+            bool result = false;
+            
+            foreach (var c in _connectionList)
+            {
+                if (c.UniqueId == connection.UniqueId && 
+                    c.Url == connection.Url &&
+                    c.GetType() == connection.GetType())
+                {
+                    result = true;
+                    break;
+                }
+            }
+
+            return result;
+        }
+
         /// <summary>
         /// Connect
         /// </summary>
@@ -167,7 +185,16 @@ namespace EltraConnector.Transport
 
                 await _connectionLock.WaitAsync();
 
-                _connectionList.Add(connection);
+                if (!ConnectionExists(connection))
+                {
+                    _connectionList.Add(connection);
+                }
+                else
+                {
+                    UnregisterConnectionEvents(connection);
+
+                    await connection.Disconnect();
+                }
 
                 _connectionLock.Release();
 
@@ -187,12 +214,17 @@ namespace EltraConnector.Transport
             bool result = false;
             var connections = FindConnections(uniqueId);
 
-            foreach(var connection in connections)
+            if (connections.Count > 0)
             {
-                if(connection.IsConnected)
+                foreach (var connection in connections)
                 {
                     result = true;
-                    break;
+
+                    if (!connection.IsConnected)
+                    {
+                        result = false;
+                        break;
+                    }
                 }
             }
 
@@ -206,17 +238,24 @@ namespace EltraConnector.Transport
         /// <returns></returns>
         public bool CanConnect(string uniqueId)
         {
-            bool result = true;
+            bool result = false;
             var connections = FindConnections(uniqueId);
 
-            foreach (var connection in connections)
+            if (connections.Count > 0)
             {
-                result = !(connection.IsConnected || connection.IsDisconnecting);
-
-                if(!result)
+                foreach (var connection in connections)
                 {
-                    break;
+                    result = !(connection.IsConnected || connection.IsDisconnecting);
+
+                    if (result)
+                    {
+                        break;
+                    }
                 }
+            }
+            else
+            {
+                result = true;
             }
 
             return result;

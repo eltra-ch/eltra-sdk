@@ -110,13 +110,11 @@ namespace EltraConnector.Transport.Udp
         public Task<string> Receive()
         {
             return Task.FromResult(string.Empty);
-            //throw new NotImplementedException();
         }
 
         public Task<T> Receive<T>()
         {
             return (Task<T>)Task.Run(() => { return null; });
-            //throw new NotImplementedException();
         }
 
         public async Task<bool> Send(UserIdentity identity, string typeName, string data)

@@ -7,7 +7,6 @@ using EltraCommon.Logger;
 using EltraCommon.Contracts.Users;
 using EltraConnector.Transport.Udp;
 using EltraConnector.Controllers;
-using EltraConnector.Transport.Ws.Interfaces;
 
 namespace EltraConnector.Agent.Controllers.Commands
 {
@@ -53,7 +52,8 @@ namespace EltraConnector.Agent.Controllers.Commands
 
                     if (device.ChannelLocalHost != EltraUdpConnector.LocalHost)
                     {
-                        IConnection udpConnection = ConnectionManager.GetConnection<UdpClientConnection>(CommandExecUuid);
+#if _UDP
+                        var udpConnection = ConnectionManager.GetConnection<UdpClientConnection>(CommandExecUuid);
 
                         if (udpConnection == null)
                         {
@@ -69,6 +69,7 @@ namespace EltraConnector.Agent.Controllers.Commands
 
                             await udpConnection.Connect();
                         }
+#endif
                     }
 
                     if (ConnectionManager != null && ConnectionManager.IsConnected(CommandExecUuid))
@@ -78,17 +79,7 @@ namespace EltraConnector.Agent.Controllers.Commands
                             result = true;
                         }
                     }
-                    /*TODO remove 
-                    else
-                    {
-                        var postResult = await Transporter.Post(UserIdentity, Url, "api/command/push", execCommand.ToJson());
-
-                        if (postResult.StatusCode == HttpStatusCode.OK)
-                        {
-                            result = true;
-                        }
-                    }*/
-
+                    
                     MsgLogger.EndTimeMeasure($"{GetType().Name} - PushCommand", start, $"push command='{execCommand.Command.Name}' to device='{device.Family}':0x{device.NodeId}");
                 }
             }
@@ -118,29 +109,10 @@ namespace EltraConnector.Agent.Controllers.Commands
                         $"set (WS) command='{status.CommandName}' status='{status.Status}' for device with nodeid={status.NodeId} failed");
                 }
             }
-            /* TODO remove
-            else
-            {
-                try
-                {
-                    MsgLogger.WriteLine($"set (REST) command='{status.CommandName}' status='{status.Status}' for device with nodeid={status.NodeId}");
-
-                    var postResult = await Transporter.Post(UserIdentity, Url, "api/command/status", JsonConvert.SerializeObject(status));
-
-                    if (postResult.StatusCode == HttpStatusCode.OK)
-                    {
-                        result = true;
-                    }
-                }
-                catch (Exception e)
-                {
-                    MsgLogger.Exception($"{GetType().Name} - SetCommandStatus", e);
-                }
-            }*/
-            
+                        
             return result;
         }
 
-        #endregion
+#endregion
     }
 }

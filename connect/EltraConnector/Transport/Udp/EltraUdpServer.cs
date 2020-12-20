@@ -1,6 +1,4 @@
 ﻿using EltraConnector.Transport.Udp.Response;
-using System.Net;
-using System.Net.Sockets;
 using System.Threading.Tasks;
 
 namespace EltraConnector.Transport.Udp
@@ -35,9 +33,9 @@ namespace EltraConnector.Transport.Udp
 
         #region Methods
 
-        protected override UdpClient CreateUdpClient()
+        protected override UdpClientWrapper CreateUdpClient()
         {
-            var result = new UdpClient(new IPEndPoint(IPAddress.Parse(Host), Port));
+            var result = new UdpClientWrapper(Host, Port);
 
             return result;
         }
@@ -89,7 +87,7 @@ namespace EltraConnector.Transport.Udp
 
             if (IsRunning)
             {
-                Cancel();
+                Abort();
 
                 _listenerTask.Wait();
 

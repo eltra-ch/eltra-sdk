@@ -190,12 +190,18 @@ namespace EltraConnector.Channels
                     if (await ConnectionManager.Connect(WsChannelId, WsChannelName))
                     {
                         result = await SendChannelIdentyficationRequest();
+                    
+                        if(result)
+                        {
+                            Status = WsChannelStatus.Started;
+                        }
                     }
                 }
             }
             else if(ConnectionManager.IsConnected(WsChannelId))
             {
                 Status = WsChannelStatus.Started;
+                result = true;
             }
 
             return result;
@@ -244,7 +250,9 @@ namespace EltraConnector.Channels
 
             if (ConnectionManager.IsConnected(WsChannelId))
             {
-                Status = WsChannelStatus.Starting;
+                Status = WsChannelStatus.Started;
+
+                result = true;
             }
             else if (ConnectionManager.CanConnect(WsChannelId))
             {
@@ -255,6 +263,11 @@ namespace EltraConnector.Channels
                     if (await ConnectionManager.Connect(WsChannelId, WsChannelName))
                     {
                         result = await SendChannelIdentyficationRequest();
+                    
+                        if(result)
+                        {
+                            Status = WsChannelStatus.Started;
+                        }
                     }
                 }
             }
