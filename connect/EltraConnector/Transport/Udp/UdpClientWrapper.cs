@@ -97,7 +97,17 @@ namespace EltraConnector.Transport.Udp
         {
             if (disposing)
             {
-                Client.Disconnect(false);
+                try
+                {
+                    if (Client.Connected)
+                    {
+                        Client.Disconnect(false);
+                    }
+                }
+                catch(Exception e)
+                {
+                    MsgLogger.Exception($"{GetType().Name} - Dispose", e);
+                }
 
                 int minWaitTime = 10;
 

@@ -44,6 +44,11 @@ namespace EltraConnector.Transport.Ws.Interfaces
         /// </summary>
         ConnectionPriority Priority { get; }
 
+        /// <summary>
+        /// ReceiveSupported
+        /// </summary>
+        bool ReceiveSupported { get; }
+
         #endregion
 
         #region Events

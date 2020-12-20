@@ -43,6 +43,8 @@ namespace EltraConnector.Transport.Udp
 
         public int ProcessedRequestsCount { get; internal set; }
 
+        public bool ReceiveSupported => false;
+
         #endregion
 
         #region Events

@@ -14,6 +14,7 @@ namespace EltraConnector.Transport.Udp
     {
         #region Private fields
 
+        private bool _isConnected;
         private EltraUdpServer _server;
         private EndpointStore _endpointStore;
 
@@ -24,7 +25,19 @@ namespace EltraConnector.Transport.Udp
         public string Url { get; set; }
         public string UniqueId { get; set; }
         public string ChannelName { get; set; }
-        public bool IsConnected { get; set; }
+        public bool IsConnected 
+        {
+            get
+            {
+                _isConnected = Server.IsRunning;
+
+                return _isConnected;
+            }
+            set
+            {
+                _isConnected = value;
+            } 
+        }
         public bool IsDisconnecting { get; set; }
         public bool Fallback => true;
         protected EltraUdpServer Server => _server ?? (_server = CreateServer());
@@ -33,6 +46,8 @@ namespace EltraConnector.Transport.Udp
         public ConnectionPriority Priority => ConnectionPriority.High;
 
         public string LocalHost => $"{IpHelper.GetLocalIpAddress()}:{Server.Port}";
+
+        public bool ReceiveSupported => false;
 
         #endregion
 

@@ -42,7 +42,7 @@ namespace EltraConnector.Transport.Ws
 
         public int BufferSize { get; set; }
 
-        public ClientWebSocket Socket { get; private set; }
+        public ClientWebSocketWrapper Socket { get; private set; }
         
         public string UniqueId { get; set; }
         
@@ -105,6 +105,8 @@ namespace EltraConnector.Transport.Ws
 
         public ConnectionPriority Priority => ConnectionPriority.Normal;
 
+        public bool ReceiveSupported => true;
+
         #endregion
 
         #region Events
@@ -156,7 +158,7 @@ namespace EltraConnector.Transport.Ws
 
         private void Initialize()
         {
-            Socket = new ClientWebSocket();
+            Socket = new ClientWebSocketWrapper();
             
             LastCloseStatus = null;
 
@@ -392,7 +394,8 @@ namespace EltraConnector.Transport.Ws
                 {
                     var receiveResult = await Socket.ReceiveAsync(segment, _cancellationTokenSource.Token);
 
-                    while (!receiveResult.CloseStatus.HasValue)
+                    while (receiveResult != null && 
+                          (receiveResult.CloseStatus == null || (receiveResult.CloseStatus != null && !receiveResult.CloseStatus.HasValue)))
                     {
                         if (receiveResult.EndOfMessage)
                         {
@@ -454,8 +457,8 @@ namespace EltraConnector.Transport.Ws
                         }
                     }
 
-                    if(receiveResult.MessageType == WebSocketMessageType.Close &&
-                        (Socket.State == WebSocketState.CloseReceived || Socket.State == WebSocketState.Open))
+                    if(receiveResult == null || (receiveResult.MessageType == WebSocketMessageType.Close &&
+                        (Socket.State == WebSocketState.CloseReceived || Socket.State == WebSocketState.Open)))
                     {
                         await Socket.CloseOutputAsync(WebSocketCloseStatus.NormalClosure, "Server closed connection", _cancellationTokenSource.Token);
                     }

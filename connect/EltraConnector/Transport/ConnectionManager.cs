@@ -498,19 +498,22 @@ namespace EltraConnector.Transport
 
             foreach (var connection in connections)
             {
-                try
+                if (connection.ReceiveSupported)
                 {
-                    var receiveResult = await connection.Receive<T>();
-
-                    if (receiveResult != null)
+                    try
                     {
-                        result = receiveResult;
-                        break;
+                        var receiveResult = await connection.Receive<T>();
+
+                        if (receiveResult != null)
+                        {
+                            result = receiveResult;
+                            break;
+                        }
                     }
-                }
-                catch (Exception e)
-                {
-                    MsgLogger.Exception($"{GetType().Name} - Receive", e);
+                    catch (Exception e)
+                    {
+                        MsgLogger.Exception($"{GetType().Name} - Receive", e);
+                    }
                 }
             }
 
