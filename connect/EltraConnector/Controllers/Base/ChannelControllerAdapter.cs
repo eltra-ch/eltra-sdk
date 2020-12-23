@@ -12,7 +12,6 @@ using System.Net;
 using System.Threading.Tasks;
 using System.Web;
 using System.Threading;
-using EltraConnector.Helpers;
 using EltraCommon.Transport;
 using EltraConnector.Transport.Udp;
 using EltraConnector.Transport.Ws.Interfaces;
@@ -370,7 +369,7 @@ namespace EltraConnector.Controllers.Base
             return result;
         }
 
-        private async Task<bool> SendStatusUpdateOverWebSocket(ChannelStatusUpdate statusUpdate)
+        private async Task<bool> SendStatusUpdate(ChannelStatusUpdate statusUpdate)
         {
             bool result = false;
 
@@ -406,12 +405,7 @@ namespace EltraConnector.Controllers.Base
 
                 UpdateChannelStatusLocalHost(statusUpdate);
 
-                result = await SendStatusUpdateOverWebSocket(statusUpdate);
-
-                /*if (!result)
-                {
-                    result = await SendStatusUpdateOverRest(statusUpdate);
-                }*/
+                result = await SendStatusUpdate(statusUpdate);
             }
             catch (Exception)
             {
@@ -425,33 +419,6 @@ namespace EltraConnector.Controllers.Base
 
             return result;
         }
-
-        /*private async Task<bool> SendStatusUpdateOverRest(ChannelStatusUpdate statusUpdate)
-        {
-            bool result = false;
-
-            try
-            {
-                var path = "api/channel/status";
-
-                var json = JsonConvert.SerializeObject(statusUpdate);
-
-                var response = await Transporter.Put(_identity, Url, path, json);
-
-                if (response.StatusCode == HttpStatusCode.OK)
-                {
-                    var requestResult = JsonConvert.DeserializeObject<RequestResult>(response.Content);
-
-                    result = requestResult.Result;
-                }
-            }
-            catch(Exception e)
-            {
-                MsgLogger.Exception($"{GetType().Name} - SendStatusUpdateOverRest", e);
-            }
-
-            return result;
-        }*/
 
         #endregion
     }

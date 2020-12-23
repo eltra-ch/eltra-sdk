@@ -1,5 +1,6 @@
 ﻿using EltraCommon.Contracts.Channels;
 using EltraCommon.Contracts.Users;
+using EltraCommon.Logger;
 using EltraCommon.Threads;
 using EltraConnector.Channels.Events;
 using EltraConnector.Events;
@@ -132,7 +133,7 @@ namespace EltraConnector.Channels
                 };
 
                 while (!result && stopWatch.ElapsedMilliseconds < _startupTimeout && 
-                    Status != WsChannelStatus.Stopped)
+                    Status != WsChannelStatus.Started)
                 {
                     Thread.Sleep(minWaitTime);
                 }
@@ -187,14 +188,32 @@ namespace EltraConnector.Channels
                 {
                     Status = WsChannelStatus.Starting;
 
+                    MsgLogger.WriteFlow($"{GetType().Name} - ConnectToChannel", $"Connect to channel {WsChannelName}");
+
+                    var sw = new Stopwatch();
+
+                    sw.Start();
+
                     if (await ConnectionManager.Connect(WsChannelId, WsChannelName))
                     {
                         result = await SendChannelIdentyficationRequest();
-                    
-                        if(result)
+
+                        sw.Stop();
+
+                        if (result)
                         {
+                            MsgLogger.WriteFlow($"{GetType().Name} - ConnectToChannel", $"Connect to channel {WsChannelName} success - elapsed time = {sw.ElapsedMilliseconds} ms");
+
                             Status = WsChannelStatus.Started;
                         }
+                        else
+                        {
+                            MsgLogger.WriteError($"{GetType().Name} - ConnectToChannel", $"Send channel {WsChannelName} identification failed!");
+                        }
+                    }
+                    else
+                    {
+                        MsgLogger.WriteError($"{GetType().Name} - ConnectToChannel", $"Connection to channel {WsChannelName} failed!");
                     }
                 }
             }

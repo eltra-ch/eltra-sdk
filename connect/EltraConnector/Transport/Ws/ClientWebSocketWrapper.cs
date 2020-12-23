@@ -56,8 +56,6 @@ namespace EltraConnector.Transport.Ws
 
             try
             {
-                await _sendLock.WaitAsync();
-
                 await _socket.ConnectAsync(uri, token);
 
                 result = true;
@@ -65,10 +63,6 @@ namespace EltraConnector.Transport.Ws
             catch (Exception e)
             {
                 MsgLogger.Exception($"{GetType().Name} - CloseAsync", e);
-            }
-            finally
-            {
-                _sendLock.Release();
             }
 
             return result;

@@ -134,6 +134,10 @@ namespace EltraConnector.Transport
                             result = true;
                         }
                     }
+                    else
+                    {
+                        result = true;
+                    }
                 }
             }
 
