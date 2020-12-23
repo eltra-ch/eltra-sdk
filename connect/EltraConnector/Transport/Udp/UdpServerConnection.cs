@@ -2,11 +2,15 @@
 using EltraConnector.Helpers;
 using EltraConnector.Transport.Definitions;
 using EltraConnector.Transport.Events;
+using EltraConnector.Transport.Udp.Contracts;
 using EltraConnector.Transport.Udp.Response;
 using EltraConnector.Transport.Ws.Interfaces;
 using System;
 using System.Net.Sockets;
 using System.Threading.Tasks;
+using System.Text.Json;
+using EltraCommon.Logger;
+using System.Net;
 
 namespace EltraConnector.Transport.Udp
 {
@@ -65,9 +69,28 @@ namespace EltraConnector.Transport.Udp
         {
             if (MessageReceived != null)
             {
+                UpdateEndpointStore(e.Text, e.Endpoint);
+
                 MessageReceived.Invoke(this, new ConnectionMessageEventArgs() { Source = e.Endpoint.ToString(), Message = e.Text, Type = MessageType.Text });
 
                 e.Handled = true;
+            }
+        }
+
+        private void UpdateEndpointStore(string message, IPEndPoint endPoint)
+        {
+            try
+            {
+                var udpRequest = JsonSerializer.Deserialize<UdpRequest>(message);
+
+                if (udpRequest is UdpRequest)
+                {
+                    _endpointStore.Add(udpRequest.Identity, endPoint);
+                }
+            }
+            catch (Exception e)
+            {
+                MsgLogger.Exception($"{GetType().Name} - OnServerMessageReceived", e);
             }
         }
 
@@ -135,11 +158,12 @@ namespace EltraConnector.Transport.Udp
         public async Task<bool> Send(UserIdentity identity, string typeName, string data)
         {
             bool result = false;
-            var endPoint = EndpointStore.Lookup(identity);
+            var endPoints = EndpointStore.ActiveEndpoints;
 
-            if (endPoint != null)
+            foreach(var endpoint in endPoints)
             {
-                var sentResult = await Server.Send(endPoint, identity, typeName, data);
+                var sentResult = await Server.Send(endpoint, identity, typeName, data);
+
                 result = sentResult > 0;
             }
 
@@ -149,11 +173,12 @@ namespace EltraConnector.Transport.Udp
         public async Task<bool> Send<T>(UserIdentity identity, T obj)
         {
             bool result = false;
-            var endPoint = EndpointStore.Lookup(identity);
+            var endPoints = EndpointStore.ActiveEndpoints;
 
-            if (endPoint != null)
+            foreach (var endpoint in endPoints)
             {
-                var sentResult = await Server.Send(endPoint, identity, obj);
+                var sentResult = await Server.Send(endpoint, identity, obj);
+             
                 result = sentResult > 0;
             }
 

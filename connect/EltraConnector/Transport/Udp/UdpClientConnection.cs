@@ -41,8 +41,6 @@ namespace EltraConnector.Transport.Udp
         protected EltraUdpClient Client { get => _client ?? (_client = CreateClient()); }
         public ConnectionPriority Priority => ConnectionPriority.High;
 
-        public int ProcessedRequestsCount { get; internal set; }
-
         public bool ReceiveSupported => false;
 
         #endregion

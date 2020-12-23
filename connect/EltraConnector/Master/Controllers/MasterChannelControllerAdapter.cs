@@ -14,7 +14,7 @@ using EltraCommon.Contracts.ToolSet;
 using EltraConnector.Controllers.Device;
 using EltraConnector.Controllers;
 using EltraConnector.Master.Controllers.Device;
-using EltraConnector.Master.Controllers.Commands;
+using EltraConnector.Controllers.Commands;
 
 namespace EltraConnector.Master.Controllers
 {

@@ -403,21 +403,21 @@ namespace EltraConnector.UserAgent
 
             if (!token.IsCancellationRequested)
             {
-                var t1 = Task.Run(() => 
+                var t1 = Task.Run(() =>
+                {
+                    _channelHeartbeat?.Start();
+                });
+
+                var t2 = Task.Run(() => 
                 {
                     _parameterUpdateManager?.Start(); 
                 });
 
-                var t2 = Task.Run(() =>
+                var t3 = Task.Run(() =>
                 {
                     _executeCommander?.Start();
                 });
 
-                var t3 = Task.Run(() => 
-                {
-                    _channelHeartbeat?.Start();
-                });
-                
                 RegisterParameterUpdateManagerEvents();
 
                 Task.WaitAll(new Task[] { t1, t2, t3 });

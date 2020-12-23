@@ -6,14 +6,15 @@ using EltraCommon.Logger;
 using EltraCommon.Contracts.CommandSets;
 using EltraConnector.Transport.Ws;
 using EltraCommon.Contracts.Channels;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Serialization;
+//using Newtonsoft.Json.Serialization;
 using EltraConnector.Events;
 using EltraCommon.Contracts.Devices;
 using EltraConnector.Transport.Events;
 using EltraConnector.Channels;
 using EltraConnector.Transport.Udp;
 using EltraConnector.Transport.Udp.Contracts;
+using EltraConnector.Extensions;
+using EltraConnector.Controllers.Commands;
 
 namespace EltraConnector.Agent.Controllers.Commands
 {
@@ -26,6 +27,7 @@ namespace EltraConnector.Agent.Controllers.Commands
         private readonly SlaveChannelControllerAdapter _channelAdapter;
         private readonly List<DeviceCommand> _deviceCommands;        
         private int _nodeId;
+        private readonly ExecuteCommandCache _executeCommandCache;
 
         #endregion
 
@@ -35,7 +37,8 @@ namespace EltraConnector.Agent.Controllers.Commands
             : base(channelAdapter.ConnectionManager, channelAdapter.ChannelId + "_ExecCommander", ChannelName,
                   channelAdapter.ChannelId, 0, channelAdapter.User.Identity)
         {
-            _deviceCommands = new List<DeviceCommand>();           
+            _deviceCommands = new List<DeviceCommand>();
+            _executeCommandCache = new ExecuteCommandCache();
 
             _channelAdapter = channelAdapter;
         }
@@ -47,6 +50,7 @@ namespace EltraConnector.Agent.Controllers.Commands
             _nodeId = nodeId;
 
             _deviceCommands = new List<DeviceCommand>();
+            _executeCommandCache = new ExecuteCommandCache();
 
             _channelAdapter = channelAdapter;
         }
@@ -81,7 +85,7 @@ namespace EltraConnector.Agent.Controllers.Commands
                 {
                     if (e.Type == MessageType.Data)
                     {
-                        await ProcessWsMessage(e.Message);
+                        await HandleMsgReceived(e.Message);
                     }
                 });
             }
@@ -91,9 +95,12 @@ namespace EltraConnector.Agent.Controllers.Commands
 
                 if (udpRequest is UdpRequest)
                 {
-                    if (udpRequest.TypeName == typeof(UdpAckRequest).FullName)
+                    if (e.Type == MessageType.Text)
                     {
-                        udpConnection.ProcessedRequestsCount++;
+                        Task.Run(async () =>
+                        {
+                            await HandleMsgReceived(udpRequest.Data);
+                        });
                     }
                 }
             }
@@ -106,15 +113,6 @@ namespace EltraConnector.Agent.Controllers.Commands
         #endregion
 
         #region Methods
-
-        private void HandleDeserializationError(object sender, ErrorEventArgs errorArgs)
-        {
-            var msg = errorArgs.ErrorContext.Error.Message;
-
-            MsgLogger.WriteDebug($"{GetType().Name} - HandleDeserializationError", msg);
-
-            errorArgs.ErrorContext.Handled = true;
-        }
 
         protected override async Task Execute()
         {
@@ -179,7 +177,7 @@ namespace EltraConnector.Agent.Controllers.Commands
             MsgLogger.WriteDebug($"{GetType().Name} - Execute", $"exec channel '{WsChannelName}', uuid='{WsChannelId}' closed");
         }
 
-        private async Task ProcessWsMessage(string json)
+        private async Task HandleMsgReceived(string json)
         {
             try
             {
@@ -202,12 +200,125 @@ namespace EltraConnector.Agent.Controllers.Commands
             }
         }
 
+        private ExecuteCommand ParseExecuteCommand(string json)
+        {
+            ExecuteCommand result = null;
+
+            try
+            {
+                var executeCommand = System.Text.Json.JsonSerializer.Deserialize<ExecuteCommand>(json);
+
+                if (executeCommand != null && executeCommand.IsValid())
+                {
+                    result = executeCommand;
+                }
+            }
+            catch (Exception)
+            {
+            }
+
+            return result;
+        }
+
+        private ExecuteCommandStatus ParseExecuteCommandStatus(string json)
+        {
+            ExecuteCommandStatus result = null;
+
+            try
+            {
+                var executeCommandStatus = System.Text.Json.JsonSerializer.Deserialize<ExecuteCommandStatus>(json);
+
+                if (executeCommandStatus != null && executeCommandStatus.IsValid())
+                {
+                    result = executeCommandStatus;
+                }
+            }
+            catch (Exception)
+            {
+            }
+
+            return result;
+        }
+
+        private List<ExecuteCommandStatus> ParseExecuteCommandStatusSet(string json)
+        {
+            List<ExecuteCommandStatus> result = null;
+
+            try
+            {
+                var executeCommandStatusList = System.Text.Json.JsonSerializer.Deserialize<List<ExecuteCommandStatus>>(json);
+
+                if (executeCommandStatusList != null && executeCommandStatusList.Count > 0)
+                {
+                    result = new List<ExecuteCommandStatus>();
+
+                    foreach (var executeCommandStatus in executeCommandStatusList)
+                    {
+                        if (executeCommandStatus.IsValid())
+                        {
+                            result.Add(executeCommandStatus);
+                        }
+                    }
+                }
+            }
+            catch (Exception)
+            {
+            }
+
+            return result;
+        }
+
+        private List<ExecuteCommand> ParseExecuteCommandSet(string json)
+        {
+            List<ExecuteCommand> result = null;
+
+            try
+            {
+                var executeCommands = System.Text.Json.JsonSerializer.Deserialize<List<ExecuteCommand>>(json);
+
+                if (executeCommands != null && executeCommands.Count > 0)
+                {
+                    result = new List<ExecuteCommand>();
+
+                    foreach (var executeCommand in executeCommands)
+                    {
+                        if (executeCommand.IsValid())
+                        {
+                            result.Add(executeCommand);
+                        }
+                    }
+                }
+            }
+            catch (Exception)
+            {
+            }
+
+            return result;
+        }
+
+        private ChannelStatusUpdate ParseChannelStatusUpdate(string json)
+        {
+            ChannelStatusUpdate result = null;
+
+            try
+            {
+                var channelStatusUpdate = System.Text.Json.JsonSerializer.Deserialize<ChannelStatusUpdate>(json);
+
+                if (channelStatusUpdate != null && channelStatusUpdate.IsValid())
+                {
+                    result = channelStatusUpdate;
+                }
+            }
+            catch (Exception)
+            {
+            }
+
+            return result;
+        }
+
         private async Task ProcessJsonMessage(string json)
         {
-            var executeCommands = JsonConvert.DeserializeObject<List<ExecuteCommand>>(json, new JsonSerializerSettings
-            {
-                Error = HandleDeserializationError
-            });
+            var executeCommands = ParseExecuteCommandSet(json);
 
             if (executeCommands != null)
             {
@@ -215,44 +326,56 @@ namespace EltraConnector.Agent.Controllers.Commands
 
                 foreach (var executeCommand in executeCommands)
                 {
-                    await WsPopCommand(executeCommand);
+                    await ExecuteCommand(executeCommand);
                 }
             }
             else
             {
-                var executeCommandStatusList = JsonConvert.DeserializeObject<List<ExecuteCommandStatus>>(json, new JsonSerializerSettings
-                {
-                    Error = HandleDeserializationError
-                });
+                var executeCommand = ParseExecuteCommand(json);
 
-                if (executeCommandStatusList != null)
+                if (executeCommand != null)
                 {
-                    MsgLogger.WriteDebug($"{GetType().Name} - Execute", $"channel '{WsChannelName}', uuid='{WsChannelId}' - received {executeCommandStatusList.Count} command status");
-
-                    foreach (var executeCommandStatus in executeCommandStatusList)
-                    {
-                        await WsPopCommand(executeCommandStatus);
-                    }
+                    await ExecuteCommand(executeCommand);
                 }
                 else
                 {
-                    var channelStatusUpdate = JsonConvert.DeserializeObject<ChannelStatusUpdate>(json, new JsonSerializerSettings
-                    {
-                        Error = HandleDeserializationError
-                    });
+                    var executeCommandStatusSet = ParseExecuteCommandStatusSet(json);
 
-                    if (channelStatusUpdate != null)
+                    if (executeCommandStatusSet != null)
                     {
-                        if (channelStatusUpdate.ChannelId != _channelAdapter.ChannelId)
+                        foreach (var executeCommandStatus in executeCommandStatusSet)
                         {
-                            MsgLogger.WriteDebug($"{GetType().Name} - Execute", $"session {channelStatusUpdate.ChannelId}, status changed to {channelStatusUpdate.Status}");
-
-                            OnRemoteChannelStatusChanged(new AgentChannelStatusChangedEventArgs() { Id = channelStatusUpdate.ChannelId, Status = channelStatusUpdate.Status });
+                            await WsPopCommand(executeCommandStatus);
                         }
                     }
                     else
                     {
-                        MsgLogger.WriteDebug($"{GetType().Name} - Execute", $"channel '{WsChannelName}', uuid='{WsChannelId}' - received 0 commands");
+                        var executeCommandStatus = ParseExecuteCommandStatus(json);
+
+                        if (executeCommandStatus != null)
+                        {
+                            await WsPopCommand(executeCommandStatus);
+
+                            MsgLogger.WriteFlow($"{GetType().Name} - ProcessJsonCommand", $"command {executeCommandStatus.CommandName} status changed = {executeCommandStatus.Status}");
+                        }
+                        else
+                        {
+                            var channelStatusUpdate = ParseChannelStatusUpdate(json);
+
+                            if (channelStatusUpdate != null)
+                            {
+                                if (channelStatusUpdate.ChannelId != _channelAdapter.Channel.Id)
+                                {
+                                    MsgLogger.WriteDebug($"{GetType().Name} - ProcessJsonCommand", $"session {channelStatusUpdate.ChannelId}, status changed to {channelStatusUpdate.Status}");
+
+                                    OnRemoteChannelStatusChanged(new AgentChannelStatusChangedEventArgs() { Id = channelStatusUpdate.ChannelId, Status = channelStatusUpdate.Status });
+                                }
+                            }
+                            else
+                            {
+                                MsgLogger.WriteDebug($"{GetType().Name} - Execute", $"channel '{WsChannelName}', uuid='{WsChannelId}' - received 0 commands");
+                            }
+                        }
                     }
                 }
             }
@@ -295,52 +418,52 @@ namespace EltraConnector.Agent.Controllers.Commands
             return await _channelAdapter.GetCommandStatus(command);
         }
 
-        public async Task WsPopCommand(ExecuteCommand execCommand)
+        public async Task ExecuteCommand(ExecuteCommand execCommand)
         {
             var deviceCommand = execCommand?.Command;
 
-            if (deviceCommand != null)
+            if (deviceCommand != null && _executeCommandCache.CanExecute(execCommand))
             {
                 var followedCommand = FindDeviceCommand(deviceCommand.Id);
 
-                switch (deviceCommand.Status)
-                {
-                    case ExecCommandStatus.Executed:
-                        {
-                            await SetCommandStatus(execCommand, ExecCommandStatus.Complete);
-
-                            OnCommandExecuted(new ExecuteCommanderEventArgs
-                            {
-                                CommandUuid = deviceCommand.Id,
-                                Status = ExecCommandStatus.Executed,
-                                Command = deviceCommand
-                            });
-
-                            RemoveDeviceCommand(deviceCommand.Id);
-
-                        }
-                        break;
-                    case ExecCommandStatus.Failed:
-                    case ExecCommandStatus.Refused:
-                        {
-                            MsgLogger.WriteError($"{GetType().Name} - WsPopCommand",
-                                $"Command {deviceCommand.Name} (uuid='{deviceCommand.Id}') execution failed!, status={deviceCommand.Status}");
-
-                            OnCommandExecuted(new ExecuteCommanderEventArgs
-                            {
-                                CommandUuid = deviceCommand.Id,
-                                Status = ExecCommandStatus.Failed,
-                                Command = deviceCommand
-                            });
-
-                            RemoveDeviceCommand(deviceCommand.Id);
-                        }
-                        break;
-
-                }
-
                 if (followedCommand != null)
                 {
+                    switch (deviceCommand.Status)
+                    {
+                        case ExecCommandStatus.Executed:
+                            {
+                                await SetCommandStatus(execCommand, ExecCommandStatus.Complete);
+
+                                OnCommandExecuted(new ExecuteCommanderEventArgs
+                                {
+                                    CommandUuid = deviceCommand.Id,
+                                    Status = ExecCommandStatus.Executed,
+                                    Command = deviceCommand
+                                });
+
+                                RemoveDeviceCommand(deviceCommand.Id);
+
+                            }
+                            break;
+                        case ExecCommandStatus.Failed:
+                        case ExecCommandStatus.Refused:
+                            {
+                                MsgLogger.WriteError($"{GetType().Name} - WsPopCommand",
+                                    $"Command {deviceCommand.Name} (uuid='{deviceCommand.Id}') execution failed!, status={deviceCommand.Status}");
+
+                                OnCommandExecuted(new ExecuteCommanderEventArgs
+                                {
+                                    CommandUuid = deviceCommand.Id,
+                                    Status = ExecCommandStatus.Failed,
+                                    Command = deviceCommand
+                                });
+
+                                RemoveDeviceCommand(deviceCommand.Id);
+                            }
+                            break;
+
+                    }
+
                     followedCommand.Status = deviceCommand.Status;
                 }
             }

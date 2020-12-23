@@ -68,13 +68,13 @@ namespace EltraConnector.Master.Controllers.Commands
 
         #region Methods
 
-        private async Task SendSessionIdentyfication(string commandExecUuid)
+        private async Task SendChannelIdentyfication(string channelId)
         {
-            if (ConnectionManager != null && ConnectionManager.IsConnected(commandExecUuid))
+            if (ConnectionManager != null && ConnectionManager.IsConnected(channelId))
             {
                 var sessionIdent = new ChannelIdentification() { Id = _channelControllerAdapter.Channel.Id };
                 
-                await ConnectionManager.Send(commandExecUuid, _channelControllerAdapter.User.Identity, sessionIdent);
+                await ConnectionManager.Send(channelId, _channelControllerAdapter.User.Identity, sessionIdent);
             }
         }
 
@@ -86,7 +86,7 @@ namespace EltraConnector.Master.Controllers.Commands
                 {
                     if (await ConnectionManager.Connect(channelId, channelName))
                     {
-                        await SendSessionIdentyfication(channelId);
+                        await SendChannelIdentyfication(channelId);
                     }
                 }
             }
@@ -190,7 +190,7 @@ namespace EltraConnector.Master.Controllers.Commands
             {
                 if (json == "ACK" || json == "KEEPALIVE")
                 {
-                    MsgLogger.EndTimeMeasure($"{GetType().Name} - HandleMsgReceived", start, $"message '{json}' processed, result = {result}");
+                    MsgLogger.WriteDebug($"{GetType().Name} - HandleMsgReceived", $"message '{json}' processed, result = {result}");
 
                     result = true;
                 }
@@ -260,6 +260,34 @@ namespace EltraConnector.Master.Controllers.Commands
                         if (executeCommand.IsValid())
                         {
                             result.Add(executeCommand);
+                        }
+                    }
+                }
+            }
+            catch (Exception)
+            {
+            }
+
+            return result;
+        }
+
+        private List<ExecuteCommandStatus> ParseExecuteCommandStatusSet(string json)
+        {
+            List<ExecuteCommandStatus> result = null;
+
+            try
+            {
+                var executeCommandStatusList = JsonSerializer.Deserialize<List<ExecuteCommandStatus>>(json);
+
+                if (executeCommandStatusList != null && executeCommandStatusList.Count > 0)
+                {
+                    result = new List<ExecuteCommandStatus>();
+
+                    foreach (var executeCommandStatus in executeCommandStatusList)
+                    {
+                        if (executeCommandStatus.IsValid())
+                        {
+                            result.Add(executeCommandStatus);
                         }
                     }
                 }
@@ -343,41 +371,55 @@ namespace EltraConnector.Master.Controllers.Commands
                     }
                     else
                     {
-                        var executeCommandStatus = ParseExecuteCommandStatus(json);
+                        var executeCommandStatusSet = ParseExecuteCommandStatusSet(json);
 
-                        if (executeCommandStatus != null)
+                        if (executeCommandStatusSet != null)
                         {
-                            MsgLogger.WriteFlow($"{GetType().Name} - ProcessJsonCommand", $"command {executeCommandStatus.CommandName} status changed = {executeCommandStatus.Status}");
-                            
+                            foreach(var executeCommandStatus in executeCommandStatusSet)
+                            {
+                                MsgLogger.WriteFlow($"{GetType().Name} - ProcessJsonCommand", $"command {executeCommandStatus.CommandName} status changed = {executeCommandStatus.Status}");
+                            }
+
                             result = true;
                         }
                         else
                         {
-                            var channelStatusUpdate = ParseChannelStatusUpdate(json);
+                            var executeCommandStatus = ParseExecuteCommandStatus(json);
 
-                            if (channelStatusUpdate != null)
+                            if (executeCommandStatus != null)
                             {
-                                if (channelStatusUpdate.ChannelId != _channelControllerAdapter.Channel.Id)
-                                {
-                                    MsgLogger.WriteDebug($"{GetType().Name} - ProcessJsonCommand", $"session {channelStatusUpdate.ChannelId}, status changed to {channelStatusUpdate.Status}");
-
-                                    OnRemoteChannelStatusChanged(new AgentChannelStatusChangedEventArgs() { Id = channelStatusUpdate.ChannelId, Status = channelStatusUpdate.Status });
-                                }
+                                MsgLogger.WriteFlow($"{GetType().Name} - ProcessJsonCommand", $"command {executeCommandStatus.CommandName} status changed = {executeCommandStatus.Status}");
 
                                 result = true;
                             }
                             else
                             {
-                                var channelIdentification = ParseChannelIdentification(json);
+                                var channelStatusUpdate = ParseChannelStatusUpdate(json);
 
-                                if (channelIdentification != null)
+                                if (channelStatusUpdate != null)
                                 {
-                                    MsgLogger.WriteDebug($"{GetType().Name} - ProcessJsonCommand", $"identification, channel = {channelIdentification.Id} node id = {channelIdentification.NodeId}");
+                                    if (channelStatusUpdate.ChannelId != _channelControllerAdapter.Channel.Id)
+                                    {
+                                        MsgLogger.WriteDebug($"{GetType().Name} - ProcessJsonCommand", $"session {channelStatusUpdate.ChannelId}, status changed to {channelStatusUpdate.Status}");
+
+                                        OnRemoteChannelStatusChanged(new AgentChannelStatusChangedEventArgs() { Id = channelStatusUpdate.ChannelId, Status = channelStatusUpdate.Status });
+                                    }
+
                                     result = true;
                                 }
                                 else
                                 {
-                                    MsgLogger.WriteError($"{GetType().Name} - ProcessJsonCommand", $"Unknown message {json} received");
+                                    var channelIdentification = ParseChannelIdentification(json);
+
+                                    if (channelIdentification != null)
+                                    {
+                                        MsgLogger.WriteDebug($"{GetType().Name} - ProcessJsonCommand", $"identification, channel = {channelIdentification.Id} node id = {channelIdentification.NodeId}");
+                                        result = true;
+                                    }
+                                    else
+                                    {
+                                        MsgLogger.WriteError($"{GetType().Name} - ProcessJsonCommand", $"Unknown message {json} received");
+                                    }
                                 }
                             }
                         }
