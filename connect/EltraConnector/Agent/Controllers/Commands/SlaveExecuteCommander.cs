@@ -6,7 +6,6 @@ using EltraCommon.Logger;
 using EltraCommon.Contracts.CommandSets;
 using EltraConnector.Transport.Ws;
 using EltraCommon.Contracts.Channels;
-//using Newtonsoft.Json.Serialization;
 using EltraConnector.Events;
 using EltraCommon.Contracts.Devices;
 using EltraConnector.Transport.Events;

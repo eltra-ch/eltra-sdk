@@ -26,6 +26,7 @@ using EltraConnector.Agent.Controllers.Commands;
 using EltraConnector.Agent.Parameters;
 using EltraConnector.Transport.Ws.Interfaces;
 using EltraConnector.Transport;
+using EltraConnector.Agent.Controllers.Heartbeat;
 
 namespace EltraConnector.UserAgent
 {
@@ -288,8 +289,9 @@ namespace EltraConnector.UserAgent
             _url = url;
             _authentication = new Authentication(url);
 
-            _channelHeartbeat = new ChannelHeartbeat(_channelAdapter, updateInterval, _timeout);
             _executeCommander = new SlaveExecuteCommander(_channelAdapter);
+            _channelHeartbeat = new SlaveChannelHeartbeat(_channelAdapter, _executeCommander, _timeout, updateInterval);
+            
             _parameterUpdateManager = new ParameterUpdateManager(_channelAdapter);
 
             RegisterEvents();
@@ -407,10 +409,7 @@ namespace EltraConnector.UserAgent
 
                 stopWatch.Start();
 
-                var heartbeatTask = Task.Run(() =>
-                {
-                    _channelHeartbeat?.Start();
-                });
+                _channelHeartbeat?.Start();
 
                 var parameterUpdateTask = Task.Run(() => 
                 {
@@ -424,7 +423,7 @@ namespace EltraConnector.UserAgent
 
                 RegisterParameterUpdateManagerEvents();
 
-                Task.WaitAll(new Task[] { heartbeatTask, parameterUpdateTask, executeCommanderTask });
+                Task.WaitAll(new Task[] { parameterUpdateTask, executeCommanderTask });
 
                 stopWatch.Stop();
 

@@ -23,9 +23,9 @@ namespace EltraConnector.Channels
 
         #region Constructors
 
-        public ChannelHeartbeat(ChannelControllerAdapter channelControllerAdapter, uint updateInterval, uint timeout)
-            : base(channelControllerAdapter.ConnectionManager, 
-                  channelControllerAdapter.Channel.Id, ChannelName,
+        public ChannelHeartbeat(ChannelControllerAdapter channelControllerAdapter, string wsChannelName, string wsChannelId, uint updateInterval, uint timeout)
+            : base(channelControllerAdapter.ConnectionManager,
+                  wsChannelId, wsChannelName,
                   channelControllerAdapter.Channel.Id, channelControllerAdapter.User.Identity)
         {
             _updateInterval = updateInterval;

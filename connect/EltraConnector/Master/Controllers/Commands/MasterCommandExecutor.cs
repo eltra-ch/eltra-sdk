@@ -4,31 +4,32 @@ using System.Threading.Tasks;
 using EltraCommon.Contracts.CommandSets;
 using EltraCommon.Contracts.Channels;
 using EltraCommon.Logger;
-using EltraCommon.Threads;
 using EltraConnector.Events;
 using EltraConnector.Transport.Ws;
 using EltraConnector.Transport.Events;
-using EltraConnector.Transport.Ws.Interfaces;
 using EltraConnector.Transport.Udp;
 using EltraConnector.Transport.Udp.Contracts;
 using System.Text.Json;
 using EltraConnector.Extensions;
+using EltraConnector.Channels;
 
 namespace EltraConnector.Master.Controllers.Commands
 {
-    class MasterCommandExecutor : EltraThread
+    class MasterCommandExecutor : WsChannelThread
     {
         #region Private fields
 
+        const string channelName = "CommandsExecution";
+
         private readonly MasterChannelControllerAdapter _channelControllerAdapter;
         private bool _stopping;
-        private string _wsChannelId;
-        
+                
         #endregion
 
         #region Constructors
 
         public MasterCommandExecutor(MasterChannelControllerAdapter adapter)
+            : base(adapter.ConnectionManager, adapter.Channel.Id + "_CommandExec", channelName, adapter.ChannelId, adapter.User.Identity)
         {
             _channelControllerAdapter = adapter;
         }
@@ -36,8 +37,7 @@ namespace EltraConnector.Master.Controllers.Commands
         #endregion
 
         #region Events
-
-        public event EventHandler<SignInRequestEventArgs> SignInRequested;
+                
         public event EventHandler<AgentChannelStatusChangedEventArgs> RemoteChannelStatusChanged;
 
         #endregion
@@ -49,58 +49,15 @@ namespace EltraConnector.Master.Controllers.Commands
             RemoteChannelStatusChanged?.Invoke(this, args);
         }
 
-        private bool OnSignInRequested()
-        {
-            var args = new SignInRequestEventArgs();
-
-            SignInRequested?.Invoke(this, args);
-
-            return args.SignInResult;
-        }
-
-        #endregion
-
-        #region Properties
-
-        private IConnectionManager ConnectionManager => _channelControllerAdapter.ConnectionManager;
-
         #endregion
 
         #region Methods
-
-        private async Task SendChannelIdentyfication(string channelId)
-        {
-            if (ConnectionManager != null && ConnectionManager.IsConnected(channelId))
-            {
-                var sessionIdent = new ChannelIdentification() { Id = _channelControllerAdapter.Channel.Id };
-                
-                await ConnectionManager.Send(channelId, _channelControllerAdapter.User.Identity, sessionIdent);
-            }
-        }
-
-        private async Task Connect(string channelId, string channelName)
-        {
-            if (ConnectionManager != null && ConnectionManager.CanConnect(channelId))
-            {
-                if (OnSignInRequested())
-                {
-                    if (await ConnectionManager.Connect(channelId, channelName))
-                    {
-                        await SendChannelIdentyfication(channelId);
-                    }
-                }
-            }
-        }
 
         protected override async Task Execute()
         {
             const int ReconnectTimeout = 100;
             
-            _wsChannelId = _channelControllerAdapter.Channel.Id + "_CommandExec";
-
-            string channelName = "CommandsExecution";
-            
-            await Connect(_wsChannelId, channelName);
+            await ConnectToChannel();
 
             _stopping = false;
 
@@ -108,7 +65,7 @@ namespace EltraConnector.Master.Controllers.Commands
 
             while (ShouldRun())
             {
-                bool result = await ProcessRequest(_wsChannelId);
+                bool result = await ProcessRequest();
 
                 if (!_stopping)
                 {
@@ -119,7 +76,7 @@ namespace EltraConnector.Master.Controllers.Commands
                         await Task.Delay(ReconnectTimeout);
                     }
 
-                    await Connect(_wsChannelId, channelName);
+                    await ReconnectToWsChannel();
                 }
             }
 
@@ -128,7 +85,7 @@ namespace EltraConnector.Master.Controllers.Commands
 
         private void OnMessageReceived(object sender, ConnectionMessageEventArgs e)
         {
-            if (sender is WsConnection connection && connection.UniqueId == _wsChannelId)
+            if (sender is WsConnection connection && connection.UniqueId == WsChannelId)
             {
                 Task.Run(async () =>
                 {
@@ -138,7 +95,7 @@ namespace EltraConnector.Master.Controllers.Commands
                     }
                 });
             }
-            else if (sender is UdpServerConnection udpConnection && udpConnection.UniqueId == _wsChannelId)
+            else if (sender is UdpServerConnection udpConnection && udpConnection.UniqueId == WsChannelId)
             {
                 var udpRequest = JsonSerializer.Deserialize<UdpRequest>(e.Message);
 
@@ -155,12 +112,12 @@ namespace EltraConnector.Master.Controllers.Commands
             }
         }
 
-        private async Task<bool> ProcessWebSocketRequest(string channelId)
+        private async Task<bool> ProcessWebSocketRequest()
         {
             const int executeIntervalWs = 1;
             bool result = true;
 
-            await ConnectionManager.Receive(channelId, ShouldRun);
+            await ConnectionManager.Receive(WsChannelId, ShouldRun);
 
             await Task.Delay(executeIntervalWs);
 
@@ -447,29 +404,18 @@ namespace EltraConnector.Master.Controllers.Commands
             return result;
         }
 
-        private async Task<bool> ProcessRequest(string channelId)
+        private async Task<bool> ProcessRequest()
         {
             bool result = false;
             
-            if (ConnectionManager != null && ConnectionManager.IsConnected(channelId))
+            if (ConnectionManager != null && ConnectionManager.IsConnected(WsChannelId))
             {
-                result = await ProcessWebSocketRequest(channelId);
+                result = await ProcessWebSocketRequest();
             }
             else if (!_stopping)
             {
                 result = await ProcessRestRequest();
             }
-
-            return result;
-        }
-
-        public override bool Stop()
-        {
-            _stopping = true;
-            
-            Task.Run(async () => { await ConnectionManager.Disconnect(_wsChannelId); }).GetAwaiter().GetResult();
-
-            bool result = base.Stop();
 
             return result;
         }

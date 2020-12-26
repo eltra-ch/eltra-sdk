@@ -14,6 +14,7 @@ using EltraConnector.Transport.Ws.Interfaces;
 using EltraConnector.Master.Controllers;
 using EltraConnector.Transport;
 using EltraConnector.Master.Controllers.Commands;
+using EltraConnector.Master.Controllers.Heartbeat;
 
 #pragma warning disable 1591
 
@@ -48,9 +49,9 @@ namespace EltraConnector.SyncAgent
             _connectionManager = new ConnectionManager() { HostUrl = url };
 
             _channelControllerAdapter = new MasterChannelControllerAdapter(this, channelId) { ConnectionManager = _connectionManager };
-
-            _channelHeartbeat = new ChannelHeartbeat(_channelControllerAdapter, updateInterval, timeout);
+                        
             _commandExecutor = new MasterCommandExecutor(_channelControllerAdapter);
+            _channelHeartbeat = new MasterChannelHeartbeat(_channelControllerAdapter, _commandExecutor, updateInterval, timeout);
 
             RegisterEvents();
         }
@@ -67,9 +68,9 @@ namespace EltraConnector.SyncAgent
             _connectionManager = new ConnectionManager() { HostUrl = url };
             
             _channelControllerAdapter = new MasterChannelControllerAdapter(this) { ConnectionManager = _connectionManager };
-
-            _channelHeartbeat = new ChannelHeartbeat(_channelControllerAdapter, updateInterval, timeout);
+                        
             _commandExecutor = new MasterCommandExecutor(_channelControllerAdapter);
+            _channelHeartbeat = new MasterChannelHeartbeat(_channelControllerAdapter, _commandExecutor, updateInterval, timeout);
 
             RegisterEvents();
         }

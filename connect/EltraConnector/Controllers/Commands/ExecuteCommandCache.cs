@@ -1,4 +1,5 @@
 ﻿using EltraCommon.Contracts.CommandSets;
+using EltraCommon.Logger;
 using System;
 using System.Collections.Generic;
 using System.Threading;
@@ -55,6 +56,11 @@ namespace EltraConnector.Controllers.Commands
             }
 
             _lock.Release();
+
+            if(!result)
+            {
+                MsgLogger.WriteLine($"drop command");
+            }
 
             return result;
         }
