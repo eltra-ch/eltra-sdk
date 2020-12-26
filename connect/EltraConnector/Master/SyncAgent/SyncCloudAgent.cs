@@ -88,11 +88,6 @@ namespace EltraConnector.SyncAgent
 
         #region Events handling
 
-        private void OnUdpServerErrorRaised(object sender, SocketError e)
-        {
-            MsgLogger.WriteError($"{GetType().Name} - OnUdpServerErrorRaised", $"Udp server error occured  = {e}!");
-        }
-
         private void OnAdapterGoodChanged(object sender, GoodChangedEventArgs e)
         {
             Good = _channelControllerAdapter.Good && _authentication.Good;
@@ -172,16 +167,28 @@ namespace EltraConnector.SyncAgent
 
         private void RegisterEvents()
         {
-            _channelHeartbeat.ChannelStatusChanged += OnChannelStatusChanged;
-            _channelHeartbeat.SignInRequested += OnSignInRequested;
+            if (_channelHeartbeat != null)
+            {
+                _channelHeartbeat.ChannelStatusChanged += OnChannelStatusChanged;
+                _channelHeartbeat.SignInRequested += OnSignInRequested;
+            }
 
-            _channelControllerAdapter.ChannelRegistered += OnChannelRegistered;
-            
-            _commandExecutor.RemoteChannelStatusChanged += OnRemoteChannelStatusChanged;
-            _commandExecutor.SignInRequested += OnSignInRequested;
+            if (_channelControllerAdapter != null)
+            {
+                _channelControllerAdapter.ChannelRegistered += OnChannelRegistered;
+                _channelControllerAdapter.GoodChanged += OnAdapterGoodChanged;
+            }
 
-            _channelControllerAdapter.GoodChanged += OnAdapterGoodChanged;
-            _authentication.GoodChanged += OnAdapterGoodChanged; 
+            if (_commandExecutor != null)
+            {
+                _commandExecutor.RemoteChannelStatusChanged += OnRemoteChannelStatusChanged;
+                _commandExecutor.SignInRequested += OnSignInRequested;
+            }
+
+            if (_authentication != null)
+            {
+                _authentication.GoodChanged += OnAdapterGoodChanged;
+            }
         }
 
         private async Task<bool> RegisterSession()

@@ -27,9 +27,25 @@ namespace EltraConnector.Agent.Parameters
 
         #region Constructors
 
+        public ParameterUpdateManager(ChannelControllerAdapter channelAdapter, string channelName, string channelId)
+            : base(channelAdapter.ConnectionManager, channelId, channelName,
+                  channelAdapter.ChannelId, 0, channelAdapter.User.Identity)
+        {
+            _channelAdapter = channelAdapter;
+            _parameterChangedTasks = new List<Task>();
+        }
+
         public ParameterUpdateManager(ChannelControllerAdapter channelAdapter)
             : base(channelAdapter.ConnectionManager, channelAdapter.ChannelId + "_ParameterUpdate", ChannelName,
                   channelAdapter.ChannelId, 0, channelAdapter.User.Identity)
+        {
+            _channelAdapter = channelAdapter;
+            _parameterChangedTasks = new List<Task>();
+        }
+
+        public ParameterUpdateManager(ChannelControllerAdapter channelAdapter, int nodeId, string channelName, string channelId)
+            : base(channelAdapter.ConnectionManager, channelId, channelName,
+                  channelAdapter.ChannelId, nodeId, channelAdapter.User.Identity)
         {
             _channelAdapter = channelAdapter;
             _parameterChangedTasks = new List<Task>();

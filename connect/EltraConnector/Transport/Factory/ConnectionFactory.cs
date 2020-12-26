@@ -28,6 +28,7 @@ namespace EltraConnector.Transport.Factory
                     result.Add(new RestConnection() { Url = url, UniqueId = uniqueId, ChannelName = channelName });
                     break;
                 case "CommandsExecution":
+                case "Master":
 #if _UDP
                     _serverConnection = new UdpServerConnection() { Url = url, ChannelName = channelName, UniqueId = uniqueId };
 
@@ -37,6 +38,7 @@ namespace EltraConnector.Transport.Factory
                     result.Add(new RestConnection() { Url = url, UniqueId = uniqueId, ChannelName = channelName });
                     break;
                 case "ExecuteCommander":
+                case "Slave":
 #if _UDP
                     if (_serverConnection!=null)
                     {

@@ -21,7 +21,7 @@ namespace EltraConnector.Agent.Controllers.Commands
     {
         #region Private fields
 
-        const string ChannelName = "ExecuteCommander";
+        const string ChannelName = "Slave";
 
         private readonly SlaveChannelControllerAdapter _channelAdapter;
         private readonly List<DeviceCommand> _deviceCommands;        

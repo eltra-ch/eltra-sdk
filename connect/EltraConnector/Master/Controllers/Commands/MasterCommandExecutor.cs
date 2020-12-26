@@ -19,7 +19,7 @@ namespace EltraConnector.Master.Controllers.Commands
     {
         #region Private fields
 
-        const string channelName = "CommandsExecution";
+        const string channelName = "Master";
 
         private readonly MasterChannelControllerAdapter _channelControllerAdapter;
         private bool _stopping;

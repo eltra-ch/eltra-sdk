@@ -27,6 +27,7 @@ using EltraConnector.Agent.Parameters;
 using EltraConnector.Transport.Ws.Interfaces;
 using EltraConnector.Transport;
 using EltraConnector.Agent.Controllers.Heartbeat;
+using EltraConnector.Agent.Controllers.Parameters;
 
 namespace EltraConnector.UserAgent
 {
@@ -290,9 +291,8 @@ namespace EltraConnector.UserAgent
             _authentication = new Authentication(url);
 
             _executeCommander = new SlaveExecuteCommander(_channelAdapter);
-            _channelHeartbeat = new SlaveChannelHeartbeat(_channelAdapter, _executeCommander, _timeout, updateInterval);
-            
-            _parameterUpdateManager = new ParameterUpdateManager(_channelAdapter);
+            _channelHeartbeat = new SlaveChannelHeartbeat(_channelAdapter, _executeCommander, _timeout, updateInterval);            
+            _parameterUpdateManager = new SlaveParameterUpdateManager(_channelAdapter, _executeCommander);
 
             RegisterEvents();
 
@@ -307,7 +307,7 @@ namespace EltraConnector.UserAgent
             _authentication = new Authentication(agent.Url);
 
             _executeCommander = new SlaveExecuteCommander(_channelAdapter, node.NodeId);
-            _parameterUpdateManager = new ParameterUpdateManager(_channelAdapter, node.NodeId);
+            _parameterUpdateManager = new SlaveParameterUpdateManager(_channelAdapter, node.NodeId, _executeCommander);
 
             RegisterEvents();
 
@@ -409,21 +409,35 @@ namespace EltraConnector.UserAgent
 
                 stopWatch.Start();
 
-                _channelHeartbeat?.Start();
+                Task parameterUpdateTask = null;
+                var tasks = new List<Task>();
 
-                var parameterUpdateTask = Task.Run(() => 
+                if (_channelHeartbeat != null)
                 {
-                    _parameterUpdateManager?.Start(); 
-                });
+                    _channelHeartbeat.Start();
+
+                    parameterUpdateTask = Task.Run(() =>
+                    {
+                        _parameterUpdateManager?.Start();
+                    });
+
+                    tasks.Add(parameterUpdateTask);
+                }
+                else
+                {
+                    _parameterUpdateManager.Start();
+                }
 
                 var executeCommanderTask = Task.Run(() =>
                 {
                     _executeCommander?.Start();
                 });
 
+                tasks.Add(executeCommanderTask);
+
                 RegisterParameterUpdateManagerEvents();
 
-                Task.WaitAll(new Task[] { parameterUpdateTask, executeCommanderTask });
+                Task.WaitAll(tasks.ToArray());
 
                 stopWatch.Stop();
 
@@ -489,7 +503,7 @@ namespace EltraConnector.UserAgent
 
             _parameterUpdateManager?.Stop();
 
-            await UnregisterSession();
+            await UnregisterChannel();
         }
 
         private async Task Run(CancellationToken token)
@@ -588,7 +602,7 @@ namespace EltraConnector.UserAgent
             return result;
         }
 
-        private async Task<bool> UnregisterSession()
+        private async Task<bool> UnregisterChannel()
         {
             bool result = false;
 
@@ -643,13 +657,22 @@ namespace EltraConnector.UserAgent
                 _channelHeartbeat.SignInRequested += OnSignInRequested;
             }
 
-            _parameterUpdateManager.SignInRequested += OnSignInRequested;
+            if (_parameterUpdateManager != null)
+            {
+                _parameterUpdateManager.SignInRequested += OnSignInRequested;
+            }
 
-            _channelAdapter.ChannelRegistered += OnChannelRegistered;
-            
-            _executeCommander.CommandExecuted += OnCommandExecuted;
-            _executeCommander.RemoteChannelStatusChanged += OnRemoteChannelStatusChanged;
-            _executeCommander.SignInRequested += OnSignInRequested;
+            if (_channelAdapter != null)
+            {
+                _channelAdapter.ChannelRegistered += OnChannelRegistered;
+            }
+
+            if (_executeCommander != null)
+            {
+                _executeCommander.CommandExecuted += OnCommandExecuted;
+                _executeCommander.RemoteChannelStatusChanged += OnRemoteChannelStatusChanged;
+                _executeCommander.SignInRequested += OnSignInRequested;
+            }
         }
 
         private async Task<List<EltraDevice>> GetDeviceNodes(Channel channel)

@@ -1,6 +1,6 @@
-﻿using EltraCommon.Extensions;
-using EltraCommon.Logger;
+﻿using EltraCommon.Logger;
 using System;
+using System.Diagnostics;
 using System.Net;
 using System.Net.Sockets;
 using System.Threading;
@@ -97,6 +97,8 @@ namespace EltraConnector.Transport.Udp
         {
             if (disposing)
             {
+                Abort();
+
                 try
                 {
                     if (Client.Connected)
@@ -110,8 +112,12 @@ namespace EltraConnector.Transport.Udp
                 }
 
                 int minWaitTime = 10;
+                int maxWaitTime = 3000;
 
-                while (_activityCounter > 0)
+                var sw = new Stopwatch();
+                sw.Start();
+
+                while (_activityCounter > 0 && sw.ElapsedMilliseconds < maxWaitTime)
                 {
                     Thread.Sleep(minWaitTime);
                 }
