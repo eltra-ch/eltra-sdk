@@ -138,8 +138,20 @@ namespace EltraConnector.Transport.Ws
         {
             if (wsMessage != null)
             {
-                MessageReceived?.Invoke(this, new ConnectionMessageEventArgs()
-                { Source = UniqueId, Message = wsMessage.Data, Type = MessageType.Data });
+                ConnectionMessageEventArgs args = new ConnectionMessageEventArgs { Source = UniqueId, Type = MessageType.Data };
+
+                var data = wsMessage.Data;
+
+                if(!string.IsNullOrEmpty(data) && data != "ACK" && data != "KEEPALIVE")
+                {
+                    args.Message = data.FromBase64();
+                }
+                else
+                {
+                    args.Message = data;
+                }
+
+                MessageReceived?.Invoke(this, args);
             }
         }
 
@@ -269,7 +281,7 @@ namespace EltraConnector.Transport.Ws
                     Identity = identity,
                     ChannelName = ChannelName,
                     TypeName = typeName,
-                    Data = data
+                    Data = data.ToBase64()
                 };
 
                 var json = JsonSerializer.Serialize(wsMessage);
@@ -359,10 +371,12 @@ namespace EltraConnector.Transport.Ws
                 {
                     if(wsMsg.TypeName == typeof(WsMessage).FullName)
                     {
-                        var json = wsMsg.Data;
+                        var base64Data = wsMsg.Data;
 
-                        if (!string.IsNullOrEmpty(json))
+                        if (!string.IsNullOrEmpty(base64Data))
                         {
+                            var json = base64Data.FromBase64();
+
                             result = json.TryDeserializeObject<WsMessage>();
                         }
                     }
@@ -504,7 +518,8 @@ namespace EltraConnector.Transport.Ws
             {
                 var wsMsg = await ReadWsMessage();
 
-                if(wsMsg is WsMessageAck)
+                if(wsMsg != null && (wsMsg.TypeName == typeof(WsMessageAck).FullName || 
+                   wsMsg.TypeName == typeof(WsMessageKeepAlive).FullName))
                 {
                     result = wsMsg.Data;
 
@@ -514,7 +529,7 @@ namespace EltraConnector.Transport.Ws
                 {
                     if (await Send(new UserIdentity(), new WsMessageAck()))
                     {
-                        result = wsMsg.Data;
+                        result = wsMsg.Data.FromBase64();
                         LastCloseStatus = null;
                     }
                     

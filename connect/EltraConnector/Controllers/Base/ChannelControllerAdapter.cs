@@ -5,7 +5,6 @@ using EltraCommon.Helpers;
 using EltraCommon.Logger;
 using EltraConnector.Events;
 using EltraCommon.Extensions;
-using System.Text.Json;
 using System;
 using System.Collections.Generic;
 using System.Net;
@@ -68,7 +67,8 @@ namespace EltraConnector.Controllers.Base
         {
             ChannelRegistered?.Invoke(this, e);
         }
-        private void OnConnectionManagerChanged()
+        
+        protected virtual void OnConnectionManagerChanged()
         {
             var t = Task.Run(async ()=> {
 
@@ -108,7 +108,7 @@ namespace EltraConnector.Controllers.Base
 
         #region Methods
 
-        private async Task<bool> SendChannelIdentyficationRequest()
+        protected async Task<bool> SendChannelIdentyficationRequest()
         {
             bool result = false;
 
@@ -380,19 +380,16 @@ namespace EltraConnector.Controllers.Base
 
             if (ConnectionManager != null && ConnectionManager.IsConnected(Channel.Id))
             {
-                await ConnectionManager.Lock();
-
                 if (await ConnectionManager.Send(Channel.Id, _user.Identity, statusUpdate))
                 {
-                    var requestResult = await ConnectionManager.Receive<RequestResult>(Channel.Id);
+                    /*var requestResult = await ConnectionManager.Receive<RequestResult>(Channel.Id);
 
                     if (requestResult != null)
                     {
                         result = requestResult.Result;
-                    }
+                    }*/
+                    result = true;
                 }
-
-                ConnectionManager.Unlock();
             }
 
             return result;

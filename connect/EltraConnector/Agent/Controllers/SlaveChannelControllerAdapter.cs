@@ -48,6 +48,22 @@ namespace EltraConnector.Agent.Controllers
 
         #region Methods
 
+        protected override void OnConnectionManagerChanged()
+        {
+            var t = Task.Run(async () => {
+
+                if (ConnectionManager != null)
+                {
+                    if (await ConnectionManager.Connect(Channel.Id, "Slave"))
+                    {
+                        await SendChannelIdentyficationRequest();
+                    }
+                }
+            });
+
+            t.Wait();
+        }
+
         private DeviceControllerAdapter CreateDeviceController()
         {
             var result = new SlaveDeviceControllerAdapter(Url, Channel, User.Identity) { ConnectionManager = ConnectionManager };

@@ -12,8 +12,6 @@ namespace EltraConnector.Channels
     {
         #region Private fields
 
-        const string ChannelName = "SessionUpdate";
-
         private readonly ChannelControllerAdapter _channelControllerAdapter;
         private readonly uint _updateInterval;
         private readonly uint _timeout;
