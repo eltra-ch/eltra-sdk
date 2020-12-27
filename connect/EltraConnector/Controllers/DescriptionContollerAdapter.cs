@@ -1,6 +1,6 @@
 ﻿using EltraCommon.ObjectDictionary.DeviceDescription;
 using EltraCommon.Logger;
-using Newtonsoft.Json;
+using System.Text.Json;
 using System;
 using System.Threading.Tasks;
 using System.Net;
@@ -12,6 +12,7 @@ using EltraCommon.Contracts.ToolSet;
 using System.Threading;
 using EltraCommon.Contracts.Users;
 using EltraCommon.Transport;
+using EltraCommon.Extensions;
 
 namespace EltraConnector.Controllers
 {
@@ -43,7 +44,7 @@ namespace EltraConnector.Controllers
             {
                 MsgLogger.WriteLine($"upload device description version='{deviceDescription.Version}'");
 
-                var postResult = await Transporter.Post(_identity, Url, "api/description/upload", JsonConvert.SerializeObject(deviceDescription));
+                var postResult = await Transporter.Post(_identity, Url, "api/description/upload", deviceDescription.ToJson());
 
                 if (postResult.StatusCode == HttpStatusCode.OK)
                 {
@@ -76,7 +77,7 @@ namespace EltraConnector.Controllers
 
                 if (!string.IsNullOrEmpty(json))
                 {
-                    var requestResult = JsonConvert.DeserializeObject<RequestResult>(json);
+                    var requestResult = json.TryDeserializeObject<RequestResult>();
 
                     if (requestResult != null)
                     {
@@ -112,7 +113,7 @@ namespace EltraConnector.Controllers
 
                 if (!string.IsNullOrEmpty(json))
                 {
-                    result = JsonConvert.DeserializeObject<DeviceDescriptionPayload>(json);
+                    result = json.TryDeserializeObject<DeviceDescriptionPayload>();
 
                     if(result!=null)
                     {
@@ -148,7 +149,7 @@ namespace EltraConnector.Controllers
 
                 if (!string.IsNullOrEmpty(json))
                 {
-                    result = JsonConvert.DeserializeObject<DeviceDescriptionIdentity>(json);                    
+                    result = json.TryDeserializeObject<DeviceDescriptionIdentity>();                    
                 }
             }
             catch (Exception e)
@@ -167,7 +168,7 @@ namespace EltraConnector.Controllers
             {
                 MsgLogger.WriteLine($"upload payload version='{payload.FileName}'");
 
-                var postResult = await Transporter.Post(_identity, Url, "api/description/payload-upload", JsonConvert.SerializeObject(payload));
+                var postResult = await Transporter.Post(_identity, Url, "api/description/payload-upload", payload.ToJson());
 
                 if (postResult.StatusCode == HttpStatusCode.OK)
                 {

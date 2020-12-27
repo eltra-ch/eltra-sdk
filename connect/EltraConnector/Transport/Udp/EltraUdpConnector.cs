@@ -2,12 +2,13 @@
 using EltraCommon.Logger;
 using EltraConnector.Transport.Udp.Contracts;
 using EltraConnector.Transport.Udp.Response;
-using Newtonsoft.Json;
+using System.Text.Json;
 using System;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
+using EltraCommon.Extensions;
 
 namespace EltraConnector.Transport.Udp
 {
@@ -140,7 +141,7 @@ namespace EltraConnector.Transport.Udp
 
             try
             {
-                var msg = JsonConvert.SerializeObject(obj);
+                var msg = JsonSerializer.Serialize(obj);
 
                 result = await Send(endPoint, identity, typeof(T).FullName, msg);
             }
@@ -155,11 +156,11 @@ namespace EltraConnector.Transport.Udp
         public async Task<int> Send(IPEndPoint endPoint, UserIdentity identity, string className, string msg)
         {
             int bytesSent = -1;
-            var request = new UdpRequest() { Identity = identity, TypeName = className, Data = msg };
+            var request = new UdpRequest() { Identity = identity, TypeName = className, Data = msg.ToBase64() };
 
             try
             {
-                bytesSent = await Send(endPoint, JsonConvert.SerializeObject(request));
+                bytesSent = await Send(endPoint, JsonSerializer.Serialize(request));
             }
             catch (Exception e)
             {

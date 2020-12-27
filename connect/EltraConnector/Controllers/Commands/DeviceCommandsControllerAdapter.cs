@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Web;
-using Newtonsoft.Json;
+using System.Text.Json;
 using EltraCommon.Contracts.CommandSets;
 using EltraCommon.Contracts.Channels;
 using EltraCommon.Logger;
@@ -11,6 +11,7 @@ using EltraCommon.Contracts.Devices;
 using EltraCommon.Contracts.Users;
 using EltraCommon.Transport;
 using EltraConnector.Transport.Ws.Interfaces;
+using EltraCommon.Extensions;
 
 namespace EltraConnector.Controllers
 {
@@ -80,7 +81,7 @@ namespace EltraConnector.Controllers
 
                     var json = await Transporter.Get(_userIdentity, url);
 
-                    var commandSet = JsonConvert.DeserializeObject<DeviceCommandSet>(json);
+                    var commandSet = json.TryDeserializeObject<DeviceCommandSet>();
 
                     if (commandSet != null)
                     {
@@ -119,7 +120,7 @@ namespace EltraConnector.Controllers
 
                     var json = await Transporter.Get(_userIdentity, url);
 
-                    var command = JsonConvert.DeserializeObject<DeviceCommand>(json);
+                    var command = json.TryDeserializeObject<DeviceCommand>();
 
                     if (command != null)
                     {
@@ -202,7 +203,7 @@ namespace EltraConnector.Controllers
 
                     if (!string.IsNullOrEmpty(json))
                     {
-                        var executeCommands = JsonConvert.DeserializeObject<List<ExecuteCommand>>(json);
+                        var executeCommands = json.TryDeserializeObject<List<ExecuteCommand>>();
 
                         foreach (var executeCommand in executeCommands)
                         {
@@ -244,7 +245,7 @@ namespace EltraConnector.Controllers
 
                     var json = await Transporter.Get(_userIdentity, url);
 
-                    result = JsonConvert.DeserializeObject<ExecuteCommand>(json);
+                    result = json.TryDeserializeObject<ExecuteCommand>();
 
                     if (result?.Command != null)
                     {
@@ -284,7 +285,7 @@ namespace EltraConnector.Controllers
 
                 var json = await Transporter.Get(_userIdentity, url);
 
-                var executeCommandStatus = JsonConvert.DeserializeObject<ExecuteCommandStatus>(json);
+                var executeCommandStatus = json.TryDeserializeObject<ExecuteCommandStatus>();
 
                 if (executeCommandStatus != null)
                 {

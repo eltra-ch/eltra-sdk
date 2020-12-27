@@ -7,10 +7,11 @@ using EltraConnector.Transport.Ws.Interfaces;
 using EltraCommon.Contracts.Users;
 using EltraCommon.Contracts.Ws;
 using EltraCommon.Logger;
-using Newtonsoft.Json;
+using System.Text.Json;
 using EltraConnector.Transport.Events;
 using EltraConnector.Transport.Ws.Converters;
 using EltraConnector.Transport.Definitions;
+using EltraCommon.Extensions;
 
 namespace EltraConnector.Transport.Ws
 {
@@ -124,7 +125,7 @@ namespace EltraConnector.Transport.Ws
             if (wsMessage != null)
             {
                 MessageReceived?.Invoke(this, new ConnectionMessageEventArgs() 
-                { Source = UniqueId, Message = JsonConvert.SerializeObject(wsMessage), Type = MessageType.WsMessage });
+                { Source = UniqueId, Message = JsonSerializer.Serialize(wsMessage), Type = MessageType.WsMessage });
             }
         }
 
@@ -271,7 +272,7 @@ namespace EltraConnector.Transport.Ws
                     Data = data
                 };
 
-                var json = JsonConvert.SerializeObject(wsMessage);
+                var json = JsonSerializer.Serialize(wsMessage);
                 var buffer = Encoding.UTF8.GetBytes(json);
 
                 if (!Socket.CloseStatus.HasValue && Socket.State == WebSocketState.Open)
@@ -321,7 +322,7 @@ namespace EltraConnector.Transport.Ws
 
             try
             {
-                var msg = JsonConvert.SerializeObject(obj);
+                var msg = JsonSerializer.Serialize(obj);
 
                 if (await Send(identity, typeof(T).FullName, msg))
                 {
@@ -352,13 +353,18 @@ namespace EltraConnector.Transport.Ws
 
             if (!string.IsNullOrEmpty(textMsg))
             {
-                var wsMsg = JsonConvert.DeserializeObject<WsMessage>(textMsg);
+                var wsMsg = textMsg.TryDeserializeObject<WsMessage>();
 
                 if (wsMsg is WsMessage)
                 {
                     if(wsMsg.TypeName == typeof(WsMessage).FullName)
                     {
-                        result = JsonConvert.DeserializeObject<WsMessage>(wsMsg.Data);
+                        var json = wsMsg.Data;
+
+                        if (!string.IsNullOrEmpty(json))
+                        {
+                            result = json.TryDeserializeObject<WsMessage>();
+                        }
                     }
                     else
                     {
@@ -567,7 +573,7 @@ namespace EltraConnector.Transport.Ws
                 
                 if (IsJson(msg))
                 {                 
-                    result = JsonConvert.DeserializeObject<T>(msg);                    
+                    result = msg.TryDeserializeObject<T>();                    
                 }
                 else if(string.IsNullOrEmpty(msg) && IsConnected)
                 {                    

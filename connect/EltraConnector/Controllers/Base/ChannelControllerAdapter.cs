@@ -5,7 +5,7 @@ using EltraCommon.Helpers;
 using EltraCommon.Logger;
 using EltraConnector.Events;
 using EltraCommon.Extensions;
-using Newtonsoft.Json;
+using System.Text.Json;
 using System;
 using System.Collections.Generic;
 using System.Net;
@@ -159,7 +159,7 @@ namespace EltraConnector.Controllers.Base
 
                 var json = await Transporter.Get(_identity, url);
 
-                result = JsonConvert.DeserializeObject<Channel>(json);
+                result = json.TryDeserializeObject<Channel>();
             }
             catch (Exception e)
             {
@@ -230,7 +230,7 @@ namespace EltraConnector.Controllers.Base
 
                 if(!string.IsNullOrEmpty(json))
                 {
-                    result = JsonConvert.DeserializeObject<List<Channel>>(json);
+                    result = json.TryDeserializeObject<List<Channel>>();
                 }
             }
             catch (Exception e)
@@ -294,9 +294,14 @@ namespace EltraConnector.Controllers.Base
 
                 if (postResult.StatusCode == HttpStatusCode.OK)
                 {
-                    var requestResult = JsonConvert.DeserializeObject<RequestResult>(postResult.Content);
+                    var json = postResult.Content;
 
-                    result = requestResult.Result;
+                    if (!string.IsNullOrEmpty(json))
+                    {
+                        var requestResult = json.TryDeserializeObject<RequestResult>();
+
+                        result = requestResult.Result;
+                    }
                 }
 
                 if(!result)
@@ -353,7 +358,7 @@ namespace EltraConnector.Controllers.Base
 
                     if (!string.IsNullOrEmpty(json))
                     {
-                        result = JsonConvert.DeserializeObject<ChannelStatus>(json);
+                        result = json.TryDeserializeObject<ChannelStatus>();
                     }
                 }
                 catch (Exception e)

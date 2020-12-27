@@ -1,10 +1,11 @@
 ﻿using EltraCommon.Contracts.Users;
 using EltraCommon.Logger;
 using EltraConnector.Transport.Udp.Contracts;
-using Newtonsoft.Json;
+using System.Text.Json;
 using System;
 using System.Text;
 using System.Threading.Tasks;
+using EltraCommon.Extensions;
 
 namespace EltraConnector.Transport.Udp
 {
@@ -136,13 +137,13 @@ namespace EltraConnector.Transport.Udp
         public async Task<int> Send(UserIdentity identity, string className, string msg)
         {
             int bytesSent = -1;
-            var request = new UdpRequest() { Identity = identity, TypeName = className, Data = msg };
+            var request = new UdpRequest() { Identity = identity, TypeName = className, Data = msg.ToBase64() };
 
             if (!IsCanceled)
             {
                 try
                 {
-                    bytesSent = await Send(JsonConvert.SerializeObject(request));
+                    bytesSent = await Send(JsonSerializer.Serialize(request));
                 }
                 catch (Exception e)
                 {
@@ -161,7 +162,7 @@ namespace EltraConnector.Transport.Udp
             {
                 try
                 {
-                    var msg = JsonConvert.SerializeObject(obj);
+                    var msg = JsonSerializer.Serialize(obj);
 
                     result = await Send(identity, typeof(T).FullName, msg);
                 }

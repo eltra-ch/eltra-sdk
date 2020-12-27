@@ -10,13 +10,14 @@ using EltraCommon.Contracts.Channels;
 using EltraCommon.Logger;
 using EltraCommon.ObjectDictionary.Common.DeviceDescription.Profiles.Application.Parameters;
 using EltraCommon.ObjectDictionary.Common.DeviceDescription.Profiles.Application.Parameters.Events;
-using Newtonsoft.Json;
+using System.Text.Json;
 using EltraCommon.Contracts.Devices;
 using EltraCommon.Contracts.History;
 using System.Net;
 using EltraConnector.Controllers.Events;
 using EltraCommon.Contracts.Users;
 using EltraCommon.Transport;
+using EltraCommon.Extensions;
 
 namespace EltraConnector.Controllers
 {
@@ -130,7 +131,7 @@ namespace EltraConnector.Controllers
 
                 var json = await Transporter.Get(_identity, url);
 
-                var parameter = JsonConvert.DeserializeObject<Parameter>(json);
+                var parameter = json.TryDeserializeObject<Parameter>();
 
                 if (parameter != null)
                 {
@@ -178,7 +179,7 @@ namespace EltraConnector.Controllers
 
                 var json = await Transporter.Get(_identity, url);
 
-                var parameterValue = JsonConvert.DeserializeObject<ParameterValue>(json);
+                var parameterValue = json.TryDeserializeObject<ParameterValue>();
 
                 if (parameterValue != null)
                 {
@@ -276,7 +277,7 @@ namespace EltraConnector.Controllers
 
                 var path = $"api/parameter/update";
 
-                var json = JsonConvert.SerializeObject(parameterUpdate);
+                var json = parameterUpdate.ToJson();
 
                 var response = await Transporter.Put(_identity, Url, path, json);
 
@@ -321,7 +322,7 @@ namespace EltraConnector.Controllers
 
                 var path = $"api/parameter/value";
 
-                var json = JsonConvert.SerializeObject(parameterUpdate);
+                var json = parameterUpdate.ToJson();
 
                 var response = await Transporter.Put(_identity, Url, path, json);
 
@@ -426,7 +427,7 @@ namespace EltraConnector.Controllers
 
                 var json = await Transporter.Get(_identity, url);
 
-                var parameterValues = JsonConvert.DeserializeObject<List<ParameterValue>>(json);
+                var parameterValues = json.TryDeserializeObject<List<ParameterValue>>();
 
                 if (parameterValues != null)
                 {
@@ -465,7 +466,7 @@ namespace EltraConnector.Controllers
 
                 if (!string.IsNullOrEmpty(json))
                 {
-                    var historyStatistics = JsonConvert.DeserializeObject<ParameterValueHistoryStatistics>(json);
+                    var historyStatistics = json.TryDeserializeObject<ParameterValueHistoryStatistics>();
 
                     if (historyStatistics != null)
                     {

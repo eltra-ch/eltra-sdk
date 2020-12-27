@@ -12,6 +12,7 @@ using EltraConnector.Transport.Udp.Contracts;
 using System.Text.Json;
 using EltraConnector.Extensions;
 using EltraConnector.Channels;
+using EltraCommon.Extensions;
 
 namespace EltraConnector.Master.Controllers.Commands
 {
@@ -105,9 +106,16 @@ namespace EltraConnector.Master.Controllers.Commands
                     {
                         Task.Run(async () =>
                         {
-                            var result = await HandleMsgReceived(udpRequest.Data);
+                            if (udpRequest.Data != "ACK" && !string.IsNullOrEmpty(udpRequest.Data))
+                            {
+                                var result = await HandleMsgReceived(udpRequest.Data.FromBase64());
+                            }
                         });
                     }
+                }
+                else
+                {
+                    MsgLogger.WriteError($"{GetType().Name} - OnMessageReceived", $"udp message is not {typeof(UdpRequest).GetType().Name} type!");
                 }
             }
         }

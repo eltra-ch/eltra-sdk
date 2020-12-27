@@ -5,9 +5,10 @@ using System.Web;
 using EltraCommon.Helpers;
 using EltraCommon.Logger;
 using EltraCommon.Contracts.Users;
-using Newtonsoft.Json;
+using System.Text.Json;
 using System.Threading;
 using EltraCommon.Transport;
+using EltraCommon.Extensions;
 
 namespace EltraConnector.Controllers
 {
@@ -42,7 +43,7 @@ namespace EltraConnector.Controllers
 
                     var path = "api/user/sign-in";
 
-                    var json = JsonConvert.SerializeObject(identity);
+                    var json = identity.ToJson();
 
                     var response = await Transporter.Post(identity, Url, path, json);
 
@@ -115,7 +116,7 @@ namespace EltraConnector.Controllers
             {
                 var path = "api/user/sign-up";
 
-                var json = JsonConvert.SerializeObject(identity);
+                var json = identity.ToJson();
 
                 var response = await Transporter.Post(identity, Url, path, json);
 
@@ -148,7 +149,7 @@ namespace EltraConnector.Controllers
 
                 if (!string.IsNullOrEmpty(json))
                 {
-                    result = JsonConvert.DeserializeObject<UserIdentity>(json);
+                    result = json.TryDeserializeObject<UserIdentity>();
                 }
             }
             catch (Exception e)
@@ -167,7 +168,7 @@ namespace EltraConnector.Controllers
             {
                 var path = "api/user/create-alias";
 
-                var json = JsonConvert.SerializeObject(identity);
+                var json = identity.ToJson();
 
                 var response = await Transporter.Post(_identity, Url, path, json);
 

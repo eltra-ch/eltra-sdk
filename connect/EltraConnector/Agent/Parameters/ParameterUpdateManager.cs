@@ -2,8 +2,6 @@
 using System.Threading.Tasks;
 using EltraCommon.Logger;
 using EltraConnector.Transport.Ws;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Serialization;
 using System.Collections.Generic;
 using EltraConnector.Controllers.Base;
 using EltraCommon.Contracts.Parameters;
@@ -11,6 +9,7 @@ using EltraCommon.Contracts.Parameters.Events;
 using EltraConnector.Channels.Events;
 using EltraConnector.Transport.Events;
 using EltraConnector.Channels;
+using EltraCommon.Extensions;
 
 namespace EltraConnector.Agent.Parameters
 {
@@ -95,10 +94,7 @@ namespace EltraConnector.Agent.Parameters
             {
                 var parameterChangedTask = Task.Run(() =>
                 {
-                    var parameterSet = JsonConvert.DeserializeObject<ParameterValueUpdateSet>(json, new JsonSerializerSettings
-                    {
-                        Error = HandleDeserializationError
-                    });
+                    var parameterSet = json.TryDeserializeObject<ParameterValueUpdateSet>();
 
                     if (parameterSet != null && parameterSet.Count > 0)
                     {
@@ -112,10 +108,7 @@ namespace EltraConnector.Agent.Parameters
                     }
                     else
                     {
-                        var parameterEntry = JsonConvert.DeserializeObject<ParameterValueUpdate>(json, new JsonSerializerSettings
-                        {
-                            Error = HandleDeserializationError
-                        });
+                        var parameterEntry = json.TryDeserializeObject<ParameterValueUpdate>();
 
                         if (parameterEntry != null)
                         {
@@ -135,15 +128,6 @@ namespace EltraConnector.Agent.Parameters
             {
                 MsgLogger.WriteDebug($"{GetType().Name} - Execute", $"unknown message '{json}' received");
             }
-        }
-
-        private void HandleDeserializationError(object sender, ErrorEventArgs errorArgs)
-        {
-            var msg = errorArgs.ErrorContext.Error.Message;
-
-            MsgLogger.WriteDebug($"{GetType().Name} - HandleDeserializationError", msg);
-
-            errorArgs.ErrorContext.Handled = true;
         }
 
         protected override async Task Execute()

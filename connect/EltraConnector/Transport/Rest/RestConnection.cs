@@ -7,10 +7,11 @@ using EltraCommon.Transport;
 using EltraConnector.Transport.Definitions;
 using EltraConnector.Transport.Events;
 using EltraConnector.Transport.Ws.Interfaces;
-using Newtonsoft.Json;
+using System.Text.Json;
 using System;
 using System.Net;
 using System.Threading.Tasks;
+using EltraCommon.Extensions;
 
 namespace EltraConnector.Transport.Rest
 {
@@ -105,7 +106,7 @@ namespace EltraConnector.Transport.Rest
                 {
                     if (postMethod)
                     {
-                        var requestResult = await Transporter.Post(identity, Url, path, JsonConvert.SerializeObject(obj));
+                        var requestResult = await Transporter.Post(identity, Url, path, JsonSerializer.Serialize(obj));
 
                         if (requestResult.StatusCode == HttpStatusCode.OK)
                         {
@@ -120,13 +121,18 @@ namespace EltraConnector.Transport.Rest
                     }
                     else
                     {
-                        var response = await Transporter.Put(identity, Url, path, JsonConvert.SerializeObject(obj));
+                        var response = await Transporter.Put(identity, Url, path, JsonSerializer.Serialize(obj));
 
                         if (response.StatusCode == HttpStatusCode.OK)
                         {
-                            var requestResult = JsonConvert.DeserializeObject<RequestResult>(response.Content);
+                            var json = response.Content;
+                            
+                            if (!string.IsNullOrEmpty(json))
+                            {
+                                var requestResult = json.TryDeserializeObject<RequestResult>();
 
-                            result = requestResult.Result;
+                                result = requestResult.Result;
+                            }
                         }
                         else
                         {

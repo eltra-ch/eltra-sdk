@@ -6,7 +6,7 @@ using EltraConnector.Events;
 using EltraCommon.Contracts.CommandSets;
 using EltraCommon.Contracts.Channels;
 using EltraCommon.Logger;
-using Newtonsoft.Json;
+using System.Text.Json;
 using EltraCommon.Contracts.Devices;
 using EltraCommon.Helpers;
 using EltraCommon.Extensions;
@@ -175,7 +175,7 @@ namespace EltraConnector.Controllers.Device
                 var url = UrlHelper.BuildUrl(Url, "api/channel/devices", query);
                 var json = await Transporter.Get(_userIdentity, url);
 
-                result = JsonConvert.DeserializeObject<List<EltraDevice>>(json);
+                result = json.TryDeserializeObject<List<EltraDevice>>();
 
                 if (result != null)
                 {
@@ -373,7 +373,7 @@ namespace EltraConnector.Controllers.Device
 
                 if(!string.IsNullOrEmpty(json))
                 {
-                    result = JsonConvert.DeserializeObject<DeviceStatus>(json);
+                    result = json.TryDeserializeObject<DeviceStatus>();
                 }
             }
             catch (Exception e)

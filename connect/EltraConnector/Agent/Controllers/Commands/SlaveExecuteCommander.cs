@@ -14,6 +14,7 @@ using EltraConnector.Transport.Udp;
 using EltraConnector.Transport.Udp.Contracts;
 using EltraConnector.Extensions;
 using EltraConnector.Controllers.Commands;
+using EltraCommon.Extensions;
 
 namespace EltraConnector.Agent.Controllers.Commands
 {
@@ -90,17 +91,33 @@ namespace EltraConnector.Agent.Controllers.Commands
             }
             else if(sender is UdpClientConnection udpConnection && udpConnection.UniqueId == WsChannelId)
             {
-                var udpRequest = System.Text.Json.JsonSerializer.Deserialize<UdpRequest>(e.Message);
+                var json = e.Message;
 
-                if (udpRequest is UdpRequest)
+                if (!string.IsNullOrEmpty(json))
                 {
-                    if (e.Type == MessageType.Text)
+                    var udpRequest = json.TryDeserializeObject<UdpRequest>();
+
+                    if (udpRequest is UdpRequest)
                     {
-                        Task.Run(async () =>
+                        if (e.Type == MessageType.Text)
                         {
-                            await HandleMsgReceived(udpRequest.Data);
-                        });
+                            Task.Run(async () =>
+                            {
+                                if (udpRequest.Data != "ACK" && !string.IsNullOrEmpty(udpRequest.Data))
+                                {
+                                    await HandleMsgReceived(udpRequest.Data.FromBase64());
+                                }
+                            });
+                        }
                     }
+                    else
+                    {
+                        MsgLogger.WriteError($"{GetType().Name} - OnMessageReceived", $"udp message is not {typeof(UdpRequest).GetType().Name} type!");
+                    }
+                }
+                else
+                {
+                    MsgLogger.WriteError($"{GetType().Name} - OnMessageReceived", "udp message is empty!");
                 }
             }
         }
@@ -205,7 +222,7 @@ namespace EltraConnector.Agent.Controllers.Commands
 
             try
             {
-                var executeCommand = System.Text.Json.JsonSerializer.Deserialize<ExecuteCommand>(json);
+                var executeCommand = json.TryDeserializeObject<ExecuteCommand>();
 
                 if (executeCommand != null && executeCommand.IsValid())
                 {
@@ -225,7 +242,7 @@ namespace EltraConnector.Agent.Controllers.Commands
 
             try
             {
-                var executeCommandStatus = System.Text.Json.JsonSerializer.Deserialize<ExecuteCommandStatus>(json);
+                var executeCommandStatus = json.TryDeserializeObject<ExecuteCommandStatus>();
 
                 if (executeCommandStatus != null && executeCommandStatus.IsValid())
                 {
@@ -245,17 +262,20 @@ namespace EltraConnector.Agent.Controllers.Commands
 
             try
             {
-                var executeCommandStatusList = System.Text.Json.JsonSerializer.Deserialize<List<ExecuteCommandStatus>>(json);
-
-                if (executeCommandStatusList != null && executeCommandStatusList.Count > 0)
+                if (json.StartsWith("[") && json.EndsWith("]"))
                 {
-                    result = new List<ExecuteCommandStatus>();
+                    var executeCommandStatusList = json.TryDeserializeObject<List<ExecuteCommandStatus>>();
 
-                    foreach (var executeCommandStatus in executeCommandStatusList)
+                    if (executeCommandStatusList != null && executeCommandStatusList.Count > 0)
                     {
-                        if (executeCommandStatus.IsValid())
+                        result = new List<ExecuteCommandStatus>();
+
+                        foreach (var executeCommandStatus in executeCommandStatusList)
                         {
-                            result.Add(executeCommandStatus);
+                            if (executeCommandStatus.IsValid())
+                            {
+                                result.Add(executeCommandStatus);
+                            }
                         }
                     }
                 }
@@ -273,17 +293,20 @@ namespace EltraConnector.Agent.Controllers.Commands
 
             try
             {
-                var executeCommands = System.Text.Json.JsonSerializer.Deserialize<List<ExecuteCommand>>(json);
-
-                if (executeCommands != null && executeCommands.Count > 0)
+                if (json.StartsWith("[") && json.EndsWith("]"))
                 {
-                    result = new List<ExecuteCommand>();
+                    var executeCommands = json.TryDeserializeObject<List<ExecuteCommand>>();
 
-                    foreach (var executeCommand in executeCommands)
+                    if (executeCommands != null && executeCommands.Count > 0)
                     {
-                        if (executeCommand.IsValid())
+                        result = new List<ExecuteCommand>();
+
+                        foreach (var executeCommand in executeCommands)
                         {
-                            result.Add(executeCommand);
+                            if (executeCommand.IsValid())
+                            {
+                                result.Add(executeCommand);
+                            }
                         }
                     }
                 }
@@ -301,7 +324,7 @@ namespace EltraConnector.Agent.Controllers.Commands
 
             try
             {
-                var channelStatusUpdate = System.Text.Json.JsonSerializer.Deserialize<ChannelStatusUpdate>(json);
+                var channelStatusUpdate = json.TryDeserializeObject<ChannelStatusUpdate>();
 
                 if (channelStatusUpdate != null && channelStatusUpdate.IsValid())
                 {
