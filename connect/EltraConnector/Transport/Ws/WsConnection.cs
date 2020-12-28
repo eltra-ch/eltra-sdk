@@ -12,6 +12,7 @@ using EltraConnector.Transport.Events;
 using EltraConnector.Transport.Ws.Converters;
 using EltraConnector.Transport.Definitions;
 using EltraCommon.Extensions;
+using EltraCommon.Helpers;
 
 namespace EltraConnector.Transport.Ws
 {
@@ -22,6 +23,7 @@ namespace EltraConnector.Transport.Ws
         private CancellationTokenSource _cancellationTokenSource;
         private CancellationTokenSource _disconnectTokenSource;
         private string _url;
+        private SemaphoreSlim _receiveLock;
 
         #endregion
 
@@ -177,6 +179,7 @@ namespace EltraConnector.Transport.Ws
 
             _cancellationTokenSource = new CancellationTokenSource();
             _disconnectTokenSource = new CancellationTokenSource();
+            _receiveLock = new SemaphoreSlim(1);
         }
 
         public async Task<bool> Connect()
@@ -276,12 +279,14 @@ namespace EltraConnector.Transport.Ws
 
             try
             {
+                var base64data = data.ToBase64();
                 var wsMessage = new WsMessage()
                 {
                     Identity = identity,
                     ChannelName = ChannelName,
                     TypeName = typeName,
-                    Data = data.ToBase64()
+                    Data = base64data,
+                    Checksum = CryptHelpers.ToMD5(base64data)
                 };
 
                 var json = JsonSerializer.Serialize(wsMessage);
@@ -412,6 +417,8 @@ namespace EltraConnector.Transport.Ws
             {
                 if (Socket.State == WebSocketState.Open)
                 {
+                    await _receiveLock.WaitAsync();
+
                     var receiveResult = await Socket.ReceiveAsync(segment, _cancellationTokenSource.Token);
 
                     while (receiveResult != null && 
@@ -505,6 +512,10 @@ namespace EltraConnector.Transport.Ws
                 MsgLogger.Exception($"{GetType().Name} - ReadMessage", e);
 
                 OnErrorOccured($"read message failed - exception = '{e.Message}'", MessageType.Text);
+            }
+            finally
+            {
+                _receiveLock.Release();
             }
 
             return result;

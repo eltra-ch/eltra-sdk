@@ -9,6 +9,8 @@ using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
 using EltraCommon.Extensions;
+using EltraCommon.Helpers;
+using EltraConnector.Extensions;
 
 namespace EltraConnector.Transport.Udp
 {
@@ -156,7 +158,9 @@ namespace EltraConnector.Transport.Udp
         public async Task<int> Send(IPEndPoint endPoint, UserIdentity identity, string className, string msg)
         {
             int bytesSent = -1;
-            var request = new UdpRequest() { Identity = identity, TypeName = className, Data = msg.ToBase64() };
+            var data = msg.ToBase64();
+            
+            var request = new UdpRequest() { Identity = identity.HashPassword(), TypeName = className, Data = data, Checksum = CryptHelpers.ToMD5(data) };
 
             try
             {

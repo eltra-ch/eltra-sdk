@@ -8,6 +8,13 @@ namespace EltraConnector.Transport.Udp.Contracts
     [DataContract]
     internal class UdpRequest
     {
+        public UdpRequest()
+        {
+            Header = "ABE3";
+        }
+
+        [DataMember]
+        public string Header { get; set; }
         [JsonIgnore]
         [IgnoreDataMember]
         public IPEndPoint Endpoint { get; set; }
@@ -20,5 +27,8 @@ namespace EltraConnector.Transport.Udp.Contracts
         
         [DataMember]
         public string Data { get; set; }
+
+        [DataMember]
+        public string Checksum { get; set; }
     }
 }

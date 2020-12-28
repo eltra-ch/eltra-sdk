@@ -83,7 +83,7 @@ namespace EltraConnector.Agent.Controllers.Commands
             {
                 Task.Run(async () =>
                 {
-                    if (e.Type == MessageType.Data)
+                    if (e.Type == MessageType.Data && e.Message != "ACK" && e.Message != "KEEPALIVE")
                     {
                         await HandleMsgReceived(e.Message);
                     }
