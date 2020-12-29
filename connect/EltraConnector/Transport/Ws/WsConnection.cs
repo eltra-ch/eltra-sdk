@@ -13,6 +13,7 @@ using EltraConnector.Transport.Ws.Converters;
 using EltraConnector.Transport.Definitions;
 using EltraCommon.Extensions;
 using EltraCommon.Helpers;
+using EltraConnector.Extensions;
 
 namespace EltraConnector.Transport.Ws
 {
@@ -136,15 +137,14 @@ namespace EltraConnector.Transport.Ws
             MessageReceived?.Invoke(this, new ConnectionMessageEventArgs() { Source = UniqueId, Message = message, Type = MessageType.Text });
         }
 
-        private void OnMessageDataReceived(WsMessage wsMessage)
+        private void OnMessageDataReceived(WsMessage message)
         {
-            if (wsMessage != null)
+            if (message != null)
             {
-                ConnectionMessageEventArgs args = new ConnectionMessageEventArgs { Source = UniqueId, Type = MessageType.Data };
-
-                var data = wsMessage.Data;
-
-                if(!string.IsNullOrEmpty(data) && data != "ACK" && data != "KEEPALIVE")
+                var args = new ConnectionMessageEventArgs { Source = UniqueId, Type = MessageType.Data };
+                var data = message.Data;
+                
+                if (!string.IsNullOrEmpty(data) && !message.IsControlMessage())
                 {
                     args.Message = data.FromBase64();
                 }
@@ -590,12 +590,15 @@ namespace EltraConnector.Transport.Ws
             try
             {
                 string msg = string.Empty;
+                string controlMsg = string.Empty;
 
                 do
                 {
                     msg = await Receive();
+
+                    controlMsg = msg.Trim(new char[] { '\"' });
                 }
-                while ((msg == "ACK" || msg == "KEEPALIVE") && !_cancellationTokenSource.IsCancellationRequested);
+                while ((controlMsg == "ACK" || controlMsg == "KEEPALIVE") && !_cancellationTokenSource.IsCancellationRequested);
                 
                 if (IsJson(msg))
                 {                 

@@ -30,5 +30,18 @@ namespace EltraConnector.Transport.Udp.Contracts
 
         [DataMember]
         public string Checksum { get; set; }
+
+        public bool IsControlMessage()
+        {
+            bool result = false;
+            var msg = Data.Trim(new char[] { '\"' });
+
+            if (msg == "ACK" || msg == "KEEPALIVE")
+            {
+                result = true;
+            }
+
+            return result;
+        }
     }
 }

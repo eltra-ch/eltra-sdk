@@ -83,7 +83,7 @@ namespace EltraConnector.Agent.Controllers.Commands
             {
                 Task.Run(async () =>
                 {
-                    if (e.Type == MessageType.Data && e.Message != "ACK" && e.Message != "KEEPALIVE")
+                    if (e.Type == MessageType.Data && !e.IsControlMessage())
                     {
                         await HandleMsgReceived(e.Message);
                     }
@@ -103,7 +103,7 @@ namespace EltraConnector.Agent.Controllers.Commands
                         {
                             Task.Run(async () =>
                             {
-                                if (udpRequest.Data != "ACK" && !string.IsNullOrEmpty(udpRequest.Data))
+                                if (!udpRequest.IsControlMessage() && !string.IsNullOrEmpty(udpRequest.Data))
                                 {
                                     await HandleMsgReceived(udpRequest.Data.FromBase64());
                                 }

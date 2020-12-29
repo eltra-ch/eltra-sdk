@@ -90,9 +90,9 @@ namespace EltraConnector.Master.Controllers.Commands
             {
                 Task.Run(async () =>
                 {
-                    if (e.Type == MessageType.Data)
+                    if (e.Type == MessageType.Data && !e.IsControlMessage())
                     {
-                        var result = await HandleMsgReceived(e.Message);
+                        await HandleMsgReceived(e.Message);
                     }
                 });
             }
@@ -106,9 +106,9 @@ namespace EltraConnector.Master.Controllers.Commands
                     {
                         Task.Run(async () =>
                         {
-                            if (udpRequest.Data != "ACK" && !string.IsNullOrEmpty(udpRequest.Data))
+                            if (!udpRequest.IsControlMessage() && !string.IsNullOrEmpty(udpRequest.Data))
                             {
-                                var result = await HandleMsgReceived(udpRequest.Data.FromBase64());
+                                await HandleMsgReceived(udpRequest.Data.FromBase64());
                             }
                         });
                     }
@@ -153,16 +153,7 @@ namespace EltraConnector.Master.Controllers.Commands
             }
             else
             {
-                if (json == "ACK" || json == "KEEPALIVE")
-                {
-                    MsgLogger.WriteDebug($"{GetType().Name} - HandleMsgReceived", $"message '{json}' processed, result = {result}");
-
-                    result = true;
-                }
-                else
-                {
-                    MsgLogger.WriteError($"{GetType().Name} - HandleMsgReceived", $"Unknown message {json} received");
-                }
+                MsgLogger.WriteError($"{GetType().Name} - HandleMsgReceived", $"Unknown message {json} received");
             }
 
             return result;

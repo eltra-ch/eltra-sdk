@@ -47,5 +47,22 @@ namespace EltraConnector.Transport.Events
         /// Type
         /// </summary>
         public MessageType Type { get; set; }
+
+        /// <summary>
+        /// Is control message ACK or KEEPALIVE 
+        /// </summary>
+        /// <returns></returns>
+        public bool IsControlMessage()
+        {
+            bool result = false;
+            var msg = Message.Trim(new char[] { '\"' });
+
+            if (msg == "ACK" || msg == "KEEPALIVE")
+            {
+                result = true;
+            }
+
+            return result;
+        }
     }
 }

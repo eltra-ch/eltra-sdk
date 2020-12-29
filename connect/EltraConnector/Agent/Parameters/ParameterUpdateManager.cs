@@ -77,7 +77,7 @@ namespace EltraConnector.Agent.Parameters
         {
             if (sender is WsConnection connection && connection.UniqueId == WsChannelId)
             {
-                if (e.Type == MessageType.Data && e.Message != "KEEPALIVE" && e.Message != "ACK")
+                if (e.Type == MessageType.Data && !e.IsControlMessage())
                 {
                     ProcessWsMessage(e.Message);
                 }
