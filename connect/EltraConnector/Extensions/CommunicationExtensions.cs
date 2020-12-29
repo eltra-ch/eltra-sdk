@@ -11,6 +11,18 @@ namespace EltraConnector.Extensions
 
             if (!string.IsNullOrEmpty(data))
             {
+                result = data.IsControlMessage();
+            }
+
+            return result;
+        }
+
+        public static bool IsControlMessage(this string data)
+        {
+            bool result = false;
+            
+            if (!string.IsNullOrEmpty(data))
+            {
                 var msg = data.Trim(new char[] { '\"' });
 
                 if (msg == "ACK" || msg == "KEEPALIVE")

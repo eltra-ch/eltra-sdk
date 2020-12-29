@@ -590,15 +590,12 @@ namespace EltraConnector.Transport.Ws
             try
             {
                 string msg = string.Empty;
-                string controlMsg = string.Empty;
-
+                
                 do
                 {
-                    msg = await Receive();
-
-                    controlMsg = msg.Trim(new char[] { '\"' });
+                    msg = await Receive();                    
                 }
-                while ((controlMsg == "ACK" || controlMsg == "KEEPALIVE") && !_cancellationTokenSource.IsCancellationRequested);
+                while (IsConnected && msg.IsControlMessage() && !_cancellationTokenSource.IsCancellationRequested);
                 
                 if (IsJson(msg))
                 {                 
