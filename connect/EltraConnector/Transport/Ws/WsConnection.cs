@@ -230,7 +230,7 @@ namespace EltraConnector.Transport.Ws
 
                     if (Socket.State == WebSocketState.Open)
                     {
-                        await Socket.CloseAsync(WebSocketCloseStatus.Empty, "", CancellationToken.None);
+                        await Socket.CloseAsync(WebSocketCloseStatus.NormalClosure, "", CancellationToken.None);
                     }
                     else if (Socket.State == WebSocketState.Closed)
                     {
@@ -294,9 +294,7 @@ namespace EltraConnector.Transport.Ws
 
                 if (!Socket.CloseStatus.HasValue && Socket.State == WebSocketState.Open)
                 {
-                    await Socket.SendAsync(new ArraySegment<byte>(buffer, 0, buffer.Length), WebSocketMessageType.Text, true, _cancellationTokenSource.Token);
-
-                    result = true;
+                    result = await Socket.SendAsync(new ArraySegment<byte>(buffer, 0, buffer.Length), WebSocketMessageType.Text, true, _cancellationTokenSource.Token);
                 }
             }
             catch (WebSocketException e)
@@ -485,9 +483,9 @@ namespace EltraConnector.Transport.Ws
                     }
 
                     if(receiveResult == null || (receiveResult.MessageType == WebSocketMessageType.Close &&
-                        (Socket.State == WebSocketState.CloseReceived || Socket.State == WebSocketState.Open)))
+                        (Socket.State == WebSocketState.CloseSent || Socket.State == WebSocketState.Open)))
                     {
-                        await Socket.CloseOutputAsync(WebSocketCloseStatus.NormalClosure, "Server closed connection", _cancellationTokenSource.Token);
+                        await Socket.CloseOutputAsync(WebSocketCloseStatus.Empty, "Server closed connection", _cancellationTokenSource.Token);
                     }
                 }
                 else

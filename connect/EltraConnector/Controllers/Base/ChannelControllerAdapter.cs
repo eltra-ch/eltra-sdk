@@ -28,20 +28,12 @@ namespace EltraConnector.Controllers.Base
         private readonly uint _timeout;
         private readonly uint _updateInterval;
         private IConnectionManager _connectionManager;
+        private string _wsChannelId;
+        private string _wsChannelName;
 
         #endregion
 
         #region Constructors
-
-        public ChannelControllerAdapter(string url, UserIdentity identity, uint updateInterval, uint timeout)
-            : base(url)
-        {
-            _uuid = Guid.NewGuid().ToString();
-            _timeout = timeout;
-            _updateInterval = updateInterval;            
-            _user = new User(identity) { Status = UserStatus.Unlocked };
-            _identity = identity;
-        }
 
         public ChannelControllerAdapter(string url, string uuid, UserIdentity identity, uint updateInterval, uint timeout)
             : base(url)
@@ -51,6 +43,9 @@ namespace EltraConnector.Controllers.Base
             _uuid = uuid;
             _user = new User(identity) { Status = UserStatus.Unlocked };
             _identity = identity;
+
+            _wsChannelName = "Slave";
+            _wsChannelId = $"{uuid}_Slave";
         }
 
         #endregion
@@ -74,7 +69,7 @@ namespace EltraConnector.Controllers.Base
 
                 if (ConnectionManager != null)
                 {
-                    if (await ConnectionManager.Connect(Channel.Id, "SessionUpdate"))
+                    if (await ConnectionManager.Connect(WsChannelId, WsChannelName))
                     {
                         await SendChannelIdentyficationRequest();
                     }
@@ -92,6 +87,8 @@ namespace EltraConnector.Controllers.Base
 
         public Channel Channel => _channel ?? (_channel = new Channel { Id = _uuid, UserName = _user.Identity.Name, Timeout = _timeout, UpdateInterval = _updateInterval, LocalHost = EltraUdpConnector.LocalHost });
 
+        public string Uuid => _uuid;
+
         public IConnectionManager ConnectionManager 
         { 
             get => _connectionManager;
@@ -104,6 +101,18 @@ namespace EltraConnector.Controllers.Base
 
         public User User => _user;
 
+        public string WsChannelId
+        {
+            get => _wsChannelId;
+            set => _wsChannelId = value;
+        }
+        
+        public string WsChannelName
+        {
+            get => _wsChannelName;
+            set => _wsChannelName = value;
+        }
+
         #endregion
 
         #region Methods
@@ -112,11 +121,11 @@ namespace EltraConnector.Controllers.Base
         {
             bool result = false;
 
-            if (ConnectionManager.IsConnected(Channel.Id))
+            if (ConnectionManager.IsConnected(WsChannelId))
             {
                 var request = new ChannelIdentification() { Id = Channel.Id };
 
-                result = await ConnectionManager.Send(Channel.Id, _identity, request);
+                result = await ConnectionManager.Send(WsChannelId, _identity, request);
             }
 
             return result;
@@ -378,9 +387,9 @@ namespace EltraConnector.Controllers.Base
         {
             bool result = false;
 
-            if (ConnectionManager != null && ConnectionManager.IsConnected(Channel.Id))
+            if (ConnectionManager != null && ConnectionManager.IsConnected(WsChannelId))
             {
-                if (await ConnectionManager.Send(Channel.Id, _user.Identity, statusUpdate))
+                if (await ConnectionManager.Send(WsChannelId, _user.Identity, statusUpdate))
                 {
                     /*var requestResult = await ConnectionManager.Receive<RequestResult>(Channel.Id);
 

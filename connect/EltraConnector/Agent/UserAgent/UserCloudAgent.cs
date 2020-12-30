@@ -61,6 +61,8 @@ namespace EltraConnector.UserAgent
 
         public UserCloudAgent(string url, UserIdentity identity, uint updateInterval, uint timeout)
         {
+            string uuid = Guid.NewGuid().ToString();
+
             _timeout = timeout;
             _status = AgentStatus.Undefined;
             _identity = identity;
@@ -68,7 +70,7 @@ namespace EltraConnector.UserAgent
             _channel = new Channel() { Status = ChannelStatus.Offline };
             _connectionManager = new ConnectionManager() { HostUrl = url };
 
-            _channelAdapter = new SlaveChannelControllerAdapter(url, identity, updateInterval, timeout) { ConnectionManager = _connectionManager };
+            _channelAdapter = new SlaveChannelControllerAdapter(url, uuid, identity, updateInterval, timeout) { ConnectionManager = _connectionManager };
 
             Initialize(url, updateInterval);
         }
@@ -81,6 +83,7 @@ namespace EltraConnector.UserAgent
             _channel = new Channel() { Status = ChannelStatus.Offline };
             _executedCommands = new List<DeviceCommand>();
             _connectionManager = new ConnectionManager() { HostUrl = url };
+
             _channelAdapter = new SlaveChannelControllerAdapter(url, uuid, identity, updateInterval, timeout) { ConnectionManager = _connectionManager };
 
             Initialize(url, updateInterval);

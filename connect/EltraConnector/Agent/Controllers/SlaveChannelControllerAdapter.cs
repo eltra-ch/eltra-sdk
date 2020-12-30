@@ -11,6 +11,7 @@ using EltraCommon.Contracts.Devices;
 using EltraCommon.ObjectDictionary.DeviceDescription;
 using EltraConnector.Controllers.Device;
 using EltraConnector.Agent.Controllers.Device;
+using EltraCommon.Logger;
 
 namespace EltraConnector.Agent.Controllers
 {
@@ -24,14 +25,11 @@ namespace EltraConnector.Agent.Controllers
 
         #region Constructors
 
-        public SlaveChannelControllerAdapter(string url, UserIdentity identity, uint updateInterval, uint timeout)
-            : base(url, identity, updateInterval, timeout)
-        {   
-        }
-
         public SlaveChannelControllerAdapter(string url, string uuid, UserIdentity identity, uint updateInterval, uint timeout)
             : base(url, uuid, identity, updateInterval, timeout)
-        {   
+        {
+            WsChannelId = $"{Uuid}_Slave";
+            WsChannelName = "Slave";
         }
 
         #endregion
@@ -54,9 +52,12 @@ namespace EltraConnector.Agent.Controllers
 
                 if (ConnectionManager != null)
                 {
-                    if (await ConnectionManager.Connect(Channel.Id, "Slave"))
+                    if (await ConnectionManager.Connect(WsChannelId, WsChannelName))
                     {
-                        await SendChannelIdentyficationRequest();
+                        if(!await SendChannelIdentyficationRequest())
+                        {
+                            MsgLogger.WriteError($"{GetType().Name} - OnConnectionManagerChanged", $"send ident request failed, channel = {WsChannelName}");
+                        }
                     }
                 }
             });

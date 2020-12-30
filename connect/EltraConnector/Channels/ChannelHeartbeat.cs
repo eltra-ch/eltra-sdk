@@ -90,16 +90,18 @@ namespace EltraConnector.Channels
                 {
                     MsgLogger.WriteError($"{GetType().Name} - Execute", $"Update session '{WsChannelId}' failed!");
                 }
-
-                var waitWatch = new Stopwatch();
-
-                waitWatch.Start();
-
-                int channelStatusUpdateTimeout = (int)TimeSpan.FromSeconds(updateIntervalInSec).TotalMilliseconds;
-
-                while (waitWatch.ElapsedMilliseconds < channelStatusUpdateTimeout && ShouldRun())
+                else
                 {
-                    await Task.Delay(minWaitTime);
+                    var waitWatch = new Stopwatch();
+
+                    waitWatch.Start();
+
+                    int channelStatusUpdateTimeout = (int)TimeSpan.FromSeconds(updateIntervalInSec).TotalMilliseconds;
+
+                    while (waitWatch.ElapsedMilliseconds < channelStatusUpdateTimeout && ShouldRun())
+                    {
+                        await Task.Delay(minWaitTime);
+                    }
                 }
 
                 if (ShouldRun())

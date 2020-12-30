@@ -146,9 +146,16 @@ namespace EltraConnector.Transport.Ws
             {
                 await _sendLock.WaitAsync();
 
-                await _socket.CloseOutputAsync(status, description, token);
+                if (_socket.State == WebSocketState.Open || _socket.State == WebSocketState.CloseSent)
+                {
+                    await _socket.CloseOutputAsync(status, description, token);
 
-                result = true;
+                    result = true;
+                }
+                else
+                {
+                    MsgLogger.WriteError($"{GetType().Name} - CloseOutputAsync", $"wrong socket state = {_socket.State}");
+                }
             }
             catch (Exception e)
             {

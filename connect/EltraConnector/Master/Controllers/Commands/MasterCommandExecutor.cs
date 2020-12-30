@@ -20,8 +20,6 @@ namespace EltraConnector.Master.Controllers.Commands
     {
         #region Private fields
 
-        const string channelName = "Master";
-
         private readonly MasterChannelControllerAdapter _channelControllerAdapter;
         private bool _stopping;
                 
@@ -30,7 +28,7 @@ namespace EltraConnector.Master.Controllers.Commands
         #region Constructors
 
         public MasterCommandExecutor(MasterChannelControllerAdapter adapter)
-            : base(adapter.ConnectionManager, adapter.Channel.Id + "_CommandExec", channelName, adapter.ChannelId, adapter.User.Identity)
+            : base(adapter.ConnectionManager, adapter.WsChannelId, adapter.WsChannelName, adapter.ChannelId, adapter.User.Identity)
         {
             _channelControllerAdapter = adapter;
         }

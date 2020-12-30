@@ -29,18 +29,9 @@ namespace EltraConnector.Master.Controllers
         private ParameterControllerAdapter _parameterControllerAdapter;
         private List<EltraDevice> _devices;
         
-
         #endregion
 
         #region Constructors
-
-        public MasterChannelControllerAdapter(SyncCloudAgent agent)
-            : base(agent.Url, agent.Identity, agent.UpdateInterval, agent.Timeout)
-        {
-            _executeCommandCache = new ExecuteCommandCache();
-
-            _agent = agent;
-        }
 
         public MasterChannelControllerAdapter(SyncCloudAgent agent, string channelId)
             : base(agent.Url, channelId, agent.Identity, agent.UpdateInterval, agent.Timeout)
@@ -48,6 +39,9 @@ namespace EltraConnector.Master.Controllers
             _executeCommandCache = new ExecuteCommandCache();
 
             _agent = agent;
+
+            WsChannelName = "Master";
+            WsChannelId = $"{channelId}_Master";
         }
 
         #endregion
@@ -134,9 +128,12 @@ namespace EltraConnector.Master.Controllers
 
                 if (ConnectionManager != null)
                 {
-                    if (await ConnectionManager.Connect(Channel.Id, "Master"))
+                    if (await ConnectionManager.Connect(WsChannelId, WsChannelName))
                     {
-                        await SendChannelIdentyficationRequest();
+                        if (!await SendChannelIdentyficationRequest())
+                        {
+                            MsgLogger.WriteError($"{GetType().Name} - OnConnectionManagerChanged", $"send ident request failed, channel = {WsChannelName}");
+                        }
                     }
                 }
             });
