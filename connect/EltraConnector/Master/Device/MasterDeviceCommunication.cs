@@ -79,7 +79,19 @@ namespace EltraConnector.Master.Device
 
         public virtual bool GetObject(ushort objectIndex, byte objectSubindex, ref byte[] data)
         {
-            return false;
+            bool result = false;
+            var parameter = Vcs.SearchParameter(objectIndex, objectSubindex) as Parameter;
+
+            if(parameter != null)
+            {
+                if(parameter.GetValue(out byte[] bytes))
+                {
+                    data = bytes;
+                    result = true;
+                }                    
+            }
+
+            return result;
         }
 
         public virtual bool SetObject(ushort objectIndex, byte objectSubindex, byte[] data)

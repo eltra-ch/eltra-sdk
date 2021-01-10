@@ -390,13 +390,7 @@ namespace EltraConnector.Controllers.Base
             if (ConnectionManager != null && ConnectionManager.IsConnected(WsChannelId))
             {
                 if (await ConnectionManager.Send(WsChannelId, _user.Identity, statusUpdate))
-                {
-                    /*var requestResult = await ConnectionManager.Receive<RequestResult>(Channel.Id);
-
-                    if (requestResult != null)
-                    {
-                        result = requestResult.Result;
-                    }*/
+                {                    
                     result = true;
                 }
             }

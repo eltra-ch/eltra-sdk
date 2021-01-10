@@ -35,7 +35,7 @@ namespace EltraConnector.Transport.Ws
             _sendLock = new SemaphoreSlim(1);
             _receiveLock = new SemaphoreSlim(1);
 
-            _socket = new ClientWebSocket();
+            Initialize();
         }
 
         #endregion
@@ -104,6 +104,12 @@ namespace EltraConnector.Transport.Ws
 
                 result = true;
             }
+            catch (WebSocketException e)
+            {
+                MsgLogger.Exception($"{GetType().Name} - SendAsync, error code = {e.WebSocketErrorCode}", e);
+
+                HandleWebSocketException(e);
+            }
             catch (Exception e)
             {
                 MsgLogger.Exception($"{GetType().Name} - SendAsync", e);
@@ -116,6 +122,20 @@ namespace EltraConnector.Transport.Ws
             return result;
         }
 
+        private void HandleWebSocketException(WebSocketException e)
+        {
+            var errorCode = e.WebSocketErrorCode;
+
+            if (errorCode == WebSocketError.ConnectionClosedPrematurely ||
+                errorCode == WebSocketError.Faulted || 
+                errorCode == WebSocketError.InvalidState)
+            {
+                MsgLogger.WriteError($"{GetType().Name} - HandleWebSocketException", "socket error, close socket");
+
+                Initialize();
+            }
+        }
+
         internal async Task<WebSocketReceiveResult> ReceiveAsync(ArraySegment<byte> segment, CancellationToken token)
         {
             WebSocketReceiveResult result = null;
@@ -125,6 +145,12 @@ namespace EltraConnector.Transport.Ws
                 await _receiveLock.WaitAsync();
 
                 result = await _socket.ReceiveAsync(segment, token);
+            }
+            catch(WebSocketException e)
+            {
+                MsgLogger.Exception($"{GetType().Name} - ReceiveAsync - error code = {e.WebSocketErrorCode}", e);
+
+                HandleWebSocketException(e);
             }
             catch(Exception e)
             {
@@ -167,6 +193,11 @@ namespace EltraConnector.Transport.Ws
             }
 
             return result;
+        }
+
+        private void Initialize()
+        {
+            _socket = new ClientWebSocket();
         }
 
         #endregion

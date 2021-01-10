@@ -106,15 +106,20 @@ namespace EltraConnector.Channels
 
                 if (ShouldRun())
                 {
-                    await ReconnectToWsChannel();
-
-                    if (ConnectionManager.IsConnected(WsChannelId))
+                    if (!await ReconnectToWsChannel())
                     {
-                        await Task.Delay(executeIntervalWs);
+                        await Task.Delay(reconnectIntervalWs);
                     }
                     else
                     {
-                        await Task.Delay(reconnectIntervalWs);
+                        if (ConnectionManager.IsConnected(WsChannelId) && ChannelStatus == ChannelStatus.Online)
+                        {
+                            await Task.Delay(executeIntervalWs);
+                        }
+                        else
+                        {
+                            await Task.Delay(reconnectIntervalWs);
+                        }
                     }
                 }
             }
@@ -132,9 +137,26 @@ namespace EltraConnector.Channels
 
             if (result)
             {
-                var updateResult = await _channelControllerAdapter.Update();
+                result = await _channelControllerAdapter.Update();
 
-                ChannelStatus = updateResult ? ChannelStatus.Online : ChannelStatus.Offline;
+                if(!result)
+                {
+                    MsgLogger.WriteError($"{GetType().Name} - ReconnectToWsChannel", "Update failed, retry ...");
+
+                    result = await _channelControllerAdapter.Update();
+
+                    if (result)
+                    {
+                        MsgLogger.WriteFlow($"{GetType().Name} - ReconnectToWsChannel", "Update retried successfully");
+                    }
+                }
+
+                ChannelStatus = result ? ChannelStatus.Online : ChannelStatus.Offline;
+
+                if(!result)
+                {
+                    MsgLogger.WriteError($"{GetType().Name} - ReconnectToWsChannel", "Update failed, change status to offline");
+                }
             }
 
             return result;
