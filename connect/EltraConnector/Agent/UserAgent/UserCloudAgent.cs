@@ -156,7 +156,7 @@ namespace EltraConnector.UserAgent
             }
             else
             {
-                MsgLogger.WriteError($"{GetType().Name} - OnChannelRegistered", $"Session uuid='{_channel.Id}' registration failed!");
+                MsgLogger.WriteError($"{GetType().Name} - OnChannelRegistered", $"channel id='{_channel.Id}' registration failed!");
             }
         }
         

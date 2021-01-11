@@ -10,8 +10,8 @@ namespace EltraConnector.Master.Controllers.Device
     {
         #region Constructors
 
-        public MasterDeviceControllerAdapter(string url, Channel session, UserIdentity userIdentity)
-            : base(url, session, userIdentity)
+        public MasterDeviceControllerAdapter(string url, Channel channel, UserIdentity userIdentity)
+            : base(url, channel, userIdentity)
         {
         }
 

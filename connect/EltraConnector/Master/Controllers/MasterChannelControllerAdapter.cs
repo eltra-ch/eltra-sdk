@@ -187,11 +187,11 @@ namespace EltraConnector.Master.Controllers
             {
                 if (await RegisterChannel())
                 {
-                    MsgLogger.WriteLine($"register session='{Channel.Id}' success");
+                    MsgLogger.WriteLine($"register channel='{Channel.Id}' success");
                 }
                 else
                 {
-                    MsgLogger.WriteError($"{GetType().Name} - RegisterDevice", $"register session='{Channel.Id}' failed!");
+                    MsgLogger.WriteError($"{GetType().Name} - RegisterDevice", $"register channel='{Channel.Id}' failed!");
 
                     result = false;
                 }
@@ -279,48 +279,48 @@ namespace EltraConnector.Master.Controllers
 
             try
             {
-                MsgLogger.WriteDebug($"{GetType().Name} - Update", $"Is session='{Channel.Id}' registered...");
+                MsgLogger.WriteDebug($"{GetType().Name} - Update", $"Is channel='{Channel.Id}' registered...");
 
                 if (await IsChannelRegistered())
                 {
-                    MsgLogger.WriteDebug($"{GetType().Name} - Update", $"Is any session='{Channel.Id}' device not registered...");
+                    MsgLogger.WriteDebug($"{GetType().Name} - Update", $"Is any channel='{Channel.Id}' device not registered...");
 
                     if (await AnyDeviceUnRegistered())
                     {
-                        MsgLogger.WriteLine($"re-register session='{Channel.Id}' devices");
+                        MsgLogger.WriteLine($"re-register channel='{Channel.Id}' devices");
 
                         if (!await DeviceControllerAdapter.RegisterDevices())
                         {
-                            MsgLogger.WriteError($"{GetType().Name} - Update", $"register session='{Channel.Id}' devices failed!");
+                            MsgLogger.WriteError($"{GetType().Name} - Update", $"register channel='{Channel.Id}' devices failed!");
                         }
                     }
 
-                    MsgLogger.Write($"{GetType().Name} - Update", $"Updating session='{Channel.Id}' status...");
+                    MsgLogger.Write($"{GetType().Name} - Update", $"Updating channel='{Channel.Id}' status...");
 
                     result = await SetChannelStatus(ChannelStatus.Online);
                 }
                 else
                 {
-                    MsgLogger.WriteLine($"Registering session='{Channel.Id}' ...");
+                    MsgLogger.WriteLine($"Registering channel='{Channel.Id}' ...");
 
                     if (await RegisterChannel())
                     {
-                        MsgLogger.Write($"{GetType().Name} - Update", $"updating session='{Channel.Id}' status ...");
+                        MsgLogger.Write($"{GetType().Name} - Update", $"updating channel='{Channel.Id}' status ...");
 
                         result = await SetChannelStatus(ChannelStatus.Online);
 
                         if (result)
                         {
-                            MsgLogger.WriteLine($"update session='{Channel.Id}' status success");
+                            MsgLogger.WriteLine($"update channel='{Channel.Id}' status success");
                         }
                         else
                         {
-                            MsgLogger.WriteError($"{GetType().Name} - Update", $"update session='{Channel.Id}' status failed!");   
+                            MsgLogger.WriteError($"{GetType().Name} - Update", $"update channel='{Channel.Id}' status failed!");   
                         }
                     }
                     else
                     {
-                        MsgLogger.WriteError($"{GetType().Name} - Update", $"register session='{Channel.Id}' failed!");
+                        MsgLogger.WriteError($"{GetType().Name} - Update", $"register channel='{Channel.Id}' failed!");
                     }
 
                     if (result)
@@ -331,11 +331,11 @@ namespace EltraConnector.Master.Controllers
 
                         if (result)
                         {
-                            MsgLogger.WriteLine($"register session='{Channel.Id}' devices success");
+                            MsgLogger.WriteLine($"register channel='{Channel.Id}' devices success");
                         }
                         else
                         {
-                            MsgLogger.WriteError($"{GetType().Name} - Update", $"register session='{Channel.Id}' devices failed!");   
+                            MsgLogger.WriteError($"{GetType().Name} - Update", $"register channel='{Channel.Id}' devices failed!");   
                         }
                     }
                 }
@@ -379,7 +379,7 @@ namespace EltraConnector.Master.Controllers
 
                                     clonedDeviceCommand.Sync(executeCommand.Command);
 
-                                    MsgLogger.WriteDebug($"{GetType().Name} - ExecuteCommand", $"Execute Command '{commandName}', session '{executeCommand.SourceChannelId}'");
+                                    MsgLogger.WriteDebug($"{GetType().Name} - ExecuteCommand", $"Execute Command '{commandName}', channel '{executeCommand.SourceChannelId}'");
 
                                     try
                                     {

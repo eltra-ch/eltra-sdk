@@ -20,10 +20,10 @@
 		<Product>Eltra.Connector</Product>		
 		<Description>Eltra - CANOpen based IoT Framework - SDK</Description>
 		<PackageTags>CANOpen IoT Eltra OPCUA OPC</PackageTags>
-        <Version>1.9.9</Version>
-        <AssemblyVersion>1.9.9.0</AssemblyVersion>
+        <Version>1.2.0</Version>
+        <AssemblyVersion>1.2.0.0</AssemblyVersion>
         <PackageIcon>eltra_logo.png</PackageIcon>
-        <FileVersion>1.9.9.0</FileVersion>
+        <FileVersion>1.2.0.0</FileVersion>
         <Configurations>Debug;Release;Debug - UWP</Configurations>
     </PropertyGroup>
 

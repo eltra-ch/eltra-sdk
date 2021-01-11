@@ -73,22 +73,23 @@ namespace EltraConnector.Channels
             const int minWaitTime = 10;
             const int reconnectIntervalWs = 1000;
             const int executeIntervalWs = 1;
-
+            const int maxRetryCount = 3;
+            
             uint updateIntervalInSec = _updateInterval;
 
             await ConnectToChannel();
 
             while (ShouldRun())
             {
-                MsgLogger.Write($"{GetType().Name} - Execute", $"Updating session id = '{WsChannelId}'...");
-
-                var updateResult = await _channelControllerAdapter.Update();
+                MsgLogger.Write($"{GetType().Name} - Execute", $"Updating channel id = '{WsChannelId}'...");
+                
+                bool updateResult = await UpdateStatusWithRetryCount(maxRetryCount);
 
                 ChannelStatus = updateResult ? ChannelStatus.Online : ChannelStatus.Offline;
 
                 if (!updateResult)
                 {
-                    MsgLogger.WriteError($"{GetType().Name} - Execute", $"Update session '{WsChannelId}' failed!");
+                    MsgLogger.WriteError($"{GetType().Name} - Execute", $"Update channel '{WsChannelId}' failed!");
                 }
                 else
                 {
@@ -131,8 +132,59 @@ namespace EltraConnector.Channels
             MsgLogger.WriteLine($"Sync agent working thread finished successfully!");
         }
 
+        private async Task<bool> UpdateStatusWithRetryCount(int maxRetryCount, int retryDelay = 1000)
+        {
+            bool result;
+            int retryCount = 0;
+            
+            do
+            {
+                result = await _channelControllerAdapter.Update();
+
+                if (!result)
+                {
+                    MsgLogger.WriteError($"{GetType().Name} - Execute", $"Update channel '{WsChannelId}' status failed, retry count {retryCount}/{maxRetryCount}!");
+
+                    await Task.Delay(retryDelay);
+
+                    retryCount++;
+                }
+            }
+            while (!result && retryCount < maxRetryCount);
+
+            return result;
+        }
+
+        private async Task<bool> ReconnectWithRetryCount(int maxRetryCount, int delay = 1000)
+        {
+            int retryCount = 0;
+            bool result;
+
+            do
+            {
+                result = await base.ReconnectToWsChannel();
+
+                if (result)
+                {
+                    result = await _channelControllerAdapter.Update();
+                }
+
+                if(!result)
+                {
+                    await Task.Delay(delay);
+                }
+
+                retryCount++;
+            }
+            while (!result && retryCount < maxRetryCount);
+
+            return result;
+        }
+
         protected override async Task<bool> ReconnectToWsChannel()
         {
+            const int maxRetryCount = 3;
+
             bool result = await base.ReconnectToWsChannel();
 
             if (result)
@@ -141,9 +193,7 @@ namespace EltraConnector.Channels
 
                 if(!result)
                 {
-                    MsgLogger.WriteError($"{GetType().Name} - ReconnectToWsChannel", "Update failed, retry ...");
-
-                    result = await _channelControllerAdapter.Update();
+                    result = await ReconnectWithRetryCount(maxRetryCount);
 
                     if (result)
                     {

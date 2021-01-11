@@ -109,7 +109,7 @@ namespace EltraConnector.SyncAgent
             }
             else
             {
-                MsgLogger.WriteError($"{GetType().Name} - OnChannelRegistered", $"Session ({channel.Id}) registration failed!");
+                MsgLogger.WriteError($"{GetType().Name} - OnChannelRegistered", $"Channel ({channel.Id}) registration failed!");
             }
         }
 
@@ -192,7 +192,7 @@ namespace EltraConnector.SyncAgent
             }
         }
 
-        private async Task<bool> RegisterSession()
+        private async Task<bool> RegisterChannel()
         {
             bool result = false;
 
@@ -200,12 +200,12 @@ namespace EltraConnector.SyncAgent
             {
                 if (await _channelControllerAdapter.RegisterChannel())
                 {
-                    MsgLogger.WriteLine($"register session='{_channelControllerAdapter.Channel.Id}' success");
+                    MsgLogger.WriteLine($"register channel='{_channelControllerAdapter.Channel.Id}' success");
                     result = true;
                 }
                 else
                 {
-                    MsgLogger.WriteError($"{GetType().Name} - RegisterSession", $"register session='{_channelControllerAdapter.Channel.Id}' failed!");
+                    MsgLogger.WriteError($"{GetType().Name} - RegisterChannel", $"register channel='{_channelControllerAdapter.Channel.Id}' failed!");
                 }
             }
             else
@@ -224,7 +224,7 @@ namespace EltraConnector.SyncAgent
             {
                 var device = deviceNode;
 
-                if (await RegisterSession())
+                if (await RegisterChannel())
                 {
                     MsgLogger.WriteLine(
                         $"register(+) device='{device.Family}', node id = {device.NodeId}, serial number=0x{device.Identification.SerialNumber:X}");
@@ -340,11 +340,11 @@ namespace EltraConnector.SyncAgent
 
             _channelHeartbeat?.Stop();
 
-            MsgLogger.WriteDebug($"{GetType().Name} - Stop", "Session updater stopped 2/4");
+            MsgLogger.WriteDebug($"{GetType().Name} - Stop", "Channel updater stopped 2/4");
 
             _channelControllerAdapter?.Stop();
 
-            MsgLogger.WriteDebug($"{GetType().Name} - Stop", "Session controller stopped 3/4");
+            MsgLogger.WriteDebug($"{GetType().Name} - Stop", "Channel controller stopped 3/4");
 
             _authentication?.Stop();
 

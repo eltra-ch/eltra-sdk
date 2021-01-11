@@ -35,8 +35,8 @@ namespace EltraConnector.Controllers
 
         #region Constructors
 
-        public ParameterControllerAdapter(UserIdentity identity, string url, Channel session)
-            :base(url, session)
+        public ParameterControllerAdapter(UserIdentity identity, string url, Channel channel)
+            :base(url, channel)
         {
             _identity = identity;
             _stopRequestEvent = new ManualResetEvent(false);
@@ -112,7 +112,7 @@ namespace EltraConnector.Controllers
 
         #region Methods
 
-        public async Task<Parameter> GetParameter(string sessionUuid, int nodeId, ushort index, byte subIndex)
+        public async Task<Parameter> GetParameter(string channelId, int nodeId, ushort index, byte subIndex)
         {
             Parameter result = null;
 
@@ -122,7 +122,7 @@ namespace EltraConnector.Controllers
 
                 var query = HttpUtility.ParseQueryString(string.Empty);
 
-                query["callerId"] = sessionUuid;
+                query["callerId"] = channelId;
                 query["nodeId"] = $"{nodeId}";
                 query["index"] = $"{index}";
                 query["subIndex"] = $"{subIndex}";
@@ -160,7 +160,7 @@ namespace EltraConnector.Controllers
             return result;
         }
 
-        public async Task<ParameterValue> GetParameterValue(string sessionUuid, int nodeId, ushort index, byte subIndex)
+        public async Task<ParameterValue> GetParameterValue(string channelId, int nodeId, ushort index, byte subIndex)
         {
             ParameterValue result = null;
 
@@ -170,7 +170,7 @@ namespace EltraConnector.Controllers
 
                 var query = HttpUtility.ParseQueryString(string.Empty);
 
-                query["callerId"] = sessionUuid;
+                query["callerId"] = channelId;
                 query["nodeId"] = $"{nodeId}";
                 query["index"] = $"{index}";
                 query["subIndex"] = $"{subIndex}";

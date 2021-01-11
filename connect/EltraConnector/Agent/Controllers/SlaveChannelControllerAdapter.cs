@@ -143,19 +143,19 @@ namespace EltraConnector.Agent.Controllers
             return DeviceAdapter.GetDeviceDescriptionIdentity(channelId, deviceVersion);
         }
 
-        public Task<Parameter> GetParameter(string sessionUuid, int nodeId, ushort index, byte subIndex)
+        public Task<Parameter> GetParameter(string channelId, int nodeId, ushort index, byte subIndex)
         {
-            return DeviceAdapter.GetParameter(sessionUuid, nodeId, index, subIndex);
+            return DeviceAdapter.GetParameter(channelId, nodeId, index, subIndex);
         }
 
-        public async Task<ParameterValue> GetParameterValue(string sessionUuid, int nodeId, ushort index, byte subIndex)
+        public async Task<ParameterValue> GetParameterValue(string channelId, int nodeId, ushort index, byte subIndex)
         {
-            return await DeviceAdapter.GetParameterValue(sessionUuid, nodeId, index, subIndex);
+            return await DeviceAdapter.GetParameterValue(channelId, nodeId, index, subIndex);
         }
         
-        public async Task<List<ParameterValue>> GetParameterHistory(string sessionUuid, int nodeId, string uniqueId, DateTime from, DateTime to)
+        public async Task<List<ParameterValue>> GetParameterHistory(string channelId, int nodeId, string uniqueId, DateTime from, DateTime to)
         {
-            return await DeviceAdapter.GetParameterHistory(sessionUuid, nodeId, uniqueId, from, to);
+            return await DeviceAdapter.GetParameterHistory(channelId, nodeId, uniqueId, from, to);
         }
 
         public async Task<ParameterValueHistoryStatistics> GetParameterHistoryStatistics(string channelId, int nodeId, string uniqueId, DateTime from, DateTime to)

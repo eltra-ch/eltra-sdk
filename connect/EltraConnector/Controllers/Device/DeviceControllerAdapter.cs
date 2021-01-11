@@ -28,7 +28,7 @@ namespace EltraConnector.Controllers.Device
 
         private readonly UserIdentity _userIdentity;
 
-        private EltraDeviceSet _sessionDevices;
+        private EltraDeviceSet _channelDevices;
         private DeviceCommandsControllerAdapter _deviceCommandsControllerAdapter;
         private ParameterControllerAdapter _parameterControllerAdapter;
         private DescriptionControllerAdapter _descriptionContollerAdapter;
@@ -38,8 +38,8 @@ namespace EltraConnector.Controllers.Device
 
         #region Constructors
 
-        public DeviceControllerAdapter(string url, Channel session, UserIdentity userIdentity)
-            : base(url, session)
+        public DeviceControllerAdapter(string url, Channel channel, UserIdentity userIdentity)
+            : base(url, channel)
         {
             _userIdentity = userIdentity;
         }
@@ -58,7 +58,7 @@ namespace EltraConnector.Controllers.Device
             }
         }
 
-        private EltraDeviceSet ChannelDevices => _sessionDevices ?? (_sessionDevices = new EltraDeviceSet { Channel = Channel });
+        private EltraDeviceSet ChannelDevices => _channelDevices ?? (_channelDevices = new EltraDeviceSet { Channel = Channel });
 
         public DeviceCommandsControllerAdapter DeviceCommandsAdapter => _deviceCommandsControllerAdapter ?? (_deviceCommandsControllerAdapter = CreateDeviceCommandsAdapter());
 
@@ -190,7 +190,7 @@ namespace EltraConnector.Controllers.Device
 
                             if(!await device.ReadDeviceDescriptionFile(deviceDescriptionFile))
                             {
-                                MsgLogger.WriteError($"{GetType().Name} - GetSessionDevices", "read device description file failed!");
+                                MsgLogger.WriteError($"{GetType().Name} - GetChannelDevices", "read device description file failed!");
                             }
                         }
                         else
@@ -202,7 +202,7 @@ namespace EltraConnector.Controllers.Device
             }
             catch (Exception e)
             {
-                MsgLogger.Exception($"{GetType().Name} - GetSessionDevices", e);
+                MsgLogger.Exception($"{GetType().Name} - GetChannelDevices", e);
             }
 
             return result;
@@ -415,19 +415,19 @@ namespace EltraConnector.Controllers.Device
             return result;
         }
 
-        public async Task<Parameter> GetParameter(string sessionUuid, int nodeId, ushort index, byte subIndex)
+        public async Task<Parameter> GetParameter(string channelId, int nodeId, ushort index, byte subIndex)
         {
-            return await ParameterAdapter.GetParameter(sessionUuid, nodeId, index, subIndex);
+            return await ParameterAdapter.GetParameter(channelId, nodeId, index, subIndex);
         }
 
-        public async Task<ParameterValue> GetParameterValue(string sessionUuid, int nodeId, ushort index, byte subIndex)
+        public async Task<ParameterValue> GetParameterValue(string channelId, int nodeId, ushort index, byte subIndex)
         {
-            return await ParameterAdapter.GetParameterValue(sessionUuid, nodeId, index, subIndex);
+            return await ParameterAdapter.GetParameterValue(channelId, nodeId, index, subIndex);
         }
 
-        public async Task<List<ParameterValue>> GetParameterHistory(string sessionUuid, int nodeId, string uniqueId, DateTime from, DateTime to)
+        public async Task<List<ParameterValue>> GetParameterHistory(string channelId, int nodeId, string uniqueId, DateTime from, DateTime to)
         {
-            return await ParameterAdapter.GetParameterHistory(sessionUuid, nodeId, uniqueId, from, to);
+            return await ParameterAdapter.GetParameterHistory(channelId, nodeId, uniqueId, from, to);
         }
         public async Task<ParameterValueHistoryStatistics> GetParameterHistoryStatistics(string channelId, int nodeId, string uniqueId, DateTime from, DateTime to)
         {

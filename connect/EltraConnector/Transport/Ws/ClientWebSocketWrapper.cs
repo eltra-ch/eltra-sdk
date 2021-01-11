@@ -108,7 +108,7 @@ namespace EltraConnector.Transport.Ws
             {
                 MsgLogger.Exception($"{GetType().Name} - SendAsync, error code = {e.WebSocketErrorCode}", e);
 
-                HandleWebSocketException(e);
+                await HandleWebSocketException(e, token);
             }
             catch (Exception e)
             {
@@ -122,7 +122,7 @@ namespace EltraConnector.Transport.Ws
             return result;
         }
 
-        private void HandleWebSocketException(WebSocketException e)
+        private async Task HandleWebSocketException(WebSocketException e, CancellationToken token)
         {
             var errorCode = e.WebSocketErrorCode;
 
@@ -131,6 +131,8 @@ namespace EltraConnector.Transport.Ws
                 errorCode == WebSocketError.InvalidState)
             {
                 MsgLogger.WriteError($"{GetType().Name} - HandleWebSocketException", "socket error, close socket");
+
+                await CloseOutputAsync(WebSocketCloseStatus.Empty, string.Empty, token);
 
                 Initialize();
             }
@@ -150,7 +152,7 @@ namespace EltraConnector.Transport.Ws
             {
                 MsgLogger.Exception($"{GetType().Name} - ReceiveAsync - error code = {e.WebSocketErrorCode}", e);
 
-                HandleWebSocketException(e);
+                await HandleWebSocketException(e, token);
             }
             catch(Exception e)
             {
@@ -170,8 +172,6 @@ namespace EltraConnector.Transport.Ws
 
             try
             {
-                await _sendLock.WaitAsync();
-
                 if (_socket.State == WebSocketState.Open || _socket.State == WebSocketState.CloseSent)
                 {
                     await _socket.CloseOutputAsync(status, description, token);
@@ -186,10 +186,6 @@ namespace EltraConnector.Transport.Ws
             catch (Exception e)
             {
                 MsgLogger.Exception($"{GetType().Name} - CloseOutputAsync", e);
-            }
-            finally
-            {
-                _sendLock.Release();
             }
 
             return result;

@@ -10,8 +10,8 @@ namespace EltraConnector.Agent.Controllers.Device
     {
         #region Constructors
 
-        public SlaveDeviceControllerAdapter(string url, Channel session, UserIdentity userIdentity)
-            : base(url, session, userIdentity)
+        public SlaveDeviceControllerAdapter(string url, Channel channel, UserIdentity userIdentity)
+            : base(url, channel, userIdentity)
         {
         }
 

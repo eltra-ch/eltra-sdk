@@ -354,7 +354,7 @@ namespace EltraConnector.Master.Controllers.Commands
                                 {
                                     if (channelStatusUpdate.ChannelId != _channelControllerAdapter.Channel.Id)
                                     {
-                                        MsgLogger.WriteDebug($"{GetType().Name} - ProcessJsonCommand", $"session {channelStatusUpdate.ChannelId}, status changed to {channelStatusUpdate.Status}");
+                                        MsgLogger.WriteDebug($"{GetType().Name} - ProcessJsonCommand", $"channel {channelStatusUpdate.ChannelId}, status changed to {channelStatusUpdate.Status}");
 
                                         OnRemoteChannelStatusChanged(new AgentChannelStatusChangedEventArgs() { Id = channelStatusUpdate.ChannelId, Status = channelStatusUpdate.Status });
                                     }
