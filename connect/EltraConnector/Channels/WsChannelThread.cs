@@ -271,6 +271,8 @@ namespace EltraConnector.Channels
             {
                 Status = WsChannelStatus.Started;
 
+                MsgLogger.WriteLine($"connected to channel = '{WsChannelId}'");
+
                 result = true;
             }
             else if (ConnectionManager.CanConnect(WsChannelId))
@@ -289,6 +291,14 @@ namespace EltraConnector.Channels
                         }
                     }
                 }
+                else
+                {
+                    MsgLogger.WriteError($"{GetType().Name} - ReconnectToWsChannel", $"cannot sign-in");
+                }
+            }
+            else
+            {
+                MsgLogger.WriteError($"{GetType().Name} - ReconnectToWsChannel", $"cannot connect and not connected");
             }
 
             return result;
