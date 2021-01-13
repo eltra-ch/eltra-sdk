@@ -122,25 +122,6 @@ namespace EltraConnector.Master.Controllers
 
         #region Methods
 
-        protected override void OnConnectionManagerChanged()
-        {
-            var t = Task.Run(async () => {
-
-                if (ConnectionManager != null)
-                {
-                    if (await ConnectionManager.Connect(WsChannelId, WsChannelName))
-                    {
-                        if (!await SendChannelIdentyficationRequest())
-                        {
-                            MsgLogger.WriteError($"{GetType().Name} - OnConnectionManagerChanged", $"send ident request failed, channel = {WsChannelName}");
-                        }
-                    }
-                }
-            });
-
-            t.Wait();
-        }
-
         internal Task<bool> PayloadExists(DeviceToolPayload payload)
         {
             return DeviceControllerAdapter.PayloadExists(payload);

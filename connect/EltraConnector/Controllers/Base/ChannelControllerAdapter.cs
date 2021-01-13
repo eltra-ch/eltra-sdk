@@ -65,18 +65,36 @@ namespace EltraConnector.Controllers.Base
         
         protected virtual void OnConnectionManagerChanged()
         {
-            var t = Task.Run(async ()=> {
+            ConnectToChannel();
+        }
 
+        protected bool ConnectToChannel()
+        {
+            bool result = false;
+
+            var t = Task.Run(async () =>
+            {
                 if (ConnectionManager != null)
                 {
+                    MsgLogger.WriteLine($"{GetType().Name} - ConnectToChannel, send ident request failed, channel = {WsChannelName}");
+
                     if (await ConnectionManager.Connect(WsChannelId, WsChannelName))
                     {
-                        await SendChannelIdentyficationRequest();
+                        if (!await SendChannelIdentyficationRequest())
+                        {
+                            MsgLogger.WriteError($"{GetType().Name} - ConnectToChannel", $"send ident request failed, channel = {WsChannelName}");
+                        }
+                        else
+                        {
+                            result = true;
+                        }
                     }
                 }
             });
 
             t.Wait();
+
+            return result;
         }
 
         #endregion
@@ -387,11 +405,23 @@ namespace EltraConnector.Controllers.Base
         {
             bool result = false;
 
-            if (ConnectionManager != null && ConnectionManager.IsConnected(WsChannelId))
+            if (ConnectionManager != null)
             {
-                if (await ConnectionManager.Send(WsChannelId, _user.Identity, statusUpdate))
-                {                    
+                if(!ConnectionManager.IsConnected(WsChannelId))
+                {
+                    result = ConnectToChannel();
+                }
+                else
+                {
                     result = true;
+                }
+
+                if (result)
+                {
+                    if (await ConnectionManager.Send(WsChannelId, _user.Identity, statusUpdate))
+                    {
+                        result = true;
+                    }
                 }
             }
 
