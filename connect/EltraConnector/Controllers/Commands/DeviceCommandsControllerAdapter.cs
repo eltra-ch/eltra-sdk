@@ -81,7 +81,7 @@ namespace EltraConnector.Controllers
 
                     var json = await Transporter.Get(_userIdentity, url);
 
-                    var commandSet = json.TryDeserializeObject<DeviceCommandSet>();
+                    var commandSet = json.TryDeserializeObject<DeviceCommandList>();
 
                     if (commandSet != null)
                     {
@@ -138,7 +138,7 @@ namespace EltraConnector.Controllers
             return result;
         }
 
-        private static void AssignDeviceToCommand(EltraDevice device, DeviceCommandSet result)
+        private static void AssignDeviceToCommand(EltraDevice device, DeviceCommandList result)
         {
             if (result != null)
             {
@@ -203,17 +203,20 @@ namespace EltraConnector.Controllers
 
                     if (!string.IsNullOrEmpty(json))
                     {
-                        var executeCommands = json.TryDeserializeObject<List<ExecuteCommand>>();
+                        var executeCommands = json.TryDeserializeObject<ExecuteCommandList>();
 
-                        foreach (var executeCommand in executeCommands)
+                        if (executeCommands != null)
                         {
-                            if (executeCommand?.Command != null)
+                            foreach (var executeCommand in executeCommands.Items)
                             {
-                                executeCommand.Command.Device = deviceNode;
+                                if (executeCommand?.Command != null)
+                                {
+                                    executeCommand.Command.Device = deviceNode;
+                                }
                             }
-                        }
 
-                        result = executeCommands;
+                            result = executeCommands.Items;
+                        }                        
                     }
                 }
                 catch (Exception e)

@@ -94,7 +94,7 @@ namespace EltraConnector.Agent.Parameters
             {
                 var parameterChangedTask = Task.Run(() =>
                 {
-                    var parameterSet = json.TryDeserializeObject<ParameterValueUpdateSet>();
+                    var parameterSet = json.TryDeserializeObject<ParameterValueUpdateList>();
 
                     if (parameterSet != null && parameterSet.Count > 0)
                     {

@@ -203,13 +203,13 @@ namespace EltraConnector.Master.Controllers.Commands
             
             try
             {
-                var executeCommands = json.TryDeserializeObject<List<ExecuteCommand>>();
+                var executeCommands = json.TryDeserializeObject<ExecuteCommandList>();
 
-                if(executeCommands != null && executeCommands.Count > 0)
+                if(executeCommands != null && executeCommands.Items.Count > 0)
                 {
                     result = new List<ExecuteCommand>();
 
-                    foreach(var executeCommand in executeCommands)
+                    foreach(var executeCommand in executeCommands.Items)
                     {
                         if (executeCommand.IsValid())
                         {
@@ -231,13 +231,13 @@ namespace EltraConnector.Master.Controllers.Commands
 
             try
             {
-                var executeCommandStatusList = json.TryDeserializeObject<List<ExecuteCommandStatus>>();
+                var executeCommandStatusList = json.TryDeserializeObject<ExecuteCommandStatusList>();
 
-                if (executeCommandStatusList != null && executeCommandStatusList.Count > 0)
+                if (executeCommandStatusList != null && executeCommandStatusList.Items.Count > 0)
                 {
                     result = new List<ExecuteCommandStatus>();
 
-                    foreach (var executeCommandStatus in executeCommandStatusList)
+                    foreach (var executeCommandStatus in executeCommandStatusList.Items)
                     {
                         if (executeCommandStatus.IsValid())
                         {

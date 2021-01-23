@@ -257,7 +257,12 @@ namespace EltraConnector.Controllers.Base
 
                 if(!string.IsNullOrEmpty(json))
                 {
-                    result = json.TryDeserializeObject<List<Channel>>();
+                    var set = json.TryDeserializeObject<ChannelList>();
+
+                    if(set!=null)
+                    {
+                        result.AddRange(set.Items);
+                    }
                 }
             }
             catch (Exception e)
@@ -385,7 +390,12 @@ namespace EltraConnector.Controllers.Base
 
                     if (!string.IsNullOrEmpty(json))
                     {
-                        result = json.TryDeserializeObject<ChannelStatus>();
+                        var statusUpdate = json.TryDeserializeObject<ChannelStatusUpdate>();
+
+                        if (statusUpdate != null)
+                        {
+                            result = statusUpdate.Status;
+                        }
                     }
                 }
                 catch (Exception e)

@@ -175,13 +175,12 @@ namespace EltraConnector.Controllers.Device
                 var url = UrlHelper.BuildUrl(Url, "api/channel/devices", query);
                 var json = await Transporter.Get(_userIdentity, url);
 
-                result = json.TryDeserializeObject<List<EltraDevice>>();
+                var devices = json.TryDeserializeObject<EltraDeviceList>();
 
-                if (result != null)
+                if (devices != null)
                 {
-                    foreach (var deviceNode in result)
-                    {
-                        var device = deviceNode;
+                    foreach (var device in devices.Items)
+                    {                        
                         var deviceDescriptionFile = DeviceDescriptionFactory.CreateDeviceDescriptionFile(device);
 
                         if (deviceDescriptionFile != null)
@@ -197,6 +196,8 @@ namespace EltraConnector.Controllers.Device
                         {
                             device.Status = DeviceStatus.Ready;
                         }
+
+                        result.Add(device);
                     }
                 }
             }

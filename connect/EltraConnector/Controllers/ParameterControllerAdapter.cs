@@ -427,11 +427,11 @@ namespace EltraConnector.Controllers
 
                 var json = await Transporter.Get(_identity, url);
 
-                var parameterValues = json.TryDeserializeObject<List<ParameterValue>>();
+                var parameterValues = json.TryDeserializeObject<ParameterValueList>();
 
                 if (parameterValues != null)
                 {
-                    result = parameterValues;
+                    result = parameterValues.Items;
 
                     MsgLogger.WriteLine($"get parameter history, device serial number={nodeId} - success");
                 }
