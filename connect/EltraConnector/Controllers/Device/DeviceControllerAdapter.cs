@@ -374,7 +374,12 @@ namespace EltraConnector.Controllers.Device
 
                 if(!string.IsNullOrEmpty(json))
                 {
-                    result = json.TryDeserializeObject<DeviceStatus>();
+                    var statusUpdate = json.TryDeserializeObject<DeviceStatusUpdate>();
+
+                    if(statusUpdate!=null)
+                    {
+                        result = statusUpdate.Status;
+                    }
                 }
             }
             catch (Exception e)
