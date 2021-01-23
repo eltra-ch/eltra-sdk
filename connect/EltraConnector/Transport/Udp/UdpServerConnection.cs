@@ -11,6 +11,7 @@ using System.Threading.Tasks;
 using System.Text.Json;
 using EltraCommon.Logger;
 using System.Net;
+using EltraCommon.Extensions;
 
 namespace EltraConnector.Transport.Udp
 {
@@ -81,7 +82,7 @@ namespace EltraConnector.Transport.Udp
         {
             try
             {
-                var udpRequest = JsonSerializer.Deserialize<UdpRequest>(message);
+                var udpRequest = message.TryDeserializeObject<UdpRequest>();
 
                 if (udpRequest is UdpRequest)
                 {

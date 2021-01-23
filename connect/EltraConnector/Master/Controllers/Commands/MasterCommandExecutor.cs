@@ -96,7 +96,7 @@ namespace EltraConnector.Master.Controllers.Commands
             }
             else if (sender is UdpServerConnection udpConnection && udpConnection.UniqueId == WsChannelId)
             {
-                var udpRequest = JsonSerializer.Deserialize<UdpRequest>(e.Message);
+                var udpRequest = e.Message.TryDeserializeObject<UdpRequest>();
 
                 if (udpRequest is UdpRequest)
                 {
@@ -163,7 +163,7 @@ namespace EltraConnector.Master.Controllers.Commands
             
             try
             {
-                var executeCommand = JsonSerializer.Deserialize<ExecuteCommand>(json);
+                var executeCommand = json.TryDeserializeObject<ExecuteCommand>();
 
                 if (executeCommand != null && executeCommand.IsValid())
                 {
@@ -183,7 +183,7 @@ namespace EltraConnector.Master.Controllers.Commands
 
             try
             {
-                var executeCommandStatus = JsonSerializer.Deserialize<ExecuteCommandStatus>(json);
+                var executeCommandStatus = json.TryDeserializeObject<ExecuteCommandStatus>();
 
                 if (executeCommandStatus != null && executeCommandStatus.IsValid())
                 {
@@ -203,7 +203,7 @@ namespace EltraConnector.Master.Controllers.Commands
             
             try
             {
-                var executeCommands = JsonSerializer.Deserialize<List<ExecuteCommand>>(json);
+                var executeCommands = json.TryDeserializeObject<List<ExecuteCommand>>();
 
                 if(executeCommands != null && executeCommands.Count > 0)
                 {
@@ -231,7 +231,7 @@ namespace EltraConnector.Master.Controllers.Commands
 
             try
             {
-                var executeCommandStatusList = JsonSerializer.Deserialize<List<ExecuteCommandStatus>>(json);
+                var executeCommandStatusList = json.TryDeserializeObject<List<ExecuteCommandStatus>>();
 
                 if (executeCommandStatusList != null && executeCommandStatusList.Count > 0)
                 {
@@ -259,7 +259,7 @@ namespace EltraConnector.Master.Controllers.Commands
             
             try
             {
-                var channelStatusUpdate = JsonSerializer.Deserialize<ChannelStatusUpdate>(json);
+                var channelStatusUpdate = json.TryDeserializeObject<ChannelStatusUpdate>();
 
                 if (channelStatusUpdate != null && channelStatusUpdate.IsValid())
                 {
@@ -279,7 +279,7 @@ namespace EltraConnector.Master.Controllers.Commands
 
             try
             {
-                var channelIdentification = JsonSerializer.Deserialize<ChannelIdentification>(json);
+                var channelIdentification = json.TryDeserializeObject<ChannelIdentification>();
 
                 if (channelIdentification != null)
                 {

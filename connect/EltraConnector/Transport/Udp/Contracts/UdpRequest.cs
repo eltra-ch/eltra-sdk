@@ -10,8 +10,13 @@ namespace EltraConnector.Transport.Udp.Contracts
     {
         public UdpRequest()
         {
-            Header = "ABE3";
+            Header = DefaultHeader;
         }
+
+        /// <summary>
+        /// DefaultHeader
+        /// </summary>
+        public static string DefaultHeader = "ABE3";
 
         [DataMember]
         public string Header { get; set; }
