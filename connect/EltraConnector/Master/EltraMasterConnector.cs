@@ -46,7 +46,7 @@ namespace EltraConnector.Master
         /// <summary>
         /// User defined channelId
         /// </summary>
-        public string ChannelId { get; set; }
+        public string ChannelId { get; private set; }
 
         /// <summary>
         /// Authorization data
@@ -211,74 +211,96 @@ namespace EltraConnector.Master
 
                 try
                 {
-                    SyncCloudAgent agent;
+                    SyncCloudAgent agent = null;
 
-                    if (!string.IsNullOrEmpty(ChannelId))
+                    MsgLogger.Print($"Sign in '{Identity.Login}' ...");
+
+                    if (await SignIn(Identity, true))
                     {
-                        agent = new SyncCloudAgent(Host, Identity, ChannelId, ConnectionSettings.UpdateInterval, ConnectionSettings.Timeout);
-                    }
-                    else
-                    {
-                        agent = new SyncCloudAgent(Host, Identity, ConnectionSettings.UpdateInterval, ConnectionSettings.Timeout);
-                    }
+                        MsgLogger.Print($"'{Identity.Login}' signed in successfully");
 
-                    RegisterEvents(agent);
+                        ChannelId = await Authentication.GetChannelId();
 
-                    bool repeat = false;
-
-                    do
-                    {
-                        Status = MasterStatus.Starting;
-
-                        MsgLogger.Print($"Sign in '{Identity.Login}' ...");
-
-                        if (await SignIn(agent))
+                        if (!string.IsNullOrEmpty(ChannelId))
                         {
-                            MsgLogger.Print($"'{Identity.Login}' signed in successfully");
-
-                            deviceManager.CloudAgent = agent;
-
-                            MsgLogger.Print("scan devices...");
-
-                            await deviceManager.Run();
-
-                            Status = MasterStatus.Started;
-
-                            while (!_cancellationTokenSource.IsCancellationRequested)
-                            {
-                                await Task.Delay(100);
-                            }
-
-                            Status = MasterStatus.Stopping;
-
-                            MsgLogger.Print("Disconnect ...");
-
-                            agent.Stop();
-
-                            MsgLogger.Print($"Stop device manager");
-
-                            await deviceManager.Stop();
-
-                            MsgLogger.Print($"Sign out, login '{Identity.Login}' ...");
-
-                            await agent.SignOut();
-
-                            MsgLogger.Print("Disconnected");
-                        }
-                        else if (!agent.Good)
-                        {
-                            repeat = true;
-
-                            MsgLogger.WriteError($"{GetType().Name} - Start", $"Connection failed, repeat in {ConnectionSettings.Timeout} sec. !");
-
-                            await Task.Delay(reconnectDelay);
+                            agent = new SyncCloudAgent(Host, Identity, ChannelId, ConnectionSettings.UpdateInterval, ConnectionSettings.Timeout);
                         }
                         else
                         {
-                            MsgLogger.WriteError($"{GetType().Name} - Start", "Authentication failed, wrong password!");
+                            MsgLogger.WriteError($"{GetType().Name} - Start", $"Master - channel cannot be read, quit");
+                        }
+
+                        if (agent != null)
+                        {
+                            RegisterEvents(agent);
+
+                            bool repeat = false;
+
+                            do
+                            {
+                                Status = MasterStatus.Starting;
+
+                                MsgLogger.Print($"Sign in '{Identity.Login}' ...");
+
+                                if (await SignIn(agent))
+                                {
+                                    MsgLogger.Print($"'{Identity.Login}' signed in successfully");
+
+                                    deviceManager.CloudAgent = agent;
+
+                                    MsgLogger.Print("scan devices...");
+
+                                    await deviceManager.Run();
+
+                                    Status = MasterStatus.Started;
+
+                                    while (!_cancellationTokenSource.IsCancellationRequested)
+                                    {
+                                        await Task.Delay(100);
+                                    }
+
+                                    Status = MasterStatus.Stopping;
+
+                                    MsgLogger.Print("Disconnect ...");
+
+                                    agent.Stop();
+
+                                    MsgLogger.Print($"Stop device manager");
+
+                                    await deviceManager.Stop();
+
+                                    MsgLogger.Print($"Sign out, login '{Identity.Login}' ...");
+
+                                    await agent.SignOut();
+
+                                    MsgLogger.Print("Disconnected");
+                                }
+                                else if (!agent.Good)
+                                {
+                                    repeat = true;
+
+                                    MsgLogger.WriteError($"{GetType().Name} - Start", $"Connection failed, repeat in {ConnectionSettings.Timeout} sec. !");
+
+                                    await Task.Delay(reconnectDelay);
+                                }
+                                else
+                                {
+                                    MsgLogger.WriteError($"{GetType().Name} - Start", "Authentication failed, wrong password!");
+                                }
+                            }
+                            while (repeat && !_cancellationTokenSource.IsCancellationRequested);
+                        }
+                        else
+                        {
+                            await Authentication.SignOut();
+
+                            MsgLogger.Print("Disconnected");
                         }
                     }
-                    while (repeat && !_cancellationTokenSource.IsCancellationRequested);
+                    else
+                    {
+                        MsgLogger.WriteError($"{GetType().Name} - Start", "Authentication failed, wrong password!");
+                    }
                 }
                 catch (Exception e)
                 {

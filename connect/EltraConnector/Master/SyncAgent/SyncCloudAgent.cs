@@ -55,27 +55,7 @@ namespace EltraConnector.SyncAgent
 
             RegisterEvents();
         }
-
-        public SyncCloudAgent(string url, UserIdentity identity, uint updateInterval, uint timeout)
-        {
-            Url = url;
-            Identity = identity;
-            UpdateInterval = updateInterval;
-            Timeout = timeout;
-
-            _good = true;
-            _authentication = new Authentication(url);
-            _connectionManager = new ConnectionManager() { HostUrl = url };
-            string uuid = Guid.NewGuid().ToString();
-
-            _channelControllerAdapter = new MasterChannelControllerAdapter(this, uuid) { ConnectionManager = _connectionManager };
-                        
-            _commandExecutor = new MasterCommandExecutor(_channelControllerAdapter);
-            _channelHeartbeat = new MasterChannelHeartbeat(_channelControllerAdapter, _commandExecutor, updateInterval, timeout);
-
-            RegisterEvents();
-        }
-
+        
         #endregion
 
         #region Events

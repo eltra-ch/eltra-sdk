@@ -27,11 +27,6 @@ namespace EltraConnector.UserAgent
 
         #region Constructors
 
-        public DeviceAgent(string url, UserIdentity identity, uint updateInterval, uint timeout)
-            : base(url, identity, updateInterval, timeout)
-        {
-        }
-
         public DeviceAgent(string url, string uuid, UserIdentity identity, uint updateInterval, uint timeout)
             : base(url, uuid, identity, updateInterval, timeout)
         {

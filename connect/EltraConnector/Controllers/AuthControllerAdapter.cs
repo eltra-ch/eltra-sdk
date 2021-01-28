@@ -9,6 +9,7 @@ using System.Text.Json;
 using System.Threading;
 using EltraCommon.Transport;
 using EltraCommon.Extensions;
+using EltraCommon.Contracts.Channels;
 
 namespace EltraConnector.Controllers
 {
@@ -180,6 +181,36 @@ namespace EltraConnector.Controllers
             catch (Exception e)
             {
                 MsgLogger.Exception($"{GetType().Name} - CreateAlias", e);
+            }
+
+            return result;
+        }
+
+        internal async Task<string> GetChannelId()
+        {
+            string result = string.Empty;
+
+            try
+            {
+                var query = HttpUtility.ParseQueryString(string.Empty);
+
+                var url = UrlHelper.BuildUrl(Url, "api/channel/id", query);
+
+                var json = await Transporter.Get(_identity, url);
+
+                if (!string.IsNullOrEmpty(json))
+                {
+                    var channelIdentification = json.TryDeserializeObject<ChannelIdentification>();
+
+                    if (channelIdentification != null)
+                    {
+                        result = channelIdentification.Id;
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                MsgLogger.Exception($"{GetType().Name} - GetChannelId", e);
             }
 
             return result;

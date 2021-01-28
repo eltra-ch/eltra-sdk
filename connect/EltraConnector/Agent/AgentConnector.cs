@@ -14,6 +14,9 @@ using System.Diagnostics;
 using EltraConnector.Interfaces;
 using EltraCommon.Transport;
 using EltraConnector.Events;
+using System.Web;
+using EltraCommon.Logger;
+using EltraCommon.Helpers;
 
 namespace EltraConnector.Agent
 {
@@ -23,8 +26,6 @@ namespace EltraConnector.Agent
     public class AgentConnector : IDisposable, IAgentConnector
     {
         #region Private fields
-
-        private readonly string _channelId;
 
         private DeviceAgent _deviceAgent;
         private uint _updateInterval;
@@ -49,18 +50,7 @@ namespace EltraConnector.Agent
             _updateInterval = 60;
             _timeout = 180;
         }
-
-        /// <summary>
-        /// AgentConnector
-        /// </summary>
-        /// <param name="channelId"></param>
-        public AgentConnector(string channelId)
-        {
-            _channelId = channelId;
-            _updateInterval = 60;
-            _timeout = 180;
-        }
-
+        
         #endregion
 
         #region Properties
@@ -214,7 +204,7 @@ namespace EltraConnector.Agent
 
             Status = AgentStatus.Starting;
             
-            CreateDeviceAgent();
+            await CreateDeviceAgent();
 
             RegisterEvents();
 
@@ -223,20 +213,20 @@ namespace EltraConnector.Agent
             return result;
         }
 
-        private void CreateDeviceAgent()
+        
+
+        private async Task CreateDeviceAgent()
         {
+            string channelId = await Authentication.GetChannelId();
+
             if (_deviceAgent != null)
             {
                 _deviceAgent = new DeviceAgent(Host, _deviceAgent.ChannelId, Identity, _updateInterval, _timeout);
             }
-            else if (!string.IsNullOrEmpty(_channelId))
+            else if (!string.IsNullOrEmpty(channelId))
             {
-                _deviceAgent = new DeviceAgent(Host, _channelId, Identity, _updateInterval, _timeout);
-            }
-            else
-            {
-                _deviceAgent = new DeviceAgent(Host, Identity, _updateInterval, _timeout);
-            }
+                _deviceAgent = new DeviceAgent(Host, channelId, Identity, _updateInterval, _timeout);
+            }            
         }
 
         /// <summary>
@@ -262,7 +252,7 @@ namespace EltraConnector.Agent
 
             Status = AgentStatus.Starting;
 
-            CreateDeviceAgent();
+            await CreateDeviceAgent();
 
             RegisterEvents();
 

@@ -59,22 +59,6 @@ namespace EltraConnector.UserAgent
 
         #region Constructors
 
-        public UserCloudAgent(string url, UserIdentity identity, uint updateInterval, uint timeout)
-        {
-            string uuid = Guid.NewGuid().ToString();
-
-            _timeout = timeout;
-            _status = AgentStatus.Undefined;
-            _identity = identity;
-            _executedCommands = new List<DeviceCommand>();
-            _channel = new Channel() { Status = ChannelStatus.Offline };
-            _connectionManager = new ConnectionManager() { HostUrl = url };
-
-            _channelAdapter = new SlaveChannelControllerAdapter(url, uuid, identity, updateInterval, timeout) { ConnectionManager = _connectionManager };
-
-            Initialize(url, updateInterval);
-        }
-
         public UserCloudAgent(string url, string uuid, UserIdentity identity, uint updateInterval, uint timeout)
         {
             _timeout = timeout;

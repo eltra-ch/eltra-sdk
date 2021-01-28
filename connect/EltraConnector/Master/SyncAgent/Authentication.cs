@@ -4,6 +4,7 @@ using EltraCommon.Contracts.Users;
 using EltraConnector.Controllers;
 using System;
 using EltraCommon.Transport.Events;
+using System.Web;
 
 namespace EltraConnector.SyncAgent
 {
@@ -202,6 +203,22 @@ namespace EltraConnector.SyncAgent
         public void Stop()
         {
             _authControllerAdapter?.Stop();
+        }
+
+        internal async Task<string> GetChannelId()
+        {
+            string result = string.Empty;
+
+            try
+            {
+                result = await _authControllerAdapter.GetChannelId();
+            }
+            catch (Exception e)
+            {
+                MsgLogger.Exception($"{GetType().Name} - GetChannelId", e);
+            }
+
+            return result;
         }
 
         #endregion

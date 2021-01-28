@@ -229,8 +229,9 @@ namespace EltraConnector.Agent.Controllers.Commands
                     result = executeCommand;
                 }
             }
-            catch (Exception)
+            catch (Exception e)
             {
+                MsgLogger.Exception($"{GetType().Name} - ParseExecuteCommand", e);
             }
 
             return result;
@@ -249,70 +250,67 @@ namespace EltraConnector.Agent.Controllers.Commands
                     result = executeCommandStatus;
                 }
             }
-            catch (Exception)
+            catch (Exception e)
             {
+                MsgLogger.Exception($"{GetType().Name} - ParseExecuteCommandStatus", e);
             }
 
             return result;
         }
 
-        private List<ExecuteCommandStatus> ParseExecuteCommandStatusSet(string json)
+        private List<ExecuteCommandStatus> ParseExecuteCommandStatusList(string json)
         {
             List<ExecuteCommandStatus> result = null;
 
             try
             {
-                if (json.StartsWith("[") && json.EndsWith("]"))
+                var executeCommandStatusList = json.TryDeserializeObject<ExecuteCommandStatusList>();
+
+                if (executeCommandStatusList != null && executeCommandStatusList.Items.Count > 0)
                 {
-                    var executeCommandStatusList = json.TryDeserializeObject<ExecuteCommandStatusList>();
+                    result = new List<ExecuteCommandStatus>();
 
-                    if (executeCommandStatusList != null && executeCommandStatusList.Items.Count > 0)
+                    foreach (var executeCommandStatus in executeCommandStatusList.Items)
                     {
-                        result = new List<ExecuteCommandStatus>();
-
-                        foreach (var executeCommandStatus in executeCommandStatusList.Items)
+                        if (executeCommandStatus.IsValid())
                         {
-                            if (executeCommandStatus.IsValid())
-                            {
-                                result.Add(executeCommandStatus);
-                            }
+                            result.Add(executeCommandStatus);
                         }
                     }
                 }
             }
-            catch (Exception)
+            catch (Exception e)
             {
+                MsgLogger.Exception($"{GetType().Name} - ParseExecuteCommandStatusSet", e);
             }
 
             return result;
         }
 
-        private List<ExecuteCommand> ParseExecuteCommandSet(string json)
+        private List<ExecuteCommand> ParseExecuteCommandList(string json)
         {
             List<ExecuteCommand> result = null;
 
             try
             {
-                if (json.StartsWith("[") && json.EndsWith("]"))
+                var executeCommands = json.TryDeserializeObject<ExecuteCommandList>();
+
+                if (executeCommands != null && executeCommands.Items.Count > 0)
                 {
-                    var executeCommands = json.TryDeserializeObject<ExecuteCommandList>();
+                    result = new List<ExecuteCommand>();
 
-                    if (executeCommands != null && executeCommands.Items.Count > 0)
+                    foreach (var executeCommand in executeCommands.Items)
                     {
-                        result = new List<ExecuteCommand>();
-
-                        foreach (var executeCommand in executeCommands.Items)
+                        if (executeCommand.IsValid())
                         {
-                            if (executeCommand.IsValid())
-                            {
-                                result.Add(executeCommand);
-                            }
+                            result.Add(executeCommand);
                         }
                     }
                 }
             }
-            catch (Exception)
+            catch (Exception e)
             {
+                MsgLogger.Exception($"{GetType().Name} - ParseExecuteCommandSet", e);
             }
 
             return result;
@@ -340,7 +338,7 @@ namespace EltraConnector.Agent.Controllers.Commands
 
         private async Task ProcessJsonMessage(string json)
         {
-            var executeCommands = ParseExecuteCommandSet(json);
+            var executeCommands = ParseExecuteCommandList(json);
 
             if (executeCommands != null)
             {
@@ -361,7 +359,7 @@ namespace EltraConnector.Agent.Controllers.Commands
                 }
                 else
                 {
-                    var executeCommandStatusSet = ParseExecuteCommandStatusSet(json);
+                    var executeCommandStatusSet = ParseExecuteCommandStatusList(json);
 
                     if (executeCommandStatusSet != null)
                     {
