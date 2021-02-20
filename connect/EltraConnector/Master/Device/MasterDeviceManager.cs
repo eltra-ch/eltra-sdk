@@ -108,14 +108,42 @@ namespace EltraConnector.Master.Device
             }
         }
 
-        public virtual async Task Run()
+        public virtual async Task<bool> Run()
         {
+            bool result = true;
+            
+            MsgLogger.WriteLine($"Run: device count='{DeviceList.Count}'");
+
             foreach (var device in DeviceList)
             {
-                MsgLogger.WriteLine($"Connected: device='{device.Family}', node id = {device.NodeId}, serial number=0x{device.Identification.SerialNumber:X}");
+                if (device.Status == DeviceStatus.Ready)
+                {
+                    MsgLogger.WriteLine($"Register: device='{device.Family}', node id = {device.NodeId}, serial number=0x{device.Identification.SerialNumber:X}");
 
-                await CloudAgent.RegisterDevice(device);
+                    if(!await CloudAgent.RegisterDevice(device))
+                    {
+                        result = false;
+                    }
+                }
             }
+
+            foreach (var device in DeviceList)
+            {
+                device.StatusChanged += async (o, e) =>
+                {
+                    if (device.Status == DeviceStatus.Ready)
+                    {
+                        MsgLogger.WriteLine($"Register: device='{device.Family}', node id = {device.NodeId}, serial number=0x{device.Identification.SerialNumber:X}");
+
+                        if(!await CloudAgent.RegisterDevice(device))
+                        {
+                            result = false;
+                        }
+                    }
+                };
+            }
+
+            return result;
         }
 
         #endregion

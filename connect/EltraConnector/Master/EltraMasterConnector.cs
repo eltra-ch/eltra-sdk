@@ -250,13 +250,14 @@ namespace EltraConnector.Master
 
                                     MsgLogger.Print("scan devices...");
 
-                                    await deviceManager.Run();
-
-                                    Status = MasterStatus.Started;
-
-                                    while (!_cancellationTokenSource.IsCancellationRequested)
+                                    if(await deviceManager.Run())
                                     {
-                                        await Task.Delay(100);
+                                        Status = MasterStatus.Started;
+
+                                        while (!_cancellationTokenSource.IsCancellationRequested)
+                                        {
+                                            await Task.Delay(100);
+                                        }
                                     }
 
                                     Status = MasterStatus.Stopping;

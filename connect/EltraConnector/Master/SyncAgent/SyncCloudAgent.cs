@@ -202,12 +202,10 @@ namespace EltraConnector.SyncAgent
 
             try
             {
-                var device = deviceNode;
-
                 if (await RegisterChannel())
                 {
                     MsgLogger.WriteLine(
-                        $"register(+) device='{device.Family}', node id = {device.NodeId}, serial number=0x{device.Identification.SerialNumber:X}");
+                        $"register(+) device='{deviceNode.Family}', node id = {deviceNode.NodeId}, serial number=0x{deviceNode.Identification.SerialNumber:X}");
 
                     result = await _channelControllerAdapter.RegisterDevice(deviceNode);
 
@@ -217,7 +215,7 @@ namespace EltraConnector.SyncAgent
                     }
                     else
                     {
-                        MsgLogger.WriteError($"{GetType().Name} - RegisterDevice", $"register device = '{device.Family}', node id = { device.NodeId}, serial number = 0x{ device.Identification.SerialNumber:X} failed!");
+                        MsgLogger.WriteError($"{GetType().Name} - RegisterDevice", $"register device = '{deviceNode.Family}', node id = {deviceNode.NodeId}, serial number = 0x{deviceNode.Identification.SerialNumber:X} failed!");
                     }
                 }
             }
