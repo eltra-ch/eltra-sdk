@@ -365,8 +365,17 @@ namespace EltraConnector.Controllers.Device
             {
                 var query = HttpUtility.ParseQueryString(string.Empty);
 
+                var deviceVersion = device.Version;
+                var identification = device.Identification;
+
                 query["channelId"] = Channel.Id;
                 query["nodeId"] = $"{device.NodeId}";
+                query["deviceName"] = $"{device.Name}";
+                query["hardwareVersion"] = $"{deviceVersion.HardwareVersion}";
+                query["softwareVersion"] = $"{deviceVersion.SoftwareVersion}";
+                query["applicationNumber"] = $"{deviceVersion.ApplicationNumber}";
+                query["applicationVersion"] = $"{deviceVersion.ApplicationVersion}";
+                query["serialNumber"] = $"{identification.SerialNumber}";
 
                 var url = UrlHelper.BuildUrl(Url, "api/device/status", query);
 
