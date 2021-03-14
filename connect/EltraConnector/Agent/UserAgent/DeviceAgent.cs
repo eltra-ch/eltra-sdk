@@ -9,7 +9,8 @@ using EltraCommon.Contracts.Parameters;
 using EltraCommon.Contracts.Users;
 using EltraCommon.Logger;
 using EltraCommon.ObjectDictionary.Common.DeviceDescription.Profiles.Application.Parameters;
-using EltraConnector.Classes;
+using EltraCommon.ObjectDictionary.Xdd.DeviceDescription.Profiles.Application.Parameters;
+using EltraConnector.Agent.UserAgent.Cache;
 using EltraConnector.SyncAgent;
 
 namespace EltraConnector.UserAgent
@@ -18,11 +19,10 @@ namespace EltraConnector.UserAgent
     {
         #region private fields
 
-        private static object _registeredParameterLocker = new object();
+        private ParameterRegistrationCache _cache;
 
         private List<DeviceCommand> _deviceCommands;
-        private List<RegisteredParameter> _registeredParameters;
-
+        
         #endregion
 
         #region Constructors
@@ -44,65 +44,11 @@ namespace EltraConnector.UserAgent
 
         public List<DeviceCommand> DeviceCommands => _deviceCommands ?? (_deviceCommands = new List<DeviceCommand>());
 
-        private List<RegisteredParameter> RegisteredParameters => _registeredParameters ?? (_registeredParameters = new List<RegisteredParameter>());
+        private ParameterRegistrationCache ParameterRegistrationCache => _cache ?? (_cache = new ParameterRegistrationCache());
 
         #endregion
 
         #region Methods
-
-        /// <summary>
-        /// IsParameterRegistered
-        /// </summary>
-        /// <param name="uniqueId"></param>
-        /// <returns></returns>
-        public bool IsParameterRegistered(string uniqueId)
-        {
-            bool result = false;
-
-            lock (_registeredParameterLocker)
-            {
-                foreach (var parameter in RegisteredParameters)
-                {
-                    if (parameter.UniqueId == uniqueId)
-                    {
-                        result = true;
-                        break;
-                    }
-                }
-            }
-
-            return result;
-        }
-
-        private void AddToRegisteredParameters(string uniqueId)
-        {
-            lock (_registeredParameterLocker)
-            {
-                RegisteredParameters.Add(new RegisteredParameter(uniqueId, _registeredParameterLocker));
-            }
-        }
-
-        private bool FindRegisteredParameter(string uniqueId, out RegisteredParameter registeredParameter)
-        {
-            bool result = false;
-
-            registeredParameter = null;
-
-            lock (_registeredParameterLocker)
-            {
-                foreach (var parameter in RegisteredParameters)
-                {
-                    if (parameter.UniqueId == uniqueId)
-                    {
-                        registeredParameter = parameter;
-                        result = true;
-                        break;
-                    }
-                }
-            }
-
-            return result;
-        }
 
         public override async Task<DeviceCommand> GetDeviceCommand(EltraDevice device, string commandName)
         {
@@ -202,7 +148,31 @@ namespace EltraConnector.UserAgent
 
             if (device != null)
             {
-                result = await GetParameterValue(device.ChannelId, device.NodeId, index, subIndex);
+                if(ParameterRegistrationCache.FindParameter(index, subIndex, out var registeredParameter))
+                {
+                    if(registeredParameter.CanUseCache)
+                    {
+                        var parameter = device.SearchParameter(index, subIndex) as XddParameter;
+
+                        if (parameter != null)
+                        {
+                            result = parameter.ActualValue;
+                        }
+                    }
+                    else
+                    {
+                        result = await GetParameterValue(device.ChannelId, device.NodeId, index, subIndex);
+
+                        if (result != null)
+                        {
+                            registeredParameter.LastModified = DateTime.Now;
+                        }
+                    }
+                }
+                else
+                {
+                    result = await GetParameterValue(device.ChannelId, device.NodeId, index, subIndex);
+                }
             }
 
             return result;
@@ -259,56 +229,53 @@ namespace EltraConnector.UserAgent
         public bool RegisterParameterUpdate(EltraDevice device, string uniqueId, ParameterUpdatePriority priority = ParameterUpdatePriority.Low, bool waitForResult = false)
         {
 #pragma warning disable 4014
-
-            Task.Run(async () => {
+            if (!string.IsNullOrEmpty(uniqueId) && device != null && device.SearchParameter(uniqueId) is XddParameter parameterEntry)
+            {   
                 bool result = false;
-
-                if (!string.IsNullOrEmpty(uniqueId))
+                
+                if (!ParameterRegistrationCache.IsParameterRegistered(uniqueId, parameterEntry.Index, parameterEntry.SubIndex, out var instanceCount))
                 {
-                    if (!IsParameterRegistered(uniqueId))
-                    {
-                        if (device != null)
+                    Task.Run(async () => {
+
+                        var command = await GetDeviceCommand(device, "RegisterParameterUpdate");
+
+                        if (command != null)
                         {
-                            if (device.SearchParameter(uniqueId) is Parameter parameterEntry)
+                            command.SetParameterValue("Index", parameterEntry.Index);
+                            command.SetParameterValue("SubIndex", parameterEntry.SubIndex);
+                            command.SetParameterValue("Priority", (int)priority);
+
+                            result = await ExecuteCommandAsync(command);
+
+                            if (!result)
                             {
-                                AddToRegisteredParameters(uniqueId);
+                                instanceCount = ParameterRegistrationCache.RemoveParameter(uniqueId);
 
-                                var command = await GetDeviceCommand(device, "RegisterParameterUpdate");
-
-                                if (command != null)
-                                {
-                                    command.SetParameterValue("Index", parameterEntry.Index);
-                                    command.SetParameterValue("SubIndex", parameterEntry.SubIndex);
-                                    command.SetParameterValue("Priority", (int)priority);
-
-                                    result = await ExecuteCommandAsync(command);
-                                }
-
-                                if (!result)
-                                {
-                                    RemoveFromRegisteredParameters(uniqueId);
-                                
-                                    MsgLogger.WriteError($"{GetType().Name} - RegisterParameterUpdate", $"parameter could't be registered - '{uniqueId}'");
-                                }
+                                MsgLogger.WriteError($"{GetType().Name} - RegisterParameterUpdate", $"parameter could't be registered - '{uniqueId}'");
+                            }
+                            else
+                            {
+                                MsgLogger.WriteDebug($"{GetType().Name} - RegisterParameterUpdate", $"registered parameter '{uniqueId}', instance count = {instanceCount}");
                             }
                         }
+                    }).ConfigureAwait(waitForResult);
+                }
+                else
+                {
+                    if (ParameterRegistrationCache.IncreaseCounter(uniqueId, out var registeredParameter))
+                    {
+                        MsgLogger.WriteDebug($"{GetType().Name} - RegisterParameterUpdate", $"register parameter '{uniqueId}', instance count = {registeredParameter.InstanceCount}");
                     }
                     else
                     {
-                        if (FindRegisteredParameter(uniqueId, out var registeredParameter))
-                        {
-                            registeredParameter.InstanceCount++;
-
-                            MsgLogger.WriteDebug($"{GetType().Name} - RegisterParameterUpdate", $"register parameter '{uniqueId}', instance count = {registeredParameter.InstanceCount}");
-                        }
-                        else
-                        {
-                            MsgLogger.WriteError($"{GetType().Name} - RegisterParameterUpdate", $"register: cannot find registered parameter '{uniqueId}'");
-                        }
+                        MsgLogger.WriteError($"{GetType().Name} - RegisterParameterUpdate", $"register parameter '{uniqueId}', instance count = {instanceCount}");
                     }
                 }
-
-            }).ConfigureAwait(waitForResult);
+            }
+            else
+            {
+                MsgLogger.WriteError($"{GetType().Name} - RegisterParameterUpdate", $"parameter '{uniqueId}' not found");
+            }
 
 #pragma warning restore 4014
 
@@ -324,89 +291,52 @@ namespace EltraConnector.UserAgent
         /// <param name="waitForResult"></param>
         public bool UnregisterParameterUpdate(EltraDevice device, string uniqueId, ParameterUpdatePriority priority = ParameterUpdatePriority.Low, bool waitForResult = false)
         {
-            var t = Task.Run(async () =>
+            if (device != null && !string.IsNullOrEmpty(uniqueId) && device.SearchParameter(uniqueId) is Parameter parameterEntry)
             {
-                if (!string.IsNullOrEmpty(uniqueId))
-                {
-                    bool result = false;
+                bool result = false;
 
-                    if (FindRegisteredParameter(uniqueId, out var registeredParameter))
+                if (ParameterRegistrationCache.CanUnregister(uniqueId, out var registeredParameter))
+                {       
+                    var t = Task.Run(async () =>
                     {
-                        if (registeredParameter.InstanceCount <= 1)
+                        var command = await GetDeviceCommand(device, "UnregisterParameterUpdate");
+
+                        if (command != null)
                         {
-                            RemoveFromRegisteredParameters(uniqueId);
+                            command.SetParameterValue("Index", parameterEntry.Index);
+                            command.SetParameterValue("SubIndex", parameterEntry.SubIndex);
+                            command.SetParameterValue("Priority", (int)priority);
 
-                            if (device != null)
-                            {
-                                if (device.SearchParameter(uniqueId) is Parameter parameterEntry)
-                                {
-                                    var command = await GetDeviceCommand(device, "UnregisterParameterUpdate");
-
-                                    if (command != null)
-                                    {
-                                        command.SetParameterValue("Index", parameterEntry.Index);
-                                        command.SetParameterValue("SubIndex", parameterEntry.SubIndex);
-                                        command.SetParameterValue("Priority", (int)priority);
-
-                                        result = await ExecuteCommandAsync(command);
-                                    }
-                                }
-                            }
+                            result = await ExecuteCommandAsync(command);
 
                             if (!result)
                             {
-                                AddToRegisteredParameters(uniqueId);
+                                ParameterRegistrationCache.AddParameter(registeredParameter);
 
-                                MsgLogger.WriteError($"{GetType().Name} - UnregisterParameterUpdate", $"parameter could't be unregistered - '{uniqueId}'");       
+                                MsgLogger.WriteError($"{GetType().Name} - UnregisterParameterUpdate", $"parameter could't be unregistered - '{uniqueId}'");
                             }
                             else
                             {
                                 MsgLogger.WriteDebug($"{GetType().Name} - UnregisterParameterUpdate", $"unregistered parameter '{uniqueId}'");
                             }
                         }
-                        else
-                        {
-                            if (registeredParameter.InstanceCount > 0)
-                            {
-                                registeredParameter.InstanceCount--;
-                            }
-                            else
-                            {
-                                registeredParameter.InstanceCount = 0;
-                            }
-
-                            MsgLogger.WriteDebug($"{GetType().Name} - UnregisterParameterUpdate", $"unregister parameter '{uniqueId}', instance count = {registeredParameter.InstanceCount}");
-
-                            result = true;
-                        }
-                    }
-                    else
-                    {
-                        MsgLogger.WriteError($"{GetType().Name} - UnregisterParameterUpdate", $"unregister: cannot find registered parameter '{uniqueId}'");
-                    }
+                    }).ConfigureAwait(waitForResult);                        
                 }
-            }).ConfigureAwait(waitForResult);
-
-            return true;
-        }
-
-        private bool RemoveFromRegisteredParameters(string uniqueId)
-        {
-            bool result = false;
-
-            lock (_registeredParameterLocker)
-            {
-                foreach (var parameter in RegisteredParameters)
+                else
                 {
-                    if (parameter.UniqueId == uniqueId)
-                    {
-                        result = RegisteredParameters.Remove(parameter);
-                        break;
-                    }
-                }
-            }
+                    registeredParameter?.Release();
 
-            return result;
+                    MsgLogger.WriteDebug($"{GetType().Name} - UnregisterParameterUpdate", $"unregister parameter '{uniqueId}', instance count = {registeredParameter?.InstanceCount}");
+
+                    result = true;
+                }                
+            }
+            else
+            {
+                MsgLogger.WriteError($"{GetType().Name} - UnregisterParameterUpdate", $"unregister: cannot find registered parameter '{uniqueId}'");
+            }
+        
+            return true;
         }
 
         /// <summary>

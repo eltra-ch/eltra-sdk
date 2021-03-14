@@ -1,20 +1,45 @@
-﻿namespace EltraConnector.Classes
+﻿using System;
+
+namespace EltraConnector.Classes
 {
     class RegisteredParameter
     {
-        private readonly object _syncObject;
-        private int _instanceCount;
+        #region Private fields
 
-        public RegisteredParameter(string uniqueId, object syncObject)
+        private readonly object _syncObject;
+        private readonly ushort _index;
+        private readonly byte _subIndex;
+
+        private int _instanceCount;
+        private DateTime _lastModified;
+
+        #endregion
+
+        #region Constrcutors
+
+        public RegisteredParameter(string uniqueId, ushort index, byte subIndex, object syncObject)
         {
             UniqueId = uniqueId;
+            _index = index;
+            _subIndex = subIndex;
 
             _syncObject = syncObject;
+            _lastModified = DateTime.MinValue;
 
-            InstanceCount = 1;
+            InstanceCount = 0;
+            MaxCacheDelayInSec = 10;
         }
 
-        public string UniqueId { get;set; }
+        #endregion
+
+        #region Properties
+
+        public string UniqueId { get; private set; }
+
+        public ushort Index => _index;
+
+        public byte SubIndex => _subIndex;
+
         public int InstanceCount
         {
             get => _instanceCount;
@@ -22,9 +47,54 @@
             {
                 lock(_syncObject)
                 {
-                    _instanceCount = value;
+                    if (value >= 0)
+                    {
+                        _instanceCount = value;
+                    }
                 }
             }
         }
+
+        public DateTime LastModified
+        {
+            get => _lastModified;
+            set
+            {
+                lock (_syncObject)
+                {
+                    _lastModified = value;
+                }
+            }
+        }
+
+        public bool CanUseCache
+        {
+            get
+            {
+                return DateTime.Now - LastModified < TimeSpan.FromSeconds(MaxCacheDelayInSec);
+            }
+        }
+
+        public double MaxCacheDelayInSec { get; set; }
+
+        #endregion
+
+        #region Methods
+
+        internal int Release()
+        {
+            if (InstanceCount > 0)
+            {
+                InstanceCount--;
+            }
+            else
+            {
+                InstanceCount = 0;
+            }
+
+            return InstanceCount;
+        }
+
+        #endregion
     }
 }

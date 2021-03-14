@@ -44,6 +44,11 @@ namespace EltraConnector.Controllers
 
                     var path = "api/user/sign-in";
 
+                    if(string.IsNullOrEmpty(identity.Role))
+                    {
+                        identity.Role = string.Empty;
+                    }
+
                     var json = identity.ToJson();
 
                     var response = await Transporter.Post(identity, Url, path, json);
