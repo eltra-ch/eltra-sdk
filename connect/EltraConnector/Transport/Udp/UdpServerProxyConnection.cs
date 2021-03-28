@@ -9,12 +9,22 @@ namespace EltraConnector.Transport.Udp
 {
     class UdpServerProxyConnection : IConnection
     {
+        #region Private fields
+
         private UdpServerConnection _source;
+
+        #endregion
+
+        #region Constructors
 
         public UdpServerProxyConnection(UdpServerConnection source)
         {
             _source = source;
         }
+
+        #endregion
+
+        #region Properties
 
         public string Url { get; set; }
         public string UniqueId { get; set; }
@@ -30,9 +40,17 @@ namespace EltraConnector.Transport.Udp
 
         public bool ReceiveSupported => _source.ReceiveSupported;
 
+        #endregion
+
+        #region Events
+
         public event EventHandler<ConnectionMessageEventArgs> MessageReceived;
         public event EventHandler<ConnectionMessageEventArgs> MessageSent;
         public event EventHandler<ConnectionMessageEventArgs> ErrorOccured;
+
+        #endregion
+
+        #region Events handling
 
         protected void OnMessageReceived()
         {
@@ -48,6 +66,10 @@ namespace EltraConnector.Transport.Udp
         {
             ErrorOccured?.Invoke(this, new ConnectionMessageEventArgs());
         }
+
+        #endregion
+
+        #region Methods
 
         public Task<bool> Connect()
         {
@@ -92,5 +114,7 @@ namespace EltraConnector.Transport.Udp
 
             return result;
         }
+
+        #endregion
     }
 }

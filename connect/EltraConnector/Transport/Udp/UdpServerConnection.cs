@@ -8,7 +8,6 @@ using EltraConnector.Transport.Ws.Interfaces;
 using System;
 using System.Net.Sockets;
 using System.Threading.Tasks;
-using System.Text.Json;
 using EltraCommon.Logger;
 using System.Net;
 using EltraCommon.Extensions;

@@ -127,6 +127,25 @@ namespace EltraConnector.Transport.Ws.Interfaces
         /// </summary>
         void Unlock();
 
+        /// <summary>
+        /// RegisterChannelClient
+        /// </summary>
+        /// <param name="client"></param>
+        void RegisterChannelClient(object client);
+
+        /// <summary>
+        /// UnregisterChannelClient
+        /// </summary>
+        /// <param name="client"></param>
+        void UnregisterChannelClient(object client);
+
+        /// <summary>
+        /// CanDisconnect
+        /// </summary>
+        /// <param name="client"></param>
+        /// <returns></returns>
+        bool CanDisconnect(object client);
+
         #endregion
     }
 }

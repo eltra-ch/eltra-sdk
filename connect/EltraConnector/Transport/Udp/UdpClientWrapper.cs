@@ -5,6 +5,7 @@ using System.Net;
 using System.Net.Sockets;
 using System.Threading;
 using System.Threading.Tasks;
+using EltraCommon.Extensions;
 
 namespace EltraConnector.Transport.Udp
 {
@@ -35,11 +36,18 @@ namespace EltraConnector.Transport.Udp
             {
                 _activityCounter++;
 
-                result = await ReceiveAsync();                
+                result = await ReceiveAsync().WithCancellation(_tokenSource.Token);                
             }
             catch(Exception e)
             {
-                MsgLogger.Exception($"{GetType().Name} - Receive", e);
+                if(e.GetType() != typeof(OperationCanceledException))
+                {
+                    MsgLogger.Exception($"{GetType().Name} - Receive", e);
+                }
+                else
+                {
+                    MsgLogger.WriteDebug($"{GetType().Name} - Receive", "close requested");
+                }                
             }
             finally
             {
@@ -57,11 +65,18 @@ namespace EltraConnector.Transport.Udp
             {
                 _activityCounter++;
 
-                result = await SendAsync(datagram, bytes, endPoint);                
+                result = await SendAsync(datagram, bytes, endPoint).WithCancellation(_tokenSource.Token);                
             }
             catch(Exception e)
             {
-                MsgLogger.Exception($"{GetType().Name} - Send", e);
+                if (e.GetType() != typeof(OperationCanceledException))
+                {
+                    MsgLogger.Exception($"{GetType().Name} - Send", e);
+                }
+                else
+                {
+                    MsgLogger.WriteDebug($"{GetType().Name} - Send", "close requested");
+                }
             }
             finally
             {
@@ -79,11 +94,18 @@ namespace EltraConnector.Transport.Udp
             {
                 _activityCounter++;
 
-                result = await SendAsync(datagram, bytes);
+                result = await SendAsync(datagram, bytes).WithCancellation(_tokenSource.Token);
             }
             catch (Exception e)
             {
-                MsgLogger.Exception($"{GetType().Name} - Send", e);
+                if (e.GetType() != typeof(OperationCanceledException))
+                {
+                    MsgLogger.Exception($"{GetType().Name} - Send", e);
+                }
+                else
+                {
+                    MsgLogger.WriteDebug($"{GetType().Name} - Send", "close requested");
+                }
             }
             finally
             {

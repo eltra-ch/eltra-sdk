@@ -20,6 +20,8 @@ namespace EltraConnector.Transport
 
         private readonly SemaphoreSlim _connectionLock;
         private readonly SemaphoreSlim _sendLock;
+        private readonly List<object> _clientList;
+
         private List<IConnection> _connectionList;
         
         #endregion
@@ -31,6 +33,7 @@ namespace EltraConnector.Transport
         /// </summary>
         public ConnectionManager()
         {
+            _clientList = new List<object>();
             _connectionLock = new SemaphoreSlim(1);
             _sendLock = new SemaphoreSlim(1);
             _connectionList = new List<IConnection>();
@@ -104,6 +107,82 @@ namespace EltraConnector.Transport
             }
 
             return result;
+        }
+
+        private bool ClientExists(object client)
+        {
+            bool existingClient = false;
+
+            foreach (var c in _clientList)
+            {
+                if (c == client)
+                {
+                    existingClient = true;
+                    break;
+                }
+            }
+
+            return existingClient;
+        }
+
+        /// <summary>
+        /// CanDisconnect
+        /// </summary>
+        /// <param name="client"></param>
+        /// <returns></returns>
+        public bool CanDisconnect(object client)
+        {
+            bool result = false;
+
+            _connectionLock.Wait();
+
+            if(_clientList.Count == 0)
+            {
+                result = true;
+            }
+            else if(_clientList.Count == 1)
+            {
+                if(_clientList[0] == client)
+                {
+                    result = true;
+                }
+            }
+
+            _connectionLock.Release();
+
+            return result;
+        }
+
+        /// <summary>
+        /// RegisterChannelClient
+        /// </summary>
+        /// <param name="client"></param>
+        public void RegisterChannelClient(object client)
+        {
+            _connectionLock.Wait();
+
+            if (!ClientExists(client))
+            {
+                _clientList.Add(client);
+            }
+
+            _connectionLock.Release();
+        }
+
+        /// <summary>
+        /// UnregisterChannelClient
+        /// </summary>
+        /// <param name="client"></param>
+        public void UnregisterChannelClient(object client)
+        {
+            _connectionLock.Wait();
+
+            if (ClientExists(client))
+            {
+                _clientList.Remove(client);
+            }
+
+            _connectionLock.Release();
         }
 
         /// <summary>
@@ -321,15 +400,20 @@ namespace EltraConnector.Transport
             bool result = false;
             var connections = FindConnections(uniqueId);
 
-            foreach (var connection in connections)
+            if (connections.Count > 0)
             {
-                UnregisterConnectionEvents(connection);
+                foreach (var connection in connections)
+                {
+                    UnregisterConnectionEvents(connection);
 
-                _connectionLock.Wait();
+                    _connectionLock.Wait();
 
-                _connectionList.Remove(connection);
+                    _connectionList.Remove(connection);
 
-                _connectionLock.Release();
+                    _connectionLock.Release();
+                }
+
+                result = true;
             }
 
             return result;

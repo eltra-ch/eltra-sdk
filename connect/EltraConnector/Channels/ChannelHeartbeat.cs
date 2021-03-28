@@ -169,16 +169,26 @@ namespace EltraConnector.Channels
                     result = await _channelControllerAdapter.Update();
                 }
 
-                if(!result)
+                if(!result && ShouldRun())
                 {
                     await Task.Delay(delay);
                 }
 
                 retryCount++;
             }
-            while (!result && retryCount < maxRetryCount);
+            while (!result && retryCount < maxRetryCount && ShouldRun());
 
             return result;
+        }
+
+        protected override async Task DisconnectFromWsChannel()
+        {
+            if (_channelControllerAdapter != null)
+            {
+                await _channelControllerAdapter.UnregisterChannel();
+            }
+
+            await base.DisconnectFromWsChannel();
         }
 
         protected override async Task<bool> ReconnectToWsChannel()

@@ -196,6 +196,8 @@ namespace EltraConnector.Channels
 
                     if (await ConnectionManager.Connect(WsChannelId, WsChannelName))
                     {
+                        ConnectionManager.RegisterChannelClient(this);
+
                         result = await SendChannelIdentyficationRequest();
 
                         sw.Stop();
@@ -219,6 +221,8 @@ namespace EltraConnector.Channels
             }
             else if(ConnectionManager.IsConnected(WsChannelId))
             {
+                ConnectionManager.RegisterChannelClient(this);
+
                 Status = WsChannelStatus.Started;
                 result = true;
             }
@@ -226,15 +230,22 @@ namespace EltraConnector.Channels
             return result;
         }
 
-        protected async Task DisconnectFromWsChannel()
+        protected virtual async Task DisconnectFromWsChannel()
         {
-            if (ConnectionManager.IsConnected(WsChannelId))
+            if(ConnectionManager.CanDisconnect(this))
             {
-                await ConnectionManager.Disconnect(WsChannelId);
+                if (ConnectionManager.IsConnected(WsChannelId))
+                {
+                    await ConnectionManager.Disconnect(WsChannelId);
+                }
+                else
+                {
+                    ConnectionManager.Remove(WsChannelId);
+                }
             }
             else
             {
-                ConnectionManager.Remove(WsChannelId);
+                ConnectionManager.UnregisterChannelClient(this);
             }
 
             Status = WsChannelStatus.Stopped;
@@ -267,38 +278,41 @@ namespace EltraConnector.Channels
         {
             bool result = false;
 
-            if (ConnectionManager.IsConnected(WsChannelId))
+            if (ShouldRun())
             {
-                Status = WsChannelStatus.Started;
-
-                MsgLogger.WriteLine($"connected to channel = '{WsChannelId}'");
-
-                result = true;
-            }
-            else if (ConnectionManager.CanConnect(WsChannelId))
-            {
-                if (OnSignInRequested())
+                if (ConnectionManager.IsConnected(WsChannelId))
                 {
-                    Status = WsChannelStatus.Starting;
+                    Status = WsChannelStatus.Started;
 
-                    if (await ConnectionManager.Connect(WsChannelId, WsChannelName))
+                    MsgLogger.WriteLine($"connected to channel = '{WsChannelId}'");
+
+                    result = true;
+                }
+                else if (ConnectionManager.CanConnect(WsChannelId))
+                {
+                    if (OnSignInRequested())
                     {
-                        result = await SendChannelIdentyficationRequest();
-                    
-                        if(result)
+                        Status = WsChannelStatus.Starting;
+
+                        if (await ConnectionManager.Connect(WsChannelId, WsChannelName))
                         {
-                            Status = WsChannelStatus.Started;
+                            result = await SendChannelIdentyficationRequest();
+
+                            if (result)
+                            {
+                                Status = WsChannelStatus.Started;
+                            }
                         }
+                    }
+                    else
+                    {
+                        MsgLogger.WriteError($"{GetType().Name} - ReconnectToWsChannel", $"cannot sign-in");
                     }
                 }
                 else
                 {
-                    MsgLogger.WriteError($"{GetType().Name} - ReconnectToWsChannel", $"cannot sign-in");
+                    MsgLogger.WriteError($"{GetType().Name} - ReconnectToWsChannel", $"cannot connect and not connected");
                 }
-            }
-            else
-            {
-                MsgLogger.WriteError($"{GetType().Name} - ReconnectToWsChannel", $"cannot connect and not connected");
             }
 
             return result;

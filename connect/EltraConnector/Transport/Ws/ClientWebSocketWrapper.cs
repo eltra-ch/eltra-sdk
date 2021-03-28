@@ -62,7 +62,14 @@ namespace EltraConnector.Transport.Ws
             }
             catch (Exception e)
             {
-                MsgLogger.Exception($"{GetType().Name} - CloseAsync", e);
+                if (e.GetType() != typeof(OperationCanceledException))
+                {
+                    MsgLogger.Exception($"{GetType().Name} - ConnectAsync", e);
+                }
+                else
+                {
+                    MsgLogger.WriteDebug($"{GetType().Name} - ConnectAsync", "close requested");
+                }
             }
 
             return result;
@@ -82,7 +89,14 @@ namespace EltraConnector.Transport.Ws
             }
             catch (Exception e)
             {
-                MsgLogger.Exception($"{GetType().Name} - CloseAsync", e);
+                if (e.GetType() != typeof(TaskCanceledException))
+                {
+                    MsgLogger.Exception($"{GetType().Name} - CloseAsync", e);
+                }
+                else
+                {
+                    MsgLogger.WriteDebug($"{GetType().Name} - CloseAsync", "close requested");
+                }
             }
             finally
             {
@@ -112,7 +126,14 @@ namespace EltraConnector.Transport.Ws
             }
             catch (Exception e)
             {
-                MsgLogger.Exception($"{GetType().Name} - SendAsync", e);
+                if (e.GetType() != typeof(TaskCanceledException))
+                {
+                    MsgLogger.Exception($"{GetType().Name} - SendAsync", e);
+                }
+                else
+                {
+                    MsgLogger.WriteDebug($"{GetType().Name} - SendAsync", "close requested");
+                }
             }
             finally
             {
@@ -156,7 +177,14 @@ namespace EltraConnector.Transport.Ws
             }
             catch(Exception e)
             {
-                MsgLogger.Exception($"{GetType().Name} - ReceiveAsync", e);
+                if (e.GetType() != typeof(TaskCanceledException))
+                {
+                    MsgLogger.Exception($"{GetType().Name} - ReceiveAsync", e);
+                }
+                else
+                {
+                    MsgLogger.WriteDebug($"{GetType().Name} - ReceiveAsync", "close requested");
+                }
             }
             finally
             {
@@ -185,7 +213,14 @@ namespace EltraConnector.Transport.Ws
             }
             catch (Exception e)
             {
-                MsgLogger.Exception($"{GetType().Name} - CloseOutputAsync", e);
+                if (e.GetType() != typeof(TaskCanceledException))
+                {
+                    MsgLogger.Exception($"{GetType().Name} - CloseOutputAsync", e);
+                }
+                else
+                {
+                    MsgLogger.WriteDebug($"{GetType().Name} - CloseOutputAsync", "close requested");
+                }
             }
 
             return result;

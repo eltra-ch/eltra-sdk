@@ -65,6 +65,8 @@ namespace EltraConnector.Controllers.Base
         
         protected virtual void OnConnectionManagerChanged()
         {
+            MsgLogger.WriteLine($"{GetType().Name} - OnConnectionManagerChanged, connection manager set, channel = {WsChannelName}");
+
             ConnectToChannel();
         }
 
@@ -76,7 +78,7 @@ namespace EltraConnector.Controllers.Base
             {
                 if (ConnectionManager != null)
                 {
-                    MsgLogger.WriteLine($"{GetType().Name} - ConnectToChannel, send ident request failed, channel = {WsChannelName}");
+                    MsgLogger.WriteLine($"{GetType().Name} - ConnectToChannel, connect to channel = {WsChannelName}");
 
                     if (await ConnectionManager.Connect(WsChannelId, WsChannelName))
                     {
@@ -417,9 +419,12 @@ namespace EltraConnector.Controllers.Base
 
             if (ConnectionManager != null)
             {
-                if(!ConnectionManager.IsConnected(WsChannelId))
+                if (!ConnectionManager.IsConnected(WsChannelId))
                 {
-                    result = ConnectToChannel();
+                    if (statusUpdate.Status != ChannelStatus.Offline)
+                    {
+                        result = ConnectToChannel();
+                    }
                 }
                 else
                 {
@@ -440,7 +445,7 @@ namespace EltraConnector.Controllers.Base
 
         protected async Task<bool> SetChannelStatus(ChannelStatus status)
         {
-            bool result;
+            bool result = false;
 
             MsgLogger.WriteLine($"{GetType().Name} - Update, set channel status {status}");
 
@@ -452,14 +457,14 @@ namespace EltraConnector.Controllers.Base
 
                 result = await SendStatusUpdate(statusUpdate);
             }
-            catch (Exception)
+            catch (Exception e)
             {
-                result = false;
+                MsgLogger.Exception($"{GetType().Name} - SetChannelStatus", e);
             }
 
             if (!result)
             {
-                MsgLogger.WriteError($"{GetType().Name} - Update", $"set channel status failed!");
+                MsgLogger.WriteError($"{GetType().Name} - SetChannelStatus", $"set channel status failed!");
             }
 
             return result;
