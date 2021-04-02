@@ -79,11 +79,20 @@ namespace EltraConnector.Master.Controllers.Commands
 
                 if (!ConnectionManager.IsConnected(wsChannelId))
                 {
-                    wsChannelId = channelId + "_CommandExec";
+                    wsChannelId = channelId + "_Master";
 
                     if (ConnectionManager.IsConnected(wsChannelId))
                     {
                         result = wsChannelId;
+                    }
+                    else
+                    {
+                        wsChannelId = channelId + "_CommandExec";
+
+                        if (ConnectionManager.IsConnected(wsChannelId))
+                        {
+                            result = wsChannelId;
+                        }
                     }
                 }
                 else

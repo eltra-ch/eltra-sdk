@@ -49,6 +49,8 @@ namespace EltraConnector.Master.Device
 
         public event EventHandler Initialized;
 
+        public event EventHandler Finalized;
+
         public event EventHandler<DeviceCommunicationEventArgs> StatusChanged;
 
         #endregion
@@ -60,12 +62,24 @@ namespace EltraConnector.Master.Device
             Initialized?.Invoke(this, new EventArgs());
         }
 
+        protected virtual void OnFinalized()
+        {
+            Finalized?.Invoke(this, new EventArgs());
+        }
+
         private void OnDeviceStatusChanged(object sender, EventArgs e)
         {
-            if (Device.Status == DeviceStatus.Registered)
+            switch(Device.Status)
             {
-                OnInitialized();
+                case DeviceStatus.Registered:
+                    OnInitialized();
+                    break;
+                case DeviceStatus.Unregistered:
+                    OnFinalized();
+                    break;
             }
+
+            OnStatusChanged(new DeviceCommunicationEventArgs() { Device = Device, LastErrorCode = LastErrorCode });
         }
 
         protected virtual void OnStatusChanged(DeviceCommunicationEventArgs e)
