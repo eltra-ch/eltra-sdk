@@ -4,27 +4,29 @@
 
 ELTRA IoT framework is based on standard Web Protocols like REST, JSON and WebSocket.
 
-**ELTRA SDK** cross-platform component is currently implemented and available in **.NET Core 3.1**.  
+**ELTRA SDK** cross-platform component is implemented and available in **.NET 5.0**.  
 
 The main target was to create *secure, universal, multiplatform, lightweight, object-oriented and Industry 4.0 ready* solution that allows monitoring and control of any device in internet.
 
 The concept is based on personal author experiance and inspired by technologies like *OPC UA, CANopen and FDT*.
 
-CANopen concepts like object dictionary and/or publish-subscribe patterns are implemented in this library.
+CANopen concepts like object dictionary and/or publish-subscribe patterns can be found in this library.
 
 This makes this solution easy to implement in industrial networks.
 
 ## Main features
 
-- REST, JSON, WebSocket API,
-- HTTP, SSL encryption, 
-- Object dictionary support (ISO 15745, CIA311),
-- SDO service data object pattern implementation,
-- PDO publish-subscribe pattern support (process data object concepts),
+- REST, WebSocket, UDP communication layers,
+- HTTP (optional with SSL encryption) as base protocol 
+- JSON message format
+- Object dictionary support (CANopen, ISO 15745, CIA311),
+- SDO service data object pattern implementation (CANopen),
+- PDO publish-subscribe pattern support (process data object CANopen concepts),
 - RPC calls with custom user defined commands,
+- UDP Raw socket communication in internal networks
 - Reconnection handling,
 
-In comparison to another similiar frameworks like **OPC UA** this technology is based on standard JSON/REST protocols with optional WebSocket support. 
+In comparison to another similiar frameworks like **OPC UA** this technology is based on standard JSON/REST protocols with optional WebSocket, UDP support. 
 **Woopsa** has similiar approach, but ELTRA has imho more sophisticated agent oriented architecture (each device and end-user is an agent working indirect over **cloud service mediator**)
 
 ## ELTRA IoT Cloud service
@@ -39,7 +41,8 @@ Easy to implement, cross-platform, proxy and firewall friendly, zero configurati
 
 ## Supported HW/SW platforms	
 
-    - .NET Core 3.1 compliant platforms
+    - .NET 5.0 compliant platforms
+	- Xamarin 4/5
     - tested on Windows 10, Linux, x64, ARM32 (Raspberry PI 3 and higher), Android, iPhone
 
 ## Source code topology
