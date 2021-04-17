@@ -2,6 +2,7 @@
 using EltraMaster.DeviceManager.Events;
 using System;
 using EltraCommon.Contracts.Devices;
+using EltraCommon.ObjectDictionary.Xdd.DeviceDescription.Profiles.Application.Parameters;
 
 #pragma warning disable 1591
 
@@ -110,7 +111,15 @@ namespace EltraConnector.Master.Device
 
         public virtual bool SetObject(ushort objectIndex, byte objectSubindex, byte[] data)
         {
-            return false;
+            bool result = false;
+            var xddParameter = Vcs.SearchParameter(objectIndex, objectSubindex) as XddParameter;
+
+            if(xddParameter != null)
+            {
+                result = xddParameter.SetValue(new ParameterValue(data));
+            }
+
+            return result;
         }
 
         public virtual bool GetObject(string loginName, ushort objectIndex, byte objectSubindex, ref byte[] data)
