@@ -77,57 +77,64 @@ namespace EltraConnector.Channels
             
             uint updateIntervalInSec = _updateInterval;
 
-            await ConnectToChannel();
-
-            while (ShouldRun())
+            try
             {
-                MsgLogger.Write($"{GetType().Name} - Execute", $"Updating channel id = '{WsChannelId}'...");
-                
-                bool updateResult = await UpdateStatusWithRetryCount(maxRetryCount);
+                await ConnectToChannel();
 
-                ChannelStatus = updateResult ? ChannelStatus.Online : ChannelStatus.Offline;
-
-                if (!updateResult)
+                while (ShouldRun())
                 {
-                    MsgLogger.WriteError($"{GetType().Name} - Execute", $"Update channel '{WsChannelId}' failed!");
-                }
-                else
-                {
-                    var waitWatch = new Stopwatch();
+                    MsgLogger.Write($"{GetType().Name} - Execute", $"Updating channel id = '{WsChannelId}'...");
 
-                    waitWatch.Start();
+                    bool updateResult = await UpdateStatusWithRetryCount(maxRetryCount);
 
-                    int channelStatusUpdateTimeout = (int)TimeSpan.FromSeconds(updateIntervalInSec).TotalMilliseconds;
+                    ChannelStatus = updateResult ? ChannelStatus.Online : ChannelStatus.Offline;
 
-                    while (waitWatch.ElapsedMilliseconds < channelStatusUpdateTimeout && ShouldRun())
+                    if (!updateResult)
                     {
-                        await Task.Delay(minWaitTime);
-                    }
-                }
-
-                if (ShouldRun())
-                {
-                    if (!await ReconnectToWsChannel())
-                    {
-                        await Task.Delay(reconnectIntervalWs);
+                        MsgLogger.WriteError($"{GetType().Name} - Execute", $"Update channel '{WsChannelId}' failed!");
                     }
                     else
                     {
-                        if (ConnectionManager.IsConnected(WsChannelId) && ChannelStatus == ChannelStatus.Online)
+                        var waitWatch = new Stopwatch();
+
+                        waitWatch.Start();
+
+                        int channelStatusUpdateTimeout = (int)TimeSpan.FromSeconds(updateIntervalInSec).TotalMilliseconds;
+
+                        while (waitWatch.ElapsedMilliseconds < channelStatusUpdateTimeout && ShouldRun())
                         {
-                            await Task.Delay(executeIntervalWs);
+                            await Task.Delay(minWaitTime);
                         }
-                        else
+                    }
+
+                    if (ShouldRun())
+                    {
+                        if (!await ReconnectToWsChannel())
                         {
                             await Task.Delay(reconnectIntervalWs);
                         }
+                        else
+                        {
+                            if (ConnectionManager.IsConnected(WsChannelId) && ChannelStatus == ChannelStatus.Online)
+                            {
+                                await Task.Delay(executeIntervalWs);
+                            }
+                            else
+                            {
+                                await Task.Delay(reconnectIntervalWs);
+                            }
+                        }
                     }
                 }
+
+                await DisconnectFromWsChannel();
+
+                ChannelStatus = ChannelStatus.Offline;
             }
-
-            await DisconnectFromWsChannel();
-
-            ChannelStatus = ChannelStatus.Offline;
+            catch (Exception e)
+            {
+                MsgLogger.Exception($"{GetType().Name} - Execute", e);
+            }
 
             MsgLogger.WriteLine($"Sync agent working thread finished successfully!");
         }

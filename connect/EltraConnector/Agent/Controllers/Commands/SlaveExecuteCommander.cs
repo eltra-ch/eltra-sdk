@@ -138,57 +138,64 @@ namespace EltraConnector.Agent.Controllers.Commands
 
             MsgLogger.WriteDebug($"{GetType().Name} - Execute", $"create exec channel '{WsChannelName}', uuid='{WsChannelId}'");
 
-            await ConnectToChannel();
-
-            ConnectionManager.MessageReceived += OnMessageReceived;
-
-            while (ShouldRun())
+            try
             {
-                try
+                await ConnectToChannel();
+
+                ConnectionManager.MessageReceived += OnMessageReceived;
+
+                while (ShouldRun())
                 {
-                    var processingCommands = GetProcessingCommands();
-
-                    if (ConnectionManager.IsConnected(WsChannelId))
+                    try
                     {
-                        MsgLogger.WriteDebug($"{GetType().Name} - Execute", $"channel '{WsChannelName}', uuid='{WsChannelId}' - receive...");
+                        var processingCommands = GetProcessingCommands();
 
-                        await ConnectionManager.Receive(WsChannelId, ShouldRun);
-                    }
-                    else
-                    {
-                        foreach (var deviceCommand in processingCommands)
+                        if (ConnectionManager.IsConnected(WsChannelId))
                         {
-                            await PopCommand(deviceCommand);
-                        }
+                            MsgLogger.WriteDebug($"{GetType().Name} - Execute", $"channel '{WsChannelName}', uuid='{WsChannelId}' - receive...");
 
-                        if (ShouldRun())
+                            await ConnectionManager.Receive(WsChannelId, ShouldRun);
+                        }
+                        else
                         {
-                            await Task.Delay(executeIntervalRest);
+                            foreach (var deviceCommand in processingCommands)
+                            {
+                                await PopCommand(deviceCommand);
+                            }
+
+                            if (ShouldRun())
+                            {
+                                await Task.Delay(executeIntervalRest);
+                            }
+                        }
+                    }
+                    catch (Exception e)
+                    {
+                        MsgLogger.Exception($"{GetType().Name} - Execute", e);
+                    }
+
+                    if (ShouldRun())
+                    {
+                        await ReconnectToWsChannel();
+
+                        if (ConnectionManager.IsConnected(WsChannelId))
+                        {
+                            await Task.Delay(executeIntervalWs);
+                        }
+                        else
+                        {
+                            await Task.Delay(reconnectIntervalWs);
                         }
                     }
                 }
-                catch (Exception e)
-                {
-                    MsgLogger.Exception($"{GetType().Name} - Execute", e);
-                }
+                ConnectionManager.MessageReceived -= OnMessageReceived;
 
-                if (ShouldRun())
-                {
-                    await ReconnectToWsChannel();
-
-                    if (ConnectionManager.IsConnected(WsChannelId))
-                    {
-                        await Task.Delay(executeIntervalWs);
-                    }
-                    else
-                    {
-                        await Task.Delay(reconnectIntervalWs);
-                    }
-                }
+                await DisconnectFromWsChannel();
             }
-            ConnectionManager.MessageReceived -= OnMessageReceived;
-
-            await DisconnectFromWsChannel();
+            catch(Exception e)
+            {
+                MsgLogger.Exception($"{GetType().Name} - Execute", e);
+            }
 
             MsgLogger.WriteDebug($"{GetType().Name} - Execute", $"exec channel '{WsChannelName}', uuid='{WsChannelId}' closed");
         }

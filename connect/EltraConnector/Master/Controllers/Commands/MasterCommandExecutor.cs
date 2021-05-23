@@ -55,31 +55,38 @@ namespace EltraConnector.Master.Controllers.Commands
         protected override async Task Execute()
         {
             const int ReconnectTimeout = 100;
-            
-            await ConnectToChannel();
 
-            _stopping = false;
+            try
+            {            
+                await ConnectToChannel();
 
-            ConnectionManager.MessageReceived += OnMessageReceived;
+                _stopping = false;
 
-            while (ShouldRun())
-            {
-                bool result = await ProcessRequest();
+                ConnectionManager.MessageReceived += OnMessageReceived;
 
-                if (!_stopping)
+                while (ShouldRun())
                 {
-                    if(!result)
+                    bool result = await ProcessRequest();
+
+                    if (!_stopping)
                     {
-                        MsgLogger.WriteError($"{GetType().Name} - Execute", $"Process request failed, wait {ReconnectTimeout} ms and reconnect...");
+                        if(!result)
+                        {
+                            MsgLogger.WriteError($"{GetType().Name} - Execute", $"Process request failed, wait {ReconnectTimeout} ms and reconnect...");
 
-                        await Task.Delay(ReconnectTimeout);
+                            await Task.Delay(ReconnectTimeout);
+                        }
+
+                        await ReconnectToWsChannel();
                     }
-
-                    await ReconnectToWsChannel();
                 }
-            }
 
-            ConnectionManager.MessageReceived -= OnMessageReceived;
+                ConnectionManager.MessageReceived -= OnMessageReceived;
+            }
+            catch (Exception e)
+            {
+                MsgLogger.Exception($"{GetType().Name} - Execute", e);
+            }
         }
 
         private void OnMessageReceived(object sender, ConnectionMessageEventArgs e)

@@ -137,36 +137,43 @@ namespace EltraConnector.Agent.Parameters
 
             Status = WsChannelStatus.Starting;
 
-            await ConnectToChannel();
-
-            ConnectionManager.MessageReceived += OnMessageReceived;
-
-            while (ShouldRun())
+            try
             {
-                await ConnectionManager.Receive(WsChannelId, ShouldRun);
+                await ConnectToChannel();
 
-                if (ShouldRun())
+                ConnectionManager.MessageReceived += OnMessageReceived;
+
+                while (ShouldRun())
                 {
-                    await ReconnectToWsChannel();
+                    await ConnectionManager.Receive(WsChannelId, ShouldRun);
 
-                    if (ConnectionManager.IsConnected(WsChannelId))
+                    if (ShouldRun())
                     {
-                        await Task.Delay(executeIntervalWs);
+                        await ReconnectToWsChannel();
+
+                        if (ConnectionManager.IsConnected(WsChannelId))
+                        {
+                            await Task.Delay(executeIntervalWs);
+                        }
+                        else
+                        {
+                            await Task.Delay(reconnectIntervalWs);
+                        }
                     }
-                    else
-                    {
-                        await Task.Delay(reconnectIntervalWs);
-                    }   
                 }
+
+                Task.WaitAll(_parameterChangedTasks.ToArray());
+
+                Status = WsChannelStatus.Stopping;
+
+                ConnectionManager.MessageReceived -= OnMessageReceived;
+
+                await DisconnectFromWsChannel();
             }
-
-            Task.WaitAll(_parameterChangedTasks.ToArray());
-
-            Status = WsChannelStatus.Stopping;
-
-            ConnectionManager.MessageReceived -= OnMessageReceived;
-
-            await DisconnectFromWsChannel();
+            catch(Exception e)
+            {
+                MsgLogger.Exception($"{GetType().Name} - Execute", e);
+            }
 
             Status = WsChannelStatus.Stopped;
         }
