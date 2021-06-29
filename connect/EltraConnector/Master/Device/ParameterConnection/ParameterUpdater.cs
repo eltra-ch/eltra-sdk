@@ -118,8 +118,6 @@ namespace EltraConnector.Master.Device.ParameterConnection
             {
                 if (_registeredParameters.Count > 0)
                 {
-                    //MsgLogger.WriteDebug($"{GetType().Name} - ParametersUpdate", $"Parameters to update count = {_registeredParameters.Count}");
-
                     foreach (var registeredParameter in _registeredParameters.Values)
                     {
                         if (!ShouldRun())
@@ -216,7 +214,7 @@ namespace EltraConnector.Master.Device.ParameterConnection
             {
                 parameter.RefCount++;
 
-                MsgLogger.WriteLine($"(+)register parameter key='{registeredParameter.Key}', refCount = {parameter.RefCount}");
+                MsgLogger.WriteLine($"{GetType().Name} - Register", $"(+)register parameter key='{registeredParameter.Key}', refCount = {parameter.RefCount}");
 
                 result = true;
             }
@@ -238,7 +236,7 @@ namespace EltraConnector.Master.Device.ParameterConnection
 
                 registeredParameter.RefCount++;
 
-                MsgLogger.WriteLine($"(+)register parameter key='{registeredParameter.Key}'");
+                MsgLogger.WriteLine($"{GetType().Name} - AddToRegisteredParameters", $"(+)register parameter key='{registeredParameter.Key}'");
 
                 result = true;
             }
@@ -266,11 +264,11 @@ namespace EltraConnector.Master.Device.ParameterConnection
                         {
                             result = _registeredParameters.Remove(registeredParameter.Key);
 
-                            MsgLogger.WriteLine($"(-)unregister parameter key='{registeredParameter.Key}', result={result}");
+                            MsgLogger.WriteLine($"{GetType().Name} - Unregister", $"(-)unregister parameter key='{registeredParameter.Key}', result={result}");
                         }
                         else
                         {
-                            MsgLogger.WriteLine($"(-)unregister parameter key='{registeredParameter.Key}', refCount = {parameter.RefCount}");
+                            MsgLogger.WriteLine($"{GetType().Name} - Unregister", $"(-)unregister parameter key='{registeredParameter.Key}', refCount = {parameter.RefCount}");
 
                             result = true;
                         }

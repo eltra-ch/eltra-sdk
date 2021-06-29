@@ -168,7 +168,7 @@ namespace EltraConnector.Master.Controllers
             {
                 if (await RegisterChannel())
                 {
-                    MsgLogger.WriteLine($"register channel='{Channel.Id}' success");
+                    MsgLogger.WriteLine($"{GetType().Name} - RegisterDevice", $"register channel='{Channel.Id}' success");
                 }
                 else
                 {
@@ -268,7 +268,7 @@ namespace EltraConnector.Master.Controllers
 
                     if (await AnyDeviceUnRegistered())
                     {
-                        MsgLogger.WriteLine($"re-register channel='{Channel.Id}' devices");
+                        MsgLogger.WriteLine($"{GetType().Name} - Update", $"re-register channel='{Channel.Id}' devices");
 
                         if (!await DeviceControllerAdapter.RegisterDevices())
                         {
@@ -282,7 +282,7 @@ namespace EltraConnector.Master.Controllers
                 }
                 else
                 {
-                    MsgLogger.WriteLine($"Registering channel='{Channel.Id}' ...");
+                    MsgLogger.WriteLine($"{GetType().Name} - Update", $"Registering channel='{Channel.Id}' ...");
 
                     if (await RegisterChannel())
                     {
@@ -292,7 +292,7 @@ namespace EltraConnector.Master.Controllers
 
                         if (result)
                         {
-                            MsgLogger.WriteLine($"update channel='{Channel.Id}' status success");
+                            MsgLogger.WriteLine($"{GetType().Name} - Update", $"update channel='{Channel.Id}' status success");
                         }
                         else
                         {
@@ -306,13 +306,13 @@ namespace EltraConnector.Master.Controllers
 
                     if (result)
                     {
-                        MsgLogger.WriteLine($"Registering devices='{Channel.Id}' ...");
+                        MsgLogger.WriteLine($"{GetType().Name} - Update", $"Registering devices='{Channel.Id}' ...");
                         
                         result = await DeviceControllerAdapter.RegisterDevices();
 
                         if (result)
                         {
-                            MsgLogger.WriteLine($"register channel='{Channel.Id}' devices success");
+                            MsgLogger.WriteLine($"{GetType().Name} - Update", $"register channel='{Channel.Id}' devices success");
                         }
                         else
                         {
@@ -323,7 +323,7 @@ namespace EltraConnector.Master.Controllers
             }
             catch (Exception e)
             {
-                MsgLogger.Exception($"{GetType().Name} - AnyDeviceUnRegistered", e);
+                MsgLogger.Exception($"{GetType().Name} - Update", e);
             }
 
             return result;

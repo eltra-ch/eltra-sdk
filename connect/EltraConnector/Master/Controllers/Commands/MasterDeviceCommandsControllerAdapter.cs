@@ -114,7 +114,8 @@ namespace EltraConnector.Master.Controllers.Commands
 
                 if (!string.IsNullOrEmpty(wsChannelId))
                 {
-                    MsgLogger.WriteLine($"set (WS) command='{status.CommandName}' status='{status.Status}' for device with nodeid={status.NodeId}");
+                    MsgLogger.WriteLine($"{GetType().Name} - SetCommandStatus", 
+                        $"set (WS) command='{status.CommandName}' status='{status.Status}' for device with nodeid={status.NodeId}");
 
                     if (await ConnectionManager.Send(wsChannelId, _userIdentity, status))
                     {

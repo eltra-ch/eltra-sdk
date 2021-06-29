@@ -180,7 +180,7 @@ namespace EltraConnector.SyncAgent
             {
                 if (await _channelControllerAdapter.RegisterChannel())
                 {
-                    MsgLogger.WriteLine($"register channel='{_channelControllerAdapter.Channel.Id}' success");
+                    MsgLogger.WriteLine($"{GetType().Name} - RegisterChannel", $"register channel='{_channelControllerAdapter.Channel.Id}' success");
                     result = true;
                 }
                 else
@@ -204,7 +204,7 @@ namespace EltraConnector.SyncAgent
             {
                 if (await RegisterChannel())
                 {
-                    MsgLogger.WriteLine(
+                    MsgLogger.WriteLine($"{GetType().Name} - RegisterDevice",
                         $"register(+) device='{deviceNode.Family}', node id = {deviceNode.NodeId}, serial number=0x{deviceNode.Identification.SerialNumber:X}");
 
                     result = await _channelControllerAdapter.RegisterDevice(deviceNode);
@@ -239,7 +239,7 @@ namespace EltraConnector.SyncAgent
             _commandExecutor.Stop();
             _channelHeartbeat.Stop();
             
-            MsgLogger.WriteLine($"Sync agent working thread finished successfully!");
+            MsgLogger.WriteLine($"{GetType().Name} - Execute", $"Sync agent working thread finished successfully!");
 
             SetStopped();
 
@@ -258,7 +258,7 @@ namespace EltraConnector.SyncAgent
                 
                 if (registered)
                 {
-                    MsgLogger.WriteLine($"unregister(-) device='{device.Family}', node id = {device.NodeId}, serial number=0x{device.Identification.SerialNumber:X}");
+                    MsgLogger.WriteLine($"{GetType().Name} - UnregisterDevice", $"unregister(-) device='{device.Family}', node id = {device.NodeId}, serial number=0x{device.Identification.SerialNumber:X}");
 
                     result = await _channelControllerAdapter.UnregisterDevice(deviceNode);
                 }

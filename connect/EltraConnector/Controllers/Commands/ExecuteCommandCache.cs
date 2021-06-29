@@ -59,7 +59,7 @@ namespace EltraConnector.Controllers.Commands
 
             if(!result)
             {
-                MsgLogger.WriteLine($"drop command");
+                MsgLogger.WriteLine($"{GetType().Name} - CanExecute", $"drop command");
             }
 
             return result;

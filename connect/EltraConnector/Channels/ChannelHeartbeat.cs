@@ -136,7 +136,7 @@ namespace EltraConnector.Channels
                 MsgLogger.Exception($"{GetType().Name} - Execute", e);
             }
 
-            MsgLogger.WriteLine($"Sync agent working thread finished successfully!");
+            MsgLogger.WriteLine($"{GetType().Name} - RunMaster", $"Sync agent working thread finished successfully!");
         }
 
         private async Task<bool> UpdateStatusWithRetryCount(int maxRetryCount, int retryDelay = 1000)

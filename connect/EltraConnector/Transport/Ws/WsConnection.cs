@@ -319,7 +319,7 @@ namespace EltraConnector.Transport.Ws
 
             if (errorCode == WebSocketError.ConnectionClosedPrematurely && Socket.State == WebSocketState.Open)
             {
-                MsgLogger.WriteLine("try recover connection ...");
+                MsgLogger.WriteLine($"{GetType().Name} - HandleBrokenConnection", "try recover connection ...");
 
                 Initialize();
             }
@@ -558,7 +558,7 @@ namespace EltraConnector.Transport.Ws
                 }
                 else
                 {
-                    MsgLogger.WriteLine($"receive ws message skipped, socket state = {Socket.State}!");
+                    MsgLogger.WriteLine($"{GetType().Name} - Receive", $"receive ws message skipped, socket state = {Socket.State}!");
                 }
             }
             catch (WebSocketException e)
@@ -607,7 +607,7 @@ namespace EltraConnector.Transport.Ws
                 }
                 else if(string.IsNullOrEmpty(msg) && IsConnected)
                 {                    
-                    MsgLogger.WriteLine($"empty string received, close status='{Socket.CloseStatus}'");
+                    MsgLogger.WriteLine($"{GetType().Name} - Receive", $"empty string received, close status='{Socket.CloseStatus}'");
 
                     OnErrorOccured("receive error occured - empty string", MessageType.Text);
                 }                

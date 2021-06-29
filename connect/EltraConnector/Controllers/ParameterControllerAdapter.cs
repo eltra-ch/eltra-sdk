@@ -73,7 +73,7 @@ namespace EltraConnector.Controllers
         {
             queueItem.WorkingTask = Task.Run(async () =>
             {
-                MsgLogger.WriteLine($"changed: {queueItem.UniqueId}, new value = '{CreateShortLogValue(queueItem.ActualValue)}'");
+                MsgLogger.WriteLine($"{GetType().Name} - QueueParameterChanged", $"changed: {queueItem.UniqueId}, new value = '{CreateShortLogValue(queueItem.ActualValue)}'");
 
                 bool skipProcessing = _parameterChangeQueue.ShouldSkip(queueItem);
 
@@ -118,7 +118,7 @@ namespace EltraConnector.Controllers
 
             try
             {
-                MsgLogger.WriteLine($"get parameter, index=0x{index:X4}, subindex=0x{subIndex:X4}, device node id={nodeId}");
+                MsgLogger.WriteLine($"{GetType().Name} - GetParameter", $"get parameter, index=0x{index:X4}, subindex=0x{subIndex:X4}, device node id={nodeId}");
 
                 var query = HttpUtility.ParseQueryString(string.Empty);
 
@@ -137,7 +137,7 @@ namespace EltraConnector.Controllers
                 {
                     result = parameter;
 
-                    MsgLogger.WriteLine($"get parameter, index=0x{index:X4}, subindex=0x{subIndex:X4}, device node id={nodeId} - success");
+                    MsgLogger.WriteLine($"{GetType().Name} - GetParameter", $"get parameter, index=0x{index:X4}, subindex=0x{subIndex:X4}, device node id={nodeId} - success");
                 }
             }
             catch (Exception e)
@@ -166,7 +166,7 @@ namespace EltraConnector.Controllers
 
             try
             {
-                MsgLogger.WriteLine($"get parameter, index=0x{index:X4}, subindex=0x{subIndex:X4}, device node id={nodeId}");
+                MsgLogger.WriteLine($"{GetType().Name} - GetParameterValue", $"get parameter, index=0x{index:X4}, subindex=0x{subIndex:X4}, device node id={nodeId}");
 
                 var query = HttpUtility.ParseQueryString(string.Empty);
 
@@ -185,7 +185,7 @@ namespace EltraConnector.Controllers
                 {
                     result = parameterValue;
 
-                    MsgLogger.WriteLine($"get parameter, index=0x{index:X4}, subindex=0x{subIndex:X4}, device node id={nodeId} - success");
+                    MsgLogger.WriteLine($"{GetType().Name} - GetParameterValue", $"get parameter, index=0x{index:X4}, subindex=0x{subIndex:X4}, device node id={nodeId} - success");
                 }
             }
             catch (Exception e)
@@ -413,7 +413,7 @@ namespace EltraConnector.Controllers
 
             try
             {
-                MsgLogger.WriteLine($"get parameter history, device serial number={nodeId}");
+                MsgLogger.WriteLine($"{GetType().Name} - GetParameterHistory", $"get parameter history, device serial number={nodeId}");
 
                 var query = HttpUtility.ParseQueryString(string.Empty);
 
@@ -433,7 +433,7 @@ namespace EltraConnector.Controllers
                 {
                     result = parameterValues.Items;
 
-                    MsgLogger.WriteLine($"get parameter history, device serial number={nodeId} - success");
+                    MsgLogger.WriteLine($"{GetType().Name} - GetParameterHistory", $"get parameter history, device serial number={nodeId} - success");
                 }
             }
             catch (Exception e)
@@ -450,7 +450,7 @@ namespace EltraConnector.Controllers
 
             try
             {
-                MsgLogger.WriteLine($"get parameter history statistics, device node id={nodeId}");
+                MsgLogger.WriteLine($"{GetType().Name} - GetParameterHistoryStatistics", $"get parameter history statistics, device node id={nodeId}");
 
                 var query = HttpUtility.ParseQueryString(string.Empty);
 
@@ -472,7 +472,7 @@ namespace EltraConnector.Controllers
                     {
                         result = historyStatistics;
 
-                        MsgLogger.WriteLine($"get parameter history statistics, device serial number={nodeId} - success");
+                        MsgLogger.WriteLine($"{GetType().Name} - GetParameterHistoryStatistics", $"get parameter history statistics, device serial number={nodeId} - success");
                     }
                 }
                 else

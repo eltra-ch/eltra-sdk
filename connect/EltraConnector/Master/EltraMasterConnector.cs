@@ -213,7 +213,7 @@ namespace EltraConnector.Master
                 {
                     SyncCloudAgent agent = null;
 
-                    MsgLogger.Print($"Sign in '{Identity.Login}' ...");
+                    MsgLogger.Print($"{GetType().Name} - Start", $"Sign in '{Identity.Login}' ...");
 
                     if (await SignIn(Identity, true))
                     {
@@ -240,11 +240,11 @@ namespace EltraConnector.Master
                             {
                                 Status = MasterStatus.Starting;
 
-                                MsgLogger.Print($"Sign in '{Identity.Login}' ...");
+                                MsgLogger.Print($"{GetType().Name} - Start", $"Sign in '{Identity.Login}' ...");
 
                                 if (await SignIn(agent))
                                 {
-                                    MsgLogger.Print($"'{Identity.Login}' signed in successfully");
+                                    MsgLogger.Print($"{GetType().Name} - Start", $"'{Identity.Login}' signed in successfully");
 
                                     deviceManager.CloudAgent = agent;
 
@@ -262,19 +262,19 @@ namespace EltraConnector.Master
 
                                     Status = MasterStatus.Stopping;
 
-                                    MsgLogger.Print("Disconnect ...");
+                                    MsgLogger.Print($"{GetType().Name} - Start", "Disconnect ...");
 
                                     agent.Stop();
 
-                                    MsgLogger.Print($"Stop device manager");
+                                    MsgLogger.Print($"{GetType().Name} - Start", $"Stop device manager");
 
                                     await deviceManager.Stop();
 
-                                    MsgLogger.Print($"Sign out, login '{Identity.Login}' ...");
+                                    MsgLogger.Print($"{GetType().Name} - Start", $"Sign out, login '{Identity.Login}' ...");
 
                                     await agent.SignOut();
 
-                                    MsgLogger.Print("Disconnected");
+                                    MsgLogger.Print($"{GetType().Name} - Start", "Disconnected");
                                 }
                                 else if (!agent.Good)
                                 {
@@ -295,7 +295,7 @@ namespace EltraConnector.Master
                         {
                             await Authentication.SignOut();
 
-                            MsgLogger.Print("Disconnected");
+                            MsgLogger.Print($"{GetType().Name} - Start", "Disconnected");
                         }
                     }
                     else
@@ -339,7 +339,7 @@ namespace EltraConnector.Master
         {
             bool result = false;
 
-            MsgLogger.WriteFlow($"Start master '{appName}' in service mode");
+            MsgLogger.WriteFlow($"{GetType().Name} - StartService", $"Start master '{appName}' in service mode");
 
             var npServer = new NpServer() { Name = appName };
 
@@ -347,7 +347,7 @@ namespace EltraConnector.Master
             {
                 npServer.StepRequested += (sender, e) =>
                 {
-                    MsgLogger.WriteFlow("stop request received ...");
+                    MsgLogger.WriteFlow($"{GetType().Name} - StartService", "stop request received ...");
 
                     Stop();
                 };
@@ -356,7 +356,7 @@ namespace EltraConnector.Master
                 {
                     result = true;
 
-                    MsgLogger.WriteFlow($"host='{Host}', user={Identity.Login}, pwd='{Identity.Password}'");
+                    MsgLogger.WriteFlow($"{GetType().Name} - StartService", $"host='{Host}', user={Identity.Login}, pwd='{Identity.Password}'");
 
                     var task = Task.Run(async ()=>
                     {
@@ -367,14 +367,14 @@ namespace EltraConnector.Master
                 }
                 else
                 {
-                    MsgLogger.WriteFlow("you have to enter login and password to proceed!");
+                    MsgLogger.WriteFlow($"{GetType().Name} - StartService", "you have to enter login and password to proceed!");
                 }
 
                 npServer.Stop();
             }
             else
             {
-                MsgLogger.WriteError($"{GetType().Name} - Start", "start failed!");
+                MsgLogger.WriteError($"{GetType().Name} - StartService", "start failed!");
             }
 
             return result;
@@ -394,12 +394,12 @@ namespace EltraConnector.Master
 
             if (client.Stop())
             {
-                MsgLogger.WriteFlow("stop request sent successfully!");
+                MsgLogger.WriteFlow($"{GetType().Name} - StopService", "stop request sent successfully!");
                 result = true;
             }
             else
             {
-                MsgLogger.WriteError("RunOptionsAndReturnExitCode", "stop request sending failed!");
+                MsgLogger.WriteError($"{GetType().Name} - StopService", "stop request sending failed!");
             }
 
             return result;

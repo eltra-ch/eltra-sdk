@@ -284,7 +284,7 @@ namespace EltraConnector.Channels
                 {
                     Status = WsChannelStatus.Started;
 
-                    MsgLogger.WriteLine($"connected to channel = '{WsChannelId}'");
+                    MsgLogger.WriteLine($"{GetType().Name} - RunMaster", $"connected to channel = '{WsChannelId}'");
 
                     result = true;
                 }

@@ -106,7 +106,7 @@ namespace EltraConnector.UserAgent
 
         private void OnStatusChanged()
         {
-            MsgLogger.WriteLine($"agent status changed to {Status}");
+            MsgLogger.WriteLine($"{GetType().Name} - OnStatusChanged", $"agent status changed to {Status}");
 
             StatusChanged?.Invoke(this, new AgentStatusEventArgs() { Status = Status });
         }
@@ -519,7 +519,7 @@ namespace EltraConnector.UserAgent
                 MsgLogger.WriteError($"{GetType().Name} - Run", $"channel registration failed!");
             }
 
-            MsgLogger.WriteLine($"UserCloud agent working thread finished successfully!");
+            MsgLogger.WriteLine($"{GetType().Name} - Run", $"UserCloud agent working thread finished successfully!");
             
             Status = AgentStatus.Stopped;
         }
@@ -535,7 +535,7 @@ namespace EltraConnector.UserAgent
                 await StopChannel();
             }
             
-            MsgLogger.WriteLine($"Sync agent working thread finished successfully!");
+            MsgLogger.WriteLine($"{GetType().Name} - RunMaster", $"Sync agent working thread finished successfully!");
 
             Status = AgentStatus.Stopped;
         }

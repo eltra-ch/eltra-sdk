@@ -95,7 +95,7 @@ namespace EltraConnector.Master.Device
             {
                 device.Disconnect();
 
-                MsgLogger.WriteLine($"Disconnected: device = {device.Family} - Unregister");
+                MsgLogger.WriteLine($"{GetType().Name} - Stop", $"Disconnected: device = {device.Family} - Unregister");
 
                 if(await CloudAgent.UnregisterDevice(device))
                 {
@@ -112,13 +112,13 @@ namespace EltraConnector.Master.Device
         {
             bool result = true;
             
-            MsgLogger.WriteLine($"Run: device count='{DeviceList.Count}'");
+            MsgLogger.WriteLine($"{GetType().Name} - Run", $"Run: device count='{DeviceList.Count}'");
 
             foreach (var device in DeviceList)
             {
                 if (device.Status == DeviceStatus.Ready)
                 {
-                    MsgLogger.WriteLine($"Register: device='{device.Family}', node id = {device.NodeId}, serial number=0x{device.Identification.SerialNumber:X}");
+                    MsgLogger.WriteLine($"{GetType().Name} - Run", $"Register: device='{device.Family}', node id = {device.NodeId}, serial number=0x{device.Identification.SerialNumber:X}");
 
                     if(!await CloudAgent.RegisterDevice(device))
                     {
@@ -133,7 +133,7 @@ namespace EltraConnector.Master.Device
                 {
                     if (device.Status == DeviceStatus.Ready)
                     {
-                        MsgLogger.WriteLine($"Register: device='{device.Family}', node id = {device.NodeId}, serial number=0x{device.Identification.SerialNumber:X}");
+                        MsgLogger.WriteLine($"{GetType().Name} - Run", $"Register: device='{device.Family}', node id = {device.NodeId}, serial number=0x{device.Identification.SerialNumber:X}");
 
                         if(!await CloudAgent.RegisterDevice(device))
                         {

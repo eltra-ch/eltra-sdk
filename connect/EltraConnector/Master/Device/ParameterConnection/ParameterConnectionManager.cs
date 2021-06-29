@@ -145,7 +145,7 @@ namespace EltraConnector.Master.Device.ParameterConnection
                     {
                         if (parameter.GetValue(out byte[] data))
                         {
-                            MsgLogger.WriteFlow( $"Write parameter, parameter='{parameter.UniqueId}', {data}");
+                            MsgLogger.WriteFlow($"{GetType().Name} - WriteParameter", $"Write parameter, parameter='{parameter.UniqueId}', {data}");
 
                             if (communication.SetObject(parameter.Index, parameter.SubIndex, data))
                             {

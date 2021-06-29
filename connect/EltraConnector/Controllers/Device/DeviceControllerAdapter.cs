@@ -90,10 +90,10 @@ namespace EltraConnector.Controllers.Device
             switch(e.State)
             {
                 case RegistrationState.Registered:
-                    MsgLogger.WriteFlow($"device '{e.Device.Name}' registered successfully.");
+                    MsgLogger.WriteFlow($"{GetType().Name} - OnRegistrationStateChanged", $"device '{e.Device.Name}' registered successfully.");
                     break;
                 case RegistrationState.Unregistered:
-                    MsgLogger.WriteFlow($"device '{e.Device.Name}' unregistered successfully.");
+                    MsgLogger.WriteFlow($"{GetType().Name} - OnRegistrationStateChanged", $"device '{e.Device.Name}' unregistered successfully.");
                     break;
                 case RegistrationState.Failed:
                     if(e.Exception!=null)

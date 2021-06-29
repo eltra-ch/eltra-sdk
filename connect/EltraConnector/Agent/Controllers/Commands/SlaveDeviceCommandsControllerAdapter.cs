@@ -97,7 +97,7 @@ namespace EltraConnector.Agent.Controllers.Commands
 
             if (ConnectionManager != null && ConnectionManager.IsConnected(CommandExecUuid))
             {
-                MsgLogger.WriteLine($"set (WS) command='{status.CommandName}' status='{status.Status}' for device with nodeid={status.NodeId}");
+                MsgLogger.WriteLine($"{GetType().Name} - SetCommandStatus", $"set (WS) command='{status.CommandName}' status='{status.Status}' for device with nodeid={status.NodeId}");
 
                 if (await ConnectionManager.Send(CommandExecUuid, UserIdentity, status))
                 {

@@ -210,16 +210,16 @@ namespace EltraConnector.Agent.Controllers.Commands
                 }
                 else if (string.IsNullOrEmpty(json) && ConnectionManager.IsConnected(WsChannelId))
                 {
-                    MsgLogger.WriteLine($"empty string received");
+                    MsgLogger.WriteLine($"{GetType().Name} - HandleMsgReceived", $"empty string received");
                 }
                 else if (!string.IsNullOrEmpty(json))
                 {
-                    MsgLogger.WriteDebug($"{GetType().Name} - Execute", $"unknown message '{json}' received");
+                    MsgLogger.WriteDebug($"{GetType().Name} - HandleMsgReceived", $"unknown message '{json}' received");
                 }
             }
             catch (Exception e)
             {
-                MsgLogger.Exception($"{GetType().Name} - Execute", e);
+                MsgLogger.Exception($"{GetType().Name} - HandleMsgReceived", e);
             }
         }
 

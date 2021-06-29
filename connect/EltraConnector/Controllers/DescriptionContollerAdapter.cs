@@ -42,7 +42,7 @@ namespace EltraConnector.Controllers
 
             try
             {
-                MsgLogger.WriteLine($"upload device description version='{deviceDescription.Version}'");
+                MsgLogger.WriteLine($"{GetType().Name} - Upload", $"upload device description version='{deviceDescription.Version}'");
 
                 var postResult = await Transporter.Post(_identity, Url, "api/description/upload", deviceDescription.ToJson());
 
@@ -166,7 +166,7 @@ namespace EltraConnector.Controllers
 
             try
             {
-                MsgLogger.WriteLine($"upload payload version='{payload.FileName}'");
+                MsgLogger.WriteLine($"{GetType().Name} - UploadPayload", $"upload payload version='{payload.FileName}'");
 
                 var postResult = await Transporter.Post(_identity, Url, "api/description/payload-upload", payload.ToJson());
 

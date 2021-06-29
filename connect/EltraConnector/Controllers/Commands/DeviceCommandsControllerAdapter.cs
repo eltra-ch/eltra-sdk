@@ -68,7 +68,7 @@ namespace EltraConnector.Controllers
 
             if (device != null)
             {
-                MsgLogger.WriteLine($"get device='{device.Family}', nodeId=0x{device.NodeId} commands");
+                MsgLogger.WriteLine($"{GetType().Name} - GetDeviceCommands", $"get device='{device.Family}', nodeId=0x{device.NodeId} commands");
 
                 try
                 {
@@ -106,7 +106,7 @@ namespace EltraConnector.Controllers
 
             if (device != null)
             {
-                MsgLogger.WriteLine($"get command '{commandName}' from device='{device.Family}', node id={device.NodeId}");
+                MsgLogger.WriteLine($"{GetType().Name} - GetDeviceCommand", $"get command '{commandName}' from device='{device.Family}', node id={device.NodeId}");
 
                 try
                 {
@@ -274,7 +274,7 @@ namespace EltraConnector.Controllers
                 var commandUuid = executeCommand.CommandId;
                 var nodeId = executeCommand.NodeId;
 
-                MsgLogger.WriteLine($"get command status '{commandName}', node id={nodeId}");
+                MsgLogger.WriteLine($"{GetType().Name} - GetCommandStatus", $"get command status '{commandName}', node id={nodeId}");
 
                 var query = HttpUtility.ParseQueryString(string.Empty);
 
@@ -294,7 +294,7 @@ namespace EltraConnector.Controllers
                 {
                     result = executeCommandStatus;
 
-                    MsgLogger.WriteLine($"command '{commandName}', status '{executeCommandStatus.Status}', device nodeId={nodeId}");
+                    MsgLogger.WriteLine($"{GetType().Name} - GetCommandStatus", $"command '{commandName}', status '{executeCommandStatus.Status}', device nodeId={nodeId}");
                 }
             }
             catch (Exception e)
