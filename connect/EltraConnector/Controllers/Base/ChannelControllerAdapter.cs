@@ -65,7 +65,7 @@ namespace EltraConnector.Controllers.Base
         
         protected virtual void OnConnectionManagerChanged()
         {
-            MsgLogger.WriteLine($"{GetType().Name} - OnConnectionManagerChanged, connection manager set, channel = {WsChannelName}");
+            MsgLogger.WriteLine($"{GetType().Name} - OnConnectionManagerChanged", $"connection manager set, channel = {WsChannelName}");
 
             ConnectToChannel();
         }
@@ -78,7 +78,7 @@ namespace EltraConnector.Controllers.Base
             {
                 if (ConnectionManager != null)
                 {
-                    MsgLogger.WriteLine($"{GetType().Name} - ConnectToChannel, connect to channel = {WsChannelName}");
+                    MsgLogger.WriteLine($"{GetType().Name} - ConnectToChannel", $"connect to channel = {WsChannelName}");
 
                     if (await ConnectionManager.Connect(WsChannelId, WsChannelName))
                     {
@@ -447,7 +447,7 @@ namespace EltraConnector.Controllers.Base
         {
             bool result = false;
 
-            MsgLogger.WriteLine($"{GetType().Name} - Update, set channel status {status}");
+            MsgLogger.WriteLine($"{GetType().Name} - SetChannelStatus", $"set channel status {status}");
 
             try
             {

@@ -217,7 +217,7 @@ namespace EltraConnector.Master
 
                     if (await SignIn(Identity, true))
                     {
-                        MsgLogger.Print($"'{Identity.Login}' signed in successfully");
+                        MsgLogger.Print($"{GetType().Name} - Start", $"'{Identity.Login}' signed in successfully");
 
                         ChannelId = await Authentication.GetChannelId();
 
@@ -248,7 +248,7 @@ namespace EltraConnector.Master
 
                                     deviceManager.CloudAgent = agent;
 
-                                    MsgLogger.Print("scan devices...");
+                                    MsgLogger.Print($"{GetType().Name} - Start", "scan devices...");
 
                                     if(await deviceManager.Run())
                                     {
