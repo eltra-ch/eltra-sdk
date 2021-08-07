@@ -22,6 +22,8 @@ namespace EltraConnector.Master.Device
         {            
             Device = device;
 
+            _vcs = new MasterVcs(Device);
+
             if (Device != null)
             {
                 Device.StatusChanged += OnDeviceStatusChanged;
@@ -36,13 +38,7 @@ namespace EltraConnector.Master.Device
 
         protected MasterDevice Device { get; }
 
-        protected MasterVcs Vcs
-        {
-            get
-            {
-                return _vcs ?? (_vcs = new MasterVcs(Device));
-            }
-        }
+        protected MasterVcs Vcs => _vcs;
 
         #endregion
 

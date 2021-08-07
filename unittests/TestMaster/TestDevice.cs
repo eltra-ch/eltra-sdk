@@ -8,7 +8,7 @@ namespace TestMaster
         public TestDevice(string deviceDescriptionFilePath, int nodeId) 
             : base("TEST", deviceDescriptionFilePath, nodeId)
         {
-            Identification.SerialNumber = 0x105;
+            Identification.SerialNumber = 0x107;
 
             AddCommand(new StartCountingCommand(this));
             AddCommand(new StopCountingCommand(this));

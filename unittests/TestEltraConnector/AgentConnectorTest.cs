@@ -883,6 +883,76 @@ namespace TestEltraConnector
         [InlineData(1)]
         [InlineData(2)]
         [InlineData(3)]
+        public async Task Parameters_DeviceNodeShouldHaveOperationalDoubleFastParameter(int nodeId)
+        {
+            //Arrange
+            var deviceNode = await TestData.GetDevice(nodeId, _aliasDeviceLogin, _aliasDevicePassword);
+
+            //Get parameter
+            var parameter = await deviceNode.GetParameter(0x4000, 0x0F) as XddParameter;
+            //store actual value for later use
+            var actualValue = parameter.ActualValue.Clone();
+            //update value, GetParameter is more 'heavy', so should be used once, and then only ReadValue
+            var parameterValue1 = await parameter.ReadValue();
+            //get value from local object dictionary
+            bool result = parameter.GetValue(out double val1);
+
+            if (val1 < double.MaxValue - 1)
+            {
+                val1 = (double)(val1 + 1);
+            }
+            else
+            {
+                val1 = double.MinValue;
+            }
+
+            // set new parameter value in object dictionary
+            bool setValueResult = parameter.SetValue(val1);
+
+            // push the data to remote device
+            bool writeResult = await parameter.Write();
+            double val2 = double.MinValue;
+            ParameterValue parameterValue2;
+            bool getValueResult;
+            int tryCount = 0;
+            int maxTryCount = 10;
+
+            do
+            {
+                // read current value from device
+                parameterValue2 = await parameter.ReadValue();
+
+                // parameterValue2 should contain current device value
+                getValueResult = parameterValue2.GetValue(ref val2);
+
+                if (val1 != val2)
+                {
+                    Thread.Sleep(1000);
+                }
+
+                tryCount++;
+            }
+            while (val1 != val2 && tryCount < maxTryCount);
+
+            //Assert
+            Assert.True(parameter != null, "Device object dictionary missing.");
+            Assert.True(parameterValue1 != null, "Get ParameterValue failed.");
+            Assert.True(parameterValue1.Equals(actualValue), "Get ParameterValue differs from actual value.");
+            Assert.True(result, "GetValue failed.");
+            Assert.True(parameterValue2 != null, "Get ParameterValue failed.");
+            Assert.True(setValueResult, "SetValue failed.");
+            Assert.True(getValueResult, "GetValue failed.");
+            Assert.True(writeResult, "Write failed.");
+            Assert.True(val1 == val2, $"ReadValue/Write mismatch val1 = {val1} val2 = {val2}.");
+
+            // sign out
+            await _connector.SignOut();
+        }
+
+        [Theory]
+        [InlineData(1)]
+        [InlineData(2)]
+        [InlineData(3)]
         public async Task Parameters_DeviceNodeShouldHaveOperationalStringParameter(int nodeId)
         {
             //Arrange
@@ -1266,7 +1336,7 @@ namespace TestEltraConnector
 
                 count++;
             }
-            while (result && getValueResult && writeResult && setValueResult && count < maxCount);
+            while (result && getValueResult && writeResult && setValueResult && count < maxCount && val1 == val2);
 
             //Assert
             Assert.True(parameter != null, "Device object dictionary missing.");

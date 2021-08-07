@@ -36,7 +36,7 @@ namespace EltraConnector.Agent.Controllers
 
         #region Properties
 
-        private DeviceControllerAdapter DeviceAdapter => _deviceControllerAdapter ?? (_deviceControllerAdapter = CreateDeviceController());
+        protected DeviceControllerAdapter DeviceAdapter => _deviceControllerAdapter ?? (_deviceControllerAdapter = CreateDeviceController());
 
         #endregion
 
@@ -65,7 +65,7 @@ namespace EltraConnector.Agent.Controllers
             t.Wait();
         }
 
-        private DeviceControllerAdapter CreateDeviceController()
+        protected virtual DeviceControllerAdapter CreateDeviceController()
         {
             var result = new SlaveDeviceControllerAdapter(Url, Channel, User.Identity) { ConnectionManager = ConnectionManager };
             
@@ -161,6 +161,11 @@ namespace EltraConnector.Agent.Controllers
         public async Task<ParameterValueHistoryStatistics> GetParameterHistoryStatistics(string channelId, int nodeId, string uniqueId, DateTime from, DateTime to)
         {
             return await DeviceAdapter.GetParameterHistoryStatistics(channelId, nodeId, uniqueId, from, to);
+        }
+
+        virtual internal Task<bool> SetParameterValue(EltraDevice device, ushort index, byte subIndex, ParameterValue parameterValue)
+        {
+            return Task.FromResult(false);
         }
 
         #endregion

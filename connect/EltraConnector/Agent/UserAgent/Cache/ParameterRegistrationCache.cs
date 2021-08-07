@@ -1,4 +1,5 @@
-﻿using EltraConnector.Classes;
+﻿using EltraCommon.ObjectDictionary.Common.DeviceDescription.Profiles.Application.Templates;
+using EltraConnector.Classes;
 using System.Collections.Generic;
 
 namespace EltraConnector.Agent.UserAgent.Cache
@@ -25,15 +26,10 @@ namespace EltraConnector.Agent.UserAgent.Cache
         /// IsParameterRegistered
         /// </summary>
         /// <param name="uniqueId"></param>
-        /// <param name="index"></param>
-        /// <param name="subIndex"></param>
-        /// <param name="instanceCount"></param>
         /// <returns></returns>
-        public bool IsParameterRegistered(string uniqueId, ushort index, byte subIndex, out int instanceCount)
+        public bool IsParameterRegistered(string uniqueId)
         {
             bool result = false;
-
-            instanceCount = 0;
 
             lock (_registeredParameterLocker)
             {
@@ -44,12 +40,7 @@ namespace EltraConnector.Agent.UserAgent.Cache
                         result = true;
                         break;
                     }
-                }
-
-                if(result == false)
-                {
-                    instanceCount = AddParameter(uniqueId, index, subIndex);
-                }
+                }                
             }
 
             return result;
@@ -74,7 +65,7 @@ namespace EltraConnector.Agent.UserAgent.Cache
             return result;
         }
 
-        private int AddParameter(string uniqueId, ushort index, byte subIndex)
+        public int AddParameter(string uniqueId, ushort index, byte subIndex, Flags flags)
         {
             int result;
 
@@ -86,7 +77,7 @@ namespace EltraConnector.Agent.UserAgent.Cache
             }
             else
             {   
-                var parameter = new RegisteredParameter(uniqueId, index, subIndex, _registeredParameterLocker) { InstanceCount = 1 };
+                var parameter = new RegisteredParameter(uniqueId, index, subIndex, flags, _registeredParameterLocker) { InstanceCount = 1 };
 
                 RegisteredParameters.Add(parameter);
 

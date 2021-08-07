@@ -28,7 +28,7 @@
 				<version versionType="SW" readOnly="true">0x0120</version>
 				<version versionType="HW" readOnly="true">0x0615</version>
 				<version versionType="APPNB" readOnly="true">0x0000</version>
-				<version versionType="APPVER" readOnly="true">0x0004</version>
+				<version versionType="APPVER" readOnly="true">0x0006</version>
 			</DeviceIdentity>
 			<DeviceManager>
 				<userLevelList>
@@ -69,9 +69,15 @@
 					<flags uniqueID="AT_RW" name="AT_RW">
 						<Access>rw</Access>
 					</flags>
+          <!-- backup flag / parameter can be used to history tracking, each value change will be stored -->
 					<flags uniqueID="AT_RW_BACKUP" name="AT_RW_BACKUP">
 						<Access>rw</Access>
 						<Backup>1</Backup>
+					</flags>
+          <!-- queued flag / performance tuning - used by volatile parameters (followed read operation can contain 'old' value, actual value will be set asynchron) -->
+					<flags uniqueID="AT_RW_VOLATILE" name="AT_RW_VOLATILE">
+						<Access>rw</Access>
+						<Volatile>1</Volatile>
 					</flags>
 				</templateList>
 				<parameterList>
@@ -367,6 +373,22 @@
 							<type>IDENTITY</type>
 						</dataType>
 						<flagsIDRef uniqueIDRef="AT_RW" />
+						<defaultValue>0</defaultValue>
+						<userLevels>
+							<userLevelIDRef uniqueIDRef="USR_Standard" />
+							<userLevelIDRef uniqueIDRef="USR_Expert" />
+							<userLevelIDRef uniqueIDRef="USR_Internal" />
+						</userLevels>
+						<displayFormat>dec</displayFormat>
+					</parameter>
+          <parameter uniqueID="PARAM_DOUBLE_FAST">
+						<index>0x4000</index>
+						<subIndex>0x0F</subIndex>
+						<label lang="en-TT">Double</label>
+						<dataType>
+							<type>DOUBLE</type>
+						</dataType>
+						<flagsIDRef uniqueIDRef="AT_RW_VOLATILE" />
 						<defaultValue>0</defaultValue>
 						<userLevels>
 							<userLevelIDRef uniqueIDRef="USR_Standard" />

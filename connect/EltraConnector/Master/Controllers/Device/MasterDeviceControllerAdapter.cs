@@ -29,7 +29,7 @@ namespace EltraConnector.Master.Controllers.Device
 
         protected override DeviceCommandsControllerAdapter CreateDeviceCommandsAdapter()
         {
-            var adapter = new MasterDeviceCommandsControllerAdapter(Url, Channel, UserIdentity);
+            var adapter = new MasterDeviceCommandsControllerAdapter(Url, Channel, Identity);
 
             AddChild(adapter);
 

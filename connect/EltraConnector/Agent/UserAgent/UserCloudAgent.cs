@@ -80,7 +80,7 @@ namespace EltraConnector.UserAgent
             _channel = new Channel() { Status = ChannelStatus.Offline };
             _executedCommands = new List<DeviceCommand>();
 
-            _channelAdapter = new SlaveChannelControllerAdapter(masterAgent.Url, deviceNode.ChannelId, masterAgent.Identity, updateInterval, timeout)
+            _channelAdapter = new MasterSlaveChannelControllerAdapter(masterAgent, deviceNode, updateInterval, timeout)
             {
                 ConnectionManager = masterAgent.ConnectionManager 
             };
@@ -469,6 +469,18 @@ namespace EltraConnector.UserAgent
                         _executeCommander.Stop();
                     }
                 }
+            }
+
+            return result;
+        }
+
+        public async Task<bool> SetParameterValue(EltraDevice device, ushort index, byte subIndex, ParameterValue parameterValue)
+        {
+            bool result = false;
+
+            if (_channelAdapter != null)
+            {
+                result = await _channelAdapter.SetParameterValue(device, index, subIndex, parameterValue);
             }
 
             return result;

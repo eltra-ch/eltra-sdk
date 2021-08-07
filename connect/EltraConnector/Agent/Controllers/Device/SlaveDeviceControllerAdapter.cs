@@ -21,7 +21,7 @@ namespace EltraConnector.Agent.Controllers.Device
 
         protected override DeviceCommandsControllerAdapter CreateDeviceCommandsAdapter()
         {
-            var adapter = new SlaveDeviceCommandsControllerAdapter(Url, Channel, UserIdentity);
+            var adapter = new SlaveDeviceCommandsControllerAdapter(Url, Channel, Identity);
 
             AddChild(adapter);
 

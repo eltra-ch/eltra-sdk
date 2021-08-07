@@ -1,4 +1,5 @@
-﻿using System;
+﻿using EltraCommon.ObjectDictionary.Common.DeviceDescription.Profiles.Application.Templates;
+using System;
 
 namespace EltraConnector.Classes
 {
@@ -9,6 +10,7 @@ namespace EltraConnector.Classes
         private readonly object _syncObject;
         private readonly ushort _index;
         private readonly byte _subIndex;
+        private readonly Flags _flags;
 
         private int _instanceCount;
         private DateTime _lastModified;
@@ -17,12 +19,12 @@ namespace EltraConnector.Classes
 
         #region Constrcutors
 
-        public RegisteredParameter(string uniqueId, ushort index, byte subIndex, object syncObject)
+        public RegisteredParameter(string uniqueId, ushort index, byte subIndex, Flags flags, object syncObject)
         {
             UniqueId = uniqueId;
             _index = index;
             _subIndex = subIndex;
-
+            _flags = flags;
             _syncObject = syncObject;
             _lastModified = DateTime.MinValue;
 
@@ -71,7 +73,14 @@ namespace EltraConnector.Classes
         {
             get
             {
-                return DateTime.Now - LastModified < TimeSpan.FromSeconds(MaxCacheDelayInSec);
+                bool result = false;
+
+                if(_flags.Volatile != 0 && DateTime.Now - LastModified < TimeSpan.FromSeconds(MaxCacheDelayInSec))
+                {
+                    result = true;
+                }
+
+                return result;
             }
         }
 
@@ -93,6 +102,11 @@ namespace EltraConnector.Classes
             }
 
             return InstanceCount;
+        }
+
+        internal void Reset()
+        {
+            LastModified = DateTime.MinValue;
         }
 
         #endregion

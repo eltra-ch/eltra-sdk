@@ -82,8 +82,6 @@ namespace EltraConnector.Master.Device
         {
             if (CloudAgent != null)
             {
-                CreateCommunication();
-
                 Task.Run(async () => {
 
                     if(CloudAgent!=null)
@@ -131,6 +129,8 @@ namespace EltraConnector.Master.Device
                     CreateConnectionManager();
 
                     AddDeviceTools(deviceDescriptionFile);
+
+                    CreateCommunication();
 
                     OnInitialized();
                 }

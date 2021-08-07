@@ -6,7 +6,6 @@ using EltraConnector.Events;
 using EltraCommon.Contracts.CommandSets;
 using EltraCommon.Contracts.Channels;
 using EltraCommon.Logger;
-using System.Text.Json;
 using EltraCommon.Contracts.Devices;
 using EltraCommon.Helpers;
 using EltraCommon.Extensions;
@@ -19,6 +18,8 @@ using EltraCommon.Contracts.Users;
 using EltraCommon.Contracts.ToolSet;
 using EltraCommon.Transport;
 using EltraConnector.Transport.Ws.Interfaces;
+using System.Net;
+using EltraCommon.Contracts.Parameters;
 
 namespace EltraConnector.Controllers.Device
 {
@@ -26,7 +27,7 @@ namespace EltraConnector.Controllers.Device
     {
         #region Private fields
 
-        private readonly UserIdentity _userIdentity;
+        private readonly UserIdentity _identity;
 
         private EltraDeviceSet _channelDevices;
         private DeviceCommandsControllerAdapter _deviceCommandsControllerAdapter;
@@ -38,10 +39,10 @@ namespace EltraConnector.Controllers.Device
 
         #region Constructors
 
-        public DeviceControllerAdapter(string url, Channel channel, UserIdentity userIdentity)
+        public DeviceControllerAdapter(string url, Channel channel, UserIdentity identity)
             : base(url, channel)
         {
-            _userIdentity = userIdentity;
+            _identity = identity;
         }
 
         #endregion
@@ -66,7 +67,7 @@ namespace EltraConnector.Controllers.Device
 
         public DescriptionControllerAdapter DescriptionContollerAdapter => _descriptionContollerAdapter ?? (_descriptionContollerAdapter = CreateDescriptionAdapter());
 
-        protected UserIdentity UserIdentity => _userIdentity;
+        protected UserIdentity Identity => _identity;
 
         #endregion
 
@@ -121,7 +122,7 @@ namespace EltraConnector.Controllers.Device
 
         private ParameterControllerAdapter CreateParameterAdapter()
         {
-            var adapter = new ParameterControllerAdapter(_userIdentity, Url, Channel);
+            var adapter = new ParameterControllerAdapter(_identity, Url, Channel);
 
             AddChild(adapter);
 
@@ -130,7 +131,7 @@ namespace EltraConnector.Controllers.Device
 
         private DescriptionControllerAdapter CreateDescriptionAdapter()
         {
-            var adapter = new DescriptionControllerAdapter(_userIdentity, Url);
+            var adapter = new DescriptionControllerAdapter(_identity, Url);
 
             AddChild(adapter);
 
@@ -152,7 +153,7 @@ namespace EltraConnector.Controllers.Device
 
             var url = UrlHelper.BuildUrl(Url, $"api/device/unregister/{Channel.Id}/{device.NodeId}", query);
 
-            bool result = await Transporter.Delete(_userIdentity, url, CancellationToken.None);
+            bool result = await Transporter.Delete(_identity, url, CancellationToken.None);
 
             if (result)
             {
@@ -173,7 +174,7 @@ namespace EltraConnector.Controllers.Device
                 query["channelId"] = channelId;
 
                 var url = UrlHelper.BuildUrl(Url, "api/channel/devices", query);
-                var json = await Transporter.Get(_userIdentity, url);
+                var json = await Transporter.Get(_identity, url);
 
                 var devices = json.TryDeserializeObject<EltraDeviceList>();
 
@@ -232,7 +233,7 @@ namespace EltraConnector.Controllers.Device
                     deviceNode.ChannelId = Channel.Id;
 
                     var path = "api/device/register";
-                    var postResult = await Transporter.Post(_userIdentity, Url, path, deviceNode.ToJson());
+                    var postResult = await Transporter.Post(_identity, Url, path, deviceNode.ToJson());
 
                     if (postResult.StatusCode == System.Net.HttpStatusCode.OK)
                     {
@@ -379,7 +380,7 @@ namespace EltraConnector.Controllers.Device
 
                 var url = UrlHelper.BuildUrl(Url, "api/device/status", query);
 
-                var json = await Transporter.Get(_userIdentity, url);
+                var json = await Transporter.Get(_identity, url);
 
                 if(!string.IsNullOrEmpty(json))
                 {
@@ -545,6 +546,53 @@ namespace EltraConnector.Controllers.Device
         internal Task<bool> PayloadExists(DeviceToolPayload payload)
         {
             return DescriptionContollerAdapter.PayloadExists(payload);
+        }
+
+        public async Task<bool> SetParameterValue(int nodeId, ushort index, byte subIndex, ParameterValue actualValue)
+        {
+            bool result = false;
+
+            try
+            {
+                var parameterUpdate = new ParameterValueUpdate
+                {
+                    ChannelId = Channel.Id,
+                    NodeId = nodeId,
+                    ParameterValue = actualValue,
+                    Index = index,
+                    SubIndex = subIndex
+                };
+
+                var path = $"api/parameter/value";
+
+                var json = parameterUpdate.ToJson();
+
+                var response = await Transporter.Put(Identity, Url, path, json);
+
+                if (response != null)
+                {
+                    if (response.StatusCode == HttpStatusCode.OK)
+                    {
+                        MsgLogger.WriteDebug($"{GetType().Name} - UpdateParameterValue", $"Device Node id = {nodeId}, Parameter Index = 0x{index:X4}, Subindex = 0x{subIndex} value successfully written");
+
+                        result = true;
+                    }
+                    else
+                    {
+                        MsgLogger.WriteError($"{GetType().Name} - UpdateParameterValue", $"Device Node id = {nodeId}, Parameter Index = 0x{index:X4}, Subindex = 0x{subIndex} value write failed, status code = {response.StatusCode}!");
+                    }
+                }
+                else
+                {
+                    MsgLogger.WriteError($"{GetType().Name} - UpdateParameterValue", $"Device Node id = {nodeId}, Parameter Index = 0x{index:X4}, Subindex = 0x{subIndex} value write failed!");
+                }
+            }
+            catch (Exception)
+            {
+                result = false;
+            }
+
+            return result;
         }
 
         #endregion        

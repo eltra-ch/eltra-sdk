@@ -8,14 +8,14 @@ namespace TestEltraConnector
     public class AgentTestBase : IDisposable
     {
         protected string _host = "https://eltra.ch";
-        //protected string _host = "http://localhost:5000";
+        //protected string _host = "http://localhost:5001";
 
         protected AgentConnector _connector;
         private static UserIdentity _identity;
         private AgentConnectorTestData _testData;
-        protected string _aliasDeviceLogin = "test2@eltra.ch";
+        protected string _aliasDeviceLogin = "test4@eltra.ch";
         protected string _aliasDevicePassword = "1234";
-        protected string masterDeviceLogin = "test.master2@eltra.ch";
+        protected string masterDeviceLogin = "test.master4@eltra.ch";
 
         public AgentTestBase()
         {

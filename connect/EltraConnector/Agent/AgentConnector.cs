@@ -13,10 +13,6 @@ using EltraConnector.SyncAgent;
 using System.Diagnostics;
 using EltraConnector.Interfaces;
 using EltraCommon.Transport;
-using EltraConnector.Events;
-using System.Web;
-using EltraCommon.Logger;
-using EltraCommon.Helpers;
 
 namespace EltraConnector.Agent
 {

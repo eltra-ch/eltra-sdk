@@ -29,13 +29,13 @@ namespace EltraConnector.UserAgent
 
         public DeviceAgent(string url, string uuid, UserIdentity identity, uint updateInterval, uint timeout)
             : base(url, uuid, identity, updateInterval, timeout)
-        {
+        {  
         }
 
         internal DeviceAgent(SyncCloudAgent masterAgent, EltraDevice device, uint updateInterval, uint timeout)
             : base(masterAgent, device, updateInterval, timeout)
         {
-
+            device.CloudConnector = this;
         }
         
         #endregion
@@ -142,6 +142,8 @@ namespace EltraConnector.UserAgent
             return result;
         }
 
+        
+
         public async Task<ParameterValue> GetParameterValue(EltraDevice device, ushort index, byte subIndex)
         {
             ParameterValue result = null;
@@ -232,9 +234,12 @@ namespace EltraConnector.UserAgent
             if (!string.IsNullOrEmpty(uniqueId) && device != null && device.SearchParameter(uniqueId) is XddParameter parameterEntry)
             {   
                 bool result = false;
-                
-                if (!ParameterRegistrationCache.IsParameterRegistered(uniqueId, parameterEntry.Index, parameterEntry.SubIndex, out var instanceCount))
+                int instanceCount = 0;
+
+                if (!ParameterRegistrationCache.IsParameterRegistered(uniqueId))
                 {
+                    instanceCount = ParameterRegistrationCache.AddParameter(uniqueId, parameterEntry.Index, parameterEntry.SubIndex, parameterEntry.Flags);
+
                     Task.Run(async () => {
 
                         var command = await GetDeviceCommand(device, "RegisterParameterUpdate");
@@ -364,6 +369,14 @@ namespace EltraConnector.UserAgent
 
                 responseCommand?.GetParameterValue("ErrorCode", ref lastErrorCode);
                 responseCommand?.GetParameterValue("Result", ref result);
+
+                if(result)
+                {
+                    if(ParameterRegistrationCache.FindParameter(parameter.UniqueId, out var registeredParameter))
+                    {
+                        registeredParameter.Reset();
+                    }
+                }    
             }
 
             return result;

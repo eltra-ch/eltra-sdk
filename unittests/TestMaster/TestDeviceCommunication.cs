@@ -76,7 +76,7 @@ namespace TestMaster
             {
                 case 0x6040:
                     {
-                        if (_controlWordParameter.GetValue(out byte[] v))
+                        if (_controlWordParameter != null && _controlWordParameter.GetValue(out byte[] v))
                         {
                             data = v;
                             result = true;
@@ -84,7 +84,7 @@ namespace TestMaster
                     } break;
                 case 0x6041:
                     {
-                        if (_statusWordParameter.GetValue(out byte[] v))
+                        if (_statusWordParameter != null && _statusWordParameter.GetValue(out byte[] v))
                         {
                             data = v;
                             result = true;
@@ -92,7 +92,7 @@ namespace TestMaster
                     } break;
                 case 0x3000:
                     {
-                        if (_counterParameter.GetValue(out byte[] v))
+                        if (_counterParameter != null && _counterParameter.GetValue(out byte[] v))
                         {
                             data = v;
                             result = true;
@@ -104,7 +104,7 @@ namespace TestMaster
                         {
                             case 0x01:
                                 {
-                                    if (_byteParameter.GetValue(out byte[] d))
+                                    if (_byteParameter != null && _byteParameter.GetValue(out byte[] d))
                                     {
                                         data = d;
                                         result = true;
@@ -113,7 +113,7 @@ namespace TestMaster
                                 break;
                             case 0x02:
                                 {
-                                    if (_ushortParameter.GetValue(out byte[] d))
+                                    if (_ushortParameter != null && _ushortParameter.GetValue(out byte[] d))
                                     {
                                         data = d;
                                         result = true;
@@ -122,7 +122,7 @@ namespace TestMaster
                                 break;
                             case 0x03:
                                 {
-                                    if (_uintParameter.GetValue(out byte[] d))
+                                    if (_uintParameter != null && _uintParameter.GetValue(out byte[] d))
                                     {
                                         data = d;
                                         result = true;
@@ -131,7 +131,7 @@ namespace TestMaster
                                 break;
                             case 0x04:
                                 {
-                                    if (_ulongParameter.GetValue(out byte[] d))
+                                    if (_ulongParameter != null && _ulongParameter.GetValue(out byte[] d))
                                     {
                                         data = d;
                                         result = true;
@@ -140,7 +140,7 @@ namespace TestMaster
                                 break;
                             case 0x05:
                                 {
-                                    if (_sbyteParameter.GetValue(out byte[] d))
+                                    if (_sbyteParameter != null && _sbyteParameter.GetValue(out byte[] d))
                                     {
                                         data = d;
                                         result = true;
@@ -149,7 +149,7 @@ namespace TestMaster
                                 break;
                             case 0x06:
                                 {
-                                    if (_shortParameter.GetValue(out byte[] d))
+                                    if (_shortParameter != null && _shortParameter.GetValue(out byte[] d))
                                     {
                                         data = d;
                                         result = true;
@@ -158,7 +158,7 @@ namespace TestMaster
                                 break;
                             case 0x07:
                                 {
-                                    if (_intParameter.GetValue(out byte[] d))
+                                    if (_intParameter != null && _intParameter.GetValue(out byte[] d))
                                     {
                                         data = d;
                                         result = true;
@@ -167,7 +167,7 @@ namespace TestMaster
                                 break;
                             case 0x08:
                                 {
-                                    if (_longParameter.GetValue(out byte[] d))
+                                    if (_longParameter != null && _longParameter.GetValue(out byte[] d))
                                     {
                                         data = d;
                                         result = true;
@@ -176,7 +176,7 @@ namespace TestMaster
                                 break;
                             case 0x09:
                                 {
-                                    if (_doubleParameter.GetValue(out byte[] d))
+                                    if (_doubleParameter != null && _doubleParameter.GetValue(out byte[] d))
                                     {
                                         data = d;
                                         result = true;
@@ -185,7 +185,7 @@ namespace TestMaster
                                 break;
                             case 0x0A:
                                 {
-                                    if (_stringParameter.GetValue(out byte[] d))
+                                    if (_stringParameter != null && _stringParameter.GetValue(out byte[] d))
                                     {
                                         data = d;
                                         result = true;
@@ -194,7 +194,7 @@ namespace TestMaster
                                 break;
                             case 0x0B:
                                 {
-                                    if (_objectParameter.GetValue(out byte[] d))
+                                    if (_objectParameter != null && _objectParameter.GetValue(out byte[] d))
                                     {
                                         data = d;
                                         result = true;
@@ -203,7 +203,7 @@ namespace TestMaster
                                 break;
                             case 0x0C:
                                 {
-                                    if (_dateTimeParameter.GetValue(out byte[] d))
+                                    if (_dateTimeParameter != null && _dateTimeParameter.GetValue(out byte[] d))
                                     {
                                         data = d;
                                         result = true;
@@ -212,7 +212,7 @@ namespace TestMaster
                                 break;
                             case 0x0D:
                                 {
-                                    if (_booleanParameter.GetValue(out byte[] d))
+                                    if (_booleanParameter != null && _booleanParameter.GetValue(out byte[] d))
                                     {
                                         data = d;
                                         result = true;
@@ -221,16 +221,22 @@ namespace TestMaster
                                 break;
                             case 0x0E:
                                 {
-                                    if (_identityParameter.GetValue(out byte[] d))
+                                    if (_identityParameter != null && _identityParameter.GetValue(out byte[] d))
                                     {
                                         data = d;
                                         result = true;
                                     }
                                 }
                                 break;
+                            default:
+                                result = base.GetObject(objectIndex, objectSubindex, ref data);
+                                break;
                         }
                         
                     } break;
+                default:
+                    result = base.GetObject(objectIndex, objectSubindex, ref data);
+                    break;
             }
             
             return result;
@@ -369,8 +375,14 @@ namespace TestMaster
                                     result = _identityParameter.SetValue(data);
                                 }
                                 break;
+                            default:
+                                result = base.SetObject(objectIndex, objectSubindex, data);
+                                break;
                         }                        
                     }
+                    break;
+                default:
+                    result = base.SetObject(objectIndex, objectSubindex, data);
                     break;
             }
             

@@ -10,7 +10,6 @@ using EltraCommon.Contracts.Channels;
 using EltraCommon.Logger;
 using EltraCommon.ObjectDictionary.Common.DeviceDescription.Profiles.Application.Parameters;
 using EltraCommon.ObjectDictionary.Common.DeviceDescription.Profiles.Application.Parameters.Events;
-using System.Text.Json;
 using EltraCommon.Contracts.Devices;
 using EltraCommon.Contracts.History;
 using System.Net;
@@ -58,14 +57,35 @@ namespace EltraConnector.Controllers
 
         private void OnParameterChanged(object sender, ParameterChangedEventArgs e)
         {
-            Parameter parameter = e.Parameter;
-            if (parameter != null)
+            try
             {
-                var device = parameter.Device;
-                if (device != null)
+                Parameter parameter = e.Parameter;
+
+                if (parameter != null)
                 {
-                    QueueParameterChanged(new ParameterChangeQueueItem(device.NodeId, parameter));                    
+                    var device = parameter.Device;
+                    if (device != null)
+                    {
+                        if (parameter.Flags.Volatile != 0)
+                        {
+                            QueueParameterChanged(new ParameterChangeQueueItem(device.NodeId, parameter));
+                        }
+                        else
+                        {
+                            Task.Run(async () =>
+                            {
+                                if(!await parameter.SetParameterValue(e.NewValue))
+                                {
+                                    MsgLogger.WriteError($"{GetType().Name} - OnParameterChanged", "SetParameterValue failed!");
+                                }
+                            }).Wait();
+                        }
+                    }
                 }
+            }
+            catch(Exception ex)
+            {
+                MsgLogger.Exception($"{GetType().Name} - OnParameterChanged", ex);
             }
         }
         
@@ -79,7 +99,11 @@ namespace EltraConnector.Controllers
 
                 if (!skipProcessing)
                 {
-                    await UpdateParameterValue(queueItem.NodeId, queueItem.Index, queueItem.SubIndex, queueItem.ActualValue);
+                    if(!await queueItem.Update(_identity))
+                    {
+                        MsgLogger.WriteError($"{GetType().Name} - QueueParameterChanged", 
+                            $"update failed: {queueItem.UniqueId}, new value = '{CreateShortLogValue(queueItem.ActualValue)}'");
+                    }
                 }
                 else
                 {
@@ -88,6 +112,8 @@ namespace EltraConnector.Controllers
             });
 
             _parameterChangeQueue.Add(queueItem);
+
+            queueItem.WorkingTask.Wait();
         }
 
         private static string CreateShortLogValue(ParameterValue actualValue)
@@ -302,53 +328,6 @@ namespace EltraConnector.Controllers
                 result = false;
             }
             
-            return result;
-        }
-
-        private async Task<bool> UpdateParameterValue(int nodeId, ushort index, byte subIndex, ParameterValue actualValue)
-        {
-            bool result = false;
-
-            try
-            {
-                var parameterUpdate = new ParameterValueUpdate
-                {
-                    ChannelId = Channel.Id,
-                    NodeId = nodeId,
-                    ParameterValue = actualValue,
-                    Index = index,
-                    SubIndex = subIndex
-                };
-
-                var path = $"api/parameter/value";
-
-                var json = parameterUpdate.ToJson();
-
-                var response = await Transporter.Put(_identity, Url, path, json);
-
-                if (response != null)
-                {
-                    if (response.StatusCode == HttpStatusCode.OK)
-                    {
-                        MsgLogger.WriteDebug($"{GetType().Name} - UpdateParameterValue", $"Device Node id = {nodeId}, Parameter Index = 0x{index:X4}, Subindex = 0x{subIndex} value successfully written");
-
-                        result = true;
-                    }
-                    else
-                    {
-                        MsgLogger.WriteError($"{GetType().Name} - UpdateParameterValue", $"Device Node id = {nodeId}, Parameter Index = 0x{index:X4}, Subindex = 0x{subIndex} value write failed, status code = {response.StatusCode}!");
-                    }
-                }
-                else
-                {
-                    MsgLogger.WriteError($"{GetType().Name} - UpdateParameterValue", $"Device Node id = {nodeId}, Parameter Index = 0x{index:X4}, Subindex = 0x{subIndex} value write failed!");
-                }
-            }
-            catch (Exception)
-            {
-                result = false;
-            }
-
             return result;
         }
 
