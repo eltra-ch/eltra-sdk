@@ -1,5 +1,4 @@
-﻿using EltraCommon.Contracts.Users;
-using EltraCommon.ObjectDictionary.Common.DeviceDescription.Profiles.Application.Parameters;
+﻿using EltraCommon.ObjectDictionary.Common.DeviceDescription.Profiles.Application.Parameters;
 using System;
 using System.Threading.Tasks;
 
@@ -13,20 +12,25 @@ namespace EltraConnector.Controllers.Queue
         private readonly long _timestamp;
         private Task _workingTask;
         private Parameter _parameter;
+        private ParameterValue _newValue;
+        private ParameterValue _oldValue;
 
         #endregion
 
         #region Constructors
 
-        public ParameterChangeQueueItem(int nodeId, Parameter parameter)
+        public ParameterChangeQueueItem(int nodeId, Parameter parameter, ParameterValue newValue, ParameterValue oldValue)
         {
             NodeId = nodeId;
-            _parameter = parameter;
 
-            ActualValue = parameter.ActualValue;
+            _parameter = parameter;
+            _newValue = newValue.Clone();
+            _oldValue = oldValue.Clone();
+
             UniqueId = parameter.UniqueId;
             Index = parameter.Index;
             SubIndex = parameter.SubIndex;
+
             _timestamp = DateTime.Now.Ticks;
         }
 
@@ -38,14 +42,7 @@ namespace EltraConnector.Controllers.Queue
         public ushort Index { get; set; }
         public byte SubIndex { get; set; }
         public string UniqueId { get; set; }
-        public ParameterValue ActualValue
-        {
-            get => _actualValue;
-            set
-            {
-                _actualValue = value.Clone();
-            }
-        }
+        public ParameterValue NewValue => _newValue;
         public long Timestamp { get => _timestamp; }
         public Task WorkingTask 
         { 
@@ -69,9 +66,23 @@ namespace EltraConnector.Controllers.Queue
             return result;
         }
 
-        public async Task<bool> Update(UserIdentity identity)
+        public async Task<bool> Update()
         {
-            return await _parameter.SetParameterValue(ActualValue);
+            bool result = false;
+
+            if (_parameter != null)
+            {
+                if (await _parameter.SetParameterValue(NewValue))
+                {
+                    result = true;
+                }
+                else
+                {
+                    _parameter.SetValue(_oldValue);
+                }
+            }
+
+            return result;
         }
 
         #endregion

@@ -3,6 +3,7 @@ using EltraMaster.DeviceManager.Events;
 using System;
 using EltraCommon.Contracts.Devices;
 using EltraCommon.ObjectDictionary.Xdd.DeviceDescription.Profiles.Application.Parameters;
+using System.Threading.Tasks;
 
 #pragma warning disable 1591
 
@@ -69,6 +70,7 @@ namespace EltraConnector.Master.Device
             switch(Device.Status)
             {
                 case DeviceStatus.Registered:
+                    ReadAllParametersAsync();
                     OnInitialized();
                     break;
                 case DeviceStatus.Unregistered:
@@ -77,6 +79,14 @@ namespace EltraConnector.Master.Device
             }
 
             OnStatusChanged(new DeviceCommunicationEventArgs() { Device = Device, LastErrorCode = LastErrorCode });
+        }
+
+        private void ReadAllParametersAsync()
+        {
+            Task.Run(async () =>
+            {
+                await Vcs.ReadAllParameters();
+            });
         }
 
         protected virtual void OnStatusChanged(DeviceCommunicationEventArgs e)

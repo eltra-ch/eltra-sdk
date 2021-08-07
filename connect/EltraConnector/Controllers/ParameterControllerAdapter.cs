@@ -68,7 +68,7 @@ namespace EltraConnector.Controllers
                     {
                         if (parameter.Flags.Volatile != 0)
                         {
-                            QueueParameterChanged(new ParameterChangeQueueItem(device.NodeId, parameter));
+                            QueueParameterChanged(new ParameterChangeQueueItem(device.NodeId, parameter, e.NewValue, e.OldValue));
                         }
                         else
                         {
@@ -76,6 +76,8 @@ namespace EltraConnector.Controllers
                             {
                                 if(!await parameter.SetParameterValue(e.NewValue))
                                 {
+                                    parameter.SetValue(e.OldValue);
+
                                     MsgLogger.WriteError($"{GetType().Name} - OnParameterChanged", "SetParameterValue failed!");
                                 }
                             }).Wait();
@@ -93,16 +95,16 @@ namespace EltraConnector.Controllers
         {
             queueItem.WorkingTask = Task.Run(async () =>
             {
-                MsgLogger.WriteLine($"{GetType().Name} - QueueParameterChanged", $"changed: {queueItem.UniqueId}, new value = '{CreateShortLogValue(queueItem.ActualValue)}'");
+                MsgLogger.WriteLine($"{GetType().Name} - QueueParameterChanged", $"changed: {queueItem.UniqueId}, new value = '{CreateShortLogValue(queueItem.NewValue)}'");
 
                 bool skipProcessing = _parameterChangeQueue.ShouldSkip(queueItem);
 
                 if (!skipProcessing)
                 {
-                    if(!await queueItem.Update(_identity))
+                    if(!await queueItem.Update())
                     {
                         MsgLogger.WriteError($"{GetType().Name} - QueueParameterChanged", 
-                            $"update failed: {queueItem.UniqueId}, new value = '{CreateShortLogValue(queueItem.ActualValue)}'");
+                            $"update failed: {queueItem.UniqueId}, new value = '{CreateShortLogValue(queueItem.NewValue)}'");
                     }
                 }
                 else
