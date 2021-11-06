@@ -185,6 +185,8 @@ namespace EltraConnector.UserAgent
                 Status = AgentStatus.Offline;
             }
 
+            MsgLogger.WriteDebug($"{GetType().Name} - OnHeartbeatChannelStatusChanged", $"AgentChannelStatus = {e.Status}, Agent Status = {Status}");
+
             ChannelStatus = e.Status;
         }
 

@@ -13,6 +13,7 @@ using EltraConnector.SyncAgent;
 using System.Diagnostics;
 using EltraConnector.Interfaces;
 using EltraCommon.Transport;
+using EltraConnector.Events;
 
 namespace EltraConnector.Agent
 {
@@ -112,6 +113,13 @@ namespace EltraConnector.Agent
 
                 return result;
             }
+            private set
+            {
+                if (Channel != null)
+                {
+                    Channel.Status = value;
+                }
+            }
         }
         
         /// <summary>
@@ -206,6 +214,11 @@ namespace EltraConnector.Agent
 
             bool result = await EnsureAgentReady();
 
+            if (result)
+            {
+                ChannelStatus = ChannelStatus.Online;
+            }
+
             return result;
         }
 
@@ -254,6 +267,8 @@ namespace EltraConnector.Agent
 
             if(await EnsureAgentReady())
             {
+                ChannelStatus = ChannelStatus.Online;
+
                 result = await BindChannels(deviceIdentity);
             }
 
@@ -626,10 +641,7 @@ namespace EltraConnector.Agent
 
                 _deviceAgent.AgentChannelStatusChanged += (sender, args) =>
                 {
-                    if (Channel != null)
-                    {
-                        Channel.Status = args.Status;
-                    }
+                    ChannelStatus = args.Status;
                 };
 
                 _deviceAgent.RemoteChannelStatusChanged += (sender, args) =>

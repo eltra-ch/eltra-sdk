@@ -68,12 +68,23 @@ namespace EltraConnector.Channels
 
         #region Methods
 
+        private async Task<bool> UpdateChannelStatus()
+        {
+            const int maxRetryCount = 1;
+
+            bool result = await UpdateStatus(maxRetryCount);
+
+            ChannelStatus = result ? ChannelStatus.Online : ChannelStatus.Offline;
+
+            return result;
+        }
+
         protected override async Task Execute()
         {
             const int minWaitTime = 10;
             const int reconnectIntervalWs = 1000;
             const int executeIntervalWs = 1;
-            const int maxRetryCount = 3;
+            
             
             uint updateIntervalInSec = _updateInterval;
 
@@ -85,9 +96,7 @@ namespace EltraConnector.Channels
                 {
                     MsgLogger.Write($"{GetType().Name} - Execute", $"Updating channel id = '{WsChannelId}'...");
 
-                    bool updateResult = await UpdateStatusWithRetryCount(maxRetryCount);
-
-                    ChannelStatus = updateResult ? ChannelStatus.Online : ChannelStatus.Offline;
+                    bool updateResult = await UpdateChannelStatus();
 
                     if (!updateResult)
                     {
@@ -122,6 +131,8 @@ namespace EltraConnector.Channels
                             else
                             {
                                 await Task.Delay(reconnectIntervalWs);
+
+                                updateResult = await UpdateChannelStatus();
                             }
                         }
                     }
@@ -139,7 +150,7 @@ namespace EltraConnector.Channels
             MsgLogger.WriteLine($"{GetType().Name} - RunMaster", $"Sync agent working thread finished successfully!");
         }
 
-        private async Task<bool> UpdateStatusWithRetryCount(int maxRetryCount, int retryDelay = 1000)
+        private async Task<bool> UpdateStatus(int maxRetryCount, int retryDelay = 1000)
         {
             bool result;
             int retryCount = 0;

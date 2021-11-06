@@ -8,7 +8,6 @@ namespace EltraConnector.Controllers.Queue
     {
         #region Private fields
 
-        private ParameterValue _actualValue;
         private readonly long _timestamp;
         private Task _workingTask;
         private Parameter _parameter;
