@@ -561,7 +561,7 @@ namespace EltraConnector.Transport
                         await Task.Delay(executeIntervalWs);
                     }
                 }
-                while ((msg == "KEEPALIVE" || msg == "ACK") && shouldRunFunc());
+                while ((msg == "KEEPALIVE" || msg == "ACK" || string.IsNullOrEmpty(msg)) && shouldRunFunc());
 
                 result = msg;
             }

@@ -20,10 +20,10 @@
 		<Product>Eltra.Connector</Product>		
 		<Description>Eltra - CANOpen based IoT Framework - SDK</Description>
 		<PackageTags>CANOpen IoT Eltra OPCUA OPC</PackageTags>
-        <Version>2.1.7</Version>
+        <Version>2.1.8</Version>
         <AssemblyVersion>2.1.0.0</AssemblyVersion>
         <PackageIcon>eltra_logo.png</PackageIcon>
-        <FileVersion>2.1.7.0</FileVersion>
+        <FileVersion>2.1.8.0</FileVersion>
         <Configurations>Debug;Release;Debug - UWP</Configurations>
     </PropertyGroup>
 
@@ -55,8 +55,8 @@
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="System.Text.Json" Version="5.0.2" />
-		<PackageReference Include="System.Memory" Version="4.5.4">
+        <PackageReference Include="System.Text.Json" Version="6.0.5" />
+		<PackageReference Include="System.Memory" Version="4.5.5">
       <IncludeAssets>none</IncludeAssets>
     </PackageReference>
     <PackageReference Include="System.Buffers" Version="4.5.1">
