@@ -23,7 +23,7 @@
         <Version>2.1.8</Version>
         <AssemblyVersion>2.1.0.0</AssemblyVersion>
         <PackageIcon>eltra_logo.png</PackageIcon>
-        <FileVersion>2.1.8.0</FileVersion>
+        <FileVersion>2.1.8.1</FileVersion>
         <Configurations>Debug;Release;Debug - UWP</Configurations>
     </PropertyGroup>
 

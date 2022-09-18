@@ -11,7 +11,7 @@
     <Company>eltra.ch</Company>
     <Product>Eltra.Wpf.Common</Product>
     <Description>Eltra - CANOpen based IoT Framework - SDK - UI WPF component</Description>
-    <Copyright>Dawid Sienkiewicz, (c) 2020</Copyright>
+    <Copyright>Dawid Sienkiewicz, (c) 2020-2022</Copyright>
     <PackageLicenseFile>LICENSE</PackageLicenseFile>
     <PackageProjectUrl>www.eltra.ch</PackageProjectUrl>
     <PackageIcon>eltra_logo.png</PackageIcon>
@@ -19,7 +19,7 @@
     <RepositoryType>GIT</RepositoryType>
     <PackageTags>CANOpen IoT Eltra WPF</PackageTags>
     <PackageReleaseNotes>Initial release - support for UI plugin system (Eltra framework)</PackageReleaseNotes>
-    <Version>1.0.3</Version>
+    <Version>1.0.4</Version>
   </PropertyGroup>
 
   <ItemGroup>

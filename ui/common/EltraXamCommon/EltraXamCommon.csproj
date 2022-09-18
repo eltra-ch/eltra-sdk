@@ -8,22 +8,22 @@
     <Company>eltra.ch</Company>
     <Product>Eltra.Xam.Common</Product>
     <Description>Eltra - CANOpen based IoT Framework - SDK - Xamarin UI</Description>
-    <Copyright>Dawid Sienkiewicz, (c) 2020-2021</Copyright>
+    <Copyright>Dawid Sienkiewicz, (c) 2020-2022</Copyright>
     <PackageLicenseFile>LICENSE</PackageLicenseFile>
     <RepositoryUrl>https://github.com/eltra-ch/eltra-common</RepositoryUrl>
     <RepositoryType>GIT</RepositoryType>
     <PackageTags>CANOpen IoT Eltra Xamarin</PackageTags>
     <PackageReleaseNotes>Initial release - support for UI plugin system (Eltra framework)</PackageReleaseNotes>
     <PackageProjectUrl>www.eltra.ch</PackageProjectUrl>
-    <Version>1.5.7</Version>
+    <Version>1.5.8</Version>
     <PackageIcon>eltra_logo.png</PackageIcon>
     <AssemblyVersion>1.5.0.0</AssemblyVersion>
-    <FileVersion>1.5.7.0</FileVersion>
+    <FileVersion>1.5.8.0</FileVersion>
     <Configurations>Debug;Release;Debug - UWP</Configurations>
   </PropertyGroup>
 
   <ItemGroup>
-    <None Include="..\..\xternals\common\EltraResources\png\eltra_logo.png">
+    <None Include="..\..\..\xternals\common\EltraResources\png\eltra_logo.png">
       <Pack>True</Pack>
       <PackagePath></PackagePath>
     </None>
@@ -43,7 +43,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\EltraCommon\EltraCommon.csproj" />
+    <ProjectReference Include="..\..\..\xternals\common\EltraCommon\EltraCommon.csproj" />
     <ProjectReference Include="..\EltraUiCommon\EltraUiCommon.csproj" />
   </ItemGroup>
 
