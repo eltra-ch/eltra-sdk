@@ -4,10 +4,10 @@ cd ..\..\..\
 cd .\connect\EltraConnector
 nugetpush
 cd ..\..\
-cd .\xternals\common\EltraUiCommon
+cd .\ui\common\EltraUiCommon
 nugetpush
 cd ..\..\..\
-cd .\xternals\common\EltraXamCommon
+cd .\ui\common\EltraXamCommon
 nugetpush
 cd ..\..\..\
 pause
