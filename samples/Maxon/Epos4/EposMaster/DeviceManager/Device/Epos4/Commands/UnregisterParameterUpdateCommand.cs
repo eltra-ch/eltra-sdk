@@ -31,7 +31,7 @@ namespace EposMaster.DeviceManager.Device.Epos4.Commands
             return result;
         }
 
-        public override bool Execute(string source)
+        public override bool Execute(string source, string sourceLoginName)
         {
             bool result = false;
             var eposDevice = Device as EposDevice;

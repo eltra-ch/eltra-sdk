@@ -34,7 +34,7 @@ namespace EposMaster.DeviceManager.Device.Epos4.Commands
             return result;
         }
 
-		public override bool Execute(string source)
+		public override bool Execute(string sourceChannelId, string sourceLoginName)
         {
             bool result = false;
             uint errorCode = 0;

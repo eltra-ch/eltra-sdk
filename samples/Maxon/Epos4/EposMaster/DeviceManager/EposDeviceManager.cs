@@ -139,14 +139,16 @@ namespace EposMaster.DeviceManager
             }
         }
         
-        public override Task Run()
+        public override Task<bool> Run()
         {
+            bool result = true;
+
             var task = Task.Run(() =>
             {
                 _deviceScanner.Scan();
             });
 
-            return task;
+            return Task.FromResult(result);
         }
 
         private async Task<bool> ConnectDevice(EposDevice device)

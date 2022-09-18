@@ -13,7 +13,7 @@ namespace EposMaster.DeviceManager.Device.Epos4.Commands
 			Name = "EnablePositionCompare";
 		}
 
-		public override bool Execute(string source)
+		public override bool Execute(string sourceChannelId, string sourceLoginName)
 		{
 			//TODO
 			return true;
