@@ -1,0 +1,23 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<UserControl x:Class="EltraWpfCommon.Controls.Parameters.ParameterComboView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:Behaviors="http://schemas.microsoft.com/xaml/behaviors" 
+             xmlns:Behaviors1="clr-namespace:EltraXamCommon.Controls.Parameters.Behaviors"
+             mc:Ignorable="d" 
+             d:DesignHeight="25" d:DesignWidth="200">
+
+    <ComboBox x:Name="ComboBox" 
+              Text="{Binding Label}" 
+              ItemsSource="{Binding TextRange}" 
+              SelectedIndex="{Binding SelectedIndex}">
+
+        <Behaviors:Interaction.Behaviors>
+            <Behaviors1:ParameterComboBehavior/>
+        </Behaviors:Interaction.Behaviors>
+        
+    </ComboBox>
+    
+</UserControl>

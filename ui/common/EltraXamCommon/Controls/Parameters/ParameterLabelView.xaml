@@ -1,0 +1,25 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<ContentView xmlns="http://xamarin.com/schemas/2014/forms" 
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Name="LabelView"
+             x:Class="EltraXamCommon.Controls.Parameters.ParameterLabelView">
+  <ContentView.Content>
+      <Grid>
+          <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+          <Grid.ColumnDefinitions>
+              <ColumnDefinition Width="*"/>
+              <ColumnDefinition Width="Auto"/>
+              <ColumnDefinition Width="Auto"/>
+          </Grid.ColumnDefinitions>
+
+          <Label x:Name="LabelControl" Grid.Row="0" Grid.Column="0" Text="{Binding Label}" IsVisible="{Binding ShowLabel}" FontSize="{Binding FontSize, Source={Reference LabelView}}"/>
+          <Entry x:Name="ContentControl" Grid.Row="1" Grid.Column="0" Text="{Binding Value}" IsReadOnly="True" FontSize="{Binding FontSize, Source={Reference LabelView}}"/>
+          <Frame Grid.Row="1" Grid.Column="1" BackgroundColor="Transparent" BorderColor="Transparent" Padding="2" />
+          <Label x:Name="UnitControl" Grid.Row="1" Grid.Column="2" Text="{Binding Unit}" FontSize="{Binding FontSize, Source={Reference LabelView}}" VerticalOptions="CenterAndExpand"/>
+
+        </Grid>
+    </ContentView.Content>
+</ContentView>

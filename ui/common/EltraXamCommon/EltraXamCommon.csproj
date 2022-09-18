@@ -1,0 +1,68 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
+    <Authors>Dawid Sienkiewicz</Authors>
+    <Company>eltra.ch</Company>
+    <Product>Eltra.Xam.Common</Product>
+    <Description>Eltra - CANOpen based IoT Framework - SDK - Xamarin UI</Description>
+    <Copyright>Dawid Sienkiewicz, (c) 2020-2021</Copyright>
+    <PackageLicenseFile>LICENSE</PackageLicenseFile>
+    <RepositoryUrl>https://github.com/eltra-ch/eltra-common</RepositoryUrl>
+    <RepositoryType>GIT</RepositoryType>
+    <PackageTags>CANOpen IoT Eltra Xamarin</PackageTags>
+    <PackageReleaseNotes>Initial release - support for UI plugin system (Eltra framework)</PackageReleaseNotes>
+    <PackageProjectUrl>www.eltra.ch</PackageProjectUrl>
+    <Version>1.5.7</Version>
+    <PackageIcon>eltra_logo.png</PackageIcon>
+    <AssemblyVersion>1.5.0.0</AssemblyVersion>
+    <FileVersion>1.5.7.0</FileVersion>
+    <Configurations>Debug;Release;Debug - UWP</Configurations>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="..\EltraResources\png\eltra_logo.png">
+      <Pack>True</Pack>
+      <PackagePath></PackagePath>
+    </None>
+    <None Include="LICENSE">
+      <Pack>True</Pack>
+      <PackagePath></PackagePath>
+    </None>
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Forms9Patch" Version="2.4.9" />
+    <PackageReference Include="Prism.Core" Version="8.1.97" />
+    <PackageReference Include="Prism.DryIoc.Forms" Version="8.1.97" />
+    <PackageReference Include="Prism.Forms" Version="8.1.97" />
+    <PackageReference Include="Xamarin.Essentials" Version="1.7.0" />
+    <PackageReference Include="Xamarin.Forms" Version="5.0.0.2291" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\EltraCommon\EltraCommon.csproj" />
+    <ProjectReference Include="..\EltraUiCommon\EltraUiCommon.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Update="Controls\Parameters\ParameterComboView.xaml.cs">
+      <DependentUpon>%(Filename)</DependentUpon>
+    </Compile>
+    <Compile Update="Controls\Parameters\ParameterEditView.xaml.cs">
+      <DependentUpon>%(Filename)</DependentUpon>
+    </Compile>
+    <Compile Update="Controls\Parameters\ParameterLabelView.xaml.cs">
+      <DependentUpon>%(Filename)</DependentUpon>
+    </Compile>
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Update="Resources\ResourceDictionary.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </EmbeddedResource>
+  </ItemGroup>
+
+</Project>

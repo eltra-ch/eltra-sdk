@@ -1,0 +1,47 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<ContentView xmlns="http://xamarin.com/schemas/2014/forms" 
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:triggers="clr-namespace:EltraXamCommon.Controls.Parameters.Triggers;assembly=EltraXamCommon"
+             xmlns:behaviors="clr-namespace:EltraXamCommon.Controls.Parameters.Behaviors;assembly=EltraXamCommon"
+             xmlns:converters="clr-namespace:EltraXamCommon.Controls.Converters"
+             x:Class="EltraXamCommon.Controls.Parameters.ParameterEditView">
+  <ContentView.Content>
+      <Grid>
+            <Grid.Resources>
+                <converters:ParameterEditFontValidationColorConverter x:Key="ValidationColorConverter"/>
+                <converters:ParameterEditUnitWidthConverter x:Key="ParameterEditUnitWidthConverter"/>
+            </Grid.Resources>
+          <Grid.RowDefinitions>
+              <RowDefinition Height="Auto"/>
+              <RowDefinition Height="Auto"/>
+          </Grid.RowDefinitions>
+          <Grid.ColumnDefinitions>
+              <ColumnDefinition Width="Auto"/>
+              <ColumnDefinition Width="*"/>
+              <ColumnDefinition Width="Auto"/>
+              <ColumnDefinition Width="Auto"/>
+          </Grid.ColumnDefinitions>
+
+          <Label x:Name="Label" Grid.Row="1" Grid.Column="0" Text="{Binding Label, Mode=OneWay}" IsVisible="{Binding ShowLabel}" VerticalOptions="Center"/>
+
+          <Entry x:Name="EditBox" Grid.Row="1" Grid.Column="1" 
+                 Text="{Binding Value}" IsEnabled="{Binding IsEnabled}" 
+                 Placeholder="{Binding Label}"
+                 TextColor="{Binding IsValid, Converter={StaticResource ValidationColorConverter}}">
+              <Entry.Triggers>
+                  <EventTrigger Event="Completed">
+                    <triggers:EntryCompleted/>
+                  </EventTrigger>
+              </Entry.Triggers>
+              <Entry.Behaviors>
+                <behaviors:ParameterValidationBehavior />
+              </Entry.Behaviors>
+          </Entry>
+          
+          <Frame Grid.Row="1" Grid.Column="2" BorderColor="Transparent" BackgroundColor="Transparent" Padding="2" 
+                   IsVisible="{Binding UnitWidth, Converter={StaticResource ParameterEditUnitWidthConverter}}"/>
+
+            <Label x:Name="Unit" Grid.Row="1" Grid.Column="3" Text="{Binding Unit}" WidthRequest="{Binding UnitWidth}" VerticalOptions="Center"/>
+      </Grid>
+    </ContentView.Content>
+</ContentView>
