@@ -2,18 +2,15 @@
 using System;
 using System.Diagnostics;
 using System.IO;
-using System.Threading.Tasks;
 
 namespace EltraMasterWatchDog
 {
     class MasterProcess
     {
-
-        
-
-        public void Respawn(WatchdogSettings settings)
+        public bool Respawn(WatchdogSettings settings)
         {
             const string methodId = "Respawn";
+            bool result = false;
 
             var fi = new FileInfo(settings.MasterProcess);
 
@@ -30,6 +27,7 @@ namespace EltraMasterWatchDog
                 if (process != null)
                 {
                     MsgLogger.WriteLine($"{GetType().Name} - {methodId}", $"Master process {settings.MasterProcess} successfully started!");
+                    result = true;
                 }
                 else
                 {
@@ -40,11 +38,14 @@ namespace EltraMasterWatchDog
             {
                 MsgLogger.WriteError($"{GetType().Name} - {methodId}", $"Master process {settings.MasterProcess} doesn't exist!");
             }
+
+            return result;
         }
 
-        public void Kill(WatchdogSettings settings)
+        public bool Kill(WatchdogSettings settings)
         {
             const string methodId = "Kill";
+            bool result = false;
 
             try
             {
@@ -69,6 +70,8 @@ namespace EltraMasterWatchDog
 
                         process.Kill(true);
                     }
+
+                    result = true;
                 }
                 else
                 {
@@ -79,6 +82,8 @@ namespace EltraMasterWatchDog
             {
                 MsgLogger.Exception($"{GetType().Name} - {methodId}", e);
             }
+
+            return result;
         }
     }
 }

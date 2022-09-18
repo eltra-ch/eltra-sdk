@@ -68,7 +68,7 @@ namespace EltraMasterWatchDog
                 }
                 else
                 {
-                    MsgLogger.WriteError($"{GetType().Name} - {methodId}", $"Connection for user: {agentAuth.Login} failed!");
+                    MsgLogger.WriteError($"{GetType().Name} - {methodId}", $"Connection to device: {deviceAuth.Login} failed!");
                 }
             }
             else
@@ -103,11 +103,15 @@ namespace EltraMasterWatchDog
                 MsgLogger.WriteLine($"{GetType().Name} - {methodId}", $"Validate channels");
 
                 await ValidateChannels();
-
-                MsgLogger.WriteLine($"{GetType().Name} - {methodId}", $"Disconnect");
-
-                await Disconnect();
             }
+            else
+            {
+                MsgLogger.WriteError($"{GetType().Name} - {methodId}", $"Connect failed!");
+            }
+
+            MsgLogger.WriteLine($"{GetType().Name} - {methodId}", $"Disconnect");
+
+            await Disconnect();
         }
 
         private async Task ValidateChannels()
@@ -124,21 +128,32 @@ namespace EltraMasterWatchDog
 
             if (isDeviceInactive)
             {
-                Respawn();
+                if(!Respawn())
+                {
+                    MsgLogger.WriteError($"{GetType().Name} - {methodId}", "respawn failed!");
+                }
             }
         }
 
-        private void Respawn()
+        private bool Respawn()
         {
             const string methodId = "Respawn";
+            bool result = false;
 
             MsgLogger.WriteWarning($"{GetType().Name} - {methodId}", $"device unactive for {_settings.MaxInactivityTimeInMinutes} [min], try kill stalled proccess");
 
             var masterProcess = new MasterProcess();
 
-            masterProcess.Kill(_settings);
+            if (masterProcess.Kill(_settings))
+            {
+                result = masterProcess.Respawn(_settings);
+            }
+            else
+            {
+                MsgLogger.WriteError($"{GetType().Name} - {methodId}", $"killing the process {_settings.MasterProcess} failed!");
+            }
 
-            masterProcess.Respawn(_settings);
+            return result;
         }
 
         public void Run()
