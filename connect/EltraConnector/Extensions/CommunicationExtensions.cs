@@ -25,7 +25,7 @@ namespace EltraConnector.Extensions
             {
                 var msg = data.Trim(new char[] { '\"' });
 
-                if (msg == "ACK" || msg == "KEEPALIVE")
+                if (msg == WsMessageAck.RawData || msg == WsMessageKeepAlive.RawData)
                 {
                     result = true;
                 }
