@@ -1,4 +1,5 @@
 ﻿using EltraCommon.Contracts.Users;
+using EltraCommon.Contracts.Ws;
 using System.Net;
 using System.Runtime.Serialization;
 using System.Text.Json.Serialization;
@@ -41,7 +42,7 @@ namespace EltraConnector.Transport.Udp.Contracts
             bool result = false;
             var msg = Data.Trim(new char[] { '\"' });
 
-            if (msg == "ACK" || msg == "KEEPALIVE")
+            if (msg == WsMessageAck.RawData || msg == WsMessageKeepAlive.RawData)
             {
                 result = true;
             }

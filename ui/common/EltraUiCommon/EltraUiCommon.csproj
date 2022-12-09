@@ -16,9 +16,9 @@
     <PackageIcon>eltra_logo.png</PackageIcon>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
-    <Version>1.5.0</Version>
+    <Version>1.5.1</Version>
     <AssemblyVersion>1.5.0.0</AssemblyVersion>
-    <FileVersion>1.5.0.0</FileVersion>
+    <FileVersion>1.5.1.0</FileVersion>
     <Configurations>Debug;Release;Debug - UWP</Configurations>
   </PropertyGroup>
 
@@ -37,7 +37,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Eltra.Connector" Version="2.1.8" />
+    <PackageReference Include="Eltra.Connector" Version="2.1.9" />
   </ItemGroup>
 
   <ItemGroup>

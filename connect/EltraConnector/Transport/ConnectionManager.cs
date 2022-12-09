@@ -8,6 +8,7 @@ using EltraConnector.Transport.Events;
 using EltraConnector.Transport.Factory;
 using EltraCommon.Logger;
 using System.Linq;
+using EltraCommon.Contracts.Ws;
 
 namespace EltraConnector.Transport
 {
@@ -561,7 +562,7 @@ namespace EltraConnector.Transport
                         await Task.Delay(executeIntervalWs);
                     }
                 }
-                while ((msg == "KEEPALIVE" || msg == "ACK" || string.IsNullOrEmpty(msg)) && shouldRunFunc());
+                while (IsConnected(uniqueId) && (msg == WsMessageKeepAlive.RawData || msg == WsMessageAck.RawData || string.IsNullOrEmpty(msg)) && shouldRunFunc());
 
                 result = msg;
             }

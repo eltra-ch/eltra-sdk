@@ -313,15 +313,18 @@ namespace EltraConnector.Transport.Ws
             return result;
         }
 
-        private async void HandleBrokenConnection(WebSocketError errorCode)
+        private async void HandleBrokenConnection(WebSocketError errorCode = WebSocketError.ConnectionClosedPrematurely)
         {
             MsgLogger.WriteError($"{GetType().Name} - HandleBrokenConnection", $"Connection to '{Url}' failed, error code = {errorCode}");
 
-            if (errorCode == WebSocketError.ConnectionClosedPrematurely && Socket.State == WebSocketState.Open)
+            if (errorCode == WebSocketError.ConnectionClosedPrematurely && (Socket.State == WebSocketState.Open || Socket.State == WebSocketState.None))
             {
-                MsgLogger.WriteLine($"{GetType().Name} - HandleBrokenConnection", "try recover connection ...");
+                if (!_cancellationTokenSource.IsCancellationRequested)
+                {
+                    MsgLogger.WriteLine($"{GetType().Name} - HandleBrokenConnection", "try recover connection ...");
 
-                Initialize();
+                    Initialize();
+                }
             }
             else
             {
@@ -558,7 +561,12 @@ namespace EltraConnector.Transport.Ws
                 }
                 else
                 {
-                    MsgLogger.WriteLine($"{GetType().Name} - Receive", $"receive ws message skipped, socket state = {Socket.State}!");
+                    MsgLogger.WriteDebug($"{GetType().Name} - Receive", $"receive ws message skipped, socket state = {Socket.State}!");
+
+                    if (Socket.State == WebSocketState.Aborted || Socket.State == WebSocketState.None || Socket.State == WebSocketState.Closed)
+                    {
+                        HandleBrokenConnection();
+                    }
                 }
             }
             catch (WebSocketException e)

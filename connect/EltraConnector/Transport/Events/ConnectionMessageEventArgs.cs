@@ -1,4 +1,5 @@
-﻿using System;
+﻿using EltraCommon.Contracts.Ws;
+using System;
 
 namespace EltraConnector.Transport.Events
 {
@@ -57,7 +58,7 @@ namespace EltraConnector.Transport.Events
             bool result = false;
             var msg = Message.Trim(new char[] { '\"' });
 
-            if (msg == "ACK" || msg == "KEEPALIVE")
+            if (msg == WsMessageAck.RawData || msg == WsMessageKeepAlive.RawData)
             {
                 result = true;
             }
