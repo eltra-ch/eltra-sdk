@@ -49,7 +49,7 @@ namespace EltraMasterWatchDog
 
             try
             {
-                FileInfo fi = new FileInfo(settings.MasterProcess);
+                var fi = new FileInfo(settings.MasterProcess);
 
                 if (fi.Exists)
                 {
@@ -75,7 +75,9 @@ namespace EltraMasterWatchDog
                 }
                 else
                 {
-                    MsgLogger.WriteError($"{GetType().Name} - {methodId}", $"Master process {settings.MasterProcess} doesn't exist!");
+                    MsgLogger.WriteLine($"{GetType().Name} - {methodId}", $"Master process {settings.MasterProcess} doesn't exist!");
+
+                    result = true;
                 }
             }
             catch (Exception e)
