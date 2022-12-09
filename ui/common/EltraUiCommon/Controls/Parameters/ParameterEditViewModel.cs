@@ -227,6 +227,8 @@ namespace EltraUiCommon.Controls.Parameters
             }
         }
 
+        
+
         public override void InitModelData()
         {
             if (Vcs != null && Vcs.Device != null)
@@ -278,9 +280,32 @@ namespace EltraUiCommon.Controls.Parameters
             InitIntRanges();
         }
 
+        protected override void OnVirtualCommandSetChanged()
+        {
+            if (Vcs != null)
+            {
+                Vcs.DeviceChanged -= OnVcsDeviceChanged;
+                Vcs.DeviceChanged += OnVcsDeviceChanged;
+
+                OnVcsDeviceChanged();
+            }
+        }
+
         protected override void OnInitialized()
         {
             InitModelData();
+        }
+
+        private void OnVcsDeviceChanged(object sender, EventArgs e)
+        {
+            OnVcsDeviceChanged();
+        }
+
+        private void OnVcsDeviceChanged()
+        {
+            _parameter = null;
+
+            UpdateParameter();
         }
 
         public override async Task<bool> StartUpdate()

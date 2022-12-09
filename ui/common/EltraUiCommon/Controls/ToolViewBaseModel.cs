@@ -14,6 +14,7 @@ namespace EltraUiCommon.Controls
 
         private static object _syncObject = new object();
         private List<ToolViewBaseModel> _children;
+        private VirtualCommandSet _vcs;
         private bool _isVisible;
         private bool _isEnabled;
         private bool _isUpdating;
@@ -49,7 +50,18 @@ namespace EltraUiCommon.Controls
 
         #region Properties
 
-        protected VirtualCommandSet Vcs { get; private set; }
+        protected VirtualCommandSet Vcs 
+        { 
+            get
+            {
+                return _vcs;
+            }
+            private set
+            {
+                _vcs = value;
+                OnVirtualCommandSetChanged();
+            }
+        }
 
         private List<ToolViewBaseModel> Children => _children ?? (_children = new List<ToolViewBaseModel>() );
 
@@ -130,6 +142,8 @@ namespace EltraUiCommon.Controls
 
         public event EventHandler VisibilityChanged;
 
+        public event EventHandler VirtualCommandSetChanged;
+
         #endregion
 
         #region Events handling
@@ -146,9 +160,14 @@ namespace EltraUiCommon.Controls
             }
         }
 
-        private void OnVisibilityChanged()
+        protected virtual void OnVisibilityChanged()
         {
             VisibilityChanged?.Invoke(this, EventArgs.Empty);
+        }
+
+        protected virtual void OnVirtualCommandSetChanged()
+        {
+            VirtualCommandSetChanged?.Invoke(this, EventArgs.Empty);
         }
 
         private void OnDeviceChannelStatusChanged(ChannelStatus channelStatus)
