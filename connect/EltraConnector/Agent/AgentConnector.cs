@@ -226,15 +226,18 @@ namespace EltraConnector.Agent
 
         private async Task CreateDeviceAgent()
         {
-            string channelId = await Authentication.GetChannelId();
-
             if (_deviceAgent != null)
             {
                 _deviceAgent = new DeviceAgent(Host, _deviceAgent.ChannelId, Identity, _updateInterval, _timeout);
             }
-            else if (!string.IsNullOrEmpty(channelId))
+            else
             {
-                _deviceAgent = new DeviceAgent(Host, channelId, Identity, _updateInterval, _timeout);
+                string channelId = await Authentication.GetChannelId();
+
+                if (!string.IsNullOrEmpty(channelId))
+                {
+                    _deviceAgent = new DeviceAgent(Host, channelId, Identity, _updateInterval, _timeout);
+                }
             }            
         }
 

@@ -515,18 +515,18 @@ namespace EltraConnector.UserAgent
             {
                 Status = AgentStatus.Registered;
 
-                if (StartChannel(token))
+                if (!StartChannel(token))
                 {
-                    Status = AgentStatus.Started;
-
-                    await WaitForRequests(token);
-
-                    await StopChannel();
+                    MsgLogger.WriteError($"{GetType().Name} - Run", $"starting channel failed");
                 }
                 else
                 {
-                    MsgLogger.WriteError($"{GetType().Name} - Run",$"starting channel failed");
+                    Status = AgentStatus.Started;
                 }
+
+                await WaitForRequests(token);
+
+                await StopChannel();
             }
             else
             {
@@ -542,12 +542,18 @@ namespace EltraConnector.UserAgent
         {
             Status = AgentStatus.Starting;
 
-            if (StartChannel(token))
+            if (!StartChannel(token))
             {
-                await WaitForRequests(token);
-
-                await StopChannel();
+                MsgLogger.WriteError($"{GetType().Name} - Run", $"starting channel failed");
             }
+            else
+            {
+                Status = AgentStatus.Started;
+            }
+
+            await WaitForRequests(token);
+
+            await StopChannel();
             
             MsgLogger.WriteLine($"{GetType().Name} - RunMaster", $"Sync agent working thread finished successfully!");
 
@@ -656,11 +662,13 @@ namespace EltraConnector.UserAgent
             {
                 _channelHeartbeat.ChannelStatusChanged += OnHeartbeatChannelStatusChanged;
                 _channelHeartbeat.SignInRequested += OnSignInRequested;
+                _channelHeartbeat.StatusChanged += OnHeartbeatStatusChanged;
             }
 
             if (_parameterUpdateManager != null)
             {
                 _parameterUpdateManager.SignInRequested += OnSignInRequested;
+                _parameterUpdateManager.StatusChanged += OnParameterUpdateStatusChanged;
             }
 
             if (_channelAdapter != null)
@@ -673,6 +681,49 @@ namespace EltraConnector.UserAgent
                 _executeCommander.CommandExecuted += OnCommandExecuted;
                 _executeCommander.RemoteChannelStatusChanged += OnRemoteChannelStatusChanged;
                 _executeCommander.SignInRequested += OnSignInRequested;
+                _executeCommander.StatusChanged += OnExecuteCommanderStatusChanged;
+            }
+        }
+
+        private void OnHeartbeatStatusChanged(object sender, WsChannelStatusEventArgs e)
+        {
+            if(_executeCommander.Status == WsChannelStatus.Started)
+            {
+                if (_parameterUpdateManager.Status == WsChannelStatus.Started)
+                {
+                    if(e.Status == WsChannelStatus.Started)
+                    {
+                        Status = AgentStatus.Started;
+                    }
+                }
+            }
+        }
+
+        private void OnParameterUpdateStatusChanged(object sender, WsChannelStatusEventArgs e)
+        {
+            if (_channelHeartbeat.Status == WsChannelStatus.Started)
+            {
+                if (_executeCommander.Status == WsChannelStatus.Started)
+                {
+                    if (e.Status == WsChannelStatus.Started)
+                    {
+                        Status = AgentStatus.Started;
+                    }                    
+                }
+            }
+        }
+
+        private void OnExecuteCommanderStatusChanged(object sender, WsChannelStatusEventArgs e)
+        {
+            if (_channelHeartbeat.Status == WsChannelStatus.Started)
+            {
+                if (_parameterUpdateManager.Status == WsChannelStatus.Started)
+                {
+                    if (e.Status == WsChannelStatus.Started)
+                    {
+                        Status = AgentStatus.Started;
+                    }
+                }
             }
         }
 

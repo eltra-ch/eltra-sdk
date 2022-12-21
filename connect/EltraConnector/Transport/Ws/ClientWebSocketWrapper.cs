@@ -229,6 +229,10 @@ namespace EltraConnector.Transport.Ws
         private void Initialize()
         {
             _socket = new ClientWebSocket();
+
+            var opt = _socket.Options;
+
+            opt.UseDefaultCredentials = true;
         }
 
         #endregion
