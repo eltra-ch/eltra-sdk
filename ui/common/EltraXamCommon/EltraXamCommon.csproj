@@ -38,8 +38,8 @@
     <PackageReference Include="Prism.Core" Version="8.1.97" />
     <PackageReference Include="Prism.DryIoc.Forms" Version="8.1.97" />
     <PackageReference Include="Prism.Forms" Version="8.1.97" />
-    <PackageReference Include="Xamarin.Essentials" Version="1.7.0" />
-    <PackageReference Include="Xamarin.Forms" Version="5.0.0.2515" />
+    <PackageReference Include="Xamarin.Essentials" Version="1.7.3" />
+    <PackageReference Include="Xamarin.Forms" Version="5.0.0.2545" />
   </ItemGroup>
 
   <ItemGroup>
