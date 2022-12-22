@@ -77,9 +77,6 @@ namespace EltraXamCommon.Plugins
 
             pluginStore.Load();
 
-            //remove previously stored plugins
-            pluginStore.Purge();
-
             return pluginStore;
         }
 
@@ -255,28 +252,45 @@ namespace EltraXamCommon.Plugins
             
             try
             {
-                var pluginFilePath = GetPluginFilePath(payload.FileName);
-
                 if (Debugging)
                 {
+                    var pluginFilePath = GetPluginFilePath(payload.FileName);
                     var currentPathFileName = Path.GetFileName(pluginFilePath);
                     var binFolder = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
                     var currentPathFullPath = Path.Combine(binFolder, currentPathFileName);
-                    
-                    if(File.Exists(currentPathFullPath))
+
+                    if (File.Exists(currentPathFullPath))
                     {
                         if (payload.Mode == DeviceToolPayloadMode.Development)
                         {
                             result = UpdateCache(payload, currentPathFullPath);
                         }
                     }
-                    else if(File.Exists(pluginFilePath))
+                    else if (File.Exists(pluginFilePath))
                     {
                         if (payload.Mode == DeviceToolPayloadMode.Development)
                         {
                             result = UpdateCache(payload, pluginFilePath);
                         }
-                    }                    
+                    }
+                    else
+                    {
+                        pluginFilePath = PluginStore.GetAssemblyFile(payload.Id);
+
+                        if (File.Exists(pluginFilePath))
+                        {
+                            result = UpdateCache(payload, pluginFilePath);
+                        }
+                    }
+                }
+                else
+                {
+                    var pluginFilePath = PluginStore.GetAssemblyFile(payload.Id);
+
+                    if (File.Exists(pluginFilePath))
+                    {
+                        result = UpdateCache(payload, pluginFilePath);
+                    }
                 }
             }
             catch (Exception e)
