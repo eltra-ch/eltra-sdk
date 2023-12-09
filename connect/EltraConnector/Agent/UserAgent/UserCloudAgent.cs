@@ -765,7 +765,14 @@ namespace EltraConnector.UserAgent
                     device.ChannelId = channel.Id;
                     device.ChannelLocalHost = channel.LocalHost;
 
-                    await UpdateDeviceDescriptionFile(device);
+                    if(channel.Status == ChannelStatus.Online)
+                    {
+                        await UpdateDeviceDescriptionFile(device);
+                    }
+                    else
+                    {
+                        _ = Task.Run(async () => { await UpdateDeviceDescriptionFile(device); });
+                    }
                 }
             }
 
