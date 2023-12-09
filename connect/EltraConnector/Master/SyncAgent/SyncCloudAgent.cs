@@ -8,7 +8,6 @@ using System.Threading.Tasks;
 using EltraCommon.Contracts.Devices;
 using EltraConnector.Channels;
 using EltraCommon.Contracts.ToolSet;
-using System.Net.Sockets;
 using EltraCommon.Transport.Events;
 using EltraConnector.Transport.Ws.Interfaces;
 using EltraConnector.Master.Controllers;

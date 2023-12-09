@@ -687,7 +687,7 @@ namespace EltraConnector.UserAgent
 
         private void OnHeartbeatStatusChanged(object sender, WsChannelStatusEventArgs e)
         {
-            if(_executeCommander.Status == WsChannelStatus.Started)
+            if(_executeCommander != null && _executeCommander.Status == WsChannelStatus.Started)
             {
                 if (_parameterUpdateManager.Status == WsChannelStatus.Started)
                 {
@@ -701,7 +701,7 @@ namespace EltraConnector.UserAgent
 
         private void OnParameterUpdateStatusChanged(object sender, WsChannelStatusEventArgs e)
         {
-            if (_channelHeartbeat.Status == WsChannelStatus.Started)
+            if (_channelHeartbeat != null && _channelHeartbeat.Status == WsChannelStatus.Started)
             {
                 if (_executeCommander.Status == WsChannelStatus.Started)
                 {
@@ -715,7 +715,7 @@ namespace EltraConnector.UserAgent
 
         private void OnExecuteCommanderStatusChanged(object sender, WsChannelStatusEventArgs e)
         {
-            if (_channelHeartbeat.Status == WsChannelStatus.Started)
+            if (_channelHeartbeat != null && _channelHeartbeat.Status == WsChannelStatus.Started)
             {
                 if (_parameterUpdateManager.Status == WsChannelStatus.Started)
                 {

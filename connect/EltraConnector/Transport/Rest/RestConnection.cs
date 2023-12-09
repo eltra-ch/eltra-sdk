@@ -12,6 +12,7 @@ using System;
 using System.Net;
 using System.Threading.Tasks;
 using EltraCommon.Extensions;
+using EltraConnector.Controllers;
 
 namespace EltraConnector.Transport.Rest
 {
@@ -19,23 +20,26 @@ namespace EltraConnector.Transport.Rest
     {
         #region Private fields
 
-        private CloudTransporter _cloudTransporter;
+        private AuthControllerAdapter _auth;
 
         #endregion
 
         #region Properties
 
-        public CloudTransporter Transporter => _cloudTransporter ?? (_cloudTransporter = new CloudTransporter());
+        public CloudTransporter Transporter => Auth.Transporter;
 
         public string Url { get; set; }
         public string UniqueId { get; set; }
         public string ChannelName { get; set; }
         public bool IsConnected => true;
+        public bool IsSignedIn { get; private set; }
         public bool IsDisconnecting => false;
         public bool Fallback => false;
         public ConnectionPriority Priority => ConnectionPriority.Low;
 
         public bool ReceiveSupported => false;
+
+        protected AuthControllerAdapter Auth => _auth ?? (_auth = new AuthControllerAdapter(Url));
 
         #endregion
 
@@ -96,11 +100,26 @@ namespace EltraConnector.Transport.Rest
         public async Task<bool> Send<T>(UserIdentity identity, T obj)
         {
             bool result = false;
+            const string method = "Send";
 
             try
             {
                 string path;
                 bool postMethod;
+
+                if (!IsSignedIn)
+                {
+                    if (await Auth.SignIn(identity))
+                    {
+                        IsSignedIn = true;
+                    }
+                    else
+                    {
+                        MsgLogger.WriteError($"{GetType().Name} - {method}", $"cannot sign-in with user name {identity.Name}");
+
+                        OnErrorOccured(HttpStatusCode.Unauthorized);
+                    }
+                }
 
                 if (GetPath(obj, out path, out postMethod))
                 {

@@ -20,11 +20,12 @@
 		<Product>Eltra.Connector</Product>		
 		<Description>Eltra - CANOpen based IoT Framework - SDK</Description>
 		<PackageTags>CANOpen IoT Eltra OPCUA OPC</PackageTags>
-        <Version>2.1.9</Version>
-        <AssemblyVersion>2.1.0.0</AssemblyVersion>
+        <Version>2.2.1</Version>
+        <AssemblyVersion>2.2.1.0</AssemblyVersion>
         <PackageIcon>eltra_logo.png</PackageIcon>
-        <FileVersion>2.1.9.0</FileVersion>
+        <FileVersion>2.2.1.0</FileVersion>
         <Configurations>Debug;Release;Debug - UWP</Configurations>
+		<PackageReadmeFile>readme.md</PackageReadmeFile>
     </PropertyGroup>
 
     <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -52,6 +53,7 @@
 
     <ItemGroup>
       <Compile Remove="Transport\CloudTransporter.cs" />
+	  <None Include="docs\readme.md" Pack="true" PackagePath="\" />
     </ItemGroup>
 
     <ItemGroup>
@@ -72,7 +74,9 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\..\xternals\common\EltraCommon\EltraCommon.csproj" />
+      <ProjectReference Include="..\..\..\eltra-common\EltraCommon\EltraCommon.csproj" />
+      <ProjectReference Include="..\..\xternals\common\EltraCommonBase\EltraCommonBase.csproj" />
+      <ProjectReference Include="..\..\xternals\common\EltraLogger\EltraLogger.csproj" />
     </ItemGroup>
 
     <Target Name="PostBuild" AfterTargets="PostBuildEvent">

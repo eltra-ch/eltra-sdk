@@ -57,6 +57,8 @@ namespace EltraConnector.Controllers
 
         private void OnParameterChanged(object sender, ParameterChangedEventArgs e)
         {
+            const string method = "OnParameterChanged";
+
             try
             {
                 Parameter parameter = e.Parameter;
@@ -72,15 +74,21 @@ namespace EltraConnector.Controllers
                         }
                         else
                         {
-                            Task.Run(async () =>
-                            {
-                                if(!await parameter.SetParameterValue(e.NewValue))
-                                {
-                                    parameter.SetValue(e.OldValue);
+                            int maxWaitTime = 3000;
 
-                                    MsgLogger.WriteError($"{GetType().Name} - OnParameterChanged", "SetParameterValue failed!");
-                                }
-                            }).Wait();
+#if DEBUG
+                            maxWaitTime = 60000;
+#endif
+
+                            var task = Task.Run(async () =>
+                            {
+                                await SetValue(parameter, e);
+                            }).Wait(maxWaitTime);
+
+                            if(!task)
+                            {
+                                MsgLogger.WriteError($"{GetType().Name} - {method}", $"SetValue {parameter.Index:X2}:{parameter.SubIndex:X2} failed! timeout!");
+                            }
                         }
                     }
                 }
@@ -90,7 +98,19 @@ namespace EltraConnector.Controllers
                 MsgLogger.Exception($"{GetType().Name} - OnParameterChanged", ex);
             }
         }
-        
+
+        private async Task SetValue(Parameter parameter, ParameterChangedEventArgs e)
+        {
+            const string method = "SetValue";
+
+            if (!await parameter.SetParameterValue(e.NewValue))
+            {
+                //TODO parameter.SetValue(e.OldValue);
+
+                MsgLogger.WriteError($"{GetType().Name} - {method}", $"SetParameterValue {parameter.Index:X2}:{parameter.SubIndex:X2} failed!");
+            }
+        }
+
         private void QueueParameterChanged(ParameterChangeQueueItem queueItem)
         {
             queueItem.WorkingTask = Task.Run(async () =>
@@ -244,8 +264,11 @@ namespace EltraConnector.Controllers
             {
                 _devices.Add(device);
 
-                StartUpdateAsync(device);
-
+                device.ConnectorChanged += (o,e) =>
+                {
+                    StartUpdateAsync(device);
+                };
+                
                 result = true;
             }
 
