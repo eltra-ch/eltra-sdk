@@ -26,7 +26,7 @@
     <Compile Remove="Plugins\**" />
     <EmbeddedResource Remove="Plugins\**" />
     <None Remove="Plugins\**" />
-    <None Include="..\..\..\xternals\common\EltraResources\png\eltra_logo.png">
+    <None Include="..\..\..\..\eltra-common\EltraResources\png\eltra_logo.png">
       <Pack>True</Pack>
       <PackagePath></PackagePath>
     </None>

@@ -7,7 +7,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\connect\EltraConnector\EltraConnector.csproj" />
-    <ProjectReference Include="..\..\xternals\common\EltraCommon\EltraCommon.csproj" />
   </ItemGroup>
 
   <ItemGroup>

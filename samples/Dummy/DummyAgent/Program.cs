@@ -13,7 +13,7 @@ namespace DummyAgent
             // (in case you would like to start multiple processes on the same workstation)
             GetStartParameters(args, out int sessionId);
 
-            //string host = "https://eltra.ch";
+            //string host = "http://eltra.ch";
             string host = "http://localhost:5001";
 
             //run demo async mode
@@ -32,8 +32,14 @@ namespace DummyAgent
                 //connect to eltra service, sign-in etc.
                 if (await agent.Connect(url, sessionId))
                 {
-                    //grab and play with sample device
-                    await agent.PlayWithDevices();
+                    int counter = 50;
+                    do
+                    {
+                        //grab and play with sample device
+                        await agent.PlayWithDevices();
+                    
+                        counter++;
+                    } while (counter > 0);
 
                     //sign-out, close session
                     await agent.Disconnect();
