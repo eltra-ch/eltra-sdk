@@ -7,7 +7,7 @@
 		<Authors>Dawid Sienkiewicz</Authors>
 		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
 		<PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
-		<Copyright>Dawid Sienkiewicz, (c) 2020-2022</Copyright>
+		<Copyright>Dawid Sienkiewicz, (c) 2020-2023</Copyright>
 		<PackageLicenseFile>LICENSE</PackageLicenseFile>
 		<PackageProjectUrl>www.eltra.ch</PackageProjectUrl>
 		<RepositoryUrl>https://github.com/eltra-ch/eltra-sdk</RepositoryUrl>
@@ -20,10 +20,10 @@
 		<Product>Eltra.Connector</Product>		
 		<Description>Eltra - CANOpen based IoT Framework - SDK</Description>
 		<PackageTags>CANOpen IoT Eltra OPCUA OPC</PackageTags>
-        <Version>2.2.2</Version>
-        <AssemblyVersion>2.2.2.0</AssemblyVersion>
+        <Version>2.2.3</Version>
+        <AssemblyVersion>2.2.3.0</AssemblyVersion>
         <PackageIcon>eltra_logo.png</PackageIcon>
-        <FileVersion>2.2.2.0</FileVersion>
+        <FileVersion>2.2.3.0</FileVersion>
         <Configurations>Debug;Release;Debug - UWP</Configurations>
 		<PackageReadmeFile>readme.md</PackageReadmeFile>
     </PropertyGroup>
@@ -57,7 +57,7 @@
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="System.Text.Json" Version="7.0.0" />
+        <PackageReference Include="System.Text.Json" Version="8.0.0" />
 		<PackageReference Include="System.Memory" Version="4.5.5">
       <IncludeAssets>none</IncludeAssets>
     </PackageReference>
