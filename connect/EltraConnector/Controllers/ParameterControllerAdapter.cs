@@ -268,6 +268,11 @@ namespace EltraConnector.Controllers
                 {
                     StartUpdateAsync(device);
                 };
+
+                if(device.Status == DeviceStatus.Ready)
+                {
+                    StartUpdateAsync(device);
+                }
                 
                 result = true;
             }
