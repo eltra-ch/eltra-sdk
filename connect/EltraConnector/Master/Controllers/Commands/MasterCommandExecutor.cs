@@ -103,9 +103,9 @@ namespace EltraConnector.Master.Controllers.Commands
             }
             else if (sender is UdpServerConnection udpConnection && udpConnection.UniqueId == WsChannelId)
             {
-                var udpRequest = e.Message.TryDeserializeObject<UdpRequest>();
+                var request = e.Message.TryDeserializeObject<UdpRequest>();
 
-                if (udpRequest is UdpRequest)
+                if (request is UdpRequest udpRequest)
                 {
                     if (e.Type == MessageType.Text)
                     {
@@ -118,9 +118,13 @@ namespace EltraConnector.Master.Controllers.Commands
                         });
                     }
                 }
+                else if(request != null)
+                {
+                    MsgLogger.WriteError($"{GetType().Name} - OnMessageReceived", $"udp message is not {request.GetType().Name} type!");
+                }
                 else
                 {
-                    MsgLogger.WriteError($"{GetType().Name} - OnMessageReceived", $"udp message is not {typeof(UdpRequest).GetType().Name} type!");
+                    MsgLogger.WriteError($"{GetType().Name} - OnMessageReceived", $"udp message is unknown type!");
                 }
             }
         }
@@ -167,7 +171,8 @@ namespace EltraConnector.Master.Controllers.Commands
         private ExecuteCommand ParseExecuteCommand(string json)
         {
             ExecuteCommand result = null;
-            
+            const string method = "ParseExecuteCommand";
+
             try
             {
                 var executeCommand = json.TryDeserializeObject<ExecuteCommand>();
@@ -176,9 +181,14 @@ namespace EltraConnector.Master.Controllers.Commands
                 {
                     result = executeCommand;
                 }
+                else
+                {
+                    MsgLogger.WriteError($"{GetType().Name} - {method}", "command not valid");
+                }
             }
-            catch (Exception)
+            catch (Exception e)
             {
+                MsgLogger.Exception($"{GetType().Name} - {method}", e);
             }
 
             return result;
@@ -187,6 +197,7 @@ namespace EltraConnector.Master.Controllers.Commands
         private ExecuteCommandStatus ParseExecuteCommandStatus(string json)
         {
             ExecuteCommandStatus result = null;
+            const string method = "ParseExecuteCommandStatus";
 
             try
             {
@@ -196,9 +207,14 @@ namespace EltraConnector.Master.Controllers.Commands
                 {
                     result = executeCommandStatus;
                 }
+                else
+                {
+                    MsgLogger.WriteError($"{GetType().Name} - {method}", "command not valid");
+                }
             }
-            catch (Exception)
+            catch (Exception e)
             {
+                MsgLogger.Exception($"{GetType().Name} - {method}", e);
             }
 
             return result;
@@ -207,7 +223,8 @@ namespace EltraConnector.Master.Controllers.Commands
         private List<ExecuteCommand> ParseExecuteCommandSet(string json)
         {
             List<ExecuteCommand> result = null;
-            
+            const string method = "ParseExecuteCommandSet";
+
             try
             {
                 var executeCommands = json.TryDeserializeObject<ExecuteCommandList>();
@@ -224,9 +241,14 @@ namespace EltraConnector.Master.Controllers.Commands
                         }
                     }
                 }
+                else
+                {
+                    MsgLogger.WriteError($"{GetType().Name} - {method}", "command not valid");
+                }
             }
-            catch (Exception)
+            catch (Exception e)
             {
+                MsgLogger.Exception($"{GetType().Name} - {method}", e);
             }
 
             return result;
@@ -235,6 +257,7 @@ namespace EltraConnector.Master.Controllers.Commands
         private List<ExecuteCommandStatus> ParseExecuteCommandStatusSet(string json)
         {
             List<ExecuteCommandStatus> result = null;
+            const string method = "ParseExecuteCommandStatusSet";
 
             try
             {
@@ -252,9 +275,14 @@ namespace EltraConnector.Master.Controllers.Commands
                         }
                     }
                 }
+                else
+                {
+                    MsgLogger.WriteError($"{GetType().Name} - {method}", "command not valid");
+                }
             }
-            catch (Exception)
+            catch (Exception e)
             {
+                MsgLogger.Exception($"{GetType().Name} - {method}", e);
             }
 
             return result;
@@ -263,7 +291,8 @@ namespace EltraConnector.Master.Controllers.Commands
         private ChannelStatusUpdate ParseChannelStatusUpdate(string json)
         {
             ChannelStatusUpdate result = null;
-            
+            const string method = "ParseChannelStatusUpdate";
+
             try
             {
                 var channelStatusUpdate = json.TryDeserializeObject<ChannelStatusUpdate>();
@@ -272,9 +301,14 @@ namespace EltraConnector.Master.Controllers.Commands
                 {
                     result = channelStatusUpdate;
                 }
+                else
+                {
+                    MsgLogger.WriteError($"{GetType().Name} - {method}", "not valid");
+                }
             }
-            catch (Exception)
+            catch (Exception e)
             {
+                MsgLogger.Exception($"{GetType().Name} - {method}", e);
             }
 
             return result;
@@ -283,6 +317,7 @@ namespace EltraConnector.Master.Controllers.Commands
         private ChannelIdentification ParseChannelIdentification(string json)
         {
             ChannelIdentification result = null;
+            const string method = "ParseChannelIdentification";
 
             try
             {
@@ -292,9 +327,14 @@ namespace EltraConnector.Master.Controllers.Commands
                 {
                     result = channelIdentification;
                 }
+                else
+                {
+                    MsgLogger.WriteError($"{GetType().Name} - {method}", "not valid");
+                }
             }
-            catch (Exception)
+            catch (Exception e)
             {
+                MsgLogger.Exception($"{GetType().Name} - {method}", e);
             }
 
             return result;

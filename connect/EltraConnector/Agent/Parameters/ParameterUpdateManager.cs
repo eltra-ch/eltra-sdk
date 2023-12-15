@@ -19,8 +19,8 @@ namespace EltraConnector.Agent.Parameters
 
         const string ChannelName = "ParameterUpdate";
 
-        private readonly ChannelControllerAdapter _channelAdapter;
         private readonly List<Task> _parameterChangedTasks;
+        private readonly object _lock = new object();
 
         #endregion
 
@@ -30,7 +30,6 @@ namespace EltraConnector.Agent.Parameters
             : base(channelAdapter.ConnectionManager, channelId, channelName,
                   channelAdapter.ChannelId, 0, channelAdapter.User.Identity)
         {
-            _channelAdapter = channelAdapter;
             _parameterChangedTasks = new List<Task>();
         }
 
@@ -38,7 +37,6 @@ namespace EltraConnector.Agent.Parameters
             : base(channelAdapter.ConnectionManager, channelAdapter.ChannelId + "_ParameterUpdate", ChannelName,
                   channelAdapter.ChannelId, 0, channelAdapter.User.Identity)
         {
-            _channelAdapter = channelAdapter;
             _parameterChangedTasks = new List<Task>();
         }
 
@@ -46,7 +44,6 @@ namespace EltraConnector.Agent.Parameters
             : base(channelAdapter.ConnectionManager, channelId, channelName,
                   channelAdapter.ChannelId, nodeId, channelAdapter.User.Identity)
         {
-            _channelAdapter = channelAdapter;
             _parameterChangedTasks = new List<Task>();
         }
 
@@ -54,7 +51,6 @@ namespace EltraConnector.Agent.Parameters
             : base(channelAdapter.ConnectionManager, channelAdapter.ChannelId + $"_ParameterUpdate_{nodeId}", ChannelName,
                   channelAdapter.ChannelId, nodeId, channelAdapter.User.Identity)
         {
-            _channelAdapter = channelAdapter;
             _parameterChangedTasks = new List<Task>();
         }
 
@@ -75,12 +71,11 @@ namespace EltraConnector.Agent.Parameters
 
         private void OnMessageReceived(object sender, ConnectionMessageEventArgs e)
         {
-            if (sender is WsConnection connection && connection.UniqueId == WsChannelId)
+            if (sender is WsConnection connection && 
+                connection.UniqueId == WsChannelId && 
+                e.Type == MessageType.Data && !e.IsControlMessage())
             {
-                if (e.Type == MessageType.Data && !e.IsControlMessage())
-                {
-                    ProcessWsMessage(e.Message);
-                }
+                ProcessWsMessage(e.Message);
             }
         }
 
@@ -119,7 +114,7 @@ namespace EltraConnector.Agent.Parameters
                     }
                 });
 
-                lock (this)
+                lock (_lock)
                 {
                     _parameterChangedTasks.Add(parameterChangedTask);
                 }

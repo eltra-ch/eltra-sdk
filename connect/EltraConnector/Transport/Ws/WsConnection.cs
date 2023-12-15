@@ -371,9 +371,9 @@ namespace EltraConnector.Transport.Ws
 
             if (!string.IsNullOrEmpty(textMsg))
             {
-                var wsMsg = textMsg.TryDeserializeObject<WsMessage>();
+                var msg = textMsg.TryDeserializeObject<WsMessage>();
 
-                if (wsMsg is WsMessage)
+                if (msg is WsMessage wsMsg)
                 {
                     if(wsMsg.TypeName == typeof(WsMessage).FullName)
                     {

@@ -16,6 +16,8 @@ using EltraConnector.Extensions;
 using EltraConnector.Controllers.Commands;
 using EltraCommon.Extensions;
 
+#pragma warning disable S3267
+
 namespace EltraConnector.Agent.Controllers.Commands
 {
     class SlaveExecuteCommander : WsChannelThread
@@ -95,9 +97,9 @@ namespace EltraConnector.Agent.Controllers.Commands
 
                 if (!string.IsNullOrEmpty(json))
                 {
-                    var udpRequest = json.TryDeserializeObject<UdpRequest>();
+                    var request = json.TryDeserializeObject<UdpRequest>();
 
-                    if (udpRequest is UdpRequest)
+                    if (request is UdpRequest udpRequest)
                     {
                         if (e.Type == MessageType.Text)
                         {
@@ -110,9 +112,13 @@ namespace EltraConnector.Agent.Controllers.Commands
                             });
                         }
                     }
+                    else if(request != null)
+                    {
+                        MsgLogger.WriteError($"{GetType().Name} - OnMessageReceived", $"udp message is not {request.GetType().Name} type!");
+                    }
                     else
                     {
-                        MsgLogger.WriteError($"{GetType().Name} - OnMessageReceived", $"udp message is not {typeof(UdpRequest).GetType().Name} type!");
+                        MsgLogger.WriteError($"{GetType().Name} - OnMessageReceived", $"udp message is unknown type!");
                     }
                 }
                 else
@@ -297,6 +303,7 @@ namespace EltraConnector.Agent.Controllers.Commands
         private List<ExecuteCommand> ParseExecuteCommandList(string json)
         {
             List<ExecuteCommand> result = null;
+            const string method = "ParseExecuteCommandList";
 
             try
             {
@@ -312,12 +319,16 @@ namespace EltraConnector.Agent.Controllers.Commands
                         {
                             result.Add(executeCommand);
                         }
+                        else
+                        {
+                            MsgLogger.WriteError($"{GetType().Name} - {method}", $"Command {executeCommand.CommandId} invalid!");
+                        }
                     }
                 }
             }
             catch (Exception e)
             {
-                MsgLogger.Exception($"{GetType().Name} - ParseExecuteCommandSet", e);
+                MsgLogger.Exception($"{GetType().Name} - {method}", e);
             }
 
             return result;
@@ -325,8 +336,10 @@ namespace EltraConnector.Agent.Controllers.Commands
 
         private ChannelStatusUpdate ParseChannelStatusUpdate(string json)
         {
-            ChannelStatusUpdate result = null;
+            const string method = "ParseChannelStatusUpdate";
 
+            ChannelStatusUpdate result = null;
+            
             try
             {
                 var channelStatusUpdate = json.TryDeserializeObject<ChannelStatusUpdate>();
@@ -336,8 +349,9 @@ namespace EltraConnector.Agent.Controllers.Commands
                     result = channelStatusUpdate;
                 }
             }
-            catch (Exception)
+            catch (Exception e)
             {
+                MsgLogger.Exception($"{GetType().Name} - {method}", e);
             }
 
             return result;

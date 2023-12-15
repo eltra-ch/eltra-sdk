@@ -14,7 +14,8 @@ namespace DummyAgent
             GetStartParameters(args, out int sessionId);
 
             //string host = "http://eltra.ch";
-            string host = "http://localhost:5001";
+            //string host = "http://localhost:5001";
+            string host = "http://localhost:52299";
 
             //run demo async mode
             var demoTask = StartDemoAsync(host, sessionId);
