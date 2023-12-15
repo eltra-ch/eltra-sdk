@@ -17,6 +17,7 @@ using EltraConnector.Controllers.Events;
 using EltraCommon.Contracts.Users;
 using EltraCommon.Transport;
 using EltraCommon.Extensions;
+using System.Globalization;
 
 namespace EltraConnector.Controllers
 {
@@ -429,8 +430,9 @@ namespace EltraConnector.Controllers
                 query["callerId"] = callerId;
                 query["nodeId"] = $"{nodeId}";
                 query["uniqueId"] = $"{uniqueId}";
-                query["from"] = $"{from}";
-                query["to"] = $"{to}";
+
+                query["from"] = $"{from.ToString("o", CultureInfo.InvariantCulture)}";
+                query["to"] = $"{to.ToString("o", CultureInfo.InvariantCulture)}";
 
                 var url = UrlHelper.BuildUrl(Url, "api/parameter/history", query);
 
@@ -466,8 +468,9 @@ namespace EltraConnector.Controllers
                 query["callerId"] = callerId;
                 query["nodeId"] = $"{nodeId}";
                 query["uniqueId"] = $"{uniqueId}";
-                query["from"] = $"{from}";
-                query["to"] = $"{to}";
+
+                query["from"] = $"{from.ToString("o", CultureInfo.InvariantCulture)}";
+                query["to"] = $"{to.ToString("o", CultureInfo.InvariantCulture)}";
 
                 var url = UrlHelper.BuildUrl(Url, "api/parameter/history-statistics", query);
 
