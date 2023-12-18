@@ -181,10 +181,6 @@ namespace EltraConnector.Master.Controllers.Commands
                 {
                     result = executeCommand;
                 }
-                else
-                {
-                    MsgLogger.WriteError($"{GetType().Name} - {method}", "command not valid");
-                }
             }
             catch (Exception e)
             {
@@ -206,10 +202,6 @@ namespace EltraConnector.Master.Controllers.Commands
                 if (executeCommandStatus != null && executeCommandStatus.IsValid())
                 {
                     result = executeCommandStatus;
-                }
-                else
-                {
-                    MsgLogger.WriteError($"{GetType().Name} - {method}", "command not valid");
                 }
             }
             catch (Exception e)
@@ -241,10 +233,6 @@ namespace EltraConnector.Master.Controllers.Commands
                         }
                     }
                 }
-                else
-                {
-                    MsgLogger.WriteError($"{GetType().Name} - {method}", "command not valid");
-                }
             }
             catch (Exception e)
             {
@@ -274,10 +262,6 @@ namespace EltraConnector.Master.Controllers.Commands
                             result.Add(executeCommandStatus);
                         }
                     }
-                }
-                else
-                {
-                    MsgLogger.WriteError($"{GetType().Name} - {method}", "command not valid");
                 }
             }
             catch (Exception e)
