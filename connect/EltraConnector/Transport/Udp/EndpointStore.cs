@@ -1,5 +1,4 @@
 ﻿using EltraCommon.Contracts.Users;
-using System;
 using System.Collections.Generic;
 using System.Net;
 
@@ -7,7 +6,7 @@ namespace EltraConnector.Transport.Udp
 {
     class EndpointStore
     {
-        private Dictionary<string, EndpointStoreEntry> _store;
+        private readonly Dictionary<string, EndpointStoreEntry> _store;
 
         public EndpointStore()
         {

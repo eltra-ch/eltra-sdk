@@ -11,7 +11,7 @@ namespace EltraConnector.Transport.Udp
     {
         #region Private fields
 
-        private UdpServerConnection _source;
+        private readonly UdpServerConnection _source;
 
         #endregion
 

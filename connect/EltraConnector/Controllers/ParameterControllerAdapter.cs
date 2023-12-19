@@ -75,10 +75,12 @@ namespace EltraConnector.Controllers
                         }
                         else
                         {
-                            int maxWaitTime = 3000;
+                            int maxWaitTime;
 
 #if DEBUG
                             maxWaitTime = 60000;
+#else
+                            maxWaitTime = 3000;
 #endif
 
                             var task = Task.Run(async () =>
@@ -247,11 +249,20 @@ namespace EltraConnector.Controllers
 
         private async Task StartUpdate(EltraDevice device)
         {
+            const string method = "StartUpdate";
+
             RegisterEvents(device);
 
             if (await UpdateParameters(device))
             {
-                Wait();
+                if (!Wait())
+                {
+                    MsgLogger.WriteError($"{GetType().Name} - {method}", "timeout");
+                }
+            }
+            else
+            {
+                MsgLogger.WriteError($"{GetType().Name} - {method}", "Update parameters failed!");
             }
 
             UnregisterEvents(device);
@@ -317,49 +328,6 @@ namespace EltraConnector.Controllers
             }
 
             return base.Stop();
-        }
-
-        private async Task<bool> UpdateParameter(EltraDevice device, Parameter parameter)
-        {
-            bool result = false;
-
-            try
-            {
-                var parameterUpdate = new ParameterUpdate
-                {
-                    ChannelId = Channel.Id,
-                    NodeId = device.NodeId,
-                    Parameter = parameter
-                };
-
-                var path = $"api/parameter/update";
-
-                var json = parameterUpdate.ToJson();
-
-                var response = await Transporter.Put(_identity, Url, path, json);
-
-                if(response != null)
-                {
-                    if (response.StatusCode == HttpStatusCode.OK)
-                    {
-                        result = true;
-                    }
-                    else
-                    {
-                        MsgLogger.WriteError($"{GetType().Name} - UpdateParameter", $"update parameter '{parameter.UniqueId}' failed, reason = {response.StatusCode}");
-                    }
-                }
-                else
-                {
-                    MsgLogger.WriteError($"{GetType().Name} - UpdateParameter", $"update parameter '{parameter.UniqueId}' failed, reason = no response");
-                }
-            }
-            catch (Exception)
-            {
-                result = false;
-            }
-            
-            return result;
         }
 
         private async Task<bool> UpdateParameters(EltraDevice device)

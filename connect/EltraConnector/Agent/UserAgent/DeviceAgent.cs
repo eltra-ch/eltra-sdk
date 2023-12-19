@@ -72,19 +72,6 @@ namespace EltraConnector.UserAgent
             DeviceCommands.Clear();
         }
 
-        private async Task<List<DeviceCommand>> AddDeviceCommands(EltraDevice device)
-        {
-            var result = new List<DeviceCommand>();
-            var commands = await GetDeviceCommands(device);
-
-            if (commands != null && commands.Count > 0)
-            {
-                result.AddRange(commands);
-            }
-
-            return result;
-        }
-
         public async Task<Parameter> GetParameter(EltraDevice device, ushort index, byte subIndex)
         {
             Parameter result = null;
@@ -302,7 +289,7 @@ namespace EltraConnector.UserAgent
 
                 if (ParameterRegistrationCache.CanUnregister(uniqueId, out var registeredParameter))
                 {       
-                    var t = Task.Run(async () =>
+                    Task.Run(async () =>
                     {
                         var command = await GetDeviceCommand(device, "UnregisterParameterUpdate");
 
@@ -370,13 +357,10 @@ namespace EltraConnector.UserAgent
                 responseCommand?.GetParameterValue("ErrorCode", ref lastErrorCode);
                 responseCommand?.GetParameterValue("Result", ref result);
 
-                if(result)
+                if (result && ParameterRegistrationCache.FindParameter(parameter.UniqueId, out var registeredParameter))
                 {
-                    if(ParameterRegistrationCache.FindParameter(parameter.UniqueId, out var registeredParameter))
-                    {
-                        registeredParameter.Reset();
-                    }
-                }    
+                    registeredParameter.Reset();
+                }
             }
 
             return result;

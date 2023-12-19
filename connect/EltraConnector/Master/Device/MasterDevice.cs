@@ -199,12 +199,9 @@ namespace EltraConnector.Master.Device
 
             value = default;
 
-            if (ParameterConnectionManager != null)
+            if (ParameterConnectionManager != null && ParameterConnectionManager.ReadParameter(parameter))
             {
-                if (ParameterConnectionManager.ReadParameter(parameter))
-                {
-                    result = parameter.GetValue(out value);
-                }
+                result = parameter.GetValue(out value);
             }
 
             return result;
@@ -214,12 +211,9 @@ namespace EltraConnector.Master.Device
         {
             bool result = false;
 
-            if (ParameterConnectionManager != null)
+            if (ParameterConnectionManager != null && parameter.SetValue(value))
             {
-                if (parameter.SetValue(value))
-                {
-                    result = ParameterConnectionManager.WriteParameter(parameter);
-                }
+                result = ParameterConnectionManager.WriteParameter(parameter);
             }
 
             return result;
@@ -320,7 +314,6 @@ namespace EltraConnector.Master.Device
             {
                 if (File.Exists(fullPath))
                 {
-                    var fileInfo = new FileInfo(fullPath);
                     var fileVersionInfo = FileVersionInfo.GetVersionInfo(fullPath);
 
                     var bytes = File.ReadAllBytes(fullPath);

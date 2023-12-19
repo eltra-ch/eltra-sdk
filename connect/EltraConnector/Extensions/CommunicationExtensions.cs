@@ -23,7 +23,8 @@ namespace EltraConnector.Extensions
             
             if (!string.IsNullOrEmpty(data))
             {
-                var msg = data.Trim(new char[] { '\"' });
+                char[] trimChars = new char[] { '\"' };
+                var msg = data.Trim(trimChars);
 
                 if (msg == WsMessageAck.RawData || msg == WsMessageKeepAlive.RawData)
                 {

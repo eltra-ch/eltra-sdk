@@ -25,8 +25,8 @@ namespace EltraConnector.Channels
         private readonly UserIdentity _identity;
 
         private WsChannelStatus _status;
-        private int _startupTimeout = 30000;
-        private int _shutdownTimeout = 30000;
+        private readonly int _startupTimeout = 30000;
+        private readonly int _shutdownTimeout = 30000;
 
         #endregion
 

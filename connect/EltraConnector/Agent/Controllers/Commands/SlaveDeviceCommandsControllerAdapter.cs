@@ -72,14 +72,12 @@ namespace EltraConnector.Agent.Controllers.Commands
 #endif
                     }
 
-                    if (ConnectionManager != null && ConnectionManager.IsConnected(CommandExecUuid))
+                    if (ConnectionManager != null && ConnectionManager.IsConnected(CommandExecUuid) && 
+                        await ConnectionManager.Send(CommandExecUuid, UserIdentity, execCommand))
                     {
-                        if (await ConnectionManager.Send(CommandExecUuid, UserIdentity, execCommand))
-                        {
-                            result = true;
-                        }
+                        result = true;
                     }
-                    
+
                     MsgLogger.EndTimeMeasure($"{GetType().Name} - PushCommand", start, $"push command='{execCommand.Command.Name}' to device='{device.Family}':0x{device.NodeId}");
                 }
             }

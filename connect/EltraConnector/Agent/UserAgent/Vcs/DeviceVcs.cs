@@ -262,15 +262,12 @@ namespace EltraConnector.UserAgent.Vcs
         {
             bool result = false;
 
-            if (Device != null)
+            if (Device != null && Device.SearchParameter(uniqueId) is Parameter parameterEntry)
             {
-                if (Device.SearchParameter(uniqueId) is Parameter parameterEntry)
-                {
-                    var parameterValue = await Agent.GetParameterValue(Device.ChannelId, Device.NodeId,
-                        parameterEntry.Index, parameterEntry.SubIndex);
+                var parameterValue = await Agent.GetParameterValue(Device.ChannelId, Device.NodeId,
+                    parameterEntry.Index, parameterEntry.SubIndex);
 
-                    result = parameterEntry.SetValue(parameterValue);
-                }
+                result = parameterEntry.SetValue(parameterValue);
             }
 
             return result;
@@ -286,14 +283,11 @@ namespace EltraConnector.UserAgent.Vcs
         {
             bool result = false;
 
-            if (Device != null)
+            if (Device != null && Device.SearchParameter(index, subIndex) is Parameter parameterEntry)
             {
-                if (Device.SearchParameter(index, subIndex) is Parameter parameterEntry)
-                {
-                    var parameterValue = await Agent.GetParameterValue(Device.ChannelId, Device.NodeId, index, subIndex);
+                var parameterValue = await Agent.GetParameterValue(Device.ChannelId, Device.NodeId, index, subIndex);
 
-                    result = parameterEntry.SetValue(parameterValue);
-                }
+                result = parameterEntry.SetValue(parameterValue);
             }
 
             return result;
@@ -308,12 +302,9 @@ namespace EltraConnector.UserAgent.Vcs
         {
             ParameterValue result = null;
 
-            if (Device != null)
+            if (Device != null && Device.SearchParameter(uniqueId) is Parameter parameterEntry)
             {
-                if (Device.SearchParameter(uniqueId) is Parameter parameterEntry)
-                {
-                    result = await Agent.GetParameterValue(Device, parameterEntry.Index, parameterEntry.SubIndex);
-                }
+                result = await Agent.GetParameterValue(Device, parameterEntry.Index, parameterEntry.SubIndex);
             }
 
             return result;
@@ -346,19 +337,13 @@ namespace EltraConnector.UserAgent.Vcs
         {
             Parameter result = null;
 
-            if (Device != null)
+            if (Device != null && Device.SearchParameter(uniqueId) is Parameter parameterEntry)
             {
-                if (Device.SearchParameter(uniqueId) is Parameter parameterEntry)
-                {
-                    var parameterValue = await Agent.GetParameterValue(Device, parameterEntry.Index, parameterEntry.SubIndex);
+                var parameterValue = await Agent.GetParameterValue(Device, parameterEntry.Index, parameterEntry.SubIndex);
 
-                    if(parameterValue!=null)
-                    {
-                        if(parameterEntry.SetValue(parameterValue))
-                        {
-                            result = parameterEntry;
-                        }
-                    }
+                if (parameterValue != null && parameterEntry.SetValue(parameterValue))
+                {
+                    result = parameterEntry;
                 }
             }
 
@@ -378,25 +363,6 @@ namespace EltraConnector.UserAgent.Vcs
             if (Device != null)
             {
                 result = await Agent.GetParameter(Device, index, subIndex);
-            }
-
-            return result;
-        }
-
-        /// <summary>
-        /// GetParameterValueHistory
-        /// </summary>
-        /// <param name="uniqueId"></param>
-        /// <param name="from"></param>
-        /// <param name="to"></param>
-        /// <returns></returns>
-        public async Task<List<ParameterValue>> GetParameterValueHistory(string uniqueId, DateTime from, DateTime to)
-        {
-            var result = new List<ParameterValue>();
-            
-            if (Agent != null && Device != null)
-            {
-                result = await Agent.GetParameterValueHistory(Device, uniqueId, from, to);
             }
 
             return result;
@@ -424,6 +390,25 @@ namespace EltraConnector.UserAgent.Vcs
         /// <summary>
         /// GetParameterValueHistory
         /// </summary>
+        /// <param name="uniqueId"></param>
+        /// <param name="from"></param>
+        /// <param name="to"></param>
+        /// <returns></returns>
+        public async Task<List<ParameterValue>> GetParameterValueHistory(string uniqueId, DateTime from, DateTime to)
+        {
+            var result = new List<ParameterValue>();
+
+            if (Agent != null && Device != null)
+            {
+                result = await Agent.GetParameterValueHistory(Device, uniqueId, from, to);
+            }
+
+            return result;
+        }
+
+        /// <summary>
+        /// GetParameterValueHistory
+        /// </summary>
         /// <param name="index"></param>
         /// <param name="subIndex"></param>
         /// <param name="from"></param>
@@ -432,13 +417,10 @@ namespace EltraConnector.UserAgent.Vcs
         public async Task<List<ParameterValue>> GetParameterValueHistory(ushort index, byte subIndex, DateTime from, DateTime to)
         {
             var result = new List<ParameterValue>();
-           
-            if (Device != null)
+
+            if (Device != null && Device.SearchParameter(index, subIndex) is Parameter parameterEntry)
             {
-                if (Device.SearchParameter(index, subIndex) is Parameter parameterEntry)
-                {
-                    result = await Agent.GetParameterValueHistory(Device, parameterEntry.UniqueId, from, to);
-                }
+                result = await Agent.GetParameterValueHistory(Device, parameterEntry.UniqueId, from, to);
             }
 
             return result;
@@ -510,36 +492,34 @@ namespace EltraConnector.UserAgent.Vcs
             {
                 foreach (var parameter in objectDictionary.Parameters)
                 {
-                    if (parameter is Parameter parameterEntry)
+                    if (parameter is Parameter parameterEntry && parameterEntry.UniqueId == uniqueId)
                     {
-                        if (parameterEntry.UniqueId == uniqueId)
+                        command.SetParameterValue("Index", parameterEntry.Index);
+                        command.SetParameterValue("SubIndex", parameterEntry.SubIndex);
+                        command.SetParameterValue("Data", new byte[parameterEntry.DataType.SizeInBytes]);
+
+                        var response = await Agent.ExecuteCommand(command);
+
+                        if (response != null)
                         {
-                            command.SetParameterValue("Index", parameterEntry.Index);
-                            command.SetParameterValue("SubIndex", parameterEntry.SubIndex);
-                            command.SetParameterValue("Data", new byte[parameterEntry.DataType.SizeInBytes]);
+                            response.GetParameterValue("ErrorCode", ref lastErrorCode);
+                            response.GetParameterValue("Result", ref commandResult);
 
-                            var response = await Agent.ExecuteCommand(command);
+                            var data = response.GetParameter("Data");
 
-                            if (response != null)
+                            result = new ExecuteResult
                             {
-                                response.GetParameterValue("ErrorCode", ref lastErrorCode);
-                                response.GetParameterValue("Result", ref commandResult);
+                                Result = commandResult,
+                                ErrorCode = lastErrorCode
+                            };
 
-                                var data = response.GetParameter("Data");
-
-                                result = new ExecuteResult
-                                {
-                                    Result = commandResult, ErrorCode = lastErrorCode
-                                };
-
-                                if (data != null)
-                                {
-                                    result.Parameters.Add(data);
-                                }
+                            if (data != null)
+                            {
+                                result.Parameters.Add(data);
                             }
-
-                            break;
                         }
+
+                        break;
                     }
                 }
             }

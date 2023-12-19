@@ -52,13 +52,10 @@ namespace EltraConnector.Controllers.Queue
             {
                 foreach (var qi in _parameterChangeQueue)
                 {
-                    if (qi.Equals(queueItem) && queueItem != qi)
+                    if (qi.Equals(queueItem) && queueItem != qi && queueItem.Timestamp < qi.Timestamp)
                     {
-                        if (queueItem.Timestamp < qi.Timestamp)
-                        {
-                            skipProcessing = true;
-                            break;
-                        }
+                        skipProcessing = true;
+                        break;
                     }
                 }
             }

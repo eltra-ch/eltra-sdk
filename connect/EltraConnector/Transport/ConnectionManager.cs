@@ -23,7 +23,7 @@ namespace EltraConnector.Transport
         private readonly SemaphoreSlim _sendLock;
         private readonly List<object> _clientList;
 
-        private List<IConnection> _connectionList;
+        private readonly List<IConnection> _connectionList;
         
         #endregion
 
@@ -141,12 +141,9 @@ namespace EltraConnector.Transport
             {
                 result = true;
             }
-            else if(_clientList.Count == 1)
+            else if (_clientList.Count == 1 && _clientList[0] == client)
             {
-                if(_clientList[0] == client)
-                {
-                    result = true;
-                }
+                result = true;
             }
 
             _connectionLock.Release();
@@ -231,24 +228,6 @@ namespace EltraConnector.Transport
             foreach (var connection in connections)
             {
                 result = await Connect(connection);
-            }
-
-            return result;
-        }
-
-        private bool ConnectionExists(IConnection connection)
-        {
-            bool result = false;
-            
-            foreach (var c in _connectionList)
-            {
-                if (c.UniqueId == connection.UniqueId && 
-                    c.Url == connection.Url &&
-                    c.GetType() == connection.GetType())
-                {
-                    result = true;
-                    break;
-                }
             }
 
             return result;
@@ -673,6 +652,24 @@ namespace EltraConnector.Transport
         public void Unlock()
         {
             _sendLock.Release();
+        }
+
+        private bool ConnectionExists(IConnection connection)
+        {
+            bool result = false;
+
+            foreach (var c in _connectionList)
+            {
+                if (c.UniqueId == connection.UniqueId &&
+                    c.Url == connection.Url &&
+                    c.GetType() == connection.GetType())
+                {
+                    result = true;
+                    break;
+                }
+            }
+
+            return result;
         }
 
         #endregion

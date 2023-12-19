@@ -13,7 +13,8 @@ using EltraConnector.SyncAgent;
 using System.Diagnostics;
 using EltraConnector.Interfaces;
 using EltraCommon.Transport;
-using EltraConnector.Events;
+using EltraCommon.Logger;
+using EltraConnector.Agent.UserAgent.Events;
 
 namespace EltraConnector.Agent
 {
@@ -25,7 +26,7 @@ namespace EltraConnector.Agent
         #region Private fields
 
         private DeviceAgent _deviceAgent;
-        private uint _updateInterval;
+        private readonly uint _updateInterval;
         private uint _timeout;
         private readonly List<(Channel, DeviceVcs)> _vcsList = new List<(Channel, DeviceVcs)>();
         private string _host;
@@ -194,51 +195,40 @@ namespace EltraConnector.Agent
         /// <returns></returns>
         public async Task<bool> Connect()
         {
+            bool result = false;
+
             if (Host == null)
             {
-                throw new Exception("Host property not specified!");
+                throw new ArgumentException("Host property not specified!");
             }
 
             if (Identity == null)
             {
-                throw new Exception("Identity property not specified!");
+                throw new ArgumentException("Identity property not specified!");
             }
 
             Disconnect();
 
             Status = AgentStatus.Starting;
             
-            await CreateDeviceAgent();
-
-            RegisterEvents();
-
-            bool result = await EnsureAgentReady();
-
-            if (result)
+            if(await CreateDeviceAgent())
             {
-                ChannelStatus = ChannelStatus.Online;
-            }
+                RegisterEvents();
 
-            return result;
-        }
+                result = await EnsureAgentReady();
 
-        
-
-        private async Task CreateDeviceAgent()
-        {
-            if (_deviceAgent != null)
-            {
-                _deviceAgent = new DeviceAgent(Host, _deviceAgent.ChannelId, Identity, _updateInterval, _timeout);
+                if (result)
+                {
+                    ChannelStatus = ChannelStatus.Online;
+                }
             }
             else
             {
-                string channelId = await Authentication.GetChannelId();
+                Status = AgentStatus.Stopped;
+            }
+            
 
-                if (!string.IsNullOrEmpty(channelId))
-                {
-                    _deviceAgent = new DeviceAgent(Host, channelId, Identity, _updateInterval, _timeout);
-                }
-            }            
+            return result;
         }
 
         /// <summary>
@@ -252,27 +242,32 @@ namespace EltraConnector.Agent
 
             if (Host == null)
             {
-                throw new Exception("Host property not specified!");
+                throw new ArgumentException("Host property not specified!");
             }
 
             if (Identity == null)
             {
-                throw new Exception("Identity property not specified!");
+                throw new ArgumentException("Identity property not specified!");
             }
 
             Disconnect();
 
             Status = AgentStatus.Starting;
 
-            await CreateDeviceAgent();
-
-            RegisterEvents();
-
-            if(await EnsureAgentReady())
+            if (await CreateDeviceAgent())
             {
-                ChannelStatus = ChannelStatus.Online;
+                RegisterEvents();
 
-                result = await BindChannels(deviceIdentity);
+                if (await EnsureAgentReady())
+                {
+                    ChannelStatus = ChannelStatus.Online;
+
+                    result = await BindChannels(deviceIdentity);
+                }
+            }
+            else
+            {
+                Status = AgentStatus.Stopped;
             }
 
             return result;
@@ -312,20 +307,17 @@ namespace EltraConnector.Agent
 
                 Status = AgentStatus.SignedIn;
             }
-            else if (createAccount)
+            else if (createAccount && await Authentication.SignUp(identity))
             {
-                if (await Authentication.SignUp(identity))
+                Status = AgentStatus.SignedUp;
+
+                if (await Authentication.SignIn(identity))
                 {
-                    Status = AgentStatus.SignedUp;
+                    Identity = identity;
 
-                    if (await Authentication.SignIn(identity))
-                    {
-                        Identity = identity;
-                        
-                        result = true;
+                    result = true;
 
-                        Status = AgentStatus.SignedIn;
-                    }
+                    Status = AgentStatus.SignedIn;
                 }
             }
 
@@ -386,12 +378,12 @@ namespace EltraConnector.Agent
 
             if (Host == null)
             {
-                throw new Exception("Host property not specified!");
+                throw new ArgumentException("Host property not specified!");
             }
 
             if (Identity==null)
             {
-                throw new Exception("Identity property not specified!");
+                throw new ArgumentException("Identity property not specified!");
             }
 
             _vcsList.Clear();
@@ -439,12 +431,12 @@ namespace EltraConnector.Agent
 
             if (Host == null)
             {
-                throw new Exception("Host property not specified!");
+                throw new ArgumentException("Host property not specified!");
             }
 
             if (Identity == null)
             {
-                throw new Exception("AuthData property not specified!");
+                throw new ArgumentException("AuthData property not specified!");
             }
 
             if (_deviceAgent != null)
@@ -471,12 +463,12 @@ namespace EltraConnector.Agent
 
             if (Host == null)
             {
-                throw new Exception("Host property not specified!");
+                throw new ArgumentException("Host property not specified!");
             }
 
             if (Identity == null)
             {
-                throw new Exception("AuthData property not specified!");
+                throw new ArgumentException("AuthData property not specified!");
             }
 
             if (_deviceAgent != null)
@@ -551,13 +543,10 @@ namespace EltraConnector.Agent
         {
             if (!disposedValue)
             {
-                if (disposing)
+                if (disposing && _deviceAgent != null)
                 {
-                    if (_deviceAgent != null)
-                    {
-                        _deviceAgent.Dispose();
-                        _deviceAgent = null;
-                    }
+                    _deviceAgent.Dispose();
+                    _deviceAgent = null;
                 }
 
                 disposedValue = true;
@@ -730,6 +719,49 @@ namespace EltraConnector.Agent
         internal virtual Authentication CreateAuthentication()
         {
             return new Authentication(Host);
+        }
+
+
+        private async Task<bool> CreateDeviceAgent()
+        {
+            bool result = false;
+            const string method = "CreateDeviceAgent";
+
+            try
+            {
+                if (_deviceAgent != null)
+                {
+                    _deviceAgent = new DeviceAgent(Host, _deviceAgent.ChannelId, Identity, _updateInterval, _timeout);
+
+                    result = true;
+                }
+                else
+                {
+                    string channelId = await Authentication.GetChannelId();
+
+                    if (!string.IsNullOrEmpty(channelId))
+                    {
+                        _deviceAgent = new DeviceAgent(Host, channelId, Identity, _updateInterval, _timeout);
+
+                        result = true;
+                    }
+                    else
+                    {
+                        channelId = Guid.NewGuid().ToString();
+
+                        _deviceAgent = new DeviceAgent(Host, channelId, Identity, _updateInterval, _timeout);
+
+                        result = true;
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                MsgLogger.Exception($"{GetType().Name} - {method}", e);
+            }
+            
+
+            return result;
         }
 
         #endregion

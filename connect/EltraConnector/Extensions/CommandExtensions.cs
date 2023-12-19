@@ -9,18 +9,12 @@ namespace EltraConnector.Extensions
         {
             bool result = false;
 
-            if(command!=null)
+            if (command != null && 
+                !string.IsNullOrEmpty(command.CommandId) && 
+                !string.IsNullOrEmpty(command.SourceChannelId) && 
+                command.Command != null)
             {
-                if(!string.IsNullOrEmpty(command.CommandId))
-                {
-                    if (!string.IsNullOrEmpty(command.SourceChannelId))
-                    {
-                        if(command.Command != null)
-                        {
-                            result = true;
-                        }
-                    }
-                }
+                result = true;
             }
 
             return result;
@@ -30,18 +24,12 @@ namespace EltraConnector.Extensions
         {
             bool result = false;
 
-            if (status != null)
+            if (status != null && 
+                !string.IsNullOrEmpty(status.CommandId) && 
+                !string.IsNullOrEmpty(status.ChannelId) && 
+                !string.IsNullOrEmpty(status.CommandName))
             {
-                if (!string.IsNullOrEmpty(status.CommandId))
-                {
-                    if (!string.IsNullOrEmpty(status.ChannelId))
-                    {
-                        if (!string.IsNullOrEmpty(status.CommandName))
-                        {
-                            result = true;
-                        }
-                    }
-                }
+                result = true;
             }
 
             return result;
@@ -51,12 +39,9 @@ namespace EltraConnector.Extensions
         {
             bool result = false;
 
-            if(status!=null)
+            if (status != null && !string.IsNullOrEmpty(status.ChannelId))
             {
-                if (!string.IsNullOrEmpty(status.ChannelId))
-                {
-                    result = true;           
-                }   
+                result = true;
             }
 
             return result;

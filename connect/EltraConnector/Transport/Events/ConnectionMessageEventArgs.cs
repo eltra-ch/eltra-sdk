@@ -56,7 +56,8 @@ namespace EltraConnector.Transport.Events
         public bool IsControlMessage()
         {
             bool result = false;
-            var msg = Message.Trim(new char[] { '\"' });
+            char[] trimChars = new char[] { '\"' };
+            var msg = Message.Trim(trimChars);
 
             if (msg == WsMessageAck.RawData || msg == WsMessageKeepAlive.RawData)
             {

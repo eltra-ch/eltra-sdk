@@ -34,7 +34,7 @@ namespace ConsoleApp1
             {
                 //connector.Host = "https://eltra.ch";
                 //connector.Host = "http://localhost:5001";
-                connector.Host = "http://localhost:52299";
+                connector.Host = "https://localhost:52298";
 
                 Console.WriteLine("Sign-in ...");
 
@@ -51,7 +51,7 @@ namespace ConsoleApp1
                         Console.WriteLine("ERROR: user defined alias not created!");
                     }
 
-                    var alias = await connector.CreateAlias("operator");
+                    /*var alias = await connector.CreateAlias("operator");
 
                     if(alias!=null)
                     {
@@ -60,7 +60,7 @@ namespace ConsoleApp1
                     else
                     {
                         Console.WriteLine("ERROR: alias not created!");
-                    }
+                    }*/
                     
                     connector.StatusChanged += OnConnectorStatusChanged;
                     connector.ChannelStatusChanged += OnChannelStatusChanged;

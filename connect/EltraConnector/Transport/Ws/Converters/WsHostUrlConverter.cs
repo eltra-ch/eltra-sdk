@@ -1,6 +1,6 @@
 ﻿namespace EltraConnector.Transport.Ws.Converters
 {
-    class WsHostUrlConverter
+    static class WsHostUrlConverter
     {
         public static string ToWsUrl(string url)
         {

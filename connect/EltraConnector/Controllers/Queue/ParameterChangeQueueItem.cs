@@ -10,9 +10,9 @@ namespace EltraConnector.Controllers.Queue
 
         private readonly long _timestamp;
         private Task _workingTask;
-        private Parameter _parameter;
-        private ParameterValue _newValue;
-        private ParameterValue _oldValue;
+        private readonly Parameter _parameter;
+        private readonly ParameterValue _newValue;
+        private readonly ParameterValue _oldValue;
 
         #endregion
 

@@ -72,12 +72,12 @@ namespace EltraConnector.Master.Device.ParameterConnection
             bool result = false;
             var communication = _device?.Communication;
 
-            MsgLogger.WriteDebug($"{GetType().Name} - ReadParameter", $"Read Parameter '{parameter.UniqueId}'");
-
             lock (ParameterReadLock)
             {
                 if (parameter != null)
                 {
+                    MsgLogger.WriteDebug($"{GetType().Name} - ReadParameter", $"Read Parameter '{parameter.UniqueId}'");
+
                     if (parameter.Flags.Access != AccessMode.WriteOnly)
                     {
                         if(parameter.DataType!=null)
@@ -102,6 +102,10 @@ namespace EltraConnector.Master.Device.ParameterConnection
 
                         result = false;
                     }
+                }
+                else
+                {
+                    MsgLogger.WriteError($"{GetType().Name} - ReadParameter", "Parameter undefined!");
                 }
             }
 

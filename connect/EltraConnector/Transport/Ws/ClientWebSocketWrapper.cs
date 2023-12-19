@@ -23,8 +23,8 @@ namespace EltraConnector.Transport.Ws
         #region Private fields
 
         private ClientWebSocket _socket;
-        private SemaphoreSlim _sendLock;
-        private SemaphoreSlim _receiveLock;
+        private readonly SemaphoreSlim _sendLock;
+        private readonly SemaphoreSlim _receiveLock;
 
         #endregion
 

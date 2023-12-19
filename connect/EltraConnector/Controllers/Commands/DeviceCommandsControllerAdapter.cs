@@ -55,6 +55,9 @@ namespace EltraConnector.Controllers
 
         private void OnConnectionManagerChanged()
         {
+            const string method = "OnConnectionManagerChanged";
+
+            MsgLogger.WriteDebug($"{GetType().Name} - {method}", "Connection manager set");
         }
 
         #endregion

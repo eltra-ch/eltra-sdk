@@ -14,7 +14,6 @@ namespace EltraConnector.Channels
 
         private readonly ChannelControllerAdapter _channelControllerAdapter;
         private readonly uint _updateInterval;
-        private readonly uint _timeout;
         private ChannelStatus _status = ChannelStatus.Offline;
                 
         #endregion
@@ -27,7 +26,6 @@ namespace EltraConnector.Channels
                   channelControllerAdapter.Channel.Id, channelControllerAdapter.User.Identity)
         {
             _updateInterval = updateInterval;
-            _timeout = timeout;
             _channelControllerAdapter = channelControllerAdapter;
         }
 
@@ -131,8 +129,6 @@ namespace EltraConnector.Channels
                             else
                             {
                                 await Task.Delay(reconnectIntervalWs);
-
-                                updateResult = await UpdateChannelStatus();
                             }
                         }
                     }

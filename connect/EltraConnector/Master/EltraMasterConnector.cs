@@ -137,22 +137,17 @@ namespace EltraConnector.Master
         public async Task<bool> SignIn(UserIdentity identity, bool createAccount = false)
         {
             bool result = false;
+            const string method = "SignIn";
+
+            if (createAccount && !await Authentication.SignUp(identity))
+            {
+                MsgLogger.WriteWarning($"{GetType().Name} - {method}", $"Sign up failed, user '{identity.Name}' exists?");
+            }
 
             if (await Authentication.SignIn(identity))
             {
                 Identity = identity;
                 result = true;
-            }
-            else if (createAccount)
-            {
-                if (await Authentication.SignUp(identity))
-                {
-                    if (await Authentication.SignIn(identity))
-                    {
-                        Identity = identity;
-                        result = true;
-                    }
-                }
             }
 
             return result;
@@ -438,12 +433,9 @@ namespace EltraConnector.Master
 
             if (!await agent.SignIn(Identity) && agent.Good)
             {
-                if (await agent.SignUp(Identity) && agent.Good)
+                if (await agent.SignUp(Identity) && agent.Good && await agent.SignIn(Identity) && agent.Good)
                 {
-                    if (await agent.SignIn(Identity) && agent.Good)
-                    {
-                        result = true;
-                    }
+                    result = true;
                 }
             }
             else

@@ -50,15 +50,11 @@ namespace EltraConnector.Agent.Controllers
         {
             var t = Task.Run(async () => {
 
-                if (ConnectionManager != null)
+                if (ConnectionManager != null && 
+                    await ConnectionManager.Connect(WsChannelId, WsChannelName) && 
+                    !await SendChannelIdentyficationRequest())
                 {
-                    if (await ConnectionManager.Connect(WsChannelId, WsChannelName))
-                    {
-                        if(!await SendChannelIdentyficationRequest())
-                        {
-                            MsgLogger.WriteError($"{GetType().Name} - OnConnectionManagerChanged", $"send ident request failed, channel = {WsChannelName}");
-                        }
-                    }
+                    MsgLogger.WriteError($"{GetType().Name} - OnConnectionManagerChanged", $"send ident request failed, channel = {WsChannelName}");
                 }
             });
 

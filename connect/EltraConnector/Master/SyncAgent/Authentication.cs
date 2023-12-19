@@ -4,7 +4,6 @@ using EltraCommon.Contracts.Users;
 using EltraConnector.Controllers;
 using System;
 using EltraCommon.Transport.Events;
-using System.Web;
 
 namespace EltraConnector.SyncAgent
 {
@@ -16,8 +15,6 @@ namespace EltraConnector.SyncAgent
         #region Private fields
 
         private readonly AuthControllerAdapter _authControllerAdapter;
-
-        private UserIdentity _identity;
         private bool _good;
 
         #endregion
@@ -53,6 +50,11 @@ namespace EltraConnector.SyncAgent
                 OnGoodChanged();
             }
         }
+
+        /// <summary>
+        /// Identity
+        /// </summary>
+        public UserIdentity Identity { get; private set; }
 
         #endregion
 
@@ -90,7 +92,7 @@ namespace EltraConnector.SyncAgent
         {
             bool result = false;
 
-            _identity = identity;
+            Identity = identity;
 
             try
             {

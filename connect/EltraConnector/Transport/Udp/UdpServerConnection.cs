@@ -81,9 +81,9 @@ namespace EltraConnector.Transport.Udp
         {
             try
             {
-                var udpRequest = message.TryDeserializeObject<UdpRequest>();
+                var request = message.TryDeserializeObject<UdpRequest>();
 
-                if (udpRequest is UdpRequest)
+                if (request is UdpRequest udpRequest)
                 {
                     _endpointStore.Add(udpRequest.Identity, endPoint);
                 }
@@ -152,7 +152,7 @@ namespace EltraConnector.Transport.Udp
 
         public Task<T> Receive<T>()
         {
-            return (Task<T>)Task.Run(() => { return null; });
+            return (Task<T>)Task.Run(() => { return Task.CompletedTask; });
         }
 
         public async Task<bool> Send(UserIdentity identity, string typeName, string data)

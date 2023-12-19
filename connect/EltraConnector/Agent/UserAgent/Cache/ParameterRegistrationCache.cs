@@ -112,28 +112,6 @@ namespace EltraConnector.Agent.UserAgent.Cache
             return result;
         }
 
-        public bool FindParameter(string uniqueId, out RegisteredParameter registeredParameter)
-        {
-            bool result = false;
-
-            registeredParameter = null;
-
-            lock (_registeredParameterLocker)
-            {
-                foreach (var parameter in RegisteredParameters)
-                {
-                    if (parameter.UniqueId == uniqueId)
-                    {
-                        registeredParameter = parameter;
-                        result = true;
-                        break;
-                    }
-                }
-            }
-
-            return result;
-        }
-
         public bool CanUnregister(string uniqueId, out RegisteredParameter registeredParameter)
         {
             bool result = false;
@@ -151,13 +129,10 @@ namespace EltraConnector.Agent.UserAgent.Cache
                     }
                 }
 
-                if(registeredParameter != null)
+                if (registeredParameter != null && registeredParameter.InstanceCount == 1)
                 {
-                    if(registeredParameter.InstanceCount == 1)
-                    {
-                        registeredParameter.Release();
-                        result = true;
-                    }
+                    registeredParameter.Release();
+                    result = true;
                 }
             }
 
@@ -204,6 +179,28 @@ namespace EltraConnector.Agent.UserAgent.Cache
                     registeredParameter = parameter;
                     result = true;
                     break;
+                }
+            }
+
+            return result;
+        }
+
+        public bool FindParameter(string uniqueId, out RegisteredParameter registeredParameter)
+        {
+            bool result = false;
+
+            registeredParameter = null;
+
+            lock (_registeredParameterLocker)
+            {
+                foreach (var parameter in RegisteredParameters)
+                {
+                    if (parameter.UniqueId == uniqueId)
+                    {
+                        registeredParameter = parameter;
+                        result = true;
+                        break;
+                    }
                 }
             }
 

@@ -1,13 +1,17 @@
 using EltraConnector.UserAgent.Definitions;
 using System;
 
-/// <summary>
-/// AgentStatusEventArgs - Agent status event arguments
-/// </summary>
-public class AgentStatusEventArgs : EventArgs
+namespace EltraConnector.Agent.UserAgent.Events
 {
+
     /// <summary>
-    /// {AgentStatus} - agent status
+    /// AgentStatusEventArgs - Agent status event arguments
     /// </summary>
-    public AgentStatus Status { get; set; }
+    public class AgentStatusEventArgs : EventArgs
+    {
+        /// <summary>
+        /// {AgentStatus} - agent status
+        /// </summary>
+        public AgentStatus Status { get; set; }
+    }
 }

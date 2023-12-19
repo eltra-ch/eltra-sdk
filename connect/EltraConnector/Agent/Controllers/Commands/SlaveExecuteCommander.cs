@@ -28,8 +28,8 @@ namespace EltraConnector.Agent.Controllers.Commands
 
         private readonly SlaveChannelControllerAdapter _channelAdapter;
         private readonly List<DeviceCommand> _deviceCommands;        
-        private int _nodeId;
         private readonly ExecuteCommandCache _executeCommandCache;
+        private readonly object _lock = new object();
 
         #endregion
 
@@ -49,8 +49,6 @@ namespace EltraConnector.Agent.Controllers.Commands
             : base(channelAdapter.ConnectionManager, channelAdapter.ChannelId + $"_ExecCommander_{nodeId}", ChannelName,
                   channelAdapter.ChannelId, nodeId, channelAdapter.User.Identity)
         {
-            _nodeId = nodeId;
-
             _deviceCommands = new List<DeviceCommand>();
             _executeCommandCache = new ExecuteCommandCache();
 
@@ -426,7 +424,7 @@ namespace EltraConnector.Agent.Controllers.Commands
         {
             var result = new List<DeviceCommand>();
 
-            lock (this)
+            lock (_lock)
             {
                 foreach (var deviceCommand in _deviceCommands)
                 {
@@ -582,16 +580,13 @@ namespace EltraConnector.Agent.Controllers.Commands
                         {
                             var execCommand = await PopCommand(command.Id, command.Device, ExecCommandStatus.Executed);
 
-                            if (execCommand != null)
+                            if (execCommand != null && await SetCommandStatus(execCommand, ExecCommandStatus.Complete))
                             {
-                                if (await SetCommandStatus(execCommand, ExecCommandStatus.Complete))
-                                {
-                                    RemoveDeviceCommand(command.Id);
+                                RemoveDeviceCommand(command.Id);
 
-                                    result = execCommand.Command;
+                                result = execCommand.Command;
 
-                                    OnCommandExecuted(new ExecuteCommanderEventArgs { CommandUuid = command.Id, Command = command, Status = ExecCommandStatus.Complete });
-                                }
+                                OnCommandExecuted(new ExecuteCommanderEventArgs { CommandUuid = command.Id, Command = command, Status = ExecCommandStatus.Complete });
                             }
                         }
                         break;
@@ -621,7 +616,7 @@ namespace EltraConnector.Agent.Controllers.Commands
         {
             DeviceCommand result = null;
 
-            lock (this)
+            lock (_lock)
             {
                 foreach (var command in _deviceCommands)
                 {
@@ -640,7 +635,7 @@ namespace EltraConnector.Agent.Controllers.Commands
         {
             var deviceCommand = FindDeviceCommand(uuid);
 
-            lock (this)
+            lock (_lock)
             {
                 if (_deviceCommands.Contains(deviceCommand))
                 {
@@ -651,7 +646,7 @@ namespace EltraConnector.Agent.Controllers.Commands
 
         public void FollowCommand(DeviceCommand command)
         {
-            lock (this)
+            lock (_lock)
             {
                 _deviceCommands.Add(command);
             }

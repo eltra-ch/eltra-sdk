@@ -88,17 +88,12 @@ namespace EltraConnector.Transport.Ws
             {
                 bool result = false;
 
-                if (_disconnectTokenSource != null)
+                if (_disconnectTokenSource != null && _disconnectTokenSource.IsCancellationRequested && 
+                    (Socket.State == WebSocketState.Open ||
+                     Socket.State == WebSocketState.CloseSent ||
+                     Socket.State == WebSocketState.CloseReceived))
                 {
-                    if(_disconnectTokenSource.IsCancellationRequested)
-                    {
-                        if(Socket.State == WebSocketState.Open ||
-                            Socket.State == WebSocketState.CloseSent ||
-                            Socket.State == WebSocketState.CloseReceived)
-                        {
-                            result = true;
-                        }
-                    }
+                    result = true;
                 }
 
                 return result;
@@ -198,7 +193,7 @@ namespace EltraConnector.Transport.Ws
             {
                 MsgLogger.Exception($"{GetType().Name} - Connect", e);
 
-                HandleBrokenConnection(e.WebSocketErrorCode);
+                await HandleBrokenConnection(e.WebSocketErrorCode);
             }
             catch (Exception e)
             {
@@ -251,7 +246,7 @@ namespace EltraConnector.Transport.Ws
             {
                 MsgLogger.Exception($"{GetType().Name} - Disconnect", e);
 
-                HandleBrokenConnection(e.WebSocketErrorCode);
+                await HandleBrokenConnection(e.WebSocketErrorCode);
             }
             catch (Exception e)
             {
@@ -268,6 +263,35 @@ namespace EltraConnector.Transport.Ws
                         MsgLogger.Exception($"{GetType().Name} - Disconnect", e);
                     }
                 }
+            }
+
+            return result;
+        }
+
+        public async Task<bool> Send<T>(UserIdentity identity, T obj)
+        {
+            bool result = false;
+
+            try
+            {
+                var msg = JsonSerializer.Serialize(obj);
+
+                if (await Send(identity, typeof(T).FullName, msg))
+                {
+                    OnMessageSent(msg, MessageType.Json);
+
+                    result = true;
+                }
+                else
+                {
+                    OnErrorOccured("send error occured", MessageType.Text);
+                }
+            }
+            catch (Exception e)
+            {
+                MsgLogger.Exception($"{GetType().Name} - Send", e);
+
+                OnErrorOccured("send error occured - exception", MessageType.Text);
             }
 
             return result;
@@ -301,7 +325,7 @@ namespace EltraConnector.Transport.Ws
             {
                 MsgLogger.Exception($"{GetType().Name} - Send", e);
 
-                HandleBrokenConnection(e.WebSocketErrorCode);
+                await HandleBrokenConnection(e.WebSocketErrorCode);
             }
             catch (Exception e)
             {
@@ -313,7 +337,7 @@ namespace EltraConnector.Transport.Ws
             return result;
         }
 
-        private async void HandleBrokenConnection(WebSocketError errorCode = WebSocketError.ConnectionClosedPrematurely)
+        private async Task HandleBrokenConnection(WebSocketError errorCode = WebSocketError.ConnectionClosedPrematurely)
         {
             MsgLogger.WriteError($"{GetType().Name} - HandleBrokenConnection", $"Connection to '{Url}' failed, error code = {errorCode}");
 
@@ -332,35 +356,6 @@ namespace EltraConnector.Transport.Ws
 
                 await Task.Delay(100);
             }            
-        }
-
-        public async Task<bool> Send<T>(UserIdentity identity, T obj)
-        {
-            bool result = false;
-
-            try
-            {
-                var msg = JsonSerializer.Serialize(obj);
-
-                if (await Send(identity, typeof(T).FullName, msg))
-                {
-                    OnMessageSent(msg, MessageType.Json);
-
-                    result = true;
-                }
-                else
-                {
-                    OnErrorOccured("send error occured", MessageType.Text);
-                }
-            }
-            catch (Exception e)
-            {
-                MsgLogger.Exception($"{GetType().Name} - Send", e);
-
-                OnErrorOccured("send error occured - exception", MessageType.Text);
-            }
-
-            return result;
         }
 
         private async Task<WsMessage> ReadWsMessage()
@@ -565,7 +560,7 @@ namespace EltraConnector.Transport.Ws
 
                     if (Socket.State == WebSocketState.Aborted || Socket.State == WebSocketState.None || Socket.State == WebSocketState.Closed)
                     {
-                        HandleBrokenConnection();
+                        await HandleBrokenConnection();
                     }
                 }
             }
@@ -573,7 +568,7 @@ namespace EltraConnector.Transport.Ws
             {
                 MsgLogger.Exception($"{GetType().Name} - Receive", e);
 
-                HandleBrokenConnection(e.WebSocketErrorCode);
+                await HandleBrokenConnection(e.WebSocketErrorCode);
 
                 OnErrorOccured($"receive failed, error code = {e.WebSocketErrorCode}", MessageType.Text);
             }
@@ -585,14 +580,6 @@ namespace EltraConnector.Transport.Ws
             }
 
             return result;
-        }
-
-        public static bool IsJson(string json)
-        {
-            json = json.Trim();
-
-            return json.StartsWith("{") && json.EndsWith("}")
-                   || json.StartsWith("[") && json.EndsWith("]");
         }
 
         public async Task<T> Receive<T>()
@@ -628,6 +615,14 @@ namespace EltraConnector.Transport.Ws
             }
 
             return result;
+        }
+
+        public static bool IsJson(string json)
+        {
+            json = json.Trim();
+
+            return json.StartsWith("{") && json.EndsWith("}")
+                   || json.StartsWith("[") && json.EndsWith("]");
         }
 
         #endregion

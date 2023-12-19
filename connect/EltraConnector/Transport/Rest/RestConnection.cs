@@ -89,7 +89,7 @@ namespace EltraConnector.Transport.Rest
 
         public Task<T> Receive<T>()
         {
-            return (Task<T>)Task.Run(() => { return default; });
+            return (Task<T>)Task.Run(() => { return Task.CompletedTask; });
         }
 
         public Task<bool> Send(UserIdentity identity, string typeName, string data)

@@ -12,9 +12,9 @@ namespace EltraConnector.Agent
     {
         #region Private fields
 
-        private AgentConnector _connector;
+        private readonly AgentConnector _connector;
         private EltraDevice _device;
-        private Channel _channel;
+        private readonly Channel _channel;
 
         #endregion
 

@@ -28,6 +28,7 @@ using EltraConnector.Transport.Ws.Interfaces;
 using EltraConnector.Transport;
 using EltraConnector.Agent.Controllers.Heartbeat;
 using EltraConnector.Agent.Controllers.Parameters;
+using EltraConnector.Agent.UserAgent.Events;
 
 namespace EltraConnector.UserAgent
 {
@@ -39,18 +40,18 @@ namespace EltraConnector.UserAgent
         private readonly UserIdentity _identity;
         private readonly SlaveChannelControllerAdapter _channelAdapter;
         private readonly uint _timeout;
+        private readonly object _lock = new object();
 
         private Task _agentTask;
         private CancellationTokenSource _agentCancelationTokenSource;
         private Authentication _authentication;
         private Channel _channel;
         private UserIdentity _deviceIdentity;
-        private AgentStatus _status = AgentStatus.Undefined;
+        private AgentStatus _status;
         private ChannelStatus _channelStatus = ChannelStatus.Undefined;
         private ChannelStatus _remoteChannelStatus = ChannelStatus.Undefined;
         private string _remoteChannelId;
         private string _url;
-        private IConnectionManager _connectionManager;
         private ChannelHeartbeat _channelHeartbeat;
         private SlaveExecuteCommander _executeCommander;
         private ParameterUpdateManager _parameterUpdateManager;
@@ -66,9 +67,8 @@ namespace EltraConnector.UserAgent
             _identity = identity;
             _channel = new Channel() { Status = ChannelStatus.Offline };
             _executedCommands = new List<DeviceCommand>();
-            _connectionManager = new ConnectionManager() { HostUrl = url };
 
-            _channelAdapter = new SlaveChannelControllerAdapter(url, uuid, identity, updateInterval, timeout) { ConnectionManager = _connectionManager };
+            _channelAdapter = new SlaveChannelControllerAdapter(url, uuid, identity, updateInterval, timeout) { ConnectionManager = new ConnectionManager() { HostUrl = url } };
 
             Initialize(url, updateInterval);
         }
@@ -276,6 +276,8 @@ namespace EltraConnector.UserAgent
 
         private void Initialize(string url, uint updateInterval)
         {
+            const string method = "Initialize";
+
             _url = url;
             _authentication = new Authentication(url);
 
@@ -287,7 +289,10 @@ namespace EltraConnector.UserAgent
 
             _agentCancelationTokenSource = new CancellationTokenSource();
 
-            StartWorkingTask();
+            if(!StartWorkingTask())
+            {
+                MsgLogger.WriteError($"{GetType().Name} - {method}", "Start working task failed!");
+            }
         }
 
         private void Initialize(SyncCloudAgent agent, EltraDevice node)
@@ -365,29 +370,6 @@ namespace EltraConnector.UserAgent
             _parameterUpdateManager.ParameterValueChanged -= OnParameterValueChanged;
         }
         
-        private async Task<bool> RegisterChannel(CancellationToken token)
-        {
-            const int minWaitTime = 300;
-            bool result = false;
-
-            while (!token.IsCancellationRequested)
-            {
-                if (await RegisterChannel())
-                {
-                    result = true;
-                    break;
-                }
-                else
-                {
-                    MsgLogger.WriteError($"{GetType().Name} - RegisterChannel", "Channel register failed!");
-                }
-
-                await Task.Delay(minWaitTime);
-            }
-
-            return result;
-        }
-
         private bool StartChannel(CancellationToken token)
         {
             bool result = false;
@@ -538,28 +520,6 @@ namespace EltraConnector.UserAgent
             Status = AgentStatus.Stopped;
         }
 
-        private async Task RunMaster(CancellationToken token)
-        {
-            Status = AgentStatus.Starting;
-
-            if (!StartChannel(token))
-            {
-                MsgLogger.WriteError($"{GetType().Name} - Run", $"starting channel failed");
-            }
-            else
-            {
-                Status = AgentStatus.Started;
-            }
-
-            await WaitForRequests(token);
-
-            await StopChannel();
-            
-            MsgLogger.WriteLine($"{GetType().Name} - RunMaster", $"Sync agent working thread finished successfully!");
-
-            Status = AgentStatus.Stopped;
-        }
-
         private static async Task WaitForRequests(CancellationToken token)
         {
             const int minWaitTime = 10;
@@ -590,6 +550,29 @@ namespace EltraConnector.UserAgent
             return await _channelAdapter.Update();
         }
 
+        private async Task<bool> RegisterChannel(CancellationToken token)
+        {
+            const int minWaitTime = 300;
+            bool result = false;
+
+            while (!token.IsCancellationRequested)
+            {
+                if (await RegisterChannel())
+                {
+                    result = true;
+                    break;
+                }
+                else
+                {
+                    MsgLogger.WriteError($"{GetType().Name} - RegisterChannel", "Channel register failed!");
+                }
+
+                await Task.Delay(minWaitTime);
+            }
+
+            return result;
+        }
+
         private async Task<bool> RegisterChannel()
         {
             bool result = false;
@@ -598,12 +581,9 @@ namespace EltraConnector.UserAgent
             {
                 result = await UpdateChannel();
             }
-            else if (await SignUp(_identity))
+            else if (await SignUp(_identity) && await SignIn(_identity))
             {
-                if (await SignIn(_identity))
-                {
-                    result = await UpdateChannel();
-                }
+                result = await UpdateChannel();
             }
 
             return result;
@@ -687,49 +667,35 @@ namespace EltraConnector.UserAgent
 
         private void OnHeartbeatStatusChanged(object sender, WsChannelStatusEventArgs e)
         {
-            if(_executeCommander != null && _executeCommander.Status == WsChannelStatus.Started)
+            if (_executeCommander != null &&
+                _executeCommander.Status == WsChannelStatus.Started &&
+                _parameterUpdateManager.Status == WsChannelStatus.Started && 
+                e.Status == WsChannelStatus.Started)
             {
-                if (_parameterUpdateManager.Status == WsChannelStatus.Started)
-                {
-                    if(e.Status == WsChannelStatus.Started)
-                    {
-                        Status = AgentStatus.Started;
-                    }
-                }
+                Status = AgentStatus.Started;
             }
         }
 
         private void OnParameterUpdateStatusChanged(object sender, WsChannelStatusEventArgs e)
         {
-            if (_channelHeartbeat != null && _channelHeartbeat.Status == WsChannelStatus.Started)
+            if (_channelHeartbeat != null && 
+                _channelHeartbeat.Status == WsChannelStatus.Started && 
+                _executeCommander.Status == WsChannelStatus.Started && 
+                e.Status == WsChannelStatus.Started)
             {
-                if (_executeCommander.Status == WsChannelStatus.Started)
-                {
-                    if (e.Status == WsChannelStatus.Started)
-                    {
-                        Status = AgentStatus.Started;
-                    }                    
-                }
+                Status = AgentStatus.Started;
             }
         }
 
         private void OnExecuteCommanderStatusChanged(object sender, WsChannelStatusEventArgs e)
         {
-            if (_channelHeartbeat != null && _channelHeartbeat.Status == WsChannelStatus.Started)
+            if (_channelHeartbeat != null &&
+                _channelHeartbeat.Status == WsChannelStatus.Started &&
+                _parameterUpdateManager.Status == WsChannelStatus.Started && 
+                e.Status == WsChannelStatus.Started)
             {
-                if (_parameterUpdateManager.Status == WsChannelStatus.Started)
-                {
-                    if (e.Status == WsChannelStatus.Started)
-                    {
-                        Status = AgentStatus.Started;
-                    }
-                }
+                Status = AgentStatus.Started;
             }
-        }
-
-        private async Task<List<EltraDevice>> GetDeviceNodes(Channel channel)
-        {
-            return await _channelAdapter.GetDeviceNodes(channel);
         }
 
         protected virtual async Task UpdateDeviceDescriptionFile(EltraDevice device)
@@ -800,7 +766,7 @@ namespace EltraConnector.UserAgent
 
         private void AddCommandToExecuted(DeviceCommand command)
         {
-            lock (this)
+            lock (_lock)
             {
                 _executedCommands.Add(command);
             }
@@ -810,7 +776,7 @@ namespace EltraConnector.UserAgent
         {
             DeviceCommand result = null;
 
-            lock (this)
+            lock (_lock)
             {
                 foreach (var command in _executedCommands)
                 {
@@ -827,7 +793,7 @@ namespace EltraConnector.UserAgent
 
         private void RemoveCommandFromExecuted(DeviceCommand deviceCommand)
         {
-            lock (this)
+            lock (_lock)
             {
                 if (_executedCommands.Contains(deviceCommand))
                 {

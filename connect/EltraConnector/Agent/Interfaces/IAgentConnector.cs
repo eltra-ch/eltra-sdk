@@ -1,6 +1,7 @@
 ﻿using EltraCommon.Contracts.Channels;
 using EltraCommon.Contracts.Users;
 using EltraConnector.Agent.Events;
+using EltraConnector.Agent.UserAgent.Events;
 using EltraConnector.UserAgent.Definitions;
 using System;
 using System.Collections.Generic;
@@ -114,11 +115,6 @@ namespace EltraConnector.Interfaces
         /// <param name="identity">device credentials</param>
         /// <returns>{bool}</returns>
         Task<bool> BindChannels(UserIdentity identity);
-
-        /// <summary>
-        /// Dispose agent instance
-        /// </summary>
-        void Dispose();
 
         #endregion
     }

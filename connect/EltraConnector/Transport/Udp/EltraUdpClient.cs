@@ -47,12 +47,9 @@ namespace EltraConnector.Transport.Udp
 
                 Host = url.Substring(0, separatorIndex);
 
-                if (url.Length > separatorIndex + 1)
+                if (url.Length > separatorIndex + 1 && int.TryParse(url.Substring(separatorIndex + 1), out var port))
                 {
-                    if (int.TryParse(url.Substring(separatorIndex + 1), out var port))
-                    {
-                        Port = port;
-                    }
+                    Port = port;
                 }
             }
         }

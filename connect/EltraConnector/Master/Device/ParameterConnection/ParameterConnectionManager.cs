@@ -19,6 +19,7 @@ namespace EltraConnector.Master.Device.ParameterConnection
 
         private readonly MasterDevice _device;
         private readonly ParameterUpdater _parameterUpdater;
+        private readonly object _lock = new object();
 
         private readonly List<RegisteredParameter> _registerParametersQueue;
         private readonly List<RegisteredParameter> _unregisterParametersQueue;
@@ -136,7 +137,7 @@ namespace EltraConnector.Master.Device.ParameterConnection
             bool result = false;
             var communication = _device?.Communication;
 
-            lock (this)
+            lock (_lock)
             {
                 if (parameter != null)
                 {

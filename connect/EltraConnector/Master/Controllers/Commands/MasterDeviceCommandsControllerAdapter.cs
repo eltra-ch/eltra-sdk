@@ -49,12 +49,11 @@ namespace EltraConnector.Master.Controllers.Commands
                     {
                         var start = MsgLogger.BeginTimeMeasure();
 
-                        if (ConnectionManager != null && ConnectionManager.IsConnected(wsChannelId))
+                        if (ConnectionManager != null && 
+                            ConnectionManager.IsConnected(wsChannelId) && 
+                            await ConnectionManager.Send(wsChannelId, _userIdentity, execCommand))
                         {
-                            if (await ConnectionManager.Send(wsChannelId, _userIdentity, execCommand))
-                            {
-                                result = true;
-                            }
+                            result = true;
                         }
 
                         MsgLogger.EndTimeMeasure($"{GetType().Name} - PushCommand", start, $"push command='{execCommand.Command.Name}' to device='{device.Family}':0x{device.NodeId}");

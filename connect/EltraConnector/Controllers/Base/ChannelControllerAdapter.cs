@@ -431,12 +431,9 @@ namespace EltraConnector.Controllers.Base
                     result = true;
                 }
 
-                if (result)
+                if (result && await ConnectionManager.Send(WsChannelId, _user.Identity, statusUpdate))
                 {
-                    if (await ConnectionManager.Send(WsChannelId, _user.Identity, statusUpdate))
-                    {
-                        result = true;
-                    }
+                    result = true;
                 }
             }
 

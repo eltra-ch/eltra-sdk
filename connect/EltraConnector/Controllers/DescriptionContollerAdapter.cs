@@ -20,7 +20,7 @@ namespace EltraConnector.Controllers
     {
         #region Private fields
 
-        private UserIdentity _identity;
+        private readonly UserIdentity _identity;
 
         #endregion
 

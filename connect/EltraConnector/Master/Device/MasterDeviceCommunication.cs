@@ -4,6 +4,8 @@ using System;
 using EltraCommon.Contracts.Devices;
 using EltraCommon.ObjectDictionary.Xdd.DeviceDescription.Profiles.Application.Parameters;
 using System.Threading.Tasks;
+using System.Diagnostics;
+using EltraCommon.Logger;
 
 #pragma warning disable 1591
 
@@ -88,12 +90,43 @@ namespace EltraConnector.Master.Device
 
         private void ReadAllParametersAsync()
         {
+            const string method = "ReadAllParametersAsync";
+
             Task.Run(async () =>
             {
-                while (Vcs.Agent == null);
-
-                await Vcs.ReadAllParameters();
+                if (await WaitForAgent())
+                {
+                    if(!await Vcs.ReadAllParameters())
+                    {
+                        MsgLogger.WriteError($"{GetType().Name} - {method}", "Read all parameters failed!");
+                    }
+                }
+                else
+                {
+                    MsgLogger.WriteError($"{GetType().Name} - {method}", $"Wait for agent failed - timeout!");
+                }
             });
+        }
+
+        private async Task<bool> WaitForAgent()
+        {
+            int minWaitTime = 10;
+            var timeout = new Stopwatch();
+            int maxWaitTime = (int)TimeSpan.FromSeconds(60).TotalMilliseconds;
+
+            timeout.Start();
+
+            while (Vcs.Agent == null)
+            {
+                await Task.Delay(minWaitTime);
+
+                if (timeout.ElapsedMilliseconds > maxWaitTime)
+                {
+                    break;
+                }
+            }
+
+            return (Vcs.Agent != null);
         }
 
         protected virtual void OnStatusChanged(DeviceCommunicationEventArgs e)
@@ -110,26 +143,10 @@ namespace EltraConnector.Master.Device
             bool result = false;
             var parameter = Vcs.SearchParameter(objectIndex, objectSubindex) as Parameter;
 
-            if(parameter != null)
+            if (parameter != null && parameter.GetValue(out byte[] bytes))
             {
-                if(parameter.GetValue(out byte[] bytes))
-                {
-                    data = bytes;
-                    result = true;
-                }                    
-            }
-
-            return result;
-        }
-
-        public virtual bool SetObject(ushort objectIndex, byte objectSubindex, byte[] data)
-        {
-            bool result = false;
-            var xddParameter = Vcs.SearchParameter(objectIndex, objectSubindex) as XddParameter;
-
-            if(xddParameter != null)
-            {
-                result = xddParameter.SetValue(new ParameterValue(data));
+                data = bytes;
+                result = true;
             }
 
             return result;
@@ -138,6 +155,19 @@ namespace EltraConnector.Master.Device
         public virtual bool GetObject(string loginName, ushort objectIndex, byte objectSubindex, ref byte[] data)
         {
             return GetObject(objectIndex, objectSubindex, ref data);
+        }
+
+        public virtual bool SetObject(ushort objectIndex, byte objectSubindex, byte[] data)
+        {
+            bool result = false;
+            var xddParameter = Vcs.SearchParameter(objectIndex, objectSubindex) as XddParameter;
+
+            if (xddParameter != null)
+            {
+                result = xddParameter.SetValue(new ParameterValue(data));
+            }
+
+            return result;
         }
 
         public virtual bool SetObject(string loginName, ushort objectIndex, byte objectSubindex, byte[] data)

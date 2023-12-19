@@ -8,7 +8,7 @@ namespace EltraConnector.Controllers.Commands
 {
     class ExecuteCommandCache
     {
-        private Dictionary<string, List<ExecuteCommandCacheEntry>> _cache;
+        private readonly Dictionary<string, List<ExecuteCommandCacheEntry>> _cache;
         private readonly SemaphoreSlim _lock;
 
         public ExecuteCommandCache()

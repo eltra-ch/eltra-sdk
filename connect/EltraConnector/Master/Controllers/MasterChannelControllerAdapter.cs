@@ -99,12 +99,14 @@ namespace EltraConnector.Master.Controllers
 
         private void OnParametersUpdated(object sender, ParameterUpdateEventArgs args)
         {
-            var device = args.Device;
+            const string method = "OnParametersUpdated";
 
-            MsgLogger.WriteFlow($"{GetType().Name} - OnParametersUpdated", $"Device = {device.Name}, parameters updated, result = {args.Result}");
+            var device = args.Device;
 
             if (device != null)
             {
+                MsgLogger.WriteFlow($"{GetType().Name} - {method}", $"Device = {device.Name}, parameters updated, result = {args.Result}");
+
                 if (device.DeviceDescription != null)
                 {
                     device.Status = DeviceStatus.Registered;
@@ -115,6 +117,10 @@ namespace EltraConnector.Master.Controllers
                 }
 
                 device.RunAsync();
+            }
+            else
+            {
+                MsgLogger.WriteError($"{GetType().Name} - {method}", $"Device not available!");
             }
         }
 
@@ -190,12 +196,9 @@ namespace EltraConnector.Master.Controllers
                 }
             }
 
-            if (result)
+            if (result && FindDevice(device.NodeId) == null)
             {
-                if (FindDevice(device.NodeId) == null)
-                {
-                    AddDevice(device);
-                }
+                AddDevice(device);
             }
 
             return result;
@@ -454,8 +457,26 @@ namespace EltraConnector.Master.Controllers
             return result;
         }
 
+        private EltraDevice FindDevice(int nodeId)
+        {
+            EltraDevice result = null;
+
+            foreach (var deviceNode in SafeDevicesArray)
+            {
+                var device = deviceNode;
+                
+                if(device.NodeId == nodeId)
+                {
+                    result = device;
+                    break;
+                }
+            }
+                            
+            return result;
+        }
+
         public async Task<bool> ExecuteCommands()
-        {                     
+        {
             bool result = true;
 
             try
@@ -463,10 +484,10 @@ namespace EltraConnector.Master.Controllers
                 foreach (var deviceNode in SafeDevicesArray)
                 {
                     var executeCommands = await DeviceControllerAdapter.PopCommands(deviceNode, ExecCommandStatus.Waiting);
-                    
+
                     foreach (var executeCommand in executeCommands)
                     {
-                        if(!await ExecuteCommand(deviceNode, executeCommand))
+                        if (!await ExecuteCommand(deviceNode, executeCommand))
                         {
                             result = false;
                         }
@@ -484,24 +505,6 @@ namespace EltraConnector.Master.Controllers
                 result = false;
             }
 
-            return result;
-        }
-
-        private EltraDevice FindDevice(int nodeId)
-        {
-            EltraDevice result = null;
-
-            foreach (var deviceNode in SafeDevicesArray)
-            {
-                var device = deviceNode;
-                
-                if(device.NodeId == nodeId)
-                {
-                    result = device;
-                    break;
-                }
-            }
-                            
             return result;
         }
 

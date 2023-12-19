@@ -130,7 +130,7 @@ namespace EltraConnector.Transport.Udp
 
         public Task<T> Receive<T>()
         {
-            return (Task<T>)Task.Run(() => { return null; });
+            return (Task<T>)Task.Run(() => { return Task.CompletedTask; });
         }
 
         public async Task<bool> Send(UserIdentity identity, string typeName, string data)

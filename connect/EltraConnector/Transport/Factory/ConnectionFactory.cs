@@ -20,9 +20,6 @@ namespace EltraConnector.Transport.Factory
             switch (channelName)
             {
                 case "SessionUpdate":
-                    result.Add(new WsConnection(uniqueId, channelName) { Url = url });
-                    result.Add(new RestConnection() { Url = url, UniqueId = uniqueId, ChannelName = channelName });
-                    break;
                 case "ParameterUpdate":
                     result.Add(new WsConnection(uniqueId, channelName) { Url = url });
                     result.Add(new RestConnection() { Url = url, UniqueId = uniqueId, ChannelName = channelName });
