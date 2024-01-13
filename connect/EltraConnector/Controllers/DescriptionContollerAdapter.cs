@@ -26,8 +26,8 @@ namespace EltraConnector.Controllers
 
         #region Constructors
 
-        public DescriptionControllerAdapter(UserIdentity identity, string url)
-            : base(url)
+        public DescriptionControllerAdapter(IHttpClient httpClient, UserIdentity identity, string url)
+            : base(httpClient, url)
         {
             _identity = identity;
         }

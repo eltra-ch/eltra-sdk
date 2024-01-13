@@ -9,6 +9,9 @@ using EltraConnector.Transport.Factory;
 using EltraCommon.Logger;
 using System.Linq;
 using EltraCommon.Contracts.Ws;
+using EltraCommon.Transport;
+using EltraConnector.Transport.Ws;
+using EltraConnector.Transport.Udp;
 
 namespace EltraConnector.Transport
 {
@@ -24,7 +27,10 @@ namespace EltraConnector.Transport
         private readonly List<object> _clientList;
 
         private readonly List<IConnection> _connectionList;
-        
+        private readonly IHttpClient _httpClient;
+        private readonly IUdpClient _udpClient;
+        private readonly IWebSocketClient _webSocketClient;
+
         #endregion
 
         #region Constructors
@@ -32,8 +38,12 @@ namespace EltraConnector.Transport
         /// <summary>
         /// ConnectionManager
         /// </summary>
-        public ConnectionManager()
+        public ConnectionManager(IHttpClient httpClient, IUdpClient udpClient, IWebSocketClient webSocketClient)
         {
+            _httpClient = httpClient;
+            _udpClient = udpClient;
+            _webSocketClient = webSocketClient;
+
             _clientList = new List<object>();
             _connectionLock = new SemaphoreSlim(1);
             _sendLock = new SemaphoreSlim(1);
@@ -196,7 +206,7 @@ namespace EltraConnector.Transport
 
             if(connections.Count == 0)
             {
-                connections = ConnectionFactory.CreateConnections(uniqueId, channelName, HostUrl);
+                connections = ConnectionFactory.CreateConnections(_httpClient, _udpClient, _webSocketClient, uniqueId, channelName, HostUrl);
                 
                 result = await Connect(connections);
             }

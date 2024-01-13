@@ -15,6 +15,8 @@ using EltraConnector.Interfaces;
 using EltraCommon.Transport;
 using EltraCommon.Logger;
 using EltraConnector.Agent.UserAgent.Events;
+using EltraConnector.Transport.Ws;
+using EltraConnector.Transport.Udp;
 
 namespace EltraConnector.Agent
 {
@@ -25,10 +27,14 @@ namespace EltraConnector.Agent
     {
         #region Private fields
 
-        private DeviceAgent _deviceAgent;
         private readonly uint _updateInterval;
-        private uint _timeout;
+        private readonly IHttpClient _httpClient;
+        private readonly IUdpClient _udpClient;
+        private readonly IWebSocketClient _webSocketClient;
         private readonly List<(Channel, DeviceVcs)> _vcsList = new List<(Channel, DeviceVcs)>();
+
+        private DeviceAgent _deviceAgent;
+        private uint _timeout;
         private string _host;
         private UserIdentity _identity;
         private bool disposedValue;
@@ -43,8 +49,12 @@ namespace EltraConnector.Agent
         /// <summary>
         /// AgentConnector
         /// </summary>
-        public AgentConnector()
+        public AgentConnector(IHttpClient httpClient, IUdpClient udpClient, IWebSocketClient webSocketClient)
         {
+            _httpClient = httpClient;
+            _udpClient = udpClient;
+            _webSocketClient = webSocketClient;
+            
             _updateInterval = 60;
             _timeout = 180;
         }
@@ -718,7 +728,7 @@ namespace EltraConnector.Agent
 
         internal virtual Authentication CreateAuthentication()
         {
-            return new Authentication(Host);
+            return new Authentication(_httpClient, Host);
         }
 
 
@@ -731,7 +741,7 @@ namespace EltraConnector.Agent
             {
                 if (_deviceAgent != null)
                 {
-                    _deviceAgent = new DeviceAgent(Host, _deviceAgent.ChannelId, Identity, _updateInterval, _timeout);
+                    _deviceAgent = new DeviceAgent(_httpClient, _udpClient, _webSocketClient, Host, _deviceAgent.ChannelId, Identity, _updateInterval, _timeout);
 
                     result = true;
                 }
@@ -741,7 +751,7 @@ namespace EltraConnector.Agent
 
                     if (!string.IsNullOrEmpty(channelId))
                     {
-                        _deviceAgent = new DeviceAgent(Host, channelId, Identity, _updateInterval, _timeout);
+                        _deviceAgent = new DeviceAgent(_httpClient, _udpClient, _webSocketClient, Host, channelId, Identity, _updateInterval, _timeout);
 
                         result = true;
                     }
@@ -749,7 +759,7 @@ namespace EltraConnector.Agent
                     {
                         channelId = Guid.NewGuid().ToString();
 
-                        _deviceAgent = new DeviceAgent(Host, channelId, Identity, _updateInterval, _timeout);
+                        _deviceAgent = new DeviceAgent(_httpClient, _udpClient, _webSocketClient, Host, channelId, Identity, _updateInterval, _timeout);
 
                         result = true;
                     }

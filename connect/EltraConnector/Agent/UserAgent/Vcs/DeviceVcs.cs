@@ -13,6 +13,9 @@ using EltraConnector.SyncAgent;
 using EltraCommon.Contracts.History;
 using EltraCommon.Contracts.Parameters.Events;
 using EltraCommon.Contracts.Channels;
+using EltraConnector.Transport.Ws;
+using EltraCommon.Transport;
+using EltraConnector.Transport.Udp;
 
 namespace EltraConnector.UserAgent.Vcs
 {
@@ -24,6 +27,7 @@ namespace EltraConnector.UserAgent.Vcs
         #region Private fields
 
         private const int DefaultTimeout = 30000;
+
         private EltraDevice _deviceNode;
         private Channel _deviceChannel;
 
@@ -34,12 +38,15 @@ namespace EltraConnector.UserAgent.Vcs
         /// <summary>
         /// DeviceVcs
         /// </summary>
+        /// <param name="httpClient"></param>
+        /// <param name="udpClient"></param>
+        /// <param name="webSocketClient"></param>
         /// <param name="url"></param>
         /// <param name="uuid"></param>
         /// <param name="identity"></param>
         /// <param name="updateInterval"></param>
         /// <param name="timeout"></param>
-        public DeviceVcs(string url, string uuid, UserIdentity identity, uint updateInterval, uint timeout)
+        public DeviceVcs(IHttpClient httpClient, IUdpClient udpClient, IWebSocketClient webSocketClient, string url, string uuid, UserIdentity identity, uint updateInterval, uint timeout)
         {
             if (identity != null)
             {
@@ -47,7 +54,7 @@ namespace EltraConnector.UserAgent.Vcs
 
                 Timeout = DefaultTimeout;
 
-                Agent = new DeviceAgent(url, uuid, identity, updateInterval, timeout);
+                Agent = new DeviceAgent(httpClient, udpClient, webSocketClient, url, uuid, identity, updateInterval, timeout);
 
                 Agent.ParameterValueChanged += OnParameterValueChanged;
 
@@ -55,7 +62,7 @@ namespace EltraConnector.UserAgent.Vcs
             }
         }
 
-        internal DeviceVcs(SyncCloudAgent masterAgent, EltraDevice deviceNode, uint updateInterval, uint timeout)
+        internal DeviceVcs(IHttpClient httpClient, IUdpClient udpClient, SyncCloudAgent masterAgent, EltraDevice deviceNode, uint updateInterval, uint timeout)
         {
             if (deviceNode != null)
             {
@@ -63,7 +70,7 @@ namespace EltraConnector.UserAgent.Vcs
 
                 Timeout = DefaultTimeout;
 
-                Agent = new DeviceAgent(masterAgent, deviceNode, updateInterval, timeout);
+                Agent = new DeviceAgent(httpClient, udpClient, masterAgent, deviceNode, updateInterval, timeout);
 
                 Agent.ParameterValueChanged += OnParameterValueChanged;
 

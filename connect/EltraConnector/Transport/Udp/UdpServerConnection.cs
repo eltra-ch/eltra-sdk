@@ -18,9 +18,20 @@ namespace EltraConnector.Transport.Udp
     {
         #region Private fields
 
+        private readonly IUdpClient _udpClient;
+
         private bool _isConnected;
         private EltraUdpServer _server;
         private EndpointStore _endpointStore;
+
+        #endregion
+
+        #region Constructors
+
+        public UdpServerConnection(IUdpClient udpClient)
+        {
+            _udpClient = udpClient;
+        }
 
         #endregion
 
@@ -112,7 +123,7 @@ namespace EltraConnector.Transport.Udp
         {
             var rnd = new Random();
 
-            var result = new EltraUdpServer() { Host = "0.0.0.0", Port = rnd.Next(5100, 5199) };
+            var result = new EltraUdpServer(_udpClient) { Host = "0.0.0.0", Port = rnd.Next(5100, 5199) };
 
             result.ErrorRaised += OnServerErrorRaised;
             result.MessageSent += OnServerMessageSent;

@@ -20,7 +20,17 @@ namespace EltraConnector.Transport.Rest
     {
         #region Private fields
 
+        private readonly IHttpClient _httpClient;
         private AuthControllerAdapter _auth;
+
+        #endregion
+
+        #region Constructors
+
+        public RestConnection(IHttpClient httpClient)
+        {
+            _httpClient = httpClient;
+        }
 
         #endregion
 
@@ -39,7 +49,7 @@ namespace EltraConnector.Transport.Rest
 
         public bool ReceiveSupported => false;
 
-        protected AuthControllerAdapter Auth => _auth ?? (_auth = new AuthControllerAdapter(Url));
+        protected AuthControllerAdapter Auth => _auth ?? (_auth = new AuthControllerAdapter(_httpClient, Url));
 
         #endregion
 

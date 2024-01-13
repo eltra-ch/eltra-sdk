@@ -5,14 +5,12 @@ using System.Threading.Tasks;
 using System.Web;
 using EltraConnector.Controllers.Queue;
 using EltraCommon.Helpers;
-using EltraCommon.Contracts.Parameters;
 using EltraCommon.Contracts.Channels;
 using EltraCommon.Logger;
 using EltraCommon.ObjectDictionary.Common.DeviceDescription.Profiles.Application.Parameters;
 using EltraCommon.ObjectDictionary.Common.DeviceDescription.Profiles.Application.Parameters.Events;
 using EltraCommon.Contracts.Devices;
 using EltraCommon.Contracts.History;
-using System.Net;
 using EltraConnector.Controllers.Events;
 using EltraCommon.Contracts.Users;
 using EltraCommon.Transport;
@@ -35,8 +33,8 @@ namespace EltraConnector.Controllers
 
         #region Constructors
 
-        public ParameterControllerAdapter(UserIdentity identity, string url, Channel channel)
-            :base(url, channel)
+        public ParameterControllerAdapter(IHttpClient httpClient, UserIdentity identity, string url, Channel channel)
+            :base(httpClient, url, channel)
         {
             _identity = identity;
             _stopRequestEvent = new ManualResetEvent(false);

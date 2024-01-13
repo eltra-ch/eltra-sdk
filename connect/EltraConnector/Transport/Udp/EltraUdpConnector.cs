@@ -18,7 +18,9 @@ namespace EltraConnector.Transport.Udp
     {
         #region Private fields
 
-        private UdpClientWrapper _udpClient;        
+        private readonly IUdpClient _udpClient;
+
+        private UdpClientWrapper _udpClientWrapper;
         
         private Encoding _encoding;
         private SocketError _socketErrorCode;
@@ -28,8 +30,10 @@ namespace EltraConnector.Transport.Udp
 
         #region Constructors
 
-        public EltraUdpConnector()
+        public EltraUdpConnector(IUdpClient udpClient)
         {
+            _udpClient = udpClient;
+
             Host = LocalHost;
             Port = 5100;
         }
@@ -44,7 +48,7 @@ namespace EltraConnector.Transport.Udp
 
         public int Port { get; set; }
 
-        protected UdpClientWrapper UdpClient => _udpClient ?? (_udpClient = CreateUdpClient());
+        protected UdpClientWrapper UdpClient => _udpClientWrapper ?? (_udpClientWrapper = CreateUdpClient());
 
         protected Encoding Encoding => _encoding ?? (_encoding = new UTF8Encoding());
 
@@ -99,7 +103,7 @@ namespace EltraConnector.Transport.Udp
 
         protected virtual UdpClientWrapper CreateUdpClient()
         {
-            var result = new UdpClientWrapper(Host, Port);
+            var result = new UdpClientWrapper(_udpClient, Host, Port);
 
             return result;
         }

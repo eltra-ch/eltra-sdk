@@ -15,6 +15,7 @@ using EltraConnector.Controllers.Device;
 using EltraConnector.Controllers;
 using EltraConnector.Master.Controllers.Device;
 using EltraConnector.Controllers.Commands;
+using EltraCommon.Transport;
 
 namespace EltraConnector.Master.Controllers
 {
@@ -24,6 +25,7 @@ namespace EltraConnector.Master.Controllers
 
         private readonly SyncCloudAgent _agent;
         private readonly ExecuteCommandCache _executeCommandCache;
+        private readonly IHttpClient _httpClient;
 
         private DeviceControllerAdapter _deviceControllerAdapter;
         private ParameterControllerAdapter _parameterControllerAdapter;
@@ -33,9 +35,10 @@ namespace EltraConnector.Master.Controllers
 
         #region Constructors
 
-        public MasterChannelControllerAdapter(SyncCloudAgent agent, string channelId)
-            : base(agent.Url, channelId, agent.Identity, agent.UpdateInterval, agent.Timeout)
+        public MasterChannelControllerAdapter(IHttpClient httpClient, SyncCloudAgent agent, string channelId)
+            : base(httpClient, agent.Url, channelId, agent.Identity, agent.UpdateInterval, agent.Timeout)
         {
+            _httpClient = httpClient;
             _executeCommandCache = new ExecuteCommandCache();
 
             _agent = agent;
@@ -140,7 +143,7 @@ namespace EltraConnector.Master.Controllers
 
         private ParameterControllerAdapter CreateParameterControllerAdapter()
         {
-            var adapter = new ParameterControllerAdapter(_agent.Identity, Url, Channel);
+            var adapter = new ParameterControllerAdapter(_httpClient, _agent.Identity, Url, Channel);
 
             AddChild(adapter);
 
@@ -149,7 +152,7 @@ namespace EltraConnector.Master.Controllers
 
         private DeviceControllerAdapter CreateDeviceController()
         {
-            var adapter = new MasterDeviceControllerAdapter(Url, Channel, _agent.Identity) 
+            var adapter = new MasterDeviceControllerAdapter(_httpClient, Url, Channel, _agent.Identity) 
             { 
                 ConnectionManager = ConnectionManager
             };

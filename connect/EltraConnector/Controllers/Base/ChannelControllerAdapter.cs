@@ -35,8 +35,8 @@ namespace EltraConnector.Controllers.Base
 
         #region Constructors
 
-        public ChannelControllerAdapter(string url, string uuid, UserIdentity identity, uint updateInterval, uint timeout)
-            : base(url)
+        public ChannelControllerAdapter(IHttpClient httpClient, string url, string uuid, UserIdentity identity, uint updateInterval, uint timeout)
+            : base(httpClient, url)
         {
             _timeout = timeout;
             _updateInterval = updateInterval;

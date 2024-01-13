@@ -21,17 +21,21 @@ namespace EltraConnector.Transport.Ws
     {
         #region Private fields
 
+        private readonly IWebSocketClient _clientWebSocket;
+
         private CancellationTokenSource _cancellationTokenSource;
         private CancellationTokenSource _disconnectTokenSource;
         private string _url;
         private SemaphoreSlim _receiveLock;
-
+        
         #endregion
 
         #region Constructors
 
-        public WsConnection(string uniqueId, string channelName)
+        public WsConnection(IWebSocketClient clientWebSocket, string uniqueId, string channelName)
         {
+            _clientWebSocket = clientWebSocket;
+
             BufferSize = 4096;
 
             Initialize();
@@ -168,7 +172,7 @@ namespace EltraConnector.Transport.Ws
 
         private void Initialize()
         {
-            Socket = new ClientWebSocketWrapper();
+            Socket = new ClientWebSocketWrapper(_clientWebSocket);
             
             LastCloseStatus = null;
 

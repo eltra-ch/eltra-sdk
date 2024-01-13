@@ -4,6 +4,7 @@ using EltraConnector.Transport.Rest;
 using EltraConnector.Transport.Ws.Interfaces;
 using System.Collections.Generic;
 using EltraCommon.Logger;
+using EltraCommon.Transport;
 
 namespace EltraConnector.Transport.Factory
 {
@@ -13,7 +14,7 @@ namespace EltraConnector.Transport.Factory
         private static UdpServerConnection _serverConnection;
 #endif
 
-        public static List<IConnection> CreateConnections(string uniqueId, string channelName, string url)
+        public static List<IConnection> CreateConnections(IHttpClient httpClient, IUdpClient udpClient, IWebSocketClient wsClient, string uniqueId, string channelName, string url)
         {
             var result = new List<IConnection>();
 
@@ -21,18 +22,18 @@ namespace EltraConnector.Transport.Factory
             {
                 case "SessionUpdate":
                 case "ParameterUpdate":
-                    result.Add(new WsConnection(uniqueId, channelName) { Url = url });
-                    result.Add(new RestConnection() { Url = url, UniqueId = uniqueId, ChannelName = channelName });
+                    result.Add(new WsConnection(wsClient, uniqueId, channelName) { Url = url });
+                    result.Add(new RestConnection(httpClient) { Url = url, UniqueId = uniqueId, ChannelName = channelName });
                     break;
                 case "CommandsExecution":
                 case "Master":
 #if _UDP
-                    _serverConnection = new UdpServerConnection() { Url = url, ChannelName = channelName, UniqueId = uniqueId };
+                    _serverConnection = new UdpServerConnection(udpClient) { Url = url, ChannelName = channelName, UniqueId = uniqueId };
 
                     result.Add(_serverConnection);
 #endif
-                    result.Add(new WsConnection(uniqueId, channelName) { Url = url });
-                    result.Add(new RestConnection() { Url = url, UniqueId = uniqueId, ChannelName = channelName });
+                    result.Add(new WsConnection(wsClient, uniqueId, channelName) { Url = url });
+                    result.Add(new RestConnection(httpClient) { Url = url, UniqueId = uniqueId, ChannelName = channelName });
                     break;
                 case "ExecuteCommander":
                 case "Slave":
@@ -42,8 +43,8 @@ namespace EltraConnector.Transport.Factory
                         result.Add(new UdpServerProxyConnection(_serverConnection) { Url = url, UniqueId = uniqueId, ChannelName = channelName });
                     }
 #endif
-                    result.Add(new WsConnection(uniqueId, channelName) { Url = url });
-                    result.Add(new RestConnection() { Url = url, UniqueId = uniqueId, ChannelName = channelName });
+                    result.Add(new WsConnection(wsClient, uniqueId, channelName) { Url = url });
+                    result.Add(new RestConnection(httpClient) { Url = url, UniqueId = uniqueId, ChannelName = channelName });
                     break;
                 default:
                     MsgLogger.WriteError($"ConnectionFactory - CreateConnections", $"cannot create instance, channelName = {channelName}");

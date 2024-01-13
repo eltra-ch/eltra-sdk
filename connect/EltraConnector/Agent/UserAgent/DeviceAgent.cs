@@ -10,8 +10,11 @@ using EltraCommon.Contracts.Users;
 using EltraCommon.Logger;
 using EltraCommon.ObjectDictionary.Common.DeviceDescription.Profiles.Application.Parameters;
 using EltraCommon.ObjectDictionary.Xdd.DeviceDescription.Profiles.Application.Parameters;
+using EltraCommon.Transport;
 using EltraConnector.Agent.UserAgent.Cache;
 using EltraConnector.SyncAgent;
+using EltraConnector.Transport.Udp;
+using EltraConnector.Transport.Ws;
 
 namespace EltraConnector.UserAgent
 {
@@ -27,13 +30,13 @@ namespace EltraConnector.UserAgent
 
         #region Constructors
 
-        public DeviceAgent(string url, string uuid, UserIdentity identity, uint updateInterval, uint timeout)
-            : base(url, uuid, identity, updateInterval, timeout)
+        public DeviceAgent(IHttpClient httpClient, IUdpClient udpClient, IWebSocketClient webSocketClient, string url, string uuid, UserIdentity identity, uint updateInterval, uint timeout)
+            : base(httpClient, udpClient, webSocketClient, url, uuid, identity, updateInterval, timeout)
         {  
         }
 
-        internal DeviceAgent(SyncCloudAgent masterAgent, EltraDevice device, uint updateInterval, uint timeout)
-            : base(masterAgent, device, updateInterval, timeout)
+        internal DeviceAgent(IHttpClient httpClient, IUdpClient udpClient, SyncCloudAgent masterAgent, EltraDevice device, uint updateInterval, uint timeout)
+            : base(httpClient, udpClient, masterAgent, device, updateInterval, timeout)
         {
             device.CloudConnector = this;
         }

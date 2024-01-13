@@ -198,8 +198,19 @@ namespace EltraConnector.Channels
                     {
                         ConnectionManager.RegisterChannelClient(this);
 
-                        result = await SendChannelIdentyficationRequest();
+                        int minWaitTime = 200;
+                        int maxWaitTime = 2400;
+                        do
+                        {
+                            result = await SendChannelIdentyficationRequest();
 
+                            if(!result)
+                            {
+                                await Task.Delay(minWaitTime);
+                            }
+                        }
+                        while (!result && sw.ElapsedMilliseconds < maxWaitTime);
+                        
                         sw.Stop();
 
                         if (result)

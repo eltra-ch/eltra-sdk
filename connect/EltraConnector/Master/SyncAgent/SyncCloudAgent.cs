@@ -14,6 +14,9 @@ using EltraConnector.Master.Controllers;
 using EltraConnector.Transport;
 using EltraConnector.Master.Controllers.Commands;
 using EltraConnector.Master.Controllers.Heartbeat;
+using EltraCommon.Transport;
+using EltraConnector.Transport.Ws;
+using EltraConnector.Transport.Udp;
 
 #pragma warning disable 1591
 
@@ -36,7 +39,7 @@ namespace EltraConnector.SyncAgent
 
         #region Constructors
 
-        public SyncCloudAgent(string url, UserIdentity identity, string channelId, uint updateInterval, uint timeout)
+        public SyncCloudAgent(IHttpClient httpClient, IUdpClient udpClient, IWebSocketClient webSocketClient, string url, UserIdentity identity, string channelId, uint updateInterval, uint timeout)
         {
             Url = url;
             Identity = identity;
@@ -44,10 +47,10 @@ namespace EltraConnector.SyncAgent
             Timeout = timeout;
             
             _good = true;
-            _authentication = new Authentication(url);
-            _connectionManager = new ConnectionManager() { HostUrl = url };
+            _authentication = new Authentication(httpClient, url);
+            _connectionManager = new ConnectionManager(httpClient, udpClient, webSocketClient) { HostUrl = url };
 
-            _channelControllerAdapter = new MasterChannelControllerAdapter(this, channelId) { ConnectionManager = _connectionManager };
+            _channelControllerAdapter = new MasterChannelControllerAdapter(httpClient, this, channelId) { ConnectionManager = _connectionManager };
                         
             _commandExecutor = new MasterCommandExecutor(_channelControllerAdapter);
             _channelHeartbeat = new MasterChannelHeartbeat(_channelControllerAdapter, _commandExecutor, updateInterval, timeout);

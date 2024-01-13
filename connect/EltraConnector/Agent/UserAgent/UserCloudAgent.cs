@@ -24,11 +24,12 @@ using EltraCommon.Transport;
 using EltraConnector.Agent.Controllers;
 using EltraConnector.Agent.Controllers.Commands;
 using EltraConnector.Agent.Parameters;
-using EltraConnector.Transport.Ws.Interfaces;
 using EltraConnector.Transport;
 using EltraConnector.Agent.Controllers.Heartbeat;
 using EltraConnector.Agent.Controllers.Parameters;
 using EltraConnector.Agent.UserAgent.Events;
+using EltraConnector.Transport.Ws;
+using EltraConnector.Transport.Udp;
 
 namespace EltraConnector.UserAgent
 {
@@ -41,6 +42,7 @@ namespace EltraConnector.UserAgent
         private readonly SlaveChannelControllerAdapter _channelAdapter;
         private readonly uint _timeout;
         private readonly object _lock = new object();
+        private readonly IHttpClient _httpClient;
 
         private Task _agentTask;
         private CancellationTokenSource _agentCancelationTokenSource;
@@ -60,27 +62,29 @@ namespace EltraConnector.UserAgent
 
         #region Constructors
 
-        public UserCloudAgent(string url, string uuid, UserIdentity identity, uint updateInterval, uint timeout)
+        public UserCloudAgent(IHttpClient httpClient, IUdpClient udpClient, IWebSocketClient webSocketClient, string url, string uuid, UserIdentity identity, uint updateInterval, uint timeout)
         {
+            _httpClient = httpClient;
             _timeout = timeout;
             _status = AgentStatus.Undefined;
             _identity = identity;
             _channel = new Channel() { Status = ChannelStatus.Offline };
             _executedCommands = new List<DeviceCommand>();
 
-            _channelAdapter = new SlaveChannelControllerAdapter(url, uuid, identity, updateInterval, timeout) { ConnectionManager = new ConnectionManager() { HostUrl = url } };
+            _channelAdapter = new SlaveChannelControllerAdapter(httpClient, udpClient, url, uuid, identity, updateInterval, timeout) { ConnectionManager = new ConnectionManager(httpClient, udpClient, webSocketClient) { HostUrl = url } };
 
             Initialize(url, updateInterval);
         }
 
-        public UserCloudAgent(SyncCloudAgent masterAgent, EltraDevice deviceNode, uint updateInterval, uint timeout)
+        public UserCloudAgent(IHttpClient httpClient, IUdpClient udpClient, SyncCloudAgent masterAgent, EltraDevice deviceNode, uint updateInterval, uint timeout)
         {
+            _httpClient = httpClient;
             _status = AgentStatus.Undefined;
             _identity = masterAgent.Identity;
             _channel = new Channel() { Status = ChannelStatus.Offline };
             _executedCommands = new List<DeviceCommand>();
 
-            _channelAdapter = new MasterSlaveChannelControllerAdapter(masterAgent, deviceNode, updateInterval, timeout)
+            _channelAdapter = new MasterSlaveChannelControllerAdapter(httpClient, udpClient, masterAgent, deviceNode, updateInterval, timeout)
             {
                 ConnectionManager = masterAgent.ConnectionManager 
             };
@@ -279,7 +283,7 @@ namespace EltraConnector.UserAgent
             const string method = "Initialize";
 
             _url = url;
-            _authentication = new Authentication(url);
+            _authentication = new Authentication(_httpClient, url);
 
             _executeCommander = new SlaveExecuteCommander(_channelAdapter);
             _channelHeartbeat = new SlaveChannelHeartbeat(_channelAdapter, _executeCommander, _timeout, updateInterval);            
@@ -298,7 +302,7 @@ namespace EltraConnector.UserAgent
         private void Initialize(SyncCloudAgent agent, EltraDevice node)
         {
             _url = agent.Url;
-            _authentication = new Authentication(agent.Url);
+            _authentication = new Authentication(_httpClient, agent.Url);
 
             _executeCommander = new SlaveExecuteCommander(_channelAdapter, node.NodeId);
             _parameterUpdateManager = new SlaveParameterUpdateManager(_channelAdapter, node.NodeId, _executeCommander);
@@ -319,7 +323,7 @@ namespace EltraConnector.UserAgent
                 Status = AgentStatus.Undefined;
             }
 
-            _agentTask = Task.Run(() => Run(_agentCancelationTokenSource.Token));
+            _agentTask = Task.Run(async () => await Run(_agentCancelationTokenSource.Token));
 
             const int minWaitTime = 10;
             

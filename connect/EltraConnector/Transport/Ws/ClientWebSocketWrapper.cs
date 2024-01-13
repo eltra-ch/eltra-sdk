@@ -22,7 +22,7 @@ namespace EltraConnector.Transport.Ws
     {
         #region Private fields
 
-        private ClientWebSocket _socket;
+        private readonly IWebSocketClient _socket;
         private readonly SemaphoreSlim _sendLock;
         private readonly SemaphoreSlim _receiveLock;
 
@@ -30,8 +30,9 @@ namespace EltraConnector.Transport.Ws
 
         #region Constructors
 
-        public ClientWebSocketWrapper()
+        public ClientWebSocketWrapper(IWebSocketClient clientWebSocket)
         {
+            _socket = clientWebSocket;
             _sendLock = new SemaphoreSlim(1);
             _receiveLock = new SemaphoreSlim(1);
 
@@ -228,8 +229,6 @@ namespace EltraConnector.Transport.Ws
 
         private void Initialize()
         {
-            _socket = new ClientWebSocket();
-
             var opt = _socket.Options;
 
             opt.UseDefaultCredentials = true;

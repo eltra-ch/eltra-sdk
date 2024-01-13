@@ -10,6 +10,10 @@ using EltraCommon.Ipc;
 using EltraConnector.Master.Device.Connection;
 using EltraConnector.Master.Definitions;
 using EltraConnector.Events;
+using EltraCommon.Transport;
+using EltraConnector.Transport.Ws;
+using EltraConnector.Transport.Udp;
+using System.Net.Sockets;
 
 namespace EltraConnector.Master
 {
@@ -19,6 +23,10 @@ namespace EltraConnector.Master
     public class EltraMasterConnector : IDisposable
     {
         #region Private fields
+
+        private readonly IHttpClient _httpClient;
+        private readonly IUdpClient _udpClient;
+        private readonly IWebSocketClient _webSocketClient;
 
         private MasterStatus _status = MasterStatus.Undefined;
         private CancellationTokenSource _cancellationTokenSource;
@@ -34,8 +42,24 @@ namespace EltraConnector.Master
         /// </summary>
         public EltraMasterConnector()
         {
-            _cancellationTokenSource = new CancellationTokenSource();
+            _httpClient = new EltraHttpClient();
+            _udpClient = new EltraUdpClient();
+            _webSocketClient = new EltraWebSocketClient();
 
+            _cancellationTokenSource = new CancellationTokenSource();
+            ConnectionSettings = new ConnectionSettings();
+        }
+
+        /// <summary>
+        /// EltraMasterConnector
+        /// </summary>
+        public EltraMasterConnector(IHttpClient httpClient, IUdpClient udpClient, IWebSocketClient webSocketClient)
+        {
+            _httpClient = httpClient;
+            _udpClient = udpClient;
+            _webSocketClient = webSocketClient;
+
+            _cancellationTokenSource = new CancellationTokenSource();
             ConnectionSettings = new ConnectionSettings();
         }
 
@@ -125,7 +149,7 @@ namespace EltraConnector.Master
 
         private Authentication CreateAuthentication()
         {
-            return new Authentication(Host);
+            return new Authentication(_httpClient, Host);
         }
 
         /// <summary>
@@ -218,7 +242,7 @@ namespace EltraConnector.Master
 
                         if (!string.IsNullOrEmpty(ChannelId))
                         {
-                            agent = new SyncCloudAgent(Host, Identity, ChannelId, ConnectionSettings.UpdateInterval, ConnectionSettings.Timeout);
+                            agent = new SyncCloudAgent(_httpClient, _udpClient, _webSocketClient, Host, Identity, ChannelId, ConnectionSettings.UpdateInterval, ConnectionSettings.Timeout);
                         }
                         else
                         {

@@ -1,183 +1,128 @@
-﻿using EltraCommon.Contracts.Users;
-using EltraCommon.Logger;
-using EltraConnector.Transport.Udp.Contracts;
-using System.Text.Json;
+﻿using EltraCommon.Logger;
 using System;
-using System.Text;
+using System.Net;
+using System.Net.Sockets;
 using System.Threading.Tasks;
-using EltraCommon.Extensions;
-using EltraCommon.Helpers;
-using EltraConnector.Extensions;
 
 namespace EltraConnector.Transport.Udp
 {
-    internal class EltraUdpClient : EltraUdpConnector
+    /// <summary>
+    /// EltraUdpClient
+    /// </summary>
+    public class EltraUdpClient : IUdpClient, IDisposable
     {
-        #region Private fields
+        private UdpClient _udpClient;
+        private bool disposedValue;
 
-        private string _url;
+        /// <summary>
+        /// UdpClient
+        /// </summary>
+        protected UdpClient UdpClient { get { return _udpClient ?? (_udpClient = new UdpClient()); } }
 
-        #endregion
-
-        #region Properties
-
-        public string Url
+        /// <summary>
+        /// Create
+        /// </summary>
+        /// <param name="host"></param>
+        /// <param name="port"></param>
+        public void Init(string host, int port)
         {
-            get => _url;
-            set
-            {
-                _url = value;
-                OnUrlChanged();
-            }
+            _udpClient = new UdpClient(new IPEndPoint(IPAddress.Parse(host), port));
         }
 
-        #endregion
-
-        #region Callbacks
-
-        private void OnUrlChanged()
+        /// <summary>
+        /// Disconnect
+        /// </summary>
+        public void Disconnect()
         {
-            var url = _url.Replace("http://", "");
-            
-            url = url.Replace("https://", "");
-
-            if (url.Contains(":"))
+            try
             {
-                int separatorIndex = url.IndexOf(":");
-
-                Host = url.Substring(0, separatorIndex);
-
-                if (url.Length > separatorIndex + 1 && int.TryParse(url.Substring(separatorIndex + 1), out var port))
+                if (UdpClient.Client.Connected)
                 {
-                    Port = port;
+                    UdpClient.Client.Disconnect(false);
                 }
-            }
-        }
-
-        #endregion
-
-        #region Methods
-
-        protected override UdpClientWrapper CreateUdpClient()
-        {
-            var result = new UdpClientWrapper();
-
-            return result;
-        }
-
-        public bool Connect()
-        {
-            bool result = false;
-
-            try
-            {
-                UdpClient.Connect(Host, Port);
-
-                result = true;
-            }
-            catch(Exception e)
-            {
-                MsgLogger.Exception($"{GetType().Name} - Connect", e);
-            }
-
-            return result;
-        }
-
-        public bool Disconnect()
-        {
-            bool result = false;
-
-            try
-            {
-                Abort();
-
-                UdpClient.Close();
-
-                result = true;
             }
             catch (Exception e)
             {
                 MsgLogger.Exception($"{GetType().Name} - Disconnect", e);
             }
-
-            return result;
         }
 
-        public async Task<int> Send(string text)
+        /// <summary>
+        /// ReceiveAsync
+        /// </summary>
+        /// <returns></returns>
+        public Task<UdpReceiveResult> ReceiveAsync()
         {
-            UTF8Encoding enc = new UTF8Encoding();
-            var bytes = enc.GetBytes(text);
-            int bytesSent = 0;
-
-            if (!IsCanceled)
-            {
-                bytesSent = await Send(bytes, bytes.Length);
-
-                if (bytesSent > 0)
-                {
-                    _ = Task.Run(async () =>
-                      {
-                          if (!IsCanceled)
-                          {
-                              var response = await Receive();
-
-                              if (response != null)
-                              {
-                                  OnMessageReceived(response);
-                              }
-                          }
-                      });
-                }
-            }
-
-            return bytesSent;
+            return UdpClient.ReceiveAsync();
         }
 
-        public async Task<int> Send(UserIdentity identity, string className, string msg)
+        /// <summary>
+        /// SendAsync
+        /// </summary>
+        /// <param name="datagram"></param>
+        /// <param name="bytes"></param>
+        /// <param name="endPoint"></param>
+        /// <returns></returns>
+        public Task<int> SendAsync(byte[] datagram, int bytes, IPEndPoint endPoint)
         {
-            int bytesSent = -1;
-            var data = msg.ToBase64();
-            
-            identity.Password = CryptHelpers.ToSha256(identity.Password);
-
-            var request = new UdpRequest() { Identity = identity.HashPassword(), TypeName = className, Data = data, Checksum = CryptHelpers.ToMD5(data) };
-
-            if (!IsCanceled)
-            {
-                try
-                {
-                    bytesSent = await Send(JsonSerializer.Serialize(request));
-                }
-                catch (Exception e)
-                {
-                    MsgLogger.Exception($"{GetType().Name} - Send", e);
-                }
-            }
-
-            return bytesSent;
+            return UdpClient.SendAsync(datagram, bytes, endPoint);
         }
 
-        public async Task<int> Send<T>(UserIdentity identity, T obj)
+        /// <summary>
+        /// SendAsync
+        /// </summary>
+        /// <param name="datagram"></param>
+        /// <param name="bytes"></param>
+        /// <returns></returns>
+        public Task<int> SendAsync(byte[] datagram, int bytes)
         {
-            int result = 0;
-
-            if (!IsCanceled)
-            {
-                try
-                {
-                    var msg = JsonSerializer.Serialize(obj);
-
-                    result = await Send(identity, typeof(T).FullName, msg);
-                }
-                catch (Exception e)
-                {
-                    MsgLogger.Exception($"{GetType().Name} - Send", e);
-                }
-            }
-
-            return result;
+            return UdpClient.SendAsync(datagram, bytes);
         }
 
-        #endregion
+        /// <summary>
+        /// Dispose
+        /// </summary>
+        /// <param name="disposing"></param>
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!disposedValue)
+            {
+                if (disposing)
+                {
+                    _udpClient.Dispose();
+                    _udpClient = null;
+                }
+
+                disposedValue = true;
+            }
+        }
+
+        /// <summary>
+        /// Dispose
+        /// </summary>
+        public void Dispose()
+        {
+            Dispose(disposing: true);
+
+            GC.SuppressFinalize(this);
+        }
+
+        /// <summary>
+        /// Close
+        /// </summary>
+        public void Close()
+        {
+            UdpClient.Close();
+        }
+
+        /// <summary>
+        /// Connect
+        /// </summary>
+        /// <param name="host"></param>
+        /// <param name="port"></param>
+        public void Connect(string host, int port)
+        {
+            UdpClient.Connect(host, port);
+        }
     }
 }

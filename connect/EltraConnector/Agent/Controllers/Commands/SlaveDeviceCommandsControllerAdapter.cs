@@ -7,6 +7,7 @@ using EltraCommon.Logger;
 using EltraCommon.Contracts.Users;
 using EltraConnector.Transport.Udp;
 using EltraConnector.Controllers;
+using EltraCommon.Transport;
 
 namespace EltraConnector.Agent.Controllers.Commands
 {
@@ -14,13 +15,17 @@ namespace EltraConnector.Agent.Controllers.Commands
     {
         #region Private fields
 
+        private readonly IUdpClient _udpClient;
+
         #endregion
 
         #region Constructors
 
-        public SlaveDeviceCommandsControllerAdapter(string url, Channel channel, UserIdentity userIdentity)
-            : base(url, channel, userIdentity)
-        {            
+        public SlaveDeviceCommandsControllerAdapter(IHttpClient httpClient, IUdpClient udpClient, string url, Channel channel, UserIdentity userIdentity)
+            : base(httpClient, url, channel, userIdentity)
+        {
+            _udpClient = udpClient;
+
             CommandExecUuid = channel.Id + "_ExecCommander";
         }
 
@@ -57,7 +62,7 @@ namespace EltraConnector.Agent.Controllers.Commands
 
                         if (udpConnection == null)
                         {
-                            var udpServerConnection = new UdpClientConnection() { ChannelName = "ExecuteCommander", 
+                            var udpServerConnection = new UdpClientConnection(_udpClient) { ChannelName = "ExecuteCommander", 
                                                                                   UniqueId = CommandExecUuid, 
                                                                                   Url = device.ChannelLocalHost };
                             

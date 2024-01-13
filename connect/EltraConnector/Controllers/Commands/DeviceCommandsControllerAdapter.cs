@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Web;
-using System.Text.Json;
 using EltraCommon.Contracts.CommandSets;
 using EltraCommon.Contracts.Channels;
 using EltraCommon.Logger;
@@ -26,8 +25,8 @@ namespace EltraConnector.Controllers
 
         #region Constructors
 
-        public DeviceCommandsControllerAdapter(string url, Channel channel, UserIdentity userIdentity)
-            : base(url, channel)
+        public DeviceCommandsControllerAdapter(IHttpClient httpClient, string url, Channel channel, UserIdentity userIdentity)
+            : base(httpClient, url, channel)
         {
             _userIdentity = userIdentity;
         }

@@ -22,8 +22,8 @@ namespace EltraConnector.Controllers
 
         #region Constructors
 
-        public AuthControllerAdapter(string url) 
-            : base(url)
+        public AuthControllerAdapter(IHttpClient httpClient, string url) 
+            : base(httpClient, url)
         {
         }
 

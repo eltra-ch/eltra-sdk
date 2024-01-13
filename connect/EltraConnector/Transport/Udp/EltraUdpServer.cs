@@ -6,15 +6,19 @@ namespace EltraConnector.Transport.Udp
     internal class EltraUdpServer : EltraUdpConnector
     {
         #region Private fields
-        
+
+        private readonly IUdpClient _udpClient;
+
         private Task _listenerTask;
         
         #endregion
 
         #region Constructors
 
-        public EltraUdpServer()
-        {                 
+        public EltraUdpServer(IUdpClient udpClient)
+            : base(udpClient)
+        {
+            _udpClient = udpClient;
         }
 
         #endregion
@@ -35,7 +39,7 @@ namespace EltraConnector.Transport.Udp
 
         protected override UdpClientWrapper CreateUdpClient()
         {
-            var result = new UdpClientWrapper(Host, Port);
+            var result = new UdpClientWrapper(_udpClient, Host, Port);
 
             return result;
         }

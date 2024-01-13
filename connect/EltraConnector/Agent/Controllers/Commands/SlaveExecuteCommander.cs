@@ -89,7 +89,7 @@ namespace EltraConnector.Agent.Controllers.Commands
                     }
                 });
             }
-            else if(sender is UdpClientConnection udpConnection && udpConnection.UniqueId == WsChannelId)
+            else if (sender is UdpClientConnection udpConnection && udpConnection.UniqueId == WsChannelId)
             {
                 var json = e.Message;
 
@@ -110,7 +110,7 @@ namespace EltraConnector.Agent.Controllers.Commands
                             });
                         }
                     }
-                    else if(request != null)
+                    else if (request != null)
                     {
                         MsgLogger.WriteError($"{GetType().Name} - OnMessageReceived", $"udp message is not {request.GetType().Name} type!");
                     }
@@ -123,6 +123,14 @@ namespace EltraConnector.Agent.Controllers.Commands
                 {
                     MsgLogger.WriteError($"{GetType().Name} - OnMessageReceived", "udp message is empty!");
                 }
+            }
+            else if (sender is UdpServerConnection)
+            {
+                MsgLogger.WriteDebug($"{GetType().Name} - OnMessageReceived", e.Message);
+            }
+            else
+            {
+                MsgLogger.WriteError($"{GetType().Name} - OnMessageReceived", "unknown message!");
             }
         }
 

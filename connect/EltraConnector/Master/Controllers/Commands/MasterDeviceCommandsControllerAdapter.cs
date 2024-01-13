@@ -6,6 +6,7 @@ using EltraCommon.Contracts.Channels;
 using EltraCommon.Logger;
 using EltraCommon.Contracts.Users;
 using EltraConnector.Controllers;
+using EltraCommon.Transport;
 
 namespace EltraConnector.Master.Controllers.Commands
 {
@@ -19,8 +20,8 @@ namespace EltraConnector.Master.Controllers.Commands
 
         #region Constructors
 
-        public MasterDeviceCommandsControllerAdapter(string url, Channel channel, UserIdentity userIdentity)
-            : base(url, channel, userIdentity)
+        public MasterDeviceCommandsControllerAdapter(IHttpClient httpClient, string url, Channel channel, UserIdentity userIdentity)
+            : base(httpClient, url, channel, userIdentity)
         {
             _userIdentity = userIdentity;
         }

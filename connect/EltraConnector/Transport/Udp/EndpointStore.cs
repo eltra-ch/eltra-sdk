@@ -61,15 +61,18 @@ namespace EltraConnector.Transport.Udp
 
         internal void Add(UserIdentity identity, IPEndPoint endpoint)
         {
-            var entry = new EndpointStoreEntry() { Identity = identity, Endpoint = endpoint };
+            if (identity != null)
+            {
+                var entry = new EndpointStoreEntry() { Identity = identity, Endpoint = endpoint };
 
-            if (_store.ContainsKey(identity.Login))
-            {
-                _store[identity.Login] = entry;
-            }
-            else
-            {
-                _store.Add(identity.Login, entry);
+                if (_store.ContainsKey(identity.Login))
+                {
+                    _store[identity.Login] = entry;
+                }
+                else
+                {
+                    _store.Add(identity.Login, entry);
+                }
             }
         }
     }

@@ -1,9 +1,11 @@
 ﻿using EltraCommon.Contracts.Devices;
 using EltraCommon.Logger;
 using EltraCommon.ObjectDictionary.Common.DeviceDescription.Profiles.Application.Parameters;
+using EltraCommon.Transport;
 using EltraConnector.SyncAgent;
+using EltraConnector.Transport.Udp;
+using EltraConnector.Transport.Ws;
 using EltraConnector.UserAgent.Vcs;
-using System;
 using System.Threading.Tasks;
 
 namespace EltraConnector.Master.Device
@@ -16,11 +18,14 @@ namespace EltraConnector.Master.Device
         /// <summary>
         /// MasterVcs
         /// </summary>
+        /// <param name="httpClient"></param>
+        /// <param name="udpClient"></param>
+        /// <param name="webSocketClient"></param>
         /// <param name="device"></param>
         /// <param name="updateInterval"></param>
         /// <param name="timeout"></param>
-        public MasterVcs(MasterDevice device, uint updateInterval, uint timeout)
-            : base(device.CloudAgent.Url, device.CloudAgent.ChannelId, device.CloudAgent.Identity, updateInterval, timeout)
+        public MasterVcs(IHttpClient httpClient, IUdpClient udpClient, IWebSocketClient webSocketClient, MasterDevice device, uint updateInterval, uint timeout)
+            : base(httpClient, udpClient, webSocketClient, device.CloudAgent.Url, device.CloudAgent.ChannelId, device.CloudAgent.Identity, updateInterval, timeout)
         {
             Device = device;
         }
@@ -28,12 +33,15 @@ namespace EltraConnector.Master.Device
         /// <summary>
         /// MasterVcs
         /// </summary>
+        /// <param name="httpClient"></param>
+        /// <param name="udpClient"></param>
+        /// <param name="webSocketClient"></param>
         /// <param name="masterAgent"></param>
         /// <param name="device"></param>
         /// <param name="updateInterval"></param>
         /// <param name="timeout"></param>
-        public MasterVcs(SyncCloudAgent masterAgent, EltraDevice device, uint updateInterval, uint timeout)
-            : base(masterAgent.Url, device.ChannelId, masterAgent.Identity, updateInterval, timeout)
+        public MasterVcs(IHttpClient httpClient, IUdpClient udpClient, IWebSocketClient webSocketClient, SyncCloudAgent masterAgent, EltraDevice device, uint updateInterval, uint timeout)
+            : base(httpClient, udpClient, webSocketClient, masterAgent.Url, device.ChannelId, masterAgent.Identity, updateInterval, timeout)
         {
             Device = device;
         }
@@ -41,9 +49,11 @@ namespace EltraConnector.Master.Device
         /// <summary>
         /// MasterVcs
         /// </summary>
+        /// <param name="httpClient"></param>
+        /// <param name="udpClient"></param>
         /// <param name="device"></param>
-        public MasterVcs(MasterDevice device)
-            : base(device.CloudAgent, device, device.CloudAgent.UpdateInterval, device.CloudAgent.Timeout)
+        public MasterVcs(IHttpClient httpClient, IUdpClient udpClient, MasterDevice device)
+            : base(httpClient, udpClient, device.CloudAgent, device, device.CloudAgent.UpdateInterval, device.CloudAgent.Timeout)
         {
             Device = device;
         }

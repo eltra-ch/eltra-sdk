@@ -12,9 +12,20 @@ namespace EltraConnector.Transport.Udp
     {
         #region Private fields
 
+        private readonly IUdpClient _udpClient;
+
         private string _uniqueId;
-        private EltraUdpClient _client;
+        private EltraUdpConnectorClient _client;
         private string _url;
+
+        #endregion
+
+        #region Constructors
+
+        public UdpClientConnection(IUdpClient udpClient)
+        {
+            _udpClient = udpClient;
+        }
 
         #endregion
 
@@ -38,7 +49,7 @@ namespace EltraConnector.Transport.Udp
         public bool IsConnected { get; set; }
         public bool IsDisconnecting { get; set; }
         public bool Fallback => true;
-        protected EltraUdpClient Client { get => _client ?? (_client = CreateClient()); }
+        protected EltraUdpConnectorClient Client { get => _client ?? (_client = CreateClient()); }
         public ConnectionPriority Priority => ConnectionPriority.High;
 
         public bool ReceiveSupported => false;
@@ -87,9 +98,9 @@ namespace EltraConnector.Transport.Udp
 
         #region Methods
 
-        private EltraUdpClient CreateClient()
+        private EltraUdpConnectorClient CreateClient()
         {
-            var result = new EltraUdpClient() { Url = Url };
+            var result = new EltraUdpConnectorClient(_udpClient) { Url = Url };
 
             result.MessageReceived += OnClientMessageReceived;
             result.MessageSent += OnClientMessageSent;

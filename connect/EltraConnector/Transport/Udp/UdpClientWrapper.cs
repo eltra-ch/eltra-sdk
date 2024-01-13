@@ -9,20 +9,27 @@ using EltraCommon.Extensions;
 
 namespace EltraConnector.Transport.Udp
 {
-    class UdpClientWrapper : UdpClient
+    class UdpClientWrapper : IDisposable
     {
+        private readonly IUdpClient _udpClient;
+
         private CancellationTokenSource _tokenSource;
         private int _activityCounter;
-
-        public UdpClientWrapper()
+        
+        public UdpClientWrapper(IUdpClient udpClient)
         {
+            _udpClient = udpClient;
+            
             _activityCounter = 0;
             _tokenSource = new CancellationTokenSource();
         }
 
-        public UdpClientWrapper(string host, int port)
-            : base(new IPEndPoint(IPAddress.Parse(host), port))
+        public UdpClientWrapper(IUdpClient udpClient, string host, int port)
         {
+            _udpClient = udpClient;
+
+            _udpClient.Init(host, port);
+
             _tokenSource = new CancellationTokenSource();
         }
 
@@ -36,7 +43,7 @@ namespace EltraConnector.Transport.Udp
             {
                 _activityCounter++;
 
-                result = await ReceiveAsync().WithCancellation(_tokenSource.Token);                
+                result = await _udpClient.ReceiveAsync().WithCancellation(_tokenSource.Token);
             }
             catch(Exception e)
             {
@@ -57,7 +64,7 @@ namespace EltraConnector.Transport.Udp
             return result;
         }
 
-        public async new Task<int> Send(byte[] datagram, int bytes, IPEndPoint endPoint)
+        public async Task<int> Send(byte[] datagram, int bytes, IPEndPoint endPoint)
         {
             int result = 0;
 
@@ -65,7 +72,7 @@ namespace EltraConnector.Transport.Udp
             {
                 _activityCounter++;
 
-                result = await SendAsync(datagram, bytes, endPoint).WithCancellation(_tokenSource.Token);                
+                result = await _udpClient.SendAsync(datagram, bytes, endPoint).WithCancellation(_tokenSource.Token);
             }
             catch(Exception e)
             {
@@ -86,7 +93,7 @@ namespace EltraConnector.Transport.Udp
             return result;
         }
 
-        public async new Task<int> Send(byte[] datagram, int bytes)
+        public async Task<int> Send(byte[] datagram, int bytes)
         {
             int result = 0;
 
@@ -94,7 +101,7 @@ namespace EltraConnector.Transport.Udp
             {
                 _activityCounter++;
 
-                result = await SendAsync(datagram, bytes).WithCancellation(_tokenSource.Token);
+                result = await _udpClient.SendAsync(datagram, bytes).WithCancellation(_tokenSource.Token);
             }
             catch (Exception e)
             {
@@ -115,23 +122,13 @@ namespace EltraConnector.Transport.Udp
             return result;
         }
 
-        protected override void Dispose(bool disposing)
+        protected virtual void Dispose(bool disposing)
         {
             if (disposing)
             {
                 Abort();
 
-                try
-                {
-                    if (Client.Connected)
-                    {
-                        Client.Disconnect(false);
-                    }
-                }
-                catch(Exception e)
-                {
-                    MsgLogger.Exception($"{GetType().Name} - Dispose", e);
-                }
+                _udpClient.Disconnect();
 
                 int minWaitTime = 10;
                 int maxWaitTime = 3000;
@@ -144,8 +141,6 @@ namespace EltraConnector.Transport.Udp
                     Thread.Sleep(minWaitTime);
                 }
             }
-
-            base.Dispose(disposing);
         }
 
         internal void Abort()
@@ -156,6 +151,23 @@ namespace EltraConnector.Transport.Udp
         internal void Reset()
         {
             _tokenSource = new CancellationTokenSource();
+        }
+
+        public void Dispose()
+        {
+            // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
+            Dispose(disposing: true);
+            GC.SuppressFinalize(this);
+        }
+
+        public void Connect(string host, int port)
+        {
+            _udpClient.Connect(host, port);
+        }
+
+        public void Close()
+        {
+            _udpClient.Close();
         }
     }
 }

@@ -4,6 +4,7 @@ using EltraCommon.Contracts.Users;
 using EltraConnector.Controllers;
 using System;
 using EltraCommon.Transport.Events;
+using EltraCommon.Transport;
 
 namespace EltraConnector.SyncAgent
 {
@@ -24,12 +25,13 @@ namespace EltraConnector.SyncAgent
         /// <summary>
         /// Authentication
         /// </summary>
+        /// <param name="httpClient"></param>
         /// <param name="url"></param>
-        public Authentication(string url)
+        public Authentication(IHttpClient httpClient, string url)
         {
             _good = true;
 
-            _authControllerAdapter = new AuthControllerAdapter(url);
+            _authControllerAdapter = new AuthControllerAdapter(httpClient, url);
 
             _authControllerAdapter.GoodChanged += OnAuthControllerAdapterGoodChanged;
         }

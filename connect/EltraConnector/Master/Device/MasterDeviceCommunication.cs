@@ -6,6 +6,9 @@ using EltraCommon.ObjectDictionary.Xdd.DeviceDescription.Profiles.Application.Pa
 using System.Threading.Tasks;
 using System.Diagnostics;
 using EltraCommon.Logger;
+using EltraCommon.Transport;
+using EltraConnector.Transport.Udp;
+using System.Net.Sockets;
 
 #pragma warning disable 1591
 
@@ -15,14 +18,40 @@ namespace EltraConnector.Master.Device
     {
         #region Private fields
 
+        private readonly IHttpClient _httpClient;
+        private readonly IUdpClient _udpClient;
+
         private MasterVcs _vcs;
-        
+
         #endregion
 
         #region Constructors
 
         public MasterDeviceCommunication(MasterDevice device)
-        {            
+        {
+            _httpClient = new EltraHttpClient();
+            _udpClient = new EltraUdpClient();
+
+            Device = device;
+
+            if (Device != null)
+            {
+                Device.StatusChanged += OnDeviceStatusChanged;
+            }
+
+            Task.Run(() => {
+
+                _vcs = new MasterVcs(_httpClient, _udpClient, Device);
+
+            });
+
+        }
+
+        public MasterDeviceCommunication(IHttpClient httpClient, IUdpClient udpClient, MasterDevice device)
+        {
+            _httpClient = httpClient;
+            _udpClient = udpClient;
+
             Device = device;
 
             if (Device != null)
@@ -32,7 +61,7 @@ namespace EltraConnector.Master.Device
 
             Task.Run(() => {
                 
-                _vcs = new MasterVcs(Device);
+                _vcs = new MasterVcs(_httpClient, _udpClient, Device);
 
             });
             
@@ -46,7 +75,7 @@ namespace EltraConnector.Master.Device
 
         protected MasterDevice Device { get; }
 
-        protected MasterVcs Vcs => _vcs ?? (_vcs = new MasterVcs(Device));
+        protected MasterVcs Vcs => _vcs ?? (_vcs = new MasterVcs(_httpClient, _udpClient, Device));
 
         #endregion
 

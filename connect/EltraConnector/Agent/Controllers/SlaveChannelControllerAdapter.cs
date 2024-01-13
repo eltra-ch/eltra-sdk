@@ -12,6 +12,10 @@ using EltraCommon.ObjectDictionary.DeviceDescription;
 using EltraConnector.Controllers.Device;
 using EltraConnector.Agent.Controllers.Device;
 using EltraCommon.Logger;
+using EltraCommon.Transport;
+using System.Net.Http;
+using EltraConnector.Transport.Udp;
+using System.Net.Sockets;
 
 namespace EltraConnector.Agent.Controllers
 {
@@ -19,15 +23,21 @@ namespace EltraConnector.Agent.Controllers
     {
         #region Private fields
 
+        private readonly IHttpClient _httpClient;
+        private readonly IUdpClient _udpClient;
+
         private DeviceControllerAdapter _deviceControllerAdapter;
         
         #endregion
 
         #region Constructors
 
-        public SlaveChannelControllerAdapter(string url, string uuid, UserIdentity identity, uint updateInterval, uint timeout)
-            : base(url, uuid, identity, updateInterval, timeout)
+        public SlaveChannelControllerAdapter(IHttpClient httpClient, IUdpClient udpClient, string url, string uuid, UserIdentity identity, uint updateInterval, uint timeout)
+            : base(httpClient, url, uuid, identity, updateInterval, timeout)
         {
+            _httpClient = httpClient;
+            _udpClient = udpClient;
+
             WsChannelId = $"{Uuid}_Slave";
             WsChannelName = "Slave";
         }
@@ -63,7 +73,7 @@ namespace EltraConnector.Agent.Controllers
 
         protected virtual DeviceControllerAdapter CreateDeviceController()
         {
-            var result = new SlaveDeviceControllerAdapter(Url, Channel, User.Identity) { ConnectionManager = ConnectionManager };
+            var result = new SlaveDeviceControllerAdapter(_httpClient, _udpClient, Url, Channel, User.Identity) { ConnectionManager = ConnectionManager };
             
             return result;
         }

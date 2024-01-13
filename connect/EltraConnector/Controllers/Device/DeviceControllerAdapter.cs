@@ -28,6 +28,7 @@ namespace EltraConnector.Controllers.Device
         #region Private fields
 
         private readonly UserIdentity _identity;
+        private readonly IHttpClient _httpClient;
 
         private EltraDeviceSet _channelDevices;
         private DeviceCommandsControllerAdapter _deviceCommandsControllerAdapter;
@@ -39,9 +40,10 @@ namespace EltraConnector.Controllers.Device
 
         #region Constructors
 
-        public DeviceControllerAdapter(string url, Channel channel, UserIdentity identity)
-            : base(url, channel)
+        public DeviceControllerAdapter(IHttpClient httpClient, string url, Channel channel, UserIdentity identity)
+            : base(httpClient, url, channel)
         {
+            _httpClient = httpClient;
             _identity = identity;
         }
 
@@ -122,7 +124,7 @@ namespace EltraConnector.Controllers.Device
 
         private ParameterControllerAdapter CreateParameterAdapter()
         {
-            var adapter = new ParameterControllerAdapter(_identity, Url, Channel);
+            var adapter = new ParameterControllerAdapter(_httpClient, _identity, Url, Channel);
 
             AddChild(adapter);
 
@@ -131,7 +133,7 @@ namespace EltraConnector.Controllers.Device
 
         private DescriptionControllerAdapter CreateDescriptionAdapter()
         {
-            var adapter = new DescriptionControllerAdapter(_identity, Url);
+            var adapter = new DescriptionControllerAdapter(_httpClient, _identity, Url);
 
             AddChild(adapter);
 
