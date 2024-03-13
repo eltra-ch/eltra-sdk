@@ -79,15 +79,24 @@ namespace EltraConnector.Agent.Controllers.Commands
 
         private void OnMessageReceived(object sender, ConnectionMessageEventArgs e)
         {
-            if (sender is WsConnection connection && connection.UniqueId == WsChannelId)
+            const string method = "OnMessageReceived";
+
+            if (sender is WsConnection connection)
             {
-                Task.Run(async () =>
+                if (connection.UniqueId == WsChannelId)
                 {
-                    if (e.Type == MessageType.Data && !e.IsControlMessage())
+                    Task.Run(async () =>
                     {
-                        await HandleMsgReceived(e.Message);
-                    }
-                });
+                        if (e.Type == MessageType.Data && !e.IsControlMessage())
+                        {
+                            await HandleMsgReceived(e.Message);
+                        }
+                    });
+                }
+                else
+                {
+                    MsgLogger.WriteDebug($"{GetType().Name} - {method}", $"message to different channel, ignore, source = {WsChannelId}, target = {connection.UniqueId}");
+                }
             }
             else if (sender is UdpClientConnection udpConnection && udpConnection.UniqueId == WsChannelId)
             {
@@ -112,25 +121,25 @@ namespace EltraConnector.Agent.Controllers.Commands
                     }
                     else if (request != null)
                     {
-                        MsgLogger.WriteError($"{GetType().Name} - OnMessageReceived", $"udp message is not {request.GetType().Name} type!");
+                        MsgLogger.WriteError($"{GetType().Name} - {method}", $"udp message is not {request.GetType().Name} type!");
                     }
                     else
                     {
-                        MsgLogger.WriteError($"{GetType().Name} - OnMessageReceived", $"udp message is unknown type!");
+                        MsgLogger.WriteError($"{GetType().Name} - {method}", $"udp message is unknown type!");
                     }
                 }
                 else
                 {
-                    MsgLogger.WriteError($"{GetType().Name} - OnMessageReceived", "udp message is empty!");
+                    MsgLogger.WriteError($"{GetType().Name} - {method}", "udp message is empty!");
                 }
             }
             else if (sender is UdpServerConnection)
             {
-                MsgLogger.WriteDebug($"{GetType().Name} - OnMessageReceived", e.Message);
+                MsgLogger.WriteDebug($"{GetType().Name} - {method}", e.Message);
             }
             else
             {
-                MsgLogger.WriteError($"{GetType().Name} - OnMessageReceived", "unknown message!");
+                MsgLogger.WriteError($"{GetType().Name} - {method}", "unknown message!");
             }
         }
 
