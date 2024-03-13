@@ -90,5 +90,14 @@ namespace EltraConnector.Transport.Ws
         {
             return Socket.SendAsync(arraySegments, messageType, endOfMessage, token);
         }
+
+        /// <summary>
+        /// Clone
+        /// </summary>
+        /// <returns></returns>
+        public IWebSocketClient Clone()
+        {
+            return new EltraWebSocketClient();
+        }
     }
 }

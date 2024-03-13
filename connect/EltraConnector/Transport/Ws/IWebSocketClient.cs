@@ -24,6 +24,12 @@ namespace EltraConnector.Transport.Ws
         ClientWebSocketOptions Options { get; }
 
         /// <summary>
+        /// Clone
+        /// </summary>
+        /// <returns></returns>
+        IWebSocketClient Clone();
+
+        /// <summary>
         /// CloseAsync
         /// </summary>
         /// <param name="status"></param>

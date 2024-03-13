@@ -10,6 +10,11 @@ namespace EltraConnector.Transport.Udp
     public interface IUdpClient
     {
         /// <summary>
+        /// Clone
+        /// </summary>
+        /// <returns></returns>
+        IUdpClient Clone();
+        /// <summary>
         /// Close
         /// </summary>
         void Close();

@@ -58,13 +58,22 @@ namespace EltraConnector.Agent.Controllers
 
         protected override void OnConnectionManagerChanged()
         {
+            const string method = "OnConnectionManagerChanged";
+
             var t = Task.Run(async () => {
 
-                if (ConnectionManager != null && 
-                    await ConnectionManager.Connect(WsChannelId, WsChannelName) && 
-                    !await SendChannelIdentyficationRequest())
+                try
                 {
-                    MsgLogger.WriteError($"{GetType().Name} - OnConnectionManagerChanged", $"send ident request failed, channel = {WsChannelName}");
+                    if (ConnectionManager != null &&
+                        await ConnectionManager.Connect(WsChannelId, WsChannelName) &&
+                        !await SendChannelIdentyficationRequest())
+                        {
+                            MsgLogger.WriteError($"{GetType().Name} - OnConnectionManagerChanged", $"send ident request failed, channel = {WsChannelName}");
+                        }
+                }
+                catch(Exception e)
+                {
+                    MsgLogger.Exception($"{GetType().Name} - {method}", e);
                 }
             });
 

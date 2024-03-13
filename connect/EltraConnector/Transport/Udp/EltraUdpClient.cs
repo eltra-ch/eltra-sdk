@@ -19,6 +19,7 @@ namespace EltraConnector.Transport.Udp
         /// </summary>
         protected UdpClient UdpClient { get { return _udpClient ?? (_udpClient = new UdpClient()); } }
 
+
         /// <summary>
         /// Create
         /// </summary>
@@ -123,6 +124,15 @@ namespace EltraConnector.Transport.Udp
         public void Connect(string host, int port)
         {
             UdpClient.Connect(host, port);
+        }
+
+        /// <summary>
+        /// Clone
+        /// </summary>
+        /// <returns></returns>
+        public IUdpClient Clone()
+        {
+            return new EltraUdpClient();
         }
     }
 }

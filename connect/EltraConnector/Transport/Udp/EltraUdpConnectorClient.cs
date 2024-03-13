@@ -71,7 +71,7 @@ namespace EltraConnector.Transport.Udp
 
         protected override UdpClientWrapper CreateUdpClient()
         {
-            var result = new UdpClientWrapper(_udpClient);
+            var result = new UdpClientWrapper(_udpClient.Clone());
 
             return result;
         }
