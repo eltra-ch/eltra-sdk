@@ -76,7 +76,7 @@ namespace EltraConnector.Controllers
                 {
                     var query = HttpUtility.ParseQueryString(string.Empty);
 
-                    query["callerId"] = Channel.Id;
+                    query["channelId"] = deviceNode.ChannelId;
                     query["nodeId"] = $"{device.NodeId}";
 
                     var url = UrlHelper.BuildUrl(Url, "api/command/commands", query);

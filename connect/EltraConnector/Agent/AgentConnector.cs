@@ -49,6 +49,22 @@ namespace EltraConnector.Agent
         /// <summary>
         /// AgentConnector
         /// </summary>
+        public AgentConnector()
+        {
+            _httpClient = new EltraHttpClient();
+            _udpClient = new EltraUdpClient();
+            _webSocketClient = new EltraWebSocketClient();
+
+            _updateInterval = 60;
+            _timeout = 180;
+        }
+
+        /// <summary>
+        /// AgentConnector
+        /// </summary>
+        /// <param name="httpClient"></param>
+        /// <param name="udpClient"></param>
+        /// <param name="webSocketClient"></param>
         public AgentConnector(IHttpClient httpClient, IUdpClient udpClient, IWebSocketClient webSocketClient)
         {
             _httpClient = httpClient;
