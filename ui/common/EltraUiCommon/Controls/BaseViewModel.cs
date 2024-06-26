@@ -15,6 +15,7 @@ namespace EltraUiCommon.Controls
         private BaseViewModel _parent;
         private string _title = string.Empty;
         private bool _isBusy;
+        private bool _isVisible;
         private IInvokeOnMainThread _invokeOnMainThread;
 
         #endregion
@@ -50,6 +51,12 @@ namespace EltraUiCommon.Controls
         {
             get => _isBusy;
             set => SetProperty(ref _isBusy, value);
+        }
+
+        public bool IsVisible
+        {
+            get => _isVisible;
+            set => SetProperty(ref _isVisible, value);
         }
 
         protected IInvokeOnMainThread InvokeOnMainThread => _invokeOnMainThread;

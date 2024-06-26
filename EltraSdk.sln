@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.28803.156
+# Visual Studio Version 17
+VisualStudioVersion = 17.10.34928.147
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EltraConnector", "connect\EltraConnector\EltraConnector.csproj", "{A9E7EF16-7713-4CA3-8C4F-2915C579194F}"
 EndProject
@@ -28,6 +28,8 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EltraLogger", "..\eltra-common\EltraLogger\EltraLogger.csproj", "{CC86A261-BC57-4499-9C89-518856A989F3}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EltraCommon", "..\eltra-common\EltraCommon\EltraCommon.csproj", "{210D9284-A531-48A6-8382-26A9259F403E}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EltraMauiCommon", "ui\common\EltraMauiCommon\EltraMauiCommon.csproj", "{43A8815A-F8D7-470E-958A-691DB691A1F8}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -90,6 +92,12 @@ Global
 		{210D9284-A531-48A6-8382-26A9259F403E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{210D9284-A531-48A6-8382-26A9259F403E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{210D9284-A531-48A6-8382-26A9259F403E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{43A8815A-F8D7-470E-958A-691DB691A1F8}.Debug - UWP|Any CPU.ActiveCfg = Debug - UWP|Any CPU
+		{43A8815A-F8D7-470E-958A-691DB691A1F8}.Debug - UWP|Any CPU.Build.0 = Debug - UWP|Any CPU
+		{43A8815A-F8D7-470E-958A-691DB691A1F8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{43A8815A-F8D7-470E-958A-691DB691A1F8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{43A8815A-F8D7-470E-958A-691DB691A1F8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{43A8815A-F8D7-470E-958A-691DB691A1F8}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -103,6 +111,7 @@ Global
 		{EF075A25-A0A5-42BF-A0EA-22371F0F3480} = {4C87799D-4992-41C8-AD37-92489B29EF2C}
 		{CC86A261-BC57-4499-9C89-518856A989F3} = {4C87799D-4992-41C8-AD37-92489B29EF2C}
 		{210D9284-A531-48A6-8382-26A9259F403E} = {4C87799D-4992-41C8-AD37-92489B29EF2C}
+		{43A8815A-F8D7-470E-958A-691DB691A1F8} = {CF6910DE-16A0-4F0F-B090-B7AD107E452F}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {3F78AC7E-CC0B-4FA9-93A8-9D1F9CB30945}
