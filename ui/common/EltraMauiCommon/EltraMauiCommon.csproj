@@ -26,7 +26,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Include="..\..\..\..\eltra-common\EltraResources\png\eltra_logo.png">
+    <None Include="..\..\..\externals\eltra-common\EltraResources\png\eltra_logo.png">
       <Pack>True</Pack>
       <PackagePath></PackagePath>
     </None>
