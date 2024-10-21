@@ -7,7 +7,7 @@
 		<Authors>Dawid Sienkiewicz</Authors>
 		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
 		<PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
-		<Copyright>Dawid Sienkiewicz, (c) 2020-2023</Copyright>
+		<Copyright>Dawid Sienkiewicz, (c) 2020-2024</Copyright>
 		<PackageLicenseFile>LICENSE</PackageLicenseFile>
 		<PackageProjectUrl>www.eltra.ch</PackageProjectUrl>
 		<RepositoryUrl>https://github.com/eltra-ch/eltra-sdk</RepositoryUrl>
