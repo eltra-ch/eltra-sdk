@@ -23,11 +23,11 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{FFF01CB9
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tools", "Tools", "{42F0EA2F-4B38-423E-BB76-C16D204EDB0B}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EltraCommonBase", "..\eltra-common\EltraCommonBase\EltraCommonBase.csproj", "{EF075A25-A0A5-42BF-A0EA-22371F0F3480}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EltraCommonBase", "externals\eltra-common\EltraCommonBase\EltraCommonBase.csproj", "{EF075A25-A0A5-42BF-A0EA-22371F0F3480}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EltraLogger", "..\eltra-common\EltraLogger\EltraLogger.csproj", "{CC86A261-BC57-4499-9C89-518856A989F3}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EltraLogger", "externals\eltra-common\EltraLogger\EltraLogger.csproj", "{CC86A261-BC57-4499-9C89-518856A989F3}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EltraCommon", "..\eltra-common\EltraCommon\EltraCommon.csproj", "{210D9284-A531-48A6-8382-26A9259F403E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EltraCommon", "externals\eltra-common\EltraCommon\EltraCommon.csproj", "{210D9284-A531-48A6-8382-26A9259F403E}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EltraMauiCommon", "ui\common\EltraMauiCommon\EltraMauiCommon.csproj", "{43A8815A-F8D7-470E-958A-691DB691A1F8}"
 EndProject

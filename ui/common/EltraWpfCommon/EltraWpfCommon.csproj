@@ -28,16 +28,16 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\EltraCommon\EltraCommon.csproj" />
+    <ProjectReference Include="..\..\..\externals\eltra-common\EltraCommon\EltraCommon.csproj" />
     <ProjectReference Include="..\EltraUiCommon\EltraUiCommon.csproj" />
   </ItemGroup>
 
   <ItemGroup>
-    <None Include="..\..\xternals\common\EltraResources\png\eltra_logo.png">
+    <None Include="..\..\..\externals\eltra-common\EltraResources\png\eltra_logo.png">
       <Pack>True</Pack>
       <PackagePath></PackagePath>
     </None>
-    <None Include="..\..\xternals\common\EltraResources\text\LICENSE">
+    <None Include="..\..\..\externals\eltra-common\EltraResources\text\LICENSE">
       <Pack>True</Pack>
       <PackagePath></PackagePath>
     </None>

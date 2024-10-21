@@ -14,28 +14,22 @@
 		<RepositoryType>GIT</RepositoryType>
 		<dependencies>
 		  <dependency id="Newtonsoft.Json" version="12.0.3" />
-		  <dependency id="Eltra.Contracts" version="1.0.0" />
 		</dependencies>
 		<PackageId>Eltra.Connector</PackageId>
 		<Product>Eltra.Connector</Product>		
 		<Description>Eltra - CANOpen based IoT Framework - SDK</Description>
 		<PackageTags>CANOpen IoT Eltra OPCUA OPC</PackageTags>
-        <Version>2.2.3</Version>
-        <AssemblyVersion>2.2.3.0</AssemblyVersion>
+        <Version>3.1.0</Version>
+        <AssemblyVersion>3.1.0.0</AssemblyVersion>
         <PackageIcon>eltra_logo.png</PackageIcon>
-        <FileVersion>2.2.3.0</FileVersion>
-        <Configurations>Debug;Release;Debug - UWP</Configurations>
+        <FileVersion>3.1.0.0</FileVersion>
+        <Configurations>Debug;Release;</Configurations>
 		<PackageReadmeFile>readme.md</PackageReadmeFile>
     </PropertyGroup>
 
     <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
       <DocumentationFile>EltraConnector.xml</DocumentationFile>
       <DefineConstants>TRACE;_UDP</DefineConstants>
-      <NoWarn>1701;1702;S3267</NoWarn>
-    </PropertyGroup>
-
-    <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug - UWP|AnyCPU'">
-      <DocumentationFile>EltraConnector.xml</DocumentationFile>
       <NoWarn>1701;1702;S3267</NoWarn>
     </PropertyGroup>
 
@@ -48,7 +42,7 @@
       <Compile Remove="TestEltraConnector\**" />
       <EmbeddedResource Remove="TestEltraConnector\**" />
       <None Remove="TestEltraConnector\**" />
-      <None Include="..\..\..\eltra-common\EltraResources\png\eltra_logo.png">
+      <None Include="..\..\externals\eltra-common\EltraResources\png\eltra_logo.png">
         <Pack>True</Pack>
         <PackagePath></PackagePath>
       </None>
@@ -77,9 +71,9 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\..\..\eltra-common\EltraCommonBase\EltraCommonBase.csproj" />
-      <ProjectReference Include="..\..\..\eltra-common\EltraCommon\EltraCommon.csproj" />
-      <ProjectReference Include="..\..\..\eltra-common\EltraLogger\EltraLogger.csproj" />
+      <ProjectReference Include="..\..\externals\eltra-common\EltraCommonBase\EltraCommonBase.csproj" />
+      <ProjectReference Include="..\..\externals\eltra-common\EltraCommon\EltraCommon.csproj" />
+      <ProjectReference Include="..\..\externals\eltra-common\EltraLogger\EltraLogger.csproj" />
     </ItemGroup>
 
     <Target Name="PostBuild" AfterTargets="PostBuildEvent">

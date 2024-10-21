@@ -16,10 +16,10 @@
     <PackageIcon>eltra_logo.png</PackageIcon>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
-    <Version>1.5.3</Version>
-    <AssemblyVersion>1.5.3.0</AssemblyVersion>
-    <FileVersion>1.5.3.0</FileVersion>
-    <Configurations>Debug;Release;Debug - UWP</Configurations>
+    <Version>3.1.0</Version>
+    <AssemblyVersion>3.1.0.0</AssemblyVersion>
+    <FileVersion>3.1.0.0</FileVersion>
+    <Configurations>Debug;Release</Configurations>
 	<PackageReadmeFile>readme.md</PackageReadmeFile>
   </PropertyGroup>
 
