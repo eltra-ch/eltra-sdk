@@ -476,8 +476,6 @@ namespace EltraUiCommon.Controls
             {
                 foreach(var t in awaitableTasks)
                 {
-                    //t.Thread.ThreadState == System.Threading.ThreadState.
-
                     t.Wait();
                 }
             }
@@ -536,8 +534,6 @@ namespace EltraUiCommon.Controls
                 WaitAllAutoUpdateTasks(id);
 
                 await UnregisterAutoUpdate();
-
-                return;
             }));
 
             AddAutoUpdateTask(tr,id);
@@ -548,7 +544,7 @@ namespace EltraUiCommon.Controls
             return Task.CompletedTask;
         }
 
-        private Task UpdateAllControlsAsync()
+        private void UpdateAllControlsAsync()
         {
             const int minWaitTime = 100;
             const double minUpdateDelayInSec = 3;
@@ -557,13 +553,16 @@ namespace EltraUiCommon.Controls
             {
                 _updateTaskTimestamp = DateTime.Now;
 
+                if (_updateViewModelsTask != null && !_updateViewModelsTask.IsCompleted)
+                {
+                    _updateViewModelsTask.Wait();
+                }
+
                 _updateViewModelsTask = Task.Run(async () =>
                 {
                     await UpdateAllControls();
                 });
             }
-
-            return _updateViewModelsTask;
         }
 
         public override bool StartCommunication()
