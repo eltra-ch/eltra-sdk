@@ -15,7 +15,6 @@ namespace EltraUiCommon.Controls
         private static object _syncObject = new object();
         private List<ToolViewBaseModel> _children;
         private VirtualCommandSet _vcs;
-        private bool _isVisible;
         private bool _isEnabled;
         private bool _isUpdating;
         private bool _isRefreshing;
@@ -96,12 +95,6 @@ namespace EltraUiCommon.Controls
         {
             get => _isConnected;
             set => SetProperty(ref _isConnected, value);
-        }
-
-        public bool IsVisible
-        {
-            get => _isVisible;
-            set => SetProperty(ref _isVisible, value);
         }
 
         public bool IsEnabled
