@@ -10,7 +10,6 @@ namespace EltraUiCommon.Controls.Parameters
     {
         #region Private fields
 
-        private readonly string _uniqueId;        
         private string _value;
         private string _unit;
         private Parameter _parameter;
@@ -22,7 +21,12 @@ namespace EltraUiCommon.Controls.Parameters
         public ParameterLabelViewModel(ToolViewBaseModel parent, string uniqueId) 
             : base(parent, uniqueId)
         {
-            _uniqueId = uniqueId;
+            IsEnabled = true;
+        }
+
+        public ParameterLabelViewModel(ToolViewBaseModel parent, ushort index, byte subIndex)
+            : base(parent, index, subIndex)
+        {
             IsEnabled = true;
         }
 
@@ -69,8 +73,18 @@ namespace EltraUiCommon.Controls.Parameters
             if (Vcs != null && Vcs.Device != null)
             {
                 var device = Vcs.Device;
+                Parameter parameter = null;
 
-                if (device.SearchParameter(_uniqueId) is Parameter parameter)
+                if (!string.IsNullOrEmpty(UniqueId))
+                {
+                    parameter = device.SearchParameter(UniqueId) as Parameter;
+                }
+                else
+                {
+                    parameter = device.SearchParameter(Index, SubIndex) as Parameter;
+                }
+
+                if (parameter != null)
                 {
                     _parameter = parameter;
 

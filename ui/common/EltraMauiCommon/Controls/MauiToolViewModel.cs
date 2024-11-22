@@ -9,7 +9,7 @@ using EltraUiCommon.Dialogs;
 
 namespace EltraMauiCommon.Controls
 {
-    public class XamToolViewModel : ToolViewModel
+    public class MauiToolViewModel : ToolViewModel
     {
         #region
 
@@ -20,17 +20,17 @@ namespace EltraMauiCommon.Controls
 
         #region Constructors
 
-        public XamToolViewModel()
+        public MauiToolViewModel()
         {
             Init(new InvokeOnMainThread());
         }
 
-        public XamToolViewModel(ToolViewBaseModel parent)
+        public MauiToolViewModel(ToolViewBaseModel parent)
             : base(parent)
         {
             Init(new InvokeOnMainThread());
 
-            if(parent is XamToolViewModel xamTool)
+            if(parent is MauiToolViewModel xamTool)
             {
                 PluginService = xamTool.PluginService;
             }
@@ -79,7 +79,7 @@ namespace EltraMauiCommon.Controls
         {
             foreach(var child in SafeChildrenArray)
             {
-                if(child is XamToolViewModel childViewModel)
+                if(child is MauiToolViewModel childViewModel)
                 {
                     childViewModel.PluginService = PluginService;
                 }
@@ -108,7 +108,7 @@ namespace EltraMauiCommon.Controls
                 {
                     if(s is DialogRequestedEventArgs args)
                     {
-                        if(args.Sender is XamToolViewModel viewModel)
+                        if(args.Sender is MauiToolViewModel viewModel)
                         {
                             viewModel.OnDialogClosed(viewModel, args.DialogResult);
                         }

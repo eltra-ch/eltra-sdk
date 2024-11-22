@@ -11,5 +11,11 @@ namespace EltraMauiCommon.Controls.Parameters
         {
             Init(new InvokeOnMainThread());
         }
+
+        public XamParameterLabelViewModel(ToolViewBaseModel parent, ushort index, byte subIndex)
+            : base(parent, index, subIndex)
+        {
+            Init(new InvokeOnMainThread());
+        }
     }
 }

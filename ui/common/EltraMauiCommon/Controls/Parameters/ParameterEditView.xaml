@@ -4,6 +4,8 @@
              xmlns:triggers="clr-namespace:EltraMauiCommon.Controls.Parameters.Triggers;assembly=EltraMauiCommon"
              xmlns:behaviors="clr-namespace:EltraMauiCommon.Controls.Parameters.Behaviors;assembly=EltraMauiCommon"
              xmlns:converters="clr-namespace:EltraMauiCommon.Controls.Converters"
+             xmlns:local="clr-namespace:EltraMauiCommon.Controls.Parameters"
+             x:DataType="local:XamParameterEditViewModel"
              x:Class="EltraMauiCommon.Controls.Parameters.ParameterEditView">
   <ContentView.Content>
       <Grid>

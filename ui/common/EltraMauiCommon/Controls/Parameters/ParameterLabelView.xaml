@@ -2,6 +2,8 @@
 <ContentView xmlns="http://schemas.microsoft.com/dotnet/2021/maui" 
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Name="LabelView"
+             xmlns:local="clr-namespace:EltraMauiCommon.Controls.Parameters"
+             x:DataType="local:XamParameterLabelViewModel"
              x:Class="EltraMauiCommon.Controls.Parameters.ParameterLabelView">
   <ContentView.Content>
       <Grid>

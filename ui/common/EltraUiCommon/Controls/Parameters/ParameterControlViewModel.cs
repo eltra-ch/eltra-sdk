@@ -8,6 +8,9 @@
         private bool _showLabel = true;
         private string _label;
         private bool _isValid = true;
+        
+        private readonly ushort _index;
+        private readonly byte _subIndex;
 
         #endregion
 
@@ -17,6 +20,13 @@
             : base(parent)
         {
             UniqueId = uniqueId;
+        }
+
+        public ParameterControlViewModel(ToolViewBaseModel parent, ushort index, byte subIndex)
+            : base(parent)
+        {
+            _index = index;
+            _subIndex = subIndex;
         }
 
         #endregion
@@ -38,6 +48,10 @@
                 OnPropertyChanged("ShowLabel");
             }
         }
+
+        public ushort Index => _index;
+
+        public byte SubIndex => _subIndex;
 
         public string Label
         {
