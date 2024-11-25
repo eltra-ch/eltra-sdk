@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Reflection;
 using System.Threading.Tasks;
 using EltraCommon.Contracts.Devices;
 using EltraCommon.ObjectDictionary.Common.DeviceDescription.Profiles.Application.Parameters;
@@ -37,6 +38,11 @@ namespace EltraUiCommon.Controls.Parameters
             : base(parent, uniqueId)
         {
             IsEnabled = true;
+        }
+
+        public ParameterEditViewModel(ToolViewBaseModel parent, ushort index, byte subIndex)
+            : base(parent, index, subIndex)
+        {
         }
 
         #endregion
