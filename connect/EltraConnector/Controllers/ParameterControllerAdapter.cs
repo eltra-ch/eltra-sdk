@@ -88,7 +88,7 @@ namespace EltraConnector.Controllers
 
                             if(!task)
                             {
-                                MsgLogger.WriteError($"{GetType().Name} - {method}", $"SetValue {parameter.Index:X2}:{parameter.SubIndex:X2} failed! timeout!");
+                                MsgLogger.WriteError($"{GetType().Name} - {method}", $"SetValue {parameter.Index:X4}:{parameter.SubIndex:X2} failed! timeout!");
                             }
                         }
                     }
@@ -108,7 +108,7 @@ namespace EltraConnector.Controllers
             {
                 //TODO parameter.SetValue(e.OldValue);
 
-                MsgLogger.WriteError($"{GetType().Name} - {method}", $"SetParameterValue {parameter.Index:X2}:{parameter.SubIndex:X2} failed!");
+                MsgLogger.WriteError($"{GetType().Name} - {method}", $"SetParameterValue {parameter.Index:X4}:{parameter.SubIndex:X2} failed!");
             }
         }
 
@@ -167,7 +167,7 @@ namespace EltraConnector.Controllers
 
             try
             {
-                MsgLogger.WriteLine($"{GetType().Name} - GetParameter", $"get parameter, index=0x{index:X4}, subindex=0x{subIndex:X4}, device node id={nodeId}");
+                MsgLogger.WriteLine($"{GetType().Name} - GetParameter", $"get parameter, index=0x{index:X4}, subindex=0x{subIndex:X2}, device node id={nodeId}");
 
                 var query = HttpUtility.ParseQueryString(string.Empty);
 
@@ -186,7 +186,7 @@ namespace EltraConnector.Controllers
                 {
                     result = parameter;
 
-                    MsgLogger.WriteLine($"{GetType().Name} - GetParameter", $"get parameter, index=0x{index:X4}, subindex=0x{subIndex:X4}, device node id={nodeId} - success");
+                    MsgLogger.WriteLine($"{GetType().Name} - GetParameter", $"get parameter, index=0x{index:X4}, subindex=0x{subIndex:X2}, device node id={nodeId} - success");
                 }
             }
             catch (Exception e)
@@ -215,7 +215,7 @@ namespace EltraConnector.Controllers
 
             try
             {
-                MsgLogger.WriteLine($"{GetType().Name} - GetParameterValue", $"get parameter, index=0x{index:X4}, subindex=0x{subIndex:X4}, device node id={nodeId}");
+                MsgLogger.WriteLine($"{GetType().Name} - GetParameterValue", $"get parameter, index=0x{index:X4}, subindex=0x{subIndex:X2}, device node id={nodeId}");
 
                 var query = HttpUtility.ParseQueryString(string.Empty);
 
@@ -234,7 +234,7 @@ namespace EltraConnector.Controllers
                 {
                     result = parameterValue;
 
-                    MsgLogger.WriteLine($"{GetType().Name} - GetParameterValue", $"get parameter, index=0x{index:X4}, subindex=0x{subIndex:X4}, device node id={nodeId} - success");
+                    MsgLogger.WriteLine($"{GetType().Name} - GetParameterValue", $"get parameter, index=0x{index:X4}, subindex=0x{subIndex:X2}, device node id={nodeId} - success");
                 }
             }
             catch (Exception e)

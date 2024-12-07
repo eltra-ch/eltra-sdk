@@ -7,11 +7,13 @@ using EltraCommon.ObjectDictionary.Common.DeviceDescription.Profiles.Application
 using EltraCommon.ObjectDictionary.DeviceDescription;
 using EltraConnector.Master.Device.Commands;
 using EltraConnector.Master.Device.ParameterConnection;
+using EltraConnector.Master.Device.SerialNumber;
 using EltraConnector.SyncAgent;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Reflection;
 using System.Threading.Tasks;
 
 #pragma warning disable 1591
@@ -22,18 +24,44 @@ namespace EltraConnector.Master.Device
     {
         #region Private fields
 
+        private readonly XddDeviceDescriptionFile _deviceDescriptionFile;
         private SyncCloudAgent _cloudAgent;
         private List<DeviceToolPayload> _deviceToolPayloadList;
-
+        
         #endregion
 
         #region Constructors
 
         public MasterDevice(string family, string deviceDescriptionFilePath, int nodeId)
         {
+            const string methodName = "MasterDevice";
+
             NodeId = nodeId;
             Family = family;
             DeviceDescriptionFilePath = deviceDescriptionFilePath;
+
+            var xddFamily = _deviceDescriptionFile.ReadFamily();
+
+            if(family != xddFamily)
+            {
+                MsgLogger.WriteWarning($"{GetType().Name} - {methodName}", $"family specified = {family} differs from xdd definition = {xddFamily}");
+            }
+
+            _deviceDescriptionFile = new XddDeviceDescriptionFile(this) { SourceFile = deviceDescriptionFilePath };
+
+            CreateCommandSet();
+        }
+
+        public MasterDevice(ISerialNumberProvider serialNumberProvider, string deviceDescriptionFilePath, int nodeId)
+        {
+            NodeId = nodeId;
+
+            Identification.SerialNumber = serialNumberProvider.ReadSerialNumber();
+
+            DeviceDescriptionFilePath = deviceDescriptionFilePath;
+            _deviceDescriptionFile = new XddDeviceDescriptionFile(this) { SourceFile = deviceDescriptionFilePath };
+
+            Family = _deviceDescriptionFile.ReadFamily();
 
             CreateCommandSet();
         }
@@ -100,7 +128,7 @@ namespace EltraConnector.Master.Device
         protected virtual void CreateCommunication()
         {
         }
-        
+
         #endregion
 
         #region Methods
@@ -116,19 +144,15 @@ namespace EltraConnector.Master.Device
 
         public override async Task<bool> ReadDeviceDescriptionFile()
         {
-            var deviceDescriptionFile = new XddDeviceDescriptionFile(this)
-            {
-                Url = CloudAgent.Url,
-                SourceFile = DeviceDescriptionFilePath
-            };
-
+            _deviceDescriptionFile.Url = CloudAgent.Url;
+            
             StatusChanged += (sender, args) => 
             {
                 if(Status == DeviceStatus.Ready)
                 {
                     CreateConnectionManager();
 
-                    AddDeviceTools(deviceDescriptionFile);
+                    AddDeviceTools(_deviceDescriptionFile);
 
                     CreateCommunication();
 
@@ -140,7 +164,7 @@ namespace EltraConnector.Master.Device
                 }
             };
 
-            return await ReadDeviceDescriptionFile(deviceDescriptionFile);
+            return await ReadDeviceDescriptionFile(_deviceDescriptionFile);
         }
 
         private void AddDeviceTools(XddDeviceDescriptionFile xdd)
@@ -225,13 +249,78 @@ namespace EltraConnector.Master.Device
             
         public override async void RunAsync()
         {
+            const string methodName = "RunAsync";
+
             var tasks = new List<Task>();
 
             StartParameterConnectionManager(ref tasks);
 
+            if(!UpdateDeviceParameters())
+            {
+                MsgLogger.WriteError($"{GetType().Name} - {methodName}", $"update device parameters failed!");
+            }
+
             StartConnectionManagersAsync(ref tasks);
 
             await Task.WhenAll(tasks);
+        }
+
+        /// <summary>
+        /// UpdateDeviceParameters
+        /// </summary>
+        /// <returns></returns>
+        private bool UpdateDeviceParameters()
+        {
+            const string methodName = "UpdateDeviceParameters";
+            bool result = true;
+            var parameters = ObjectDictionary?.Parameters;
+
+            if (parameters != null && Communication != null)
+            {
+                foreach (var parameter in parameters)
+                {
+                    if (parameter is Parameter parameterEntry)
+                    {
+                        if (parameterEntry.GetValue(out byte[] bytes) && bytes != null && bytes.Length > 0 && 
+                            Communication.GetObject(parameter.Index, parameterEntry.SubIndex, ref bytes))
+                        {
+                            if(!parameterEntry.SetValue(bytes))
+                            {
+                                MsgLogger.WriteError($"{GetType().Name} - {methodName}", $"set value failed! 0x{parameterEntry.Index:X4}:0x{parameterEntry.SubIndex:X2}");
+                                result = false;
+                            }
+                        }
+                    }
+                    else if (parameter is StructuredParameter structuredParameter)
+                    {
+                        var subParameters = structuredParameter.Parameters;
+                        if (subParameters != null)
+                        {
+                            foreach (var subParameter in subParameters)
+                            {
+                                if (subParameter is Parameter subParameterEntry &&
+                                    subParameterEntry.SubIndex > 0 &&
+                                    subParameterEntry.GetValue(out byte[] bytes) && bytes != null && bytes.Length > 0 &&
+                                    Communication.GetObject(subParameterEntry.Index, subParameterEntry.SubIndex, ref bytes))
+                                {
+                                    if(!subParameterEntry.SetValue(bytes))
+                                    {
+                                        MsgLogger.WriteError($"{GetType().Name} - {methodName}", $"set value failed! 0x{subParameterEntry.Index:X4}:0x{subParameterEntry.SubIndex:X2}");
+                                        result = false;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            else
+            {
+                result = false;
+                MsgLogger.WriteError($"{GetType().Name} - {methodName}", $"no object dictionary or communication set!");
+            }
+
+            return result;
         }
 
         public virtual void Disconnect()

@@ -106,12 +106,12 @@ namespace EltraConnector.Master.Device
 
                 if (!result)
                 {
-                    MsgLogger.WriteError($"{GetType().Name} - ReadAllParameters", $"set parameter ({parameterEntry.Index:X2}:{parameterEntry.SubIndex:X2}) value failed!");
+                    MsgLogger.WriteError($"{GetType().Name} - ReadAllParameters", $"set parameter ({parameterEntry.Index:X4}:{parameterEntry.SubIndex:X2}) value failed!");
                 }
             }
             else
             {
-                MsgLogger.WriteError($"{GetType().Name} - ReadAllParameters", $"get parameter ({parameterEntry.Index:X2}:{parameterEntry.SubIndex:X2}) value failed!");
+                MsgLogger.WriteError($"{GetType().Name} - ReadAllParameters", $"get parameter ({parameterEntry.Index:X4}:{parameterEntry.SubIndex:X2}) value failed!");
             }
 
             return result;

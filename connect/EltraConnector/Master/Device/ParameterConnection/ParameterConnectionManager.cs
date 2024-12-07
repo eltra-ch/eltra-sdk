@@ -77,7 +77,7 @@ namespace EltraConnector.Master.Device.ParameterConnection
             {
                 var registeredParameter = new RegisteredParameter { Source = source, Parameter = parameter, Priority = priority };
 
-                MsgLogger.WriteFlow($"{GetType().Name} - RegisterParameter", $"register parameter index = 0x{index:X4}, subindex = 0x{subIndex:X4}, add to queue ...");
+                MsgLogger.WriteFlow($"{GetType().Name} - RegisterParameter", $"register parameter index = 0x{index:X4}, subindex = 0x{subIndex:X2}, add to queue ...");
 
                 lock (RegisterParametersQueueLock)
                 {
@@ -85,11 +85,11 @@ namespace EltraConnector.Master.Device.ParameterConnection
                     result = true;
                 }
 
-                MsgLogger.WriteFlow($"{GetType().Name} - RegisterParameter", $"register parameter index = 0x{index:X4}, subindex = 0x{subIndex:X4}, added to queue");
+                MsgLogger.WriteFlow($"{GetType().Name} - RegisterParameter", $"register parameter index = 0x{index:X4}, subindex = 0x{subIndex:X2}, added to queue");
             }
             else
             {
-                MsgLogger.WriteError($"{GetType().Name} - RegisterParameter", $"parameter index = 0x{index:X4}, subindex = 0x{subIndex:X4}, not found");
+                MsgLogger.WriteError($"{GetType().Name} - RegisterParameter", $"parameter index = 0x{index:X4}, subindex = 0x{subIndex:X2}, not found");
             }
 
             return result;
@@ -105,7 +105,7 @@ namespace EltraConnector.Master.Device.ParameterConnection
             {
                 var registeredParameter = new RegisteredParameter { Source = source, Parameter = parameter, Priority = priority };
 
-                MsgLogger.WriteFlow($"{GetType().Name} - UnregisterParameter", $"un-register parameter index = 0x{index:X4}, subindex = 0x{subIndex:X4}, add to queue ...");
+                MsgLogger.WriteFlow($"{GetType().Name} - UnregisterParameter", $"un-register parameter index = 0x{index:X4}, subindex = 0x{subIndex:X2}, add to queue ...");
 
                 lock (UnregisterParametersQueueLock)
                 {
@@ -113,11 +113,11 @@ namespace EltraConnector.Master.Device.ParameterConnection
                     result = true;
                 }
 
-                MsgLogger.WriteFlow($"{GetType().Name} - UnregisterParameter", $"un-register parameter index = 0x{index:X4}, subindex = 0x{subIndex:X4}, added to queue");
+                MsgLogger.WriteFlow($"{GetType().Name} - UnregisterParameter", $"un-register parameter index = 0x{index:X4}, subindex = 0x{subIndex:X2}, added to queue");
             }
             else
             {
-                MsgLogger.WriteError($"{GetType().Name} - UnregisterParameter", $"parameter index = 0x{index:X4}, subindex = 0x{subIndex:X4}, not found");
+                MsgLogger.WriteError($"{GetType().Name} - UnregisterParameter", $"parameter index = 0x{index:X4}, subindex = 0x{subIndex:X2}, not found");
             }
 
             return result;
