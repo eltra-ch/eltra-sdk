@@ -386,3 +386,4 @@ Module.symvers
 Mkfile.old
 dkms.conf
 /prescription/prescription/*.DotSettings
+/connect/EltraConnector/EltraConnector.xml
