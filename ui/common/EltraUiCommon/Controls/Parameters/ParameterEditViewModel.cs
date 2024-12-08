@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Diagnostics;
-using System.Reflection;
 using System.Threading.Tasks;
 using EltraCommon.Contracts.Devices;
 using EltraCommon.Logger;
@@ -30,6 +29,8 @@ namespace EltraUiCommon.Controls.Parameters
         private double _doubleValue;
         private double _doubleIncrement = 1.0;
         private double _unitWidth;
+        
+        private bool _lockParameterChange;
 
         #endregion
 
@@ -153,9 +154,7 @@ namespace EltraUiCommon.Controls.Parameters
 
         private void OnParameterChanged(object sender, ParameterChangedEventArgs e)
         {
-            UnregisterChangedEvent();
-
-            if (e.Parameter != null)
+            if (e.Parameter != null && !_lockParameterChange)
             {
                 string valueAsText = e.Parameter.GetValueAsString();
 
@@ -166,8 +165,6 @@ namespace EltraUiCommon.Controls.Parameters
                     Changed?.Invoke(this, e);
                 }
             }
-
-            RegisterChangedEvent();
         }
 
         private void OnParameterWritten(object sender, ParameterWrittenEventArgs e)
@@ -179,7 +176,7 @@ namespace EltraUiCommon.Controls.Parameters
 
         #region Methods
 
-        private void RegisterChangedEvent()
+        private void RegisterParameterChangedEvent()
         {
             if (_parameter != null)
             {
@@ -187,7 +184,7 @@ namespace EltraUiCommon.Controls.Parameters
             }
         }
 
-        private void UnregisterChangedEvent()
+        private void UnregisterParameterChangedEvent()
         {
             if (_parameter != null)
             {
@@ -197,7 +194,7 @@ namespace EltraUiCommon.Controls.Parameters
 
         private void RegisterEvents()
         {
-            RegisterChangedEvent();
+            RegisterParameterChangedEvent();
             RegisterWrittenEvent();
         }
 
@@ -211,7 +208,7 @@ namespace EltraUiCommon.Controls.Parameters
 
         private void UnregisterEvents()
         {
-            UnregisterChangedEvent();
+            UnregisterParameterChangedEvent();
             UnregisterWrittenEvent();
         }
 
@@ -420,8 +417,12 @@ namespace EltraUiCommon.Controls.Parameters
 
                     if (oldValue != newValue)
                     {
+                        _lockParameterChange = true;
+
                         if (_parameter.SetValueAsString(newValue))
                         {
+                            _lockParameterChange = false;
+
                             int retryCount = 10;
                             bool writeResult = false;
                             do
@@ -444,9 +445,16 @@ namespace EltraUiCommon.Controls.Parameters
                             }
                             else
                             {
+                                _lockParameterChange = false;
                                 _parameter.SetValueAsString(oldValue);
                                 result = false;
                             }
+                        }
+                        else
+                        {
+                            _lockParameterChange = false;
+                            _parameter.SetValueAsString(oldValue);
+                            result = false;
                         }
                     }
                     else
