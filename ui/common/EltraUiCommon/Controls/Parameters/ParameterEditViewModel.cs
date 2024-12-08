@@ -3,6 +3,7 @@ using System.Diagnostics;
 using System.Reflection;
 using System.Threading.Tasks;
 using EltraCommon.Contracts.Devices;
+using EltraCommon.Logger;
 using EltraCommon.ObjectDictionary.Common.DeviceDescription.Profiles.Application.Parameters;
 using EltraCommon.ObjectDictionary.Common.DeviceDescription.Profiles.Application.Parameters.Events;
 using EltraCommon.ObjectDictionary.Xdd.DeviceDescription.Profiles.Application.Parameters;
@@ -226,14 +227,22 @@ namespace EltraUiCommon.Controls.Parameters
         {
             if (_parameter == null)
             {
-                if (Vcs.Device.SearchParameter(UniqueId) is Parameter parameter)
+                if (!string.IsNullOrEmpty(UniqueId))
                 {
-                    _parameter = parameter;
+                    if (Vcs.Device.SearchParameter(UniqueId) is Parameter parameter)
+                    {
+                        _parameter = parameter;
+                    }
+                }
+                else
+                {
+                    if (Vcs.Device.SearchParameter(Index, SubIndex) is Parameter parameter)
+                    {
+                        _parameter = parameter;
+                    }
                 }
             }
         }
-
-        
 
         public override void InitModelData()
         {
@@ -316,6 +325,7 @@ namespace EltraUiCommon.Controls.Parameters
 
         public override async Task<bool> StartUpdate()
         {
+            const string methodName = "StartUpdate";
             bool result = true;
 
             if(!IsUpdating)
@@ -332,7 +342,7 @@ namespace EltraUiCommon.Controls.Parameters
                     }
                     else
                     {
-                        Debug.Print($"Parameter {UniqueId} not defined!");
+                        MsgLogger.WriteDebug($"{GetType().Name} - {methodName}", $"Parameter uniqueid = '{UniqueId}' or {Index:X4}:{SubIndex:X2} not defined!");
                     }
 
                     InitModelData();
