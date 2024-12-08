@@ -403,35 +403,41 @@ namespace EltraUiCommon.Controls.Parameters
 
             try
             {
-                if (Vcs != null)
+                if (Vcs != null && _parameter != null)
                 {
                     var oldValue = _parameter.GetValueAsString();
                     var oldParameterValue = _parameter.ActualValue.Clone();
 
                     if (oldValue != newValue)
                     {
-                        if (_parameter != null)
+                        if (_parameter.SetValueAsString(newValue))
                         {
-                            if (_parameter.SetValueAsString(newValue))
+                            int retryCount = 10;
+                            bool writeResult = false;
+                            do
                             {
-                                if (await _parameter.Write())
-                                {
-                                    var newParameterValue = _parameter.ActualValue;
-
-                                    InitDoubleValue();
-                                    InitIntValue();
-
-                                    OnEdited(new ParameterChangedEventArgs(_parameter, oldParameterValue, newParameterValue) );
-
-                                    result = true;
-                                }
-                                else
-                                {
-                                    _parameter.SetValueAsString(oldValue);
-                                    result = false;
-                                }
+                                writeResult = await _parameter.Write();
+                                retryCount--;
                             }
-                        }                        
+                            while (!writeResult && retryCount > 0);
+
+                            if (writeResult)
+                            {
+                                var newParameterValue = _parameter.ActualValue;
+
+                                InitDoubleValue();
+                                InitIntValue();
+
+                                OnEdited(new ParameterChangedEventArgs(_parameter, oldParameterValue, newParameterValue));
+
+                                result = true;
+                            }
+                            else
+                            {
+                                _parameter.SetValueAsString(oldValue);
+                                result = false;
+                            }
+                        }
                     }
                     else
                     {
