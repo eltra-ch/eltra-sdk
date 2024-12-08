@@ -203,7 +203,7 @@ namespace EltraConnector.Master.Device
             return SetObject(objectIndex, objectSubindex, data);
         }
 
-        protected bool UpdateParameterDictionaryValue<T>(ushort objectIndex, byte objectSubindex, T newValue)
+        protected bool SetObject<T>(ushort objectIndex, byte objectSubindex, T newValue)
         {
             bool result = false;
 
