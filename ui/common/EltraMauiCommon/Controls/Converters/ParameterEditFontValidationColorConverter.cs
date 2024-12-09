@@ -1,7 +1,7 @@
 ﻿using System;
-using System.Drawing;
 using System.Globalization;
 using Microsoft.Maui.Controls;
+using Microsoft.Maui.Graphics;
 
 namespace EltraMauiCommon.Controls.Converters
 {
@@ -9,14 +9,11 @@ namespace EltraMauiCommon.Controls.Converters
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            Color result = Color.Black;
+            Color result = Colors.Black;
 
-            if (value is bool bv)
+            if (value is bool bv && !bv)
             {
-                if(!bv)
-                {
-                    result = Color.Red;
-                }
+                result = Colors.MediumVioletRed;
             }
 
             return result;
