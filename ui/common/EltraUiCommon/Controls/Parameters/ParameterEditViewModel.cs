@@ -289,7 +289,9 @@ namespace EltraUiCommon.Controls.Parameters
 
             InitDoubleValue();
             InitIntValue();
+
             InitIntRanges();
+            InitDoubleRanges();
         }
 
         protected override void OnVirtualCommandSetChanged()
@@ -467,7 +469,7 @@ namespace EltraUiCommon.Controls.Parameters
             }
             catch (Exception e)
             {
-                Console.WriteLine(e);
+                Debug.WriteLine(e);
             }
 
             return result;
@@ -495,30 +497,60 @@ namespace EltraUiCommon.Controls.Parameters
         {
             if (_parameter != null)
             {
-                switch (_parameter.DataType.Type)
+                long minvalue = 0;
+                long maxvalue = 0;
+
+                if (_parameter is XddParameter xddParameter)
                 {
-                    case TypeCode.Int16:
-                    case TypeCode.Int32:
-                    case TypeCode.Int64:
-                    case TypeCode.UInt16:
-                    case TypeCode.UInt32:
-                    case TypeCode.UInt64:
-                        long minvalue = 0;
-                        long maxvalue = 0;
-
-                        if (_parameter is XddParameter epos4Parameter)
+                    if (xddParameter.GetRange(ref minvalue, ref maxvalue))
+                    {
+                        switch (_parameter.DataType.Type)
                         {
-                            if (epos4Parameter.GetRange(ref minvalue, ref maxvalue))
-                            {
-                                IntMinValue = minvalue;
-                                IntMaxValue = maxvalue;
+                            case TypeCode.Int16:
+                            case TypeCode.Int32:
+                            case TypeCode.Int64:
+                            case TypeCode.UInt16:
+                            case TypeCode.UInt32:
+                            case TypeCode.UInt64:
+                                {
+                                    IntMinValue = minvalue;
+                                    IntMaxValue = maxvalue;
 
-                                DoubleMinValue = IntMinValue;
-                                DoubleMaxValue = IntMaxValue;
-                            }
+                                    DoubleMinValue = IntMinValue;
+                                    DoubleMaxValue = IntMaxValue;
+                                }
+                                break;
+                            case TypeCode.Single:
+                            case TypeCode.Double:
+                                DoubleMinValue = minvalue;
+                                DoubleMaxValue = maxvalue;
+                                break;
                         }
+                    }
+                }
+            }
+        }
 
-                        break;
+        private void InitDoubleRanges()
+        {
+            if (_parameter != null)
+            {
+                double minvalue = 0;
+                double maxvalue = 0;
+
+                if (_parameter is XddParameter xddParameter)
+                {
+                    if (xddParameter.GetRange(ref minvalue, ref maxvalue))
+                    {
+                        switch (_parameter.DataType.Type)
+                        {
+                            case TypeCode.Single:
+                            case TypeCode.Double:
+                                DoubleMinValue = minvalue;
+                                DoubleMaxValue = maxvalue;
+                                break;
+                        }
+                    }
                 }
             }
         }
