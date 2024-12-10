@@ -21,7 +21,7 @@ namespace EltraMauiCommon.Controls.Behaviors
             if (_page != null)
             {
                 _page.BindingContextChanged += OnPageBindingContextChanged;
-                _page.LayoutChanged += OnPageLayoutChanged;
+                _page.SizeChanged += OnPageLayoutChanged;
             }
 
             base.OnAttachedTo(page);
@@ -32,7 +32,7 @@ namespace EltraMauiCommon.Controls.Behaviors
             if (_page != null)
             {
                 _page.BindingContextChanged -= OnPageBindingContextChanged;
-                _page.LayoutChanged -= OnPageLayoutChanged;
+                _page.SizeChanged -= OnPageLayoutChanged;
             }
 
             base.OnDetachingFrom(bindable);

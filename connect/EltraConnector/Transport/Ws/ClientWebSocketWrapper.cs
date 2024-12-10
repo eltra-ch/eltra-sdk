@@ -1,5 +1,6 @@
 ﻿using EltraCommon.Logger;
 using System;
+using System.Net.Sockets;
 using System.Net.WebSockets;
 using System.Threading;
 using System.Threading.Tasks;
@@ -229,9 +230,24 @@ namespace EltraConnector.Transport.Ws
 
         private void Initialize()
         {
-            var opt = _socket.Options;
+            const string methodName = "Initialize";
+            
+            try
+            {
+                if (_socket != null)
+                {
+                    var opt = _socket.Options;
 
-            opt.UseDefaultCredentials = true;
+                    if (_socket.State == WebSocketState.Open || _socket.State == WebSocketState.CloseSent)
+                    {
+                        opt.UseDefaultCredentials = true;
+                    }
+                }
+            }
+            catch(Exception e)
+            {
+                MsgLogger.Exception($"{GetType().Name} - {methodName}", e);
+            }
         }
 
         #endregion
