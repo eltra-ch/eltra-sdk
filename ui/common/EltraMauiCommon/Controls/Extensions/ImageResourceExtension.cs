@@ -6,6 +6,7 @@ using Microsoft.Maui.Controls.Xaml;
 namespace EltraMauiCommon.Controls.Extensions
 {
     [ContentProperty(nameof(Source))]
+    [AcceptEmptyServiceProvider]
     public class ImageResourceExtension : IMarkupExtension
     {
         public string Source { get; set; }
