@@ -380,16 +380,16 @@ namespace EltraUiCommon.Controls.Parameters
 
         public override async Task Show()
         {
-            IsBusy = true;
-
             if (!IsVisible)
             {
-                RegisterEvents();
+                IsBusy = true;
 
                 await base.Show();
-            }
 
-            IsBusy = false;
+                RegisterEvents();
+
+                IsBusy = false;
+            }
         }
 
         public override async Task Hide()
