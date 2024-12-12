@@ -11,10 +11,11 @@ namespace EltraUiCommon.Controls.Definitions
 
         internal void Wait()
         {
+            const int maxWaitTime = 10000;
             if (Thread.ThreadState == ThreadState.Running ||
                 Thread.ThreadState == ThreadState.Background)
             {
-                Thread.Join();
+                Thread.Join(maxWaitTime);
             }
         }
     }

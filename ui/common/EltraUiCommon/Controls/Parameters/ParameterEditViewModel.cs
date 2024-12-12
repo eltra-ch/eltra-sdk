@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Diagnostics;
-using System.Reflection;
 using System.Threading.Tasks;
 using EltraCommon.Contracts.Devices;
+using EltraCommon.Logger;
 using EltraCommon.ObjectDictionary.Common.DeviceDescription.Profiles.Application.Parameters;
 using EltraCommon.ObjectDictionary.Common.DeviceDescription.Profiles.Application.Parameters.Events;
 using EltraCommon.ObjectDictionary.Xdd.DeviceDescription.Profiles.Application.Parameters;
@@ -29,6 +29,8 @@ namespace EltraUiCommon.Controls.Parameters
         private double _doubleValue;
         private double _doubleIncrement = 1.0;
         private double _unitWidth;
+        
+        private bool _lockParameterChange;
 
         #endregion
 
@@ -152,9 +154,7 @@ namespace EltraUiCommon.Controls.Parameters
 
         private void OnParameterChanged(object sender, ParameterChangedEventArgs e)
         {
-            UnregisterChangedEvent();
-
-            if (e.Parameter != null)
+            if (e.Parameter != null && !_lockParameterChange)
             {
                 string valueAsText = e.Parameter.GetValueAsString();
 
@@ -165,8 +165,6 @@ namespace EltraUiCommon.Controls.Parameters
                     Changed?.Invoke(this, e);
                 }
             }
-
-            RegisterChangedEvent();
         }
 
         private void OnParameterWritten(object sender, ParameterWrittenEventArgs e)
@@ -178,7 +176,7 @@ namespace EltraUiCommon.Controls.Parameters
 
         #region Methods
 
-        private void RegisterChangedEvent()
+        private void RegisterParameterChangedEvent()
         {
             if (_parameter != null)
             {
@@ -186,7 +184,7 @@ namespace EltraUiCommon.Controls.Parameters
             }
         }
 
-        private void UnregisterChangedEvent()
+        private void UnregisterParameterChangedEvent()
         {
             if (_parameter != null)
             {
@@ -196,7 +194,7 @@ namespace EltraUiCommon.Controls.Parameters
 
         private void RegisterEvents()
         {
-            RegisterChangedEvent();
+            RegisterParameterChangedEvent();
             RegisterWrittenEvent();
         }
 
@@ -210,7 +208,7 @@ namespace EltraUiCommon.Controls.Parameters
 
         private void UnregisterEvents()
         {
-            UnregisterChangedEvent();
+            UnregisterParameterChangedEvent();
             UnregisterWrittenEvent();
         }
 
@@ -226,14 +224,22 @@ namespace EltraUiCommon.Controls.Parameters
         {
             if (_parameter == null)
             {
-                if (Vcs.Device.SearchParameter(UniqueId) is Parameter parameter)
+                if (!string.IsNullOrEmpty(UniqueId))
                 {
-                    _parameter = parameter;
+                    if (Vcs.Device.SearchParameter(UniqueId) is Parameter parameter)
+                    {
+                        _parameter = parameter;
+                    }
+                }
+                else
+                {
+                    if (Vcs.Device.SearchParameter(Index, SubIndex) is Parameter parameter)
+                    {
+                        _parameter = parameter;
+                    }
                 }
             }
         }
-
-        
 
         public override void InitModelData()
         {
@@ -283,7 +289,9 @@ namespace EltraUiCommon.Controls.Parameters
 
             InitDoubleValue();
             InitIntValue();
+
             InitIntRanges();
+            InitDoubleRanges();
         }
 
         protected override void OnVirtualCommandSetChanged()
@@ -316,6 +324,7 @@ namespace EltraUiCommon.Controls.Parameters
 
         public override async Task<bool> StartUpdate()
         {
+            const string methodName = "StartUpdate";
             bool result = true;
 
             if(!IsUpdating)
@@ -332,7 +341,7 @@ namespace EltraUiCommon.Controls.Parameters
                     }
                     else
                     {
-                        Debug.Print($"Parameter {UniqueId} not defined!");
+                        MsgLogger.WriteDebug($"{GetType().Name} - {methodName}", $"Parameter uniqueid = '{UniqueId}' or {Index:X4}:{SubIndex:X2} not defined!");
                     }
 
                     InitModelData();
@@ -371,16 +380,16 @@ namespace EltraUiCommon.Controls.Parameters
 
         public override async Task Show()
         {
-            IsBusy = true;
-
             if (!IsVisible)
             {
-                RegisterEvents();
+                IsBusy = true;
 
                 await base.Show();
-            }
 
-            IsBusy = false;
+                RegisterEvents();
+
+                IsBusy = false;
+            }
         }
 
         public override async Task Hide()
@@ -403,35 +412,52 @@ namespace EltraUiCommon.Controls.Parameters
 
             try
             {
-                if (Vcs != null)
+                if (Vcs != null && _parameter != null)
                 {
                     var oldValue = _parameter.GetValueAsString();
                     var oldParameterValue = _parameter.ActualValue.Clone();
 
                     if (oldValue != newValue)
                     {
-                        if (_parameter != null)
+                        _lockParameterChange = true;
+
+                        if (_parameter.SetValueAsString(newValue))
                         {
-                            if (_parameter.SetValueAsString(newValue))
+                            _lockParameterChange = false;
+
+                            int retryCount = 10;
+                            bool writeResult = false;
+                            do
                             {
-                                if (await _parameter.Write())
-                                {
-                                    var newParameterValue = _parameter.ActualValue;
-
-                                    InitDoubleValue();
-                                    InitIntValue();
-
-                                    OnEdited(new ParameterChangedEventArgs(_parameter, oldParameterValue, newParameterValue) );
-
-                                    result = true;
-                                }
-                                else
-                                {
-                                    _parameter.SetValueAsString(oldValue);
-                                    result = false;
-                                }
+                                writeResult = await _parameter.Write();
+                                retryCount--;
                             }
-                        }                        
+                            while (!writeResult && retryCount > 0);
+
+                            if (writeResult)
+                            {
+                                var newParameterValue = _parameter.ActualValue;
+
+                                InitDoubleValue();
+                                InitIntValue();
+
+                                OnEdited(new ParameterChangedEventArgs(_parameter, oldParameterValue, newParameterValue));
+
+                                result = true;
+                            }
+                            else
+                            {
+                                _lockParameterChange = false;
+                                _parameter.SetValueAsString(oldValue);
+                                result = false;
+                            }
+                        }
+                        else
+                        {
+                            _lockParameterChange = false;
+                            _parameter.SetValueAsString(oldValue);
+                            result = false;
+                        }
                     }
                     else
                     {
@@ -443,7 +469,7 @@ namespace EltraUiCommon.Controls.Parameters
             }
             catch (Exception e)
             {
-                Console.WriteLine(e);
+                Debug.WriteLine(e);
             }
 
             return result;
@@ -471,30 +497,60 @@ namespace EltraUiCommon.Controls.Parameters
         {
             if (_parameter != null)
             {
-                switch (_parameter.DataType.Type)
+                long minvalue = 0;
+                long maxvalue = 0;
+
+                if (_parameter is XddParameter xddParameter)
                 {
-                    case TypeCode.Int16:
-                    case TypeCode.Int32:
-                    case TypeCode.Int64:
-                    case TypeCode.UInt16:
-                    case TypeCode.UInt32:
-                    case TypeCode.UInt64:
-                        long minvalue = 0;
-                        long maxvalue = 0;
-
-                        if (_parameter is XddParameter epos4Parameter)
+                    if (xddParameter.GetRange(ref minvalue, ref maxvalue))
+                    {
+                        switch (_parameter.DataType.Type)
                         {
-                            if (epos4Parameter.GetRange(ref minvalue, ref maxvalue))
-                            {
-                                IntMinValue = minvalue;
-                                IntMaxValue = maxvalue;
+                            case TypeCode.Int16:
+                            case TypeCode.Int32:
+                            case TypeCode.Int64:
+                            case TypeCode.UInt16:
+                            case TypeCode.UInt32:
+                            case TypeCode.UInt64:
+                                {
+                                    IntMinValue = minvalue;
+                                    IntMaxValue = maxvalue;
 
-                                DoubleMinValue = IntMinValue;
-                                DoubleMaxValue = IntMaxValue;
-                            }
+                                    DoubleMinValue = IntMinValue;
+                                    DoubleMaxValue = IntMaxValue;
+                                }
+                                break;
+                            case TypeCode.Single:
+                            case TypeCode.Double:
+                                DoubleMinValue = minvalue;
+                                DoubleMaxValue = maxvalue;
+                                break;
                         }
+                    }
+                }
+            }
+        }
 
-                        break;
+        private void InitDoubleRanges()
+        {
+            if (_parameter != null)
+            {
+                double minvalue = 0;
+                double maxvalue = 0;
+
+                if (_parameter is XddParameter xddParameter)
+                {
+                    if (xddParameter.GetRange(ref minvalue, ref maxvalue))
+                    {
+                        switch (_parameter.DataType.Type)
+                        {
+                            case TypeCode.Single:
+                            case TypeCode.Double:
+                                DoubleMinValue = minvalue;
+                                DoubleMaxValue = maxvalue;
+                                break;
+                        }
+                    }
                 }
             }
         }

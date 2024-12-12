@@ -34,7 +34,12 @@ namespace EltraMauiCommon.Controls.Parameters.Behaviors
 
                     var dataType = parameter.DataType;
 
-                    if (dataType.Type == TypeCode.String || dataType.Type == TypeCode.Object)
+                    if (dataType.Type == TypeCode.String || 
+                        dataType.Type == TypeCode.Object || 
+                        dataType.Type == TypeCode.DBNull ||
+                        dataType.Type == TypeCode.DateTime ||
+                        dataType.Type == TypeCode.Empty ||
+                        dataType.Type == TypeCode.Boolean)
                     {
                         result = false;
                     }
@@ -50,7 +55,7 @@ namespace EltraMauiCommon.Controls.Parameters.Behaviors
             {
                 if (((Entry)sender).BindingContext is ParameterEditViewModel viewModel && IsNumberDataType(viewModel))
                 {
-                    var isValid = IsValidNumber(args.NewTextValue);
+                    var isValid = IsValidNumber(args.NewTextValue, viewModel);
 
                     viewModel.IsValid = isValid;
 
@@ -68,20 +73,51 @@ namespace EltraMauiCommon.Controls.Parameters.Behaviors
             }
         }
 
-        private static bool IsValidNumber(string textValue)
+        private static bool IsValidNumber(string textValue, ParameterEditViewModel viewModel)
         {
-            var chars = textValue.ToCharArray();
             bool isValid = false;
 
-            if (chars.Length > 0)
+            if (textValue.Length > 0)
             {
                 isValid = true;
-                foreach (var character in chars)
+                var parameter = viewModel?.Parameter;
+
+                if (parameter != null)
                 {
-                    if (!char.IsDigit(character) && character != '-')
+                    var type = parameter.DataType.Type;
+
+                    switch(type)
                     {
-                        isValid = false;
-                        break;
+                        case TypeCode.Byte:
+                            isValid = byte.TryParse(textValue, out var _);
+                            break;
+                        case TypeCode.SByte:
+                            isValid = sbyte.TryParse(textValue, out var _);
+                            break;
+                        case TypeCode.Int64:
+                            isValid = long.TryParse(textValue, out var _);
+                            break;
+                        case TypeCode.UInt64:
+                            isValid = ulong.TryParse(textValue, out var _);
+                            break;
+                        case TypeCode.Int32:
+                            isValid = int.TryParse(textValue, out var _);
+                            break;
+                        case TypeCode.UInt32:
+                            isValid = uint.TryParse(textValue, out var _);
+                            break;
+                        case TypeCode.Int16:
+                            isValid = short.TryParse(textValue, out var _);
+                            break;
+                        case TypeCode.UInt16:
+                            isValid = ushort.TryParse(textValue, out var _);
+                            break;
+                        case TypeCode.Single:
+                            isValid = Single.TryParse(textValue, out var _);
+                            break;
+                        case TypeCode.Double:
+                            isValid = double.TryParse(textValue, out double _);
+                            break;
                     }
                 }
             }

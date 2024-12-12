@@ -17,10 +17,10 @@
               <ColumnDefinition Width="Auto"/>
           </Grid.ColumnDefinitions>
 
-          <Label x:Name="LabelControl" Grid.Row="0" Grid.Column="0" Text="{Binding Label}" IsVisible="{Binding ShowLabel}" FontSize="{Binding FontSize, Source={Reference LabelView}}"/>
-          <Entry x:Name="ContentControl" Grid.Row="1" Grid.Column="0" Text="{Binding Value}" IsReadOnly="True" FontSize="{Binding FontSize, Source={Reference LabelView}}"/>
+          <Label x:Name="LabelControl" Grid.Row="0" Grid.Column="0" Text="{Binding Label}" IsVisible="{Binding ShowLabel}" FontSize="{Binding FontSize, Source={x:Reference LabelView}}"/>
+            <Entry x:Name="ContentControl" Grid.Row="1" Grid.Column="0" Text="{Binding Value}" IsReadOnly="True" FontSize="{Binding FontSize, Source={x:Reference LabelView}}"/>
           <Frame Grid.Row="1" Grid.Column="1" BackgroundColor="Transparent" BorderColor="Transparent" Padding="2" />
-          <Label x:Name="UnitControl" Grid.Row="1" Grid.Column="2" Text="{Binding Unit}" FontSize="{Binding FontSize, Source={Reference LabelView}}" VerticalOptions="CenterAndExpand"/>
+            <Label x:Name="UnitControl" Grid.Row="1" Grid.Column="2" Text="{Binding Unit}" FontSize="{Binding FontSize, Source={x:Reference LabelView}}" VerticalOptions="CenterAndExpand"/>
 
         </Grid>
     </ContentView.Content>

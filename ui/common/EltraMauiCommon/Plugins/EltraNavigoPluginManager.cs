@@ -61,7 +61,7 @@ namespace EltraMauiCommon.Plugins
 
         public List<EltraPluginCacheItem> PluginCache => _pluginCache ?? (_pluginCache = new List<EltraPluginCacheItem>());
 
-        public string LocalPath => Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
+        public string LocalPath => Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "ch.eltra.eltranavigo");
 
         private PluginStore PluginStore => _pluginStore ?? (_pluginStore = CreatePluginStore());
 

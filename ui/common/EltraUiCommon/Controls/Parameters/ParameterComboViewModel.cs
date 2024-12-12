@@ -201,6 +201,8 @@ namespace EltraUiCommon.Controls.Parameters
 
         public override async Task Show()
         {
+            await base.Show();
+
             IsBusy = true;
 
             if (_parameter != null)
@@ -209,8 +211,6 @@ namespace EltraUiCommon.Controls.Parameters
             }
 
             ReadValue();
-
-            await base.Show();
 
             IsBusy = false;
         }
