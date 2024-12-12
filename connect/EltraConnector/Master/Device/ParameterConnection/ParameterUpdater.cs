@@ -86,7 +86,7 @@ namespace EltraConnector.Master.Device.ParameterConnection
 
                             MsgLogger.WriteDebug($"{GetType().Name} - ReadParameter", $"Get Object '0x{parameter.Index:X4} 0x{parameter.SubIndex:X4}', data size={parameter.DataType.SizeInBytes}");
 
-                            if (communication.GetObject(parameter.Index, parameter.SubIndex, ref data))
+                            if (communication != null && communication.GetObject(parameter.Index, parameter.SubIndex, ref data))
                             {
                                 result = parameter.SetValue(data);
                             }
