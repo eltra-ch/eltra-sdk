@@ -172,6 +172,11 @@ namespace EltraConnector.Transport.Ws
 
         private void Initialize()
         {
+            if(_clientWebSocket != null && _clientWebSocket.State == WebSocketState.Aborted)
+            {
+                _clientWebSocket.Clone();
+            }
+
             Socket = new ClientWebSocketWrapper(_clientWebSocket);
             
             LastCloseStatus = null;

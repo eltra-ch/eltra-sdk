@@ -13,7 +13,6 @@ using EltraConnector.Events;
 using EltraCommon.Transport;
 using EltraConnector.Transport.Ws;
 using EltraConnector.Transport.Udp;
-using System.Net.Sockets;
 
 namespace EltraConnector.Master
 {
@@ -143,6 +142,16 @@ namespace EltraConnector.Master
             StatusChanged?.Invoke(this, e);
         }
 
+        private void OnAgentRemoteChannelStatusChanged(object sender, AgentChannelStatusChangedEventArgs e)
+        {
+            RemoteChannelStatusChanged?.Invoke(sender, e);
+        }
+
+        private void OnAgentChannelStatusChanged(object sender, AgentChannelStatusChangedEventArgs e)
+        {
+            ChannelStatusChanged?.Invoke(sender, e);
+        }
+
         #endregion
 
         #region Methods
@@ -228,107 +237,132 @@ namespace EltraConnector.Master
 
                 int reconnectDelay = (int)TimeSpan.FromSeconds(ConnectionSettings.Timeout).TotalMilliseconds;
 
-                try
+                do
                 {
-                    SyncCloudAgent agent = null;
+                    await StartDeviceManager(deviceManager, reconnectDelay);
 
-                    MsgLogger.Print($"{GetType().Name} - Start", $"Sign in '{Identity.Login}' ...");
-
-                    if (await SignIn(Identity, true))
+                    if (!_cancellationTokenSource.IsCancellationRequested)
                     {
-                        MsgLogger.Print($"{GetType().Name} - Start", $"'{Identity.Login}' signed in successfully");
+                        await Task.Delay(reconnectDelay);
+                    }
+                }
+                while (!_cancellationTokenSource.IsCancellationRequested);
+                
+                Status = MasterStatus.Stopped;
+            }
+        }
 
-                        ChannelId = await Authentication.GetChannelId();
+        private async Task StartDeviceManager(MasterDeviceManager deviceManager, int reconnectDelay)
+        {
+            try
+            {
+                SyncCloudAgent agent = null;
 
-                        if (!string.IsNullOrEmpty(ChannelId))
-                        {
-                            agent = new SyncCloudAgent(_httpClient, _udpClient, _webSocketClient, Host, Identity, ChannelId, ConnectionSettings.UpdateInterval, ConnectionSettings.Timeout);
-                        }
-                        else
-                        {
-                            MsgLogger.WriteError($"{GetType().Name} - Start", $"Master - channel cannot be read, quit");
-                        }
+                MsgLogger.Print($"{GetType().Name} - Start", $"Sign in '{Identity.Login}' ...");
 
-                        if (agent != null)
-                        {
-                            RegisterEvents(agent);
+                if (await SignIn(Identity, false))
+                {
+                    MsgLogger.Print($"{GetType().Name} - Start", $"'{Identity.Login}' signed in successfully");
 
-                            bool repeat = false;
+                    ChannelId = await Authentication.GetChannelId();
 
-                            do
-                            {
-                                Status = MasterStatus.Starting;
-
-                                MsgLogger.Print($"{GetType().Name} - Start", $"Sign in '{Identity.Login}' ...");
-
-                                if (await SignIn(agent))
-                                {
-                                    MsgLogger.Print($"{GetType().Name} - Start", $"'{Identity.Login}' signed in successfully");
-
-                                    deviceManager.CloudAgent = agent;
-
-                                    MsgLogger.Print($"{GetType().Name} - Start", "scan devices...");
-
-                                    if(await deviceManager.Run())
-                                    {
-                                        Status = MasterStatus.Started;
-
-                                        while (!_cancellationTokenSource.IsCancellationRequested)
-                                        {
-                                            await Task.Delay(100);
-                                        }
-                                    }
-
-                                    Status = MasterStatus.Stopping;
-
-                                    MsgLogger.Print($"{GetType().Name} - Start", "Disconnect ...");
-
-                                    agent.Stop();
-
-                                    MsgLogger.Print($"{GetType().Name} - Start", $"Stop device manager");
-
-                                    await deviceManager.Stop();
-
-                                    MsgLogger.Print($"{GetType().Name} - Start", $"Sign out, login '{Identity.Login}' ...");
-
-                                    await agent.SignOut();
-
-                                    MsgLogger.Print($"{GetType().Name} - Start", "Disconnected");
-                                }
-                                else if (!agent.Good)
-                                {
-                                    repeat = true;
-
-                                    MsgLogger.WriteError($"{GetType().Name} - Start", $"Connection failed, repeat in {ConnectionSettings.Timeout} sec. !");
-
-                                    await Task.Delay(reconnectDelay);
-                                }
-                                else
-                                {
-                                    MsgLogger.WriteError($"{GetType().Name} - Start", "Authentication failed, wrong password!");
-                                }
-                            }
-                            while (repeat && !_cancellationTokenSource.IsCancellationRequested);
-                        }
-                        else
-                        {
-                            await Authentication.SignOut();
-
-                            MsgLogger.Print($"{GetType().Name} - Start", "Disconnected");
-                        }
+                    if (!string.IsNullOrEmpty(ChannelId))
+                    {
+                        agent = new SyncCloudAgent(_httpClient, _udpClient, _webSocketClient, Host, Identity, ChannelId, ConnectionSettings.UpdateInterval, ConnectionSettings.Timeout);
                     }
                     else
                     {
-                        MsgLogger.WriteError($"{GetType().Name} - Start", "Authentication failed, wrong password!");
+                        MsgLogger.WriteError($"{GetType().Name} - Start", $"Master - channel cannot be read, quit");
+                    }
+
+                    if (agent != null)
+                    {
+                        await StartAgent(deviceManager, agent, reconnectDelay);
+                    }
+                    else
+                    {
+                        await Authentication.SignOut();
+
+                        MsgLogger.Print($"{GetType().Name} - Start", "Disconnected");
                     }
                 }
-                catch (Exception e)
+                else
                 {
-                    MsgLogger.Exception($"{GetType().Name} - Start", e);
+                    MsgLogger.WriteError($"{GetType().Name} - Start", "Authentication failed, wrong password!");
                 }
-
-                Status = MasterStatus.Stopped;
             }
+            catch (Exception e)
+            {
+                MsgLogger.Exception($"{GetType().Name} - Start", e);
+            }
+        }
+
+        private async Task StartAgent(MasterDeviceManager deviceManager, SyncCloudAgent agent, int reconnectDelay)
+        {
+            RegisterEvents(agent);
+
+            do
+            {
+                Status = MasterStatus.Starting;
+
+                MsgLogger.Print($"{GetType().Name} - Start", $"Sign in '{Identity.Login}' ...");
+
+                if (await SignIn(agent))
+                {
+                    MsgLogger.Print($"{GetType().Name} - Start", $"'{Identity.Login}' signed in successfully");
+
+                    deviceManager.CloudAgent = agent;
+
+                    MsgLogger.Print($"{GetType().Name} - Start", "scan devices...");
+
+                    if (await deviceManager.Run())
+                    {
+                        Status = MasterStatus.Started;
+
+                        while (!_cancellationTokenSource.IsCancellationRequested)
+                        {
+                            await Task.Delay(100);
+                        }
+                    }
+
+                    Status = MasterStatus.Stopping;
+
+                    MsgLogger.Print($"{GetType().Name} - Start", "Disconnect ...");
+
+                    agent.Stop();
+
+                    MsgLogger.Print($"{GetType().Name} - Start", $"Stop device manager");
+
+                    await deviceManager.Stop();
+
+                    MsgLogger.Print($"{GetType().Name} - Start", $"Sign out, login '{Identity.Login}' ...");
+
+                    await agent.SignOut();
+
+                    MsgLogger.Print($"{GetType().Name} - Start", "Disconnected");
+                }
+                else if (!agent.Good)
+                {
+                    MsgLogger.WriteError($"{GetType().Name} - Start", $"Connection failed, repeat in {ConnectionSettings.Timeout} sec. !");
+
+                    if (!_cancellationTokenSource.IsCancellationRequested)
+                    {
+                        await Task.Delay(reconnectDelay);
+                    }
+                }
+                else
+                {
+                    MsgLogger.WriteError($"{GetType().Name} - Start", "Authentication failed, wrong password!");
+
+                    if (!_cancellationTokenSource.IsCancellationRequested)
+                    {
+                        await Task.Delay(reconnectDelay);
+                    }
+                }
+            }
+            while (!_cancellationTokenSource.IsCancellationRequested);
+
+            UnregisterEvents(agent);
         }
 
         /// <summary>
@@ -445,6 +479,7 @@ namespace EltraConnector.Master
                 if (disposing)
                 {
                     _cancellationTokenSource?.Cancel();
+                    _cancellationTokenSource?.Dispose();
                 }
 
                 disposedValue = true;
@@ -472,15 +507,14 @@ namespace EltraConnector.Master
 
         private void RegisterEvents(SyncCloudAgent agent)
         {
-            agent.ChannelStatusChanged += (sender, args) =>
-            {
-                ChannelStatusChanged?.Invoke(sender, args);
-            };
+            agent.ChannelStatusChanged += OnAgentChannelStatusChanged;
+            agent.RemoteChannelStatusChanged += OnAgentRemoteChannelStatusChanged;
+        }
 
-            agent.RemoteChannelStatusChanged += (sender, args) =>
-            {
-                RemoteChannelStatusChanged?.Invoke(sender, args);
-            };
+        private void UnregisterEvents(SyncCloudAgent agent)
+        {
+            agent.ChannelStatusChanged -= OnAgentChannelStatusChanged;
+            agent.RemoteChannelStatusChanged -= OnAgentRemoteChannelStatusChanged;
         }
 
         #endregion
