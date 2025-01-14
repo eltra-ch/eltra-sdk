@@ -8,22 +8,24 @@
     <Company>eltra.ch</Company>
     <Product>Eltra.MAUI.Common</Product>
     <Description>Eltra - CANOpen based IoT Framework - SDK - MAUI</Description>
-    <Copyright>Dawid Sienkiewicz, (c) 2020-2024</Copyright>
+    <Copyright>Dawid Sienkiewicz, (c) 2020-2025</Copyright>
     <PackageLicenseFile>LICENSE</PackageLicenseFile>
     <RepositoryUrl>https://github.com/eltra-ch/eltra-common</RepositoryUrl>
     <RepositoryType>GIT</RepositoryType>
     <PackageTags>CANOpen IoT Eltra MAUI</PackageTags>
     <PackageReleaseNotes>Initial release - support for UI plugin system (Eltra framework)</PackageReleaseNotes>
     <PackageProjectUrl>www.eltra.ch</PackageProjectUrl>
-    <Version>3.1.1</Version>
+    <Version>3.2.0</Version>
     <PackageIcon>eltra_logo.png</PackageIcon>
-    <AssemblyVersion>3.1.1.0</AssemblyVersion>
-    <FileVersion>3.1.1.0</FileVersion>
+    <AssemblyVersion>3.2.0.0</AssemblyVersion>
+    <FileVersion>3.2.0.0</FileVersion>
     <Configurations>Debug;Release</Configurations>
 	<PackageReadmeFile>readme.md</PackageReadmeFile>
-	<!--<UseMaui>false</UseMaui>-->
 	<NoWarn>NU5104</NoWarn>
 	<MauiEnableXamlCBindingWithSourceCompilation>true</MauiEnableXamlCBindingWithSourceCompilation>
+	  <dependencies>
+		  <dependency id="EltraUiCommon" version="3.2.0" />
+	  </dependencies>
   </PropertyGroup>
 
   <ItemGroup>

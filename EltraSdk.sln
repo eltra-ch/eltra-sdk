@@ -31,6 +31,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EltraCommon", "externals\el
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EltraMauiCommon", "ui\common\EltraMauiCommon\EltraMauiCommon.csproj", "{43A8815A-F8D7-470E-958A-691DB691A1F8}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EltraWpfCommon", "ui\common\EltraWpfCommon\EltraWpfCommon.csproj", "{9BA51795-A964-4E4F-BD18-FADF8D288A16}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug - UWP|Any CPU = Debug - UWP|Any CPU
@@ -98,6 +100,12 @@ Global
 		{43A8815A-F8D7-470E-958A-691DB691A1F8}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{43A8815A-F8D7-470E-958A-691DB691A1F8}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{43A8815A-F8D7-470E-958A-691DB691A1F8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9BA51795-A964-4E4F-BD18-FADF8D288A16}.Debug - UWP|Any CPU.ActiveCfg = Debug|Any CPU
+		{9BA51795-A964-4E4F-BD18-FADF8D288A16}.Debug - UWP|Any CPU.Build.0 = Debug|Any CPU
+		{9BA51795-A964-4E4F-BD18-FADF8D288A16}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9BA51795-A964-4E4F-BD18-FADF8D288A16}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9BA51795-A964-4E4F-BD18-FADF8D288A16}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9BA51795-A964-4E4F-BD18-FADF8D288A16}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -112,6 +120,7 @@ Global
 		{CC86A261-BC57-4499-9C89-518856A989F3} = {4C87799D-4992-41C8-AD37-92489B29EF2C}
 		{210D9284-A531-48A6-8382-26A9259F403E} = {4C87799D-4992-41C8-AD37-92489B29EF2C}
 		{43A8815A-F8D7-470E-958A-691DB691A1F8} = {CF6910DE-16A0-4F0F-B090-B7AD107E452F}
+		{9BA51795-A964-4E4F-BD18-FADF8D288A16} = {CF6910DE-16A0-4F0F-B090-B7AD107E452F}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {3F78AC7E-CC0B-4FA9-93A8-9D1F9CB30945}

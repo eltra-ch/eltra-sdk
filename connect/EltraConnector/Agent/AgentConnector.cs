@@ -698,6 +698,7 @@ namespace EltraConnector.Agent
 
         private async Task<bool> EnsureAgentReady()
         {
+            const int minWaitTime = 10;
             bool result = false;
 
             if (Status == AgentStatus.Starting)
@@ -710,7 +711,7 @@ namespace EltraConnector.Agent
 
                 do
                 {
-                    await Task.Delay(10);
+                    await Task.Delay(minWaitTime);
 
                     if(_deviceAgent != null && _deviceAgent.Status == AgentStatus.Online)
                     {

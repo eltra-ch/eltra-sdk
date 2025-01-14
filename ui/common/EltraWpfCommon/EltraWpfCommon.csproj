@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <OutputType>Library</OutputType>
-    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <TargetFrameworks>net8.0-windows;net472</TargetFrameworks>
     <UseWPF>true</UseWPF>
     <PackageId>Eltra.Wpf.Common</PackageId>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
@@ -11,7 +11,7 @@
     <Company>eltra.ch</Company>
     <Product>Eltra.Wpf.Common</Product>
     <Description>Eltra - CANOpen based IoT Framework - SDK - UI WPF component</Description>
-    <Copyright>Dawid Sienkiewicz, (c) 2020-2022</Copyright>
+    <Copyright>Dawid Sienkiewicz, (c) 2020-2025</Copyright>
     <PackageLicenseFile>LICENSE</PackageLicenseFile>
     <PackageProjectUrl>www.eltra.ch</PackageProjectUrl>
     <PackageIcon>eltra_logo.png</PackageIcon>
@@ -19,16 +19,20 @@
     <RepositoryType>GIT</RepositoryType>
     <PackageTags>CANOpen IoT Eltra WPF</PackageTags>
     <PackageReleaseNotes>Initial release - support for UI plugin system (Eltra framework)</PackageReleaseNotes>
-    <Version>1.0.4</Version>
+    <Version>3.2.0</Version>
+	<AssemblyVersion>3.2.0.0</AssemblyVersion>
+	<FileVersion>3.2.0.0</FileVersion>
+	  <dependencies>
+		  <dependency id="EltraUiCommon" version="3.2.0" />
+	  </dependencies>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.Xaml.Behaviors.Wpf" Version="1.1.39" />
-    <PackageReference Include="Prism.Wpf" Version="8.1.97" />
+    <PackageReference Include="Microsoft.Xaml.Behaviors.Wpf" Version="1.1.135" />
+    <PackageReference Include="Prism.Wpf" Version="9.0.537" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\..\externals\eltra-common\EltraCommon\EltraCommon.csproj" />
     <ProjectReference Include="..\EltraUiCommon\EltraUiCommon.csproj" />
   </ItemGroup>
 

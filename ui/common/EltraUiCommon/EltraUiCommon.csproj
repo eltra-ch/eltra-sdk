@@ -6,7 +6,7 @@
     <Company>eltra.ch</Company>
     <Product>Eltra.Ui.Common</Product>
     <Description>Eltra - CANOpen based IoT Framework - SDK - UI component</Description>
-    <Copyright>Dawid Sienkiewicz, (c) 2020-2024</Copyright>
+    <Copyright>Dawid Sienkiewicz, (c) 2020-2025</Copyright>
     <PackageLicenseFile>LICENSE</PackageLicenseFile>
     <PackageProjectUrl>www.eltra.ch</PackageProjectUrl>
     <RepositoryUrl>https://github.com/eltra-ch/eltra-common</RepositoryUrl>
@@ -16,11 +16,14 @@
     <PackageIcon>eltra_logo.png</PackageIcon>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
-    <Version>3.1.0</Version>
-    <AssemblyVersion>3.1.0.0</AssemblyVersion>
-    <FileVersion>3.1.0.0</FileVersion>
+    <Version>3.2.0</Version>
+    <AssemblyVersion>3.2.0.0</AssemblyVersion>
+    <FileVersion>3.2.0.0</FileVersion>
     <Configurations>Debug;Release</Configurations>
 	<PackageReadmeFile>readme.md</PackageReadmeFile>
+	  <dependencies>
+		  <dependency id="Eltra.Connector" version="3.2.0" />
+	  </dependencies>
   </PropertyGroup>
 
   <ItemGroup>

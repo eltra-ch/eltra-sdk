@@ -299,6 +299,8 @@ namespace EltraConnector.Master
 
         private async Task StartAgent(MasterDeviceManager deviceManager, SyncCloudAgent agent, int reconnectDelay)
         {
+            const int minWaitTime = 100;
+
             RegisterEvents(agent);
 
             do
@@ -321,7 +323,7 @@ namespace EltraConnector.Master
 
                         while (!_cancellationTokenSource.IsCancellationRequested)
                         {
-                            await Task.Delay(100);
+                            await Task.Delay(minWaitTime).ConfigureAwait(false);
                         }
                     }
 

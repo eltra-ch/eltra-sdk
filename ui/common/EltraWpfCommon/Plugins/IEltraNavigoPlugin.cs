@@ -1,5 +1,5 @@
 ﻿using EltraUiCommon.Controls;
-using Prism.Services.Dialogs;
+using Prism.Dialogs;
 using System.Collections.Generic;
 using System.Windows.Controls;
 

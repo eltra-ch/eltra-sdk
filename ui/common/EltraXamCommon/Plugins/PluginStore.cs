@@ -1,6 +1,5 @@
-﻿using EltraCommon.Helpers;
-using EltraCommon.Logger;
-using Newtonsoft.Json;
+﻿using EltraCommon.Logger;
+using System.Text.Json;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -71,7 +70,7 @@ namespace EltraXamCommon.Plugins
                 {
                     var json = File.ReadAllText(PluginStoreFilePath);
 
-                    var pluginStore = JsonConvert.DeserializeObject<PluginStore>(json);
+                    var pluginStore = JsonSerializer.Deserialize<PluginStore>(json);
 
                     if(pluginStore != null)
                     {
@@ -100,7 +99,7 @@ namespace EltraXamCommon.Plugins
         {
             try
             {
-                var json = JsonConvert.SerializeObject(this);
+                var json = JsonSerializer.Serialize(this);
 
                 File.WriteAllText(PluginStoreFilePath, json);
             }
