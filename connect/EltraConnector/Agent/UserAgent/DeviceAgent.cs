@@ -342,28 +342,45 @@ namespace EltraConnector.UserAgent
         /// <returns></returns>
         public async Task<bool> WriteParameter(EltraDevice device, Parameter parameter)
         {
+            const string methodName = "WriteParameter";
             bool result = false;
             uint lastErrorCode = 0;
             var command = await GetDeviceCommand(device, "SetObject");
 
             if (command != null)
             {
-                command.SetParameterValue("Index", parameter.Index);
-                command.SetParameterValue("SubIndex", parameter.SubIndex);
-
-                parameter.GetValue(out byte[] data);
-
-                command.SetParameterValue("Data", data);
-
-                var responseCommand = await ExecuteCommand(command);
-
-                responseCommand?.GetParameterValue("ErrorCode", ref lastErrorCode);
-                responseCommand?.GetParameterValue("Result", ref result);
-
-                if (result && ParameterRegistrationCache.FindParameter(parameter.UniqueId, out var registeredParameter))
+                if (parameter != null)
                 {
-                    registeredParameter.Reset();
+                    command.SetParameterValue("Index", parameter.Index);
+                    command.SetParameterValue("SubIndex", parameter.SubIndex);
+
+                    if (parameter.GetValue(out byte[] data))
+                    {
+                        command.SetParameterValue("Data", data);
+
+                        var responseCommand = await ExecuteCommand(command);
+
+                        responseCommand?.GetParameterValue("ErrorCode", ref lastErrorCode);
+                        responseCommand?.GetParameterValue("Result", ref result);
+
+                        if (result && ParameterRegistrationCache.FindParameter(parameter.UniqueId, out var registeredParameter))
+                        {
+                            registeredParameter.Reset();
+                        }
+                    }
+                    else
+                    {
+                        MsgLogger.WriteError($"{GetType().Name} - {methodName}", $"Cannot get parameter {parameter.UniqueId} value");
+                    }
                 }
+                else
+                {
+                    MsgLogger.WriteError($"{GetType().Name} - {methodName}", $"parameter not found!");
+                }
+            }
+            else
+            {
+                MsgLogger.WriteError($"{GetType().Name} - {methodName}", $"command not found!");
             }
 
             return result;
