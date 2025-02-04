@@ -58,7 +58,10 @@ namespace EltraConnector.Transport.Ws
 
             try
             {
-                await _socket.ConnectAsync(uri, token);
+                if (_socket.State != WebSocketState.Open && _socket.State != WebSocketState.Connecting)
+                {
+                    await _socket.ConnectAsync(uri, token);
+                }
 
                 result = true;
             }
@@ -210,7 +213,7 @@ namespace EltraConnector.Transport.Ws
                 }
                 else
                 {
-                    MsgLogger.WriteError($"{GetType().Name} - CloseOutputAsync", $"wrong socket state = {_socket.State}");
+                    MsgLogger.WriteWarning($"{GetType().Name} - CloseOutputAsync", $"wrong socket state = {_socket.State}");
                 }
             }
             catch (Exception e)

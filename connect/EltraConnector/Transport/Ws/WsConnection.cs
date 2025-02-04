@@ -21,7 +21,7 @@ namespace EltraConnector.Transport.Ws
     {
         #region Private fields
 
-        private readonly IWebSocketClient _clientWebSocket;
+        private IWebSocketClient _clientWebSocket;
 
         private CancellationTokenSource _cancellationTokenSource;
         private CancellationTokenSource _disconnectTokenSource;
@@ -172,9 +172,9 @@ namespace EltraConnector.Transport.Ws
 
         private void Initialize()
         {
-            if(_clientWebSocket != null && _clientWebSocket.State == WebSocketState.Aborted)
+            if(_clientWebSocket != null && (_clientWebSocket.State == WebSocketState.Aborted || _clientWebSocket.State == WebSocketState.Closed))
             {
-                _clientWebSocket.Clone();
+                _clientWebSocket = _clientWebSocket.Clone();
             }
 
             Socket = new ClientWebSocketWrapper(_clientWebSocket);
