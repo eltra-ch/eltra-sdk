@@ -685,6 +685,7 @@ namespace EltraConnector.Agent
                     var vcsDevice = vcs.Item2.Device;
 
                     if (vcsDevice != null &&
+                        vcsDevice.ChannelId == device.ChannelId &&
                         vcsDevice.NodeId == device.NodeId)
                     {
                         result = vcs.Item2;

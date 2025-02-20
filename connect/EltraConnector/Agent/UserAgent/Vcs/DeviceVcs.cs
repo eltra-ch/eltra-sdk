@@ -155,8 +155,9 @@ namespace EltraConnector.UserAgent.Vcs
         private void OnParameterValueChanged(object sender, ParameterValueChangedEventArgs e)
         {
             var objectDictionary = Device?.ObjectDictionary;
+            var channelId = Device?.ChannelId;
 
-            if(objectDictionary!=null)
+            if (objectDictionary != null && e.ChannelId == channelId)
             {
                 var parameterBase = objectDictionary.SearchParameter(e.Index, e.SubIndex);
 

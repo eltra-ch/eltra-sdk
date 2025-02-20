@@ -93,23 +93,25 @@ namespace EltraConnector.Agent.Parameters
 
                     if (parameterSet != null && parameterSet.Count > 0)
                     {
-                        foreach (var parameterEntry in parameterSet.Items)
+                        foreach (var parameterUpdateValue in parameterSet.Items)
                         {
-                            OnParameterValueChanged(new ParameterValueChangedEventArgs(parameterEntry.NodeId,
-                                                                                       parameterEntry.Index,
-                                                                                       parameterEntry.SubIndex,
-                                                                                       parameterEntry.ParameterValue));
+                            OnParameterValueChanged(new ParameterValueChangedEventArgs(parameterUpdateValue.ChannelId,
+                                                                                       parameterUpdateValue.NodeId,
+                                                                                       parameterUpdateValue.Index,
+                                                                                       parameterUpdateValue.SubIndex,
+                                                                                       parameterUpdateValue.ParameterValue));
                         }
                     }
                     else
                     {
-                        var parameterEntry = json.TryDeserializeObject<ParameterValueUpdate>();
+                        var parameterValueUpdate = json.TryDeserializeObject<ParameterValueUpdate>();
 
-                        if (parameterEntry != null)
+                        if (parameterValueUpdate != null)
                         {
-                            OnParameterValueChanged(new ParameterValueChangedEventArgs(parameterEntry.NodeId,
-                                                                                       parameterEntry.Index,
-                                                                                       parameterEntry.SubIndex, parameterEntry.ParameterValue));
+                            OnParameterValueChanged(new ParameterValueChangedEventArgs(parameterValueUpdate.ChannelId,
+                                                                                       parameterValueUpdate.NodeId,
+                                                                                       parameterValueUpdate.Index,
+                                                                                       parameterValueUpdate.SubIndex, parameterValueUpdate.ParameterValue));
                         }
                     }
                 });
