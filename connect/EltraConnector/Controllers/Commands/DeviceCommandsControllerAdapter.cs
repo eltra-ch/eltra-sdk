@@ -165,6 +165,7 @@ namespace EltraConnector.Controllers
             {
                 var execCommand = new ExecuteCommand { Command = command, 
                                                        NodeId = device.NodeId,
+                                                       Modified = DateTime.Now.ToUniversalTime(),
                                                        TargetChannelId = device.ChannelId,
                                                        SourceChannelId = sourceChannelId };
 

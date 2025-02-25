@@ -850,12 +850,17 @@ namespace EltraConnector.UserAgent
         public async Task<bool> ExecuteCommandAsync(DeviceCommand command)
         {
             bool result = false;
+            const string methodName = "ExecuteCommandAsync";
 
             if (await PushCommand(command, ExecCommandStatus.Waiting))
             {
                 _executeCommander.FollowCommand(command);
 
                 result = true;
+            }
+            else
+            {
+                MsgLogger.WriteError($"{GetType().Name} - {methodName}", $"push command '{command.Id}' failed!");
             }
 
             return result;
