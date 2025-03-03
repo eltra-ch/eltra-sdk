@@ -1,7 +1,7 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net8.0</TargetFramework>
+    <TargetFrameworks>net8.0;net9.0</TargetFrameworks>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
     <Authors>Dawid Sienkiewicz</Authors>
@@ -15,10 +15,10 @@
     <PackageTags>CANOpen IoT Eltra MAUI</PackageTags>
     <PackageReleaseNotes>Initial release - support for UI plugin system (Eltra framework)</PackageReleaseNotes>
     <PackageProjectUrl>www.eltra.ch</PackageProjectUrl>
-    <Version>3.2.0</Version>
+    <Version>3.2.1</Version>
     <PackageIcon>eltra_logo.png</PackageIcon>
-    <AssemblyVersion>3.2.0.0</AssemblyVersion>
-    <FileVersion>3.2.0.0</FileVersion>
+    <AssemblyVersion>3.2.1.0</AssemblyVersion>
+    <FileVersion>3.2.1.0</FileVersion>
     <Configurations>Debug;Release</Configurations>
 	<PackageReadmeFile>readme.md</PackageReadmeFile>
 	<NoWarn>NU5104</NoWarn>
@@ -40,9 +40,10 @@
   </ItemGroup>
 
   <ItemGroup>
-	<PackageReference Include="Microsoft.Maui.Controls" Version="9.0.14" />
-	<PackageReference Include="Microsoft.Maui.Controls.Compatibility" Version="9.0.14" />
-	<PackageReference Include="CommunityToolkit.Maui" Version="9.1.1" />
+	<PackageReference Include="Microsoft.Maui.Controls" Version="9.0.40" />
+	<PackageReference Include="Microsoft.Maui.Controls.Compatibility" Version="9.0.40" />
+	<PackageReference Include="CommunityToolkit.Maui" Version="9.1.1" Condition="'$(TargetFramework)' == 'net8.0'" />
+	  <PackageReference Include="CommunityToolkit.Maui" Version="11.1.0" Condition="'$(TargetFramework)' == 'net9.0'" />
   </ItemGroup>
 	
   <ItemGroup>
