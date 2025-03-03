@@ -1,5 +1,5 @@
 ﻿using EltraXamCommon.Dialogs;
-using Prism.Services.Dialogs;
+using Prism.Dialogs;
 using System;
 using System.ComponentModel;
 

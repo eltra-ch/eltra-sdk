@@ -1,13 +1,21 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.30204.135
+# Visual Studio Version 17
+VisualStudioVersion = 17.12.35707.178 d17.12
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TestMaster", "TestMaster.csproj", "{A6B58520-EBA0-4CCF-BFA8-EF82174E075A}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EltraCommon", "..\..\xternals\common\EltraCommon\EltraCommon.csproj", "{306A4CAA-2991-430F-9A32-2584DFFCD7BD}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EltraConnector", "..\..\connect\EltraConnector\EltraConnector.csproj", "{0B789B64-096A-4395-8F8E-9381EE3D4968}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Common", "Common", "{53C89FD1-3741-4C29-99F1-E2DF00B59D55}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EltraCommonBase", "..\..\externals\eltra-common\EltraCommonBase\EltraCommonBase.csproj", "{A529BD92-DF33-4FC8-9F53-BB6BAF409BDD}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EltraCommon", "..\..\externals\eltra-common\EltraCommon\EltraCommon.csproj", "{4C8D17C3-1A4F-4F73-8990-866167718971}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EltraLogger", "..\..\externals\eltra-common\EltraLogger\EltraLogger.csproj", "{46EBAB1A-262A-4FB5-B4DA-FD7380DC69C3}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -34,9 +42,32 @@ Global
 		{0B789B64-096A-4395-8F8E-9381EE3D4968}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0B789B64-096A-4395-8F8E-9381EE3D4968}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0B789B64-096A-4395-8F8E-9381EE3D4968}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A529BD92-DF33-4FC8-9F53-BB6BAF409BDD}.Debug - UWP|Any CPU.ActiveCfg = Debug|Any CPU
+		{A529BD92-DF33-4FC8-9F53-BB6BAF409BDD}.Debug - UWP|Any CPU.Build.0 = Debug|Any CPU
+		{A529BD92-DF33-4FC8-9F53-BB6BAF409BDD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A529BD92-DF33-4FC8-9F53-BB6BAF409BDD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A529BD92-DF33-4FC8-9F53-BB6BAF409BDD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A529BD92-DF33-4FC8-9F53-BB6BAF409BDD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4C8D17C3-1A4F-4F73-8990-866167718971}.Debug - UWP|Any CPU.ActiveCfg = Debug|Any CPU
+		{4C8D17C3-1A4F-4F73-8990-866167718971}.Debug - UWP|Any CPU.Build.0 = Debug|Any CPU
+		{4C8D17C3-1A4F-4F73-8990-866167718971}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4C8D17C3-1A4F-4F73-8990-866167718971}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4C8D17C3-1A4F-4F73-8990-866167718971}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4C8D17C3-1A4F-4F73-8990-866167718971}.Release|Any CPU.Build.0 = Release|Any CPU
+		{46EBAB1A-262A-4FB5-B4DA-FD7380DC69C3}.Debug - UWP|Any CPU.ActiveCfg = Debug|Any CPU
+		{46EBAB1A-262A-4FB5-B4DA-FD7380DC69C3}.Debug - UWP|Any CPU.Build.0 = Debug|Any CPU
+		{46EBAB1A-262A-4FB5-B4DA-FD7380DC69C3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{46EBAB1A-262A-4FB5-B4DA-FD7380DC69C3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{46EBAB1A-262A-4FB5-B4DA-FD7380DC69C3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{46EBAB1A-262A-4FB5-B4DA-FD7380DC69C3}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{A529BD92-DF33-4FC8-9F53-BB6BAF409BDD} = {53C89FD1-3741-4C29-99F1-E2DF00B59D55}
+		{4C8D17C3-1A4F-4F73-8990-866167718971} = {53C89FD1-3741-4C29-99F1-E2DF00B59D55}
+		{46EBAB1A-262A-4FB5-B4DA-FD7380DC69C3} = {53C89FD1-3741-4C29-99F1-E2DF00B59D55}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {557D5953-C783-4F41-B460-CF09AD3AC4F9}

@@ -4,7 +4,7 @@ using EltraXamCommon.Framework;
 using EltraXamCommon.Plugins.Events;
 using System;
 using EltraXamCommon.Dialogs;
-using Prism.Services.Dialogs;
+using Prism.Dialogs;
 using EltraXamCommon.Plugins;
 
 namespace EltraXamCommon.Controls

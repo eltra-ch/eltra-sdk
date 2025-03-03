@@ -23,7 +23,7 @@ namespace TestMaster
 
             var runner = Task.Run(async () =>
             {
-                connector.Host = "https://eltra.ch";
+                connector.Host = "https://localhost:51697/";
 
                 if (args.Length > 0)
                 {

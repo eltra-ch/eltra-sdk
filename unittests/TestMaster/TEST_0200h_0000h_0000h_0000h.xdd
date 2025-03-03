@@ -28,7 +28,7 @@
 				<version versionType="SW" readOnly="true">0x0120</version>
 				<version versionType="HW" readOnly="true">0x0615</version>
 				<version versionType="APPNB" readOnly="true">0x0000</version>
-				<version versionType="APPVER" readOnly="true">0x0006</version>
+				<version versionType="APPVER" readOnly="true">0x0007</version>
 			</DeviceIdentity>
 			<DeviceManager>
 				<userLevelList>
@@ -306,6 +306,7 @@
 						<label lang="en-TT">String</label>
 						<dataType>
 							<type>VISIBLE_STRING</type>
+							<size unit="byte">255</size>
 						</dataType>
 						<flagsIDRef uniqueIDRef="AT_RW" />
 						<defaultValue/>

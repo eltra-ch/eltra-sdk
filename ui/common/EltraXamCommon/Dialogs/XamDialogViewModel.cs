@@ -1,22 +1,25 @@
 ﻿using Prism.Mvvm;
-using Prism.Services.Dialogs;
+using Prism.Dialogs;
 using System;
 
 namespace EltraXamCommon.Dialogs
 {
     public class XamDialogViewModel : BindableBase, IDialogAware
     {
+
         #region Events
 
-        public event Action<IDialogParameters> RequestClose;
+        private DialogCloseListener _dialogCloseListener = new DialogCloseListener();
 
+        DialogCloseListener IDialogAware.RequestClose => _dialogCloseListener;
+        
         #endregion
 
         #region Events handling
 
         protected void SendCloseRequest(IDialogParameters dialogParameters = null)
         {
-            RequestClose?.Invoke(dialogParameters);
+            _dialogCloseListener.Invoke(dialogParameters);
         }
 
         #endregion
