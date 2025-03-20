@@ -21,6 +21,9 @@
     <FileVersion>3.2.1.0</FileVersion>
     <Configurations>Debug;Release</Configurations>
 	<PackageReadmeFile>readme.md</PackageReadmeFile>
+	  <dependencies>
+		  <dependency id="EltraUiCommon" version="3.2.1" />
+	  </dependencies>
   </PropertyGroup>
 
   <ItemGroup>
