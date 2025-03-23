@@ -10,7 +10,10 @@ jobs:
   build:
 
     runs-on: ubuntu-latest
-
+    
+    env: 
+      EnableWindowsTargeting: true
+      
     steps:
     - uses: actions/checkout@v2
     - name: Setup .NET Core
